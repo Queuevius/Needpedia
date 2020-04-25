@@ -1,0 +1,127 @@
+body {
+    background-image: url("./content-bg.gif");
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.128571429;
+    color: #333333;
+    background-color: #ffffff;
+}
+
+.navbar-custom {
+    background-color: #6c757d61 !important;
+}
+
+.nav-item > .nav-link {
+  color: var(--gray-dark) !important;
+}
+
+
+.ui-block {
+  background-color: #fff;
+  border-radius: 5px;
+  border: 1px solid #e6ecf5;
+  margin-bottom: 15px;
+}
+
+.ui-block .ui-block-title:last-child {
+  border-bottom: 0
+}
+
+.ui-block-title {
+  padding: 23px 25px 18px;
+  line-height: 1;
+  border-bottom: 1px solid #e6ecf5;
+  border-top: 1px solid #e6ecf5;
+  display: table;
+  width: 100%;
+  position: relative;
+  border-radius: 5px 5px 0 0
+}
+.ui-block-title > * {
+  margin-bottom: 0;
+  display: table-cell;
+  vertical-align: middle
+}
+
+.control-icon .ui-block-title a {
+  display: inline-block;
+  float: right;
+  margin-left: 20px;
+  text-transform: uppercase;
+  font-size: 9px;
+  padding: 0
+}
+.ui-block-title .btn {
+  display: inline-block;
+  margin-bottom: 0
+}
+.ui-block-content {
+  padding: 24px 23px 23px
+}
+.your-profile-menu {
+  padding: 12px 25px;
+  border-bottom: 1px solid #e6ecf5;
+  margin-bottom: 0
+}
+
+.your-profile-menu li a {
+  font-size: 11px;
+  padding: 12px 0;
+  color: #888da8;
+  display: block;
+  font-weight: 700
+}
+
+.your-profile-menu li a {
+  color: #515365;
+  font-size: 0.9em !important;
+}
+
+.your-profile-menu {
+  list-style: none;
+}
+
+.accordion-menu .card-header {
+  padding: 0
+}
+
+.accordion-menu .card-header a > .olymp-dropdown-arrow-icon {
+  margin-left: 15px;
+  margin-top: 4px
+}
+
+.accordion-menu .card-header svg {
+  margin-top: 0
+}
+
+.accordion-menu .card-header a {
+  color: inherit;
+  font-size: 13px
+}
+
+.card-footer, .card-header {
+  padding: .75rem 1.25rem;
+  background-color: #fff;
+}
+
+.card {
+  border: none
+}
+
+.card-header a {
+  color: #515365;
+  display: block
+}
+
+.card-header a:focus, .card-header a:hover {
+  color: #515365
+}
+
+.customer-quote {
+  font-size: 18px;
+  font-weight: 400;
+  color: black;
+  line-height: 1.8;
+  text-align: center;
+  margin-bottom: 40px;
+}
