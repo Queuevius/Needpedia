@@ -1,0 +1,36 @@
+<div class="row">
+  <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
+    <% if posts.blank? %>
+      <h4 class="alert alert-warning">There are no <%= type.pluralize.titleize %> created yet</h4>
+    <% end %>
+  </div>
+  <% posts.each do |post| %>
+    <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1">
+      <div class="ui-block shadow-lg rounded">
+        <div class="ui-block-content">
+          <div class="row">
+            <div class="col-md-6">
+              <%= link_to post_path(post), class: 'text-dark' do %>
+                <h2><%= post.title %></h2>
+              <% end %>
+              <em>Author: <%= post.user.name %></em><br>
+              <em><%= post.created_at.strftime('%d-%m-%Y') %></em>
+            </div>
+            <div class="col-md-6 text-right">
+              <% if post.post_type == Post::POST_TYPE_AREA %>
+                <%= link_to 'Problems', post_problems_path(post_id: post.id, post_type: Post::POST_TYPE_PROBLEM), class: 'btn btn-danger' %>
+                <%= link_to 'Proposals', post_proposals_path(post_id: post.id, post_type: Post::POST_TYPE_PROPOSAL), class: 'btn btn-secondary pr-2' %>
+              <% elsif post.post_type == Post::POST_TYPE_PROBLEM %>
+                <%= link_to 'Ideas', post_ideas_path(post_id: post.id, post_type: Post::POST_TYPE_IDEA), class: 'btn btn-success' %>
+              <% else %>
+              <% end %>
+            </div>
+            <div class="col-md-12">
+              <p><%= post.content %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

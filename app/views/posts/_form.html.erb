@@ -1,0 +1,32 @@
+<%= form_with(model: post, local: true) do |form| %>
+
+  <% if !@post.persisted? %>
+    <%= form.hidden_field :post_type, value: @type %>
+    <%= form.hidden_field :user_id, value: current_user.id %>
+    <%= form.hidden_field :area_id, value: @area_id %>
+    <%= form.hidden_field :problem_id, value: @problem_id %>
+  <% end %>
+  <div class="form-group">
+    <%= form.text_field :title, autofocus: true, class: 'form-control', placeholder: "Title" %>
+  </div>
+
+  <div class="form-group">
+    <%= form.rich_text_area :content, autofocus: true, class: 'form-control', placeholder: "Body" %>
+  </div>
+
+  <div class="form-group">
+    <% if post.persisted? %>
+      <div class="float-right">
+        <%= link_to 'Destroy', post, method: :delete, class: "text-danger", data: { confirm: 'Are you sure?' } %>
+      </div>
+    <% end %>
+
+    <%= form.submit class: 'btn btn-primary' %>
+
+    <% if post.persisted? %>
+      <%= link_to "Cancel", post, class: "btn btn-link" %>
+    <% else %>
+      <%= link_to "Cancel", posts_path, class: "btn btn-link" %>
+    <% end %>
+  </div>
+<% end %>

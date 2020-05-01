@@ -24,11 +24,17 @@
         <li class="nav-item pt-1"><%= link_to "What's New", announcements_path, class: "nav-link #{unread_announcements(current_user)}" %></li>
         <% if user_signed_in? %>
 
-        <li class="nav-item">
-          <%= link_to notifications_path, class: "nav-link" do %>
-            <span><i class="far fa-bell" aria-hidden="true" style="font-size: x-large"></i></span>
-          <% end %>
-         </li>
+          <li class="nav-item">
+            <%= link_to posts_path(post_type: Post::POST_TYPE_AREA), class: "nav-link" do %>
+              <span><i class="fa fa-globe" title="Area Posts" aria-hidden="true" style="font-size: x-large"></i></span>
+            <% end %>
+          </li>
+
+          <li class="nav-item">
+            <%= link_to notifications_path, class: "nav-link" do %>
+              <span><i class="far fa-bell" aria-hidden="true" style="font-size: x-large"></i></span>
+            <% end %>
+          </li>
 
           <li class="nav-item dropdown">
             <%= link_to "#", id: "navbar-dropdown", class: "nav-link dropdown-toggle", data: { target: "nav-account-dropdown", toggle: "dropdown" }, aria: { haspopup: true, expanded: false } do %>
@@ -45,8 +51,8 @@
           </li>
 
         <% else %>
-          <li class="nav-item"><%= link_to "Sign Up", new_user_registration_path, class: "nav-link" %></li>
-          <li class="nav-item"><%= link_to "Login", new_user_session_path, class: "nav-link" %></li>
+          <li class="nav-item pt-1"><%= link_to "Sign Up", new_user_registration_path, class: "nav-link" %></li>
+          <li class="nav-item pt-1"><%= link_to "Login", new_user_session_path, class: "nav-link" %></li>
         <% end %>
       </ul>
     </div>

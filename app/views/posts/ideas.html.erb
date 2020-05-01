@@ -1,0 +1,22 @@
+<div class="container mb-5">
+  <div class="row mt-3">
+    <div class="col-md-12 text-center mb-2">
+      <h1><b><%= @type.pluralize.titleize %></b></h1>
+    </div>
+    <div class="col-md-12">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <%= link_to 'Problem', post_problems_path(post_id: @post.id, post_type: Post::POST_TYPE_PROBLEM), class: 'btn btn-danger' %>
+        </div>
+
+        <div class="col-sm-6 text-right">
+          <%= link_to new_post_path(post_type: Post::POST_TYPE_IDEA, area_id: nil, problem_id: @post.id), class: 'btn btn-primary' do %>
+            Add New <%= @type %>
+          <% end %>
+        </div>
+      </div>
+
+      <%= render 'list', posts: @posts, type: @type %>
+    </div>
+  </div>
+</div>
