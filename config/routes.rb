@@ -19,9 +19,15 @@ Rails.application.routes.draw do
   resources :notifications, only: [:index]
   resources :announcements, only: [:index]
   resources :posts do
-      get 'problems'
-      get 'proposals'
-      get 'ideas'
+    get 'problems'
+    get 'proposals'
+    get 'ideas'
+    collection do
+      get 'search_result'
+      get 'all_problems'
+      get 'all_proposals'
+      get 'all_ideas'
+    end
   end
   devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
   root to: 'home#index'

@@ -11,6 +11,9 @@ class Post < ApplicationRecord
     POST_TYPE_PROPOSAL,
     POST_TYPE_IDEA
   ].freeze
+
+  GENERAL_AREA = ENV['GENERAL_AREA_ID']
+  GENERAL_PROBLEM = ENV['GENERAL_PROBLEM_ID']
   ################################ Relationships ########################
   belongs_to :user, optional: true
   belongs_to :parent_area, class_name: 'Post', foreign_key: :area_id, optional: true

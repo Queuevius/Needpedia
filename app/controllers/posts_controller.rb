@@ -23,6 +23,17 @@ class PostsController < ApplicationController
     @posts = Post.idea_posts.where(problem_id: @post.id)
   end
 
+  def all_problems
+    @posts = Post.problem_posts
+  end
+
+  def all_proposals
+    @posts = Post.proposal_posts
+  end
+
+  def all_ideas
+    @posts = Post.idea_posts
+  end
   # GET /posts/1
   # GET /posts/1.json
   def show
@@ -81,15 +92,21 @@ class PostsController < ApplicationController
     end
   end
 
+  def search_result
+    keywords = params[:q]
+    @q = Post.ransack(keywords)
+    @posts = @q.result(distinct: true)
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
   def set_post
-    @post = Post.find(params[:id])
+    @post = Post.find_by_id(params[:id])
   end
 
   def set_area
-    @post = Post.find(params[:post_id])
+    @post = Post.find_by_id(params[:post_id])
   end
 
   def set_type

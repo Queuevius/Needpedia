@@ -10,16 +10,30 @@
         <div class="ui-block-content">
           <div class="row">
             <div class="col-md-6">
-              <%= link_to post_path(post), class: 'text-dark' do %>
-                <h2><%= post.title %></h2>
-              <% end %>
+              <div class="row">
+                <div class="col-lg-1 align-text-bottom">
+                  <% if post.post_type == Post::POST_TYPE_AREA %>
+                    <small class="text-primary">Area</small>
+                  <% elsif post.post_type == Post::POST_TYPE_PROBLEM %>
+                    <small class="text-danger">Problem</small>
+                  <% elsif post.post_type == Post::POST_TYPE_PROPOSAL %>
+                    <small class="text-purple">Proposal</small>
+                  <% elsif post.post_type == Post::POST_TYPE_IDEA %>
+                    <small class="text-success">Idea</small>
+                  <% else %>
+                  <% end %>
+                </div>
+                <div class="col-lg-11">
+                  <h2><%= link_to post.title, post_path(post), class: 'text-dark' %></h2>
+                </div>
+              </div>
               <em>Author: <%= post.user.name %></em><br>
               <em><%= post.created_at.strftime('%d-%m-%Y') %></em>
             </div>
             <div class="col-md-6 text-right">
               <% if post.post_type == Post::POST_TYPE_AREA %>
                 <%= link_to 'Problems', post_problems_path(post_id: post.id, post_type: Post::POST_TYPE_PROBLEM), class: 'btn btn-danger' %>
-                <%= link_to 'Proposals', post_proposals_path(post_id: post.id, post_type: Post::POST_TYPE_PROPOSAL), class: 'btn btn-secondary pr-2' %>
+                <%= link_to 'Proposals', post_proposals_path(post_id: post.id, post_type: Post::POST_TYPE_PROPOSAL), class: 'btn btn-default btn-purple pr-2' %>
               <% elsif post.post_type == Post::POST_TYPE_PROBLEM %>
                 <%= link_to 'Ideas', post_ideas_path(post_id: post.id, post_type: Post::POST_TYPE_IDEA), class: 'btn btn-success' %>
               <% else %>

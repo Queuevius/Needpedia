@@ -1,7 +1,16 @@
 <div class="container mb-5">
   <div class="row mt-1">
     <div class="col-md-12 text-center mb-2">
-      <h1><b><%= @post.title %></b></h1>
+      <% if @post.post_type == Post::POST_TYPE_AREA %>
+        <h1 class="text-primary"><b><%= @post.title %></b></h1>
+      <% elsif @post.post_type == Post::POST_TYPE_PROBLEM %>
+        <h1 class="text-danger"><b><%= @post.title %></b></h1>
+      <% elsif @post.post_type == Post::POST_TYPE_PROPOSAL %>
+        <h1 class="text-purple"><b><%= @post.title %></b></h1>
+      <% elsif @post.post_type == Post::POST_TYPE_IDEA %>
+        <h1 class="text-success"><b><%= @post.title %></b></h1>
+      <% else %>
+      <% end %>
     </div>
     <div class="col-md-12 mb-2">
       <div class="row">
@@ -9,13 +18,16 @@
           <div class="ui-block shadow-lg rounded">
             <div class="ui-block-content">
               <div class="row">
-                <div class="col-sm-6 text-left mb-2">
+                <div class="col-sm-3 text-left mb-2">
                   <%= link_to posts_path, class: 'btn btn-primary' do %>
                     Back
                   <% end %>
                 </div>
 
-                <div class="col-sm-6 text-right mb-2">
+                <div class="col-sm-9 text-right mb-2">
+                  <%= link_to 'Problems', all_problems_posts_path(), class: 'btn btn-danger' %>
+                  <%= link_to 'Proposals', all_problems_posts_path(), class: 'btn btn-purple' %>
+                  <%= link_to 'Ideas', all_problems_posts_path(), class: 'btn btn-success' %>
                   <% if @post.user == current_user %>
                     <%= link_to edit_post_path(@post), class: 'btn btn-primary' do %>
                       Edit

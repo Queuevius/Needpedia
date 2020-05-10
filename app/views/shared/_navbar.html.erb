@@ -12,6 +12,18 @@
       <%= image_tag('image2.resized.png') %>
     <% end %>
 
+
+    <%= search_form_for @q, url: search_result_posts_path do |f| %>
+      <div class="row no-gutters align-items-center">
+        <div class="col">
+          <%= f.text_field :title_cont, class: 'form-control form-control-sm', placeholder: 'Search' %>
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-sm btn-secondary" type="submit"><i class="fa fa-search"></i></button>
+        </div>
+      </div>
+    <% end %>
+
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMain" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>

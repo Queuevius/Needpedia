@@ -1,7 +1,7 @@
 <div class="container mb-5">
   <div class="row mt-3">
     <div class="col-md-12 text-center mb-2">
-      <h1><b><%= @type.pluralize.titleize %></b></h1>
+      <h1><b>Proposal</b></h1>
     </div>
     <div class="col-md-12">
       <div class="row mb-2">
@@ -10,13 +10,13 @@
         </div>
 
         <div class="col-sm-6 text-right">
-          <%= link_to new_post_path(post_type: Post::POST_TYPE_PROBLEM, area_id: @post.id, problem_id: nil), class: 'btn btn-primary' do %>
-            Create Problem Post
+          <%= link_to new_post_path(post_type: Post::POST_TYPE_PROPOSAL, area_id: Post::GENERAL_AREA), class: 'btn btn-primary' do %>
+            Create Proposal Post
           <% end %>
         </div>
       </div>
 
-      <%= render 'list', posts: @posts, type: @type %>
+      <%= render 'list', posts: @posts, type: Post::POST_TYPE_PROPOSAL %>
     </div>
   </div>
 </div>

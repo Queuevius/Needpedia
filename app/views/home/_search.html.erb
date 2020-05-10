@@ -1,0 +1,16 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+      <%= search_form_for @q, url: search_result_posts_path do |f| %>
+        <div class="row no-gutters align-items-center">
+          <div class="col">
+            <%= f.text_field :title_cont, class: 'form-control form-control-lg', placeholder: "Search" %>
+          </div>
+          <div class="col-auto">
+            <button class="ml-2 btn btn-lg btn-secondary search-button" type="submit">Go</button>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
