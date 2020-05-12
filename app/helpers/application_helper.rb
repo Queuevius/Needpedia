@@ -7,4 +7,13 @@ module ApplicationHelper
       notice: "alert-info"
     }.stringify_keys[flash_type.to_s] || flash_type.to_s
   end
+
+  def post_type_color(type)
+    {
+      idea: "text-success",
+      problem: "text-danger",
+      area: "text-primary",
+      proposal: "text-purple"
+    }.stringify_keys[type.to_s] || type.to_s
+  end
 end
