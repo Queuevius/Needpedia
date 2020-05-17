@@ -8,4 +8,7 @@ class HomeController < ApplicationController
 
   def privacy
   end
+
+  def time_bank
+  end
 end

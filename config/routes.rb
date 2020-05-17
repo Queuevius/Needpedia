@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     root to: "users#index"
   end
   get '/privacy', to: 'home#privacy'
+  get '/time_bank', to: 'home#time_bank'
   get '/terms', to: 'home#terms'
     authenticate :user, lambda { |u| u.admin? } do
       mount Sidekiq::Web => '/sidekiq'
@@ -27,6 +28,13 @@ Rails.application.routes.draw do
       get 'all_problems'
       get 'all_proposals'
       get 'all_ideas'
+    end
+  end
+
+  resources :gigs do
+    collection do
+      get 'search'
+      get 'search_result'
     end
   end
   devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
