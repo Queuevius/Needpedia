@@ -16,6 +16,10 @@ class GigsController < ApplicationController
 
   # GET /gigs/new
   def new
+    unless current_user.credit_hours.positive?
+      flash[:alert] = 'You dont have enough credit hours to Post a gig'
+      redirect_to time_bank_path and return
+    end
     @gig = Gig.new()
   end
 
@@ -27,6 +31,10 @@ class GigsController < ApplicationController
   # POST /gigs
   # POST /gigs.json
   def create
+    unless current_user.credit_hours.positive?
+      flash[:alert] = 'You dont have enough credit hours to Post a gig'
+      redirect_to time_bank_path and return
+    end
     @gig = Gig.new(gig_params)
 
     respond_to do |format|
