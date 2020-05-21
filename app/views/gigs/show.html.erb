@@ -8,30 +8,43 @@
     <div class="col-md-12 mb-2">
       <div class="row">
         <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+          <div class="row mb-2">
+            <div class="col-lg-6 col-md-6 text-left">
+              <%= link_to gigs_path, class: 'btn btn-primary' do %>
+                Back
+              <% end %>
+            </div>
+            <div class="col-lg-6 col-md-6 text-right">
+              <% if @gig.user == current_user %>
+                <%= link_to edit_gig_path(@gig), class: 'btn btn-light ml-2 text-primary' do %>
+                  Edit
+                <% end %>
+                <%= link_to @gig, method: :delete, class: 'btn btn-light text-danger', data: { confirm: 'Are you sure?' } do %>
+                  <i class="fa fa-trash" aria-hidden="true"></i> Delete
+                <% end %>
+              <% end %>
+            </div>
+          </div>
           <div class="ui-block shadow-lg rounded">
             <div class="ui-block-content">
               <div class="row">
-                <div class="col-sm-3 text-left mb-2">
-                  <%= link_to gigs_path, class: 'btn btn-primary' do %>
-                    Back
-                  <% end %>
+                <div class="col-lg-12 col-md-12 mb-3">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                      <h1><%= @gig.area_tag %></h1>
+                      <h5 class="text-info">Credits: <%= @gig.amount %></h5>
+                    </div>
+                    <div class="col-lg-6 col-md-6 pull-right pt-3">
+                      <div class="justify-content-center float-right text-center">
+                        <em>Author: <%= @gig.user.name %></em><br>
+                        <em><%= @gig.created_at.strftime('%d-%m-%Y') %></em>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div class="col-sm-9 text-right mb-2">
-                  <% if @gig.user == current_user %>
-                    <%= link_to edit_gig_path(@gig), class: 'btn btn-primary' do %>
-                      Edit
-                    <% end %>
-                  <% end %>
-                </div>
-                <div class="col-lg-12 col-md-12 ml-auto mr-auto">
-                  <%= @gig.area_tag %>
-                </div>
                 <div class="col-lg-12 col-md-12 ml-auto mr-auto">
                   <%= @gig.body %>
-                </div>
-                <div class="col-lg-12 col-md-12 ml-auto mr-auto">
-                  <%= @gig.amount %>
                 </div>
                 <% if @gig.images.present? %>
                    <div class="col-lg-12 col-md-12 ml-auto mr-auto">
@@ -43,10 +56,29 @@
                 </div>
                 <% end %>
               </div>
+              <div class="row">
+                <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+                  <% if @gig.credit_transaction.nil? && @gig.user != current_user %>
+                    <%= link_to accept_transactions_path(recipient_id: @gig.user.id, gig_id: @gig.id), method: :put, class: 'btn btn-success float-right ml-2' do %>
+                      <i class="fa fa-check" aria-hidden="true"></i> Accept
+                    <% end %>
+                    <%#= link_to gigs_path, class: 'btn btn-warning float-right ml-2' do %>
+<!--                      <i class="fa fa-flag" aria-hidden="true"></i> Flag Post-->
+                    <%# end %>
+                  <% end %>
+                  <% if @gig.user == current_user && @gig.credit_transaction.nil? %>
+                    <%= link_to award_transactions_path(gig_id: @gig.id), class: 'btn btn-primary float-right', id: 'award_modal' do %>
+                      <i class="fa fa-tasks" aria-hidden="true"></i> Award
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
+<div id="award_modal" class="modal fade custome-modal" role="dialog" aria-labelledby="userModalLabel">
 </div>

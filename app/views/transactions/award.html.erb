@@ -1,0 +1,18 @@
+<div class="row">
+  <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+    <div class="ui-block shadow-lg rounded">
+      <div class="ui-block-content">
+        <h1 class="text-center">Award Time Gig</h1>
+        <%= form_for @transaction, url: transactions_path do |form| %>
+          <div class="form-group">
+            <%= form.hidden_field :gig_id, value: @gig.id %>
+            <%= form.select :recipient_id, @users.collect {|r| [r['first_name'], r['id']]},{include_blank: "Select Awardee"}, {  class: 'form-control', required: true } %>
+          </div>
+          <%= form.submit 'Award', class: 'btn btn-primary' %>
+
+          <%= link_to "Cancel", gig_path(@gig), class: "btn btn-link" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

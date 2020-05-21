@@ -4,7 +4,7 @@ class GigsController < ApplicationController
   # GET /gigs
   # GET /gigs.json
   def index
-    @gigs = Gig.where(user: current_user)
+    @gigs = current_user.gigs
   end
 
 
@@ -80,7 +80,7 @@ class GigsController < ApplicationController
   def search_result
     keywords = params[:q]
     @q = Gig.ransack(keywords)
-    @gigs = @q.result(distinct: true)
+    @gigs = @q.result(distinct: true).where(status: Gig::GIG_STATUS_ACTIVE)
   end
 
   private
