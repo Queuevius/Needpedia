@@ -49,7 +49,7 @@
           </li>
 
           <li class="nav-item">
-            <%= link_to notifications_path, class: "nav-link" do %>
+            <%= link_to notifications_path, class: "nav-link #{unread_notification(current_user)}" do %>
               <span><i class="far fa-bell" aria-hidden="true" style="font-size: x-large"></i></span>
             <% end %>
           </li>

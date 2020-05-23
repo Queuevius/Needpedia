@@ -4,7 +4,10 @@ class GigsController < ApplicationController
   # GET /gigs
   # GET /gigs.json
   def index
-    @gigs = current_user.gigs
+    posted_gigs = current_user.posted_gigs
+    work_gig = current_user.gigs
+    gigs = posted_gigs + work_gig
+    @gigs = gigs.uniq
   end
 
 
@@ -16,7 +19,9 @@ class GigsController < ApplicationController
 
   # GET /gigs/new
   def new
-    unless current_user.credit_hours.positive?
+    posted_gigs = current_user.posted_gigs.where(status: Gig::GIG_STATUS_ACTIVE)
+    posted_gigs_amount = posted_gigs.sum(:amount)
+    unless current_user.credit_hours.positive? && current_user.credit_hours > posted_gigs_amount
       flash[:alert] = 'You dont have enough credit hours to Post a gig'
       redirect_to time_bank_path and return
     end
@@ -74,15 +79,30 @@ class GigsController < ApplicationController
   # DELETE /gigs/1
   # DELETE /gigs/1.json
   def destroy
-    @gig = Gig.find(params[:id])
-    @gig.destroy
+    begin
+      @gig = Gig.find(params[:id])
+      @gig.destroy
+    rescue StandardError => e
+      flash[:alert] = "An Error occurred: #{e}"
+    end
     respond_to do |format|
       format.html { redirect_to gigs_url, notice: 'Post was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
+  def disable
+    @gig = Gig.find(params[:gig_id])
+    if @gig.update(status: Gig::GIG_STATUS_DISABLE)
+      flash[:notice] = 'Gig is disabled and wont be available in search anymore.'
+    else
+      flash[:alert] = 'Something went wrong'
+    end
+    redirect_to @gig
+  end
+
   def search
+    @q = Gig.ransack(params[:q])
   end
 
   def search_result
@@ -91,10 +111,36 @@ class GigsController < ApplicationController
     @gigs = @q.result(distinct: true).where(status: Gig::GIG_STATUS_ACTIVE)
   end
 
+  def accept
+    begin
+      gig_id = params.require(:gig_id)
+      gig = Gig.find(gig_id)
+      recipient = gig.user
+
+      gig.status = Gig::GIG_STATUS_PROGRESS
+      gig.users << current_user
+
+      notification = Notification.post(from: current_user, notifiable: current_user, to: recipient, action: Notification::NOTIFICATION_TYPE_ACCEPTED)
+
+      if gig.save! && notification
+        flash[:notice] = 'Gig Accepted successfully...'
+      else
+        flash[:alert] = 'Your request could not be completed, please try again'
+      end
+    rescue StandardError => e
+      flash[:alert] = "An Error occurred: #{e}"
+    end
+    redirect_to gig_path(gig)
+  end
+
+  # def my_accepted
+  #   @gigs = current_user.gigs
+  # end
+
   private
 
   # Only allow a list of trusted parameters through.
   def gig_params
-    params.require(:gig).permit(:title, :area_tag, :user_id, :body, :amount)
+    params.require(:gig).permit(:title, :area_tag, :user_id, :body, :amount, images: [])
   end
 end

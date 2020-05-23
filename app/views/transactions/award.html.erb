@@ -3,6 +3,9 @@
     <div class="ui-block shadow-lg rounded">
       <div class="ui-block-content">
         <h1 class="text-center">Award Time Gig</h1>
+        <% if @users.blank? %>
+          <div class="alert alert-warning">No users are currently working on this gig</div>
+        <% end %>
         <%= form_for @transaction, url: transactions_path do |form| %>
           <div class="form-group">
             <%= form.hidden_field :gig_id, value: @gig.id %>

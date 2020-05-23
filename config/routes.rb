@@ -32,14 +32,16 @@ Rails.application.routes.draw do
   end
 
   resources :gigs do
+    put 'disable'
     collection do
+      get 'my_accepted'
       get 'search'
       get 'search_result'
+      put 'accept'
     end
   end
   resources :transactions, only: [:create] do
     collection do
-      put 'accept'
       get 'award'
     end
   end

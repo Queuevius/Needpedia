@@ -7,6 +7,23 @@ body {
     background-color: #ffffff;
 }
 
+.unread-notificatios:after {
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  -moz-background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  background: $red;
+  content: '';
+  display: inline-block;
+  height: 8px;
+  width: 8px;
+  margin-left: -6px;
+  margin-bottom: 13px;
+}
+
+
 .form-control-borderless {
   border: none;
 }

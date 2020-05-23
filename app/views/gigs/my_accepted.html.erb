@@ -16,12 +16,12 @@
       <div class="row">
         <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
           <% if @gigs.blank? %>
-            <h4 class="alert alert-warning">There are no gig created yet</h4>
+            <h4 class="alert alert-warning">You have not accepted any gig yet</h4>
           <% end %>
         </div>
       </div>
       <%= render 'list', { gigs: @gigs, search: true } %>
     </div>
-    </div>
   </div>
+</div>
 </div>

@@ -10,10 +10,13 @@ class User < ApplicationRecord
   has_many :notifications, foreign_key: :recipient_id
   has_many :services
   has_many :posts, dependent: :destroy
-  has_many :gigs, dependent: :destroy
+  has_many :posted_gigs, class_name: 'Gig', dependent: :destroy
 
   has_many :transferred_transactions, class_name: 'Transaction', foreign_key: :actor_id
   has_many :received_transactions, class_name: 'Transaction', foreign_key: :recipient_id
+
+  has_many :user_gigs
+  has_many :gigs, through: :user_gigs, dependent: :destroy
 
   def credit_hours
     sum = received_transactions&.sum(:amount) - transferred_transactions&.sum(:amount)

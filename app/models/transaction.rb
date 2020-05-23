@@ -5,10 +5,12 @@ class Transaction < ApplicationRecord
   TRANSACTION_TYPE_GIG = 'gig'.freeze
   TRANSACTION_TYPE_DEFAULT = 'default'.freeze
   TRANSACTION_TYPE_ADMIN = 'admin'.freeze
+  TRANSACTION_TYPE_DELETE = 'delete'.freeze
   TRANSACTION_TYPES = [
     TRANSACTION_TYPE_GIG,
     TRANSACTION_TYPE_DEFAULT,
-    TRANSACTION_TYPE_ADMIN
+    TRANSACTION_TYPE_ADMIN,
+    TRANSACTION_TYPE_DELETE
   ].freeze
 
   ################################ Relationships ########################

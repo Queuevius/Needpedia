@@ -1,8 +1,14 @@
 class Notification < ApplicationRecord
+
+  ################################ Constants ############################
+  NOTIFICATION_TYPE_ACCEPTED = 'gig_accepted'.freeze
+  NOTIFICATION_TYPE_AWARDED = 'gig_awarded'.freeze
+
+  ################################ relationships ############################
   belongs_to :recipient, class_name: "User"
   belongs_to :actor, class_name: "User"
   belongs_to :notifiable, polymorphic: true
-  
+
   scope :unread, -> { where(read_at: nil) }
   scope :recent, -> { order(created_at: :desc).limit(5) }
 

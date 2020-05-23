@@ -6,7 +6,7 @@
       <%= search_form_for @q, url: search_result_gigs_path do |f| %>
         <div class="row no-gutters align-items-center">
           <div class="col">
-            <%= f.text_field :title_cont, class: 'form-control form-control-lg', placeholder: "Search" %>
+            <%= f.text_field :title_or_area_tag_cont, class: 'form-control form-control-lg', placeholder: "Search" %>
           </div>
           <div class="col-auto">
             <button class="ml-2 btn btn-lg btn-secondary search-button" type="submit">Go</button>
