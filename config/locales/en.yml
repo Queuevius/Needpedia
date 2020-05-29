@@ -30,4 +30,11 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
+  activerecord:
+    errors:
+      models:
+        gig:
+          attributes:
+            images:
+              content_type: 'file type is not supported'
   hello: "Hello world"

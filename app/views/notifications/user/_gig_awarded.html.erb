@@ -1,5 +1,6 @@
 <div class="card">
   <div class="card-body">
-    You awarded a Gig to <%= actor.name %>
+    <h5>You were awarded time credit by <%= actor.name %></h5>
+    <em class="text-muted"><%= notification.created_at.strftime('%e %b %Y %H:%M %p') %></em>
   </div>
 </div>

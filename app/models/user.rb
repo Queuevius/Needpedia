@@ -19,7 +19,8 @@ class User < ApplicationRecord
   has_many :gigs, through: :user_gigs, dependent: :destroy
 
   def credit_hours
-    sum = received_transactions&.sum(:amount) - transferred_transactions&.sum(:amount)
+    active_gigs_amount = posted_gigs.where(status: Gig::GIG_STATUS_ACTIVE).sum(:amount)
+    sum = (received_transactions&.sum(:amount) - transferred_transactions&.sum(:amount) - active_gigs_amount).round(1)
     sum.negative? ? 0 : sum
   end
 

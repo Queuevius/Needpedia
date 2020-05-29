@@ -30,11 +30,17 @@ class Gig < ApplicationRecord
   validates :area_tag, presence: true
   validates :body, presence: true
   validates :amount, presence: true
+  validate :correct_amount
+  validates :images, blob: { content_type: ['image/jpg', 'image/jpeg', 'image/png'], size_range: 1..3.megabytes }
 
   ############################### Scopes ################################
 
   ############################### methods ################################
   def activate_gig
     update(status: GIG_STATUS_ACTIVE) if user.credit_hours.positive?
+  end
+
+  def correct_amount
+    errors.add(:amount, 'can not be greater than available credit') if amount >= user.credit_hours
   end
 end

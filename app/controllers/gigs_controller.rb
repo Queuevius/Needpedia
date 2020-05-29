@@ -19,9 +19,7 @@ class GigsController < ApplicationController
 
   # GET /gigs/new
   def new
-    posted_gigs = current_user.posted_gigs.where(status: Gig::GIG_STATUS_ACTIVE)
-    posted_gigs_amount = posted_gigs.sum(:amount)
-    unless current_user.credit_hours.positive? && current_user.credit_hours > posted_gigs_amount
+    unless current_user.credit_hours.positive?
       flash[:alert] = 'You dont have enough credit hours to Post a gig'
       redirect_to time_bank_path and return
     end
