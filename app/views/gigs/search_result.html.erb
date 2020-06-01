@@ -13,9 +13,7 @@
 
       <div class="row">
         <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
-          <% if @gigs.blank? %>
-            <h4 class="alert alert-warning">No results found</h4>
-          <% end %>
+          <h5 class="alert alert-info"><%= @gigs.count %> results found for "<%= @keywords[:title_or_area_tag_cont] %>"</h5>
         </div>
       </div>
       <%= render 'list', { gigs: @gigs, search: false } %>

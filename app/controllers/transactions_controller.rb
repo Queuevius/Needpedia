@@ -21,8 +21,8 @@ class TransactionsController < ApplicationController
         redirect_to gig_path(gig) and return
       end
       ts = TransactionService.new(actor: current_user, recipient: recipient, gig: gig, amount: amount, type: Transaction::TRANSACTION_TYPE_GIG)
-      if ts.call
-        gig.update!(status: Gig::GIG_STATUS_AWARDED)
+      gig.status = Gig::GIG_STATUS_AWARDED
+      if ts.call && gig.save!(validate: false)
         Notification.post(
           from: current_user,
           notifiable: current_user,

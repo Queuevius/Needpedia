@@ -104,8 +104,8 @@ class GigsController < ApplicationController
   end
 
   def search_result
-    keywords = params[:q]
-    @q = Gig.ransack(keywords)
+    @keywords = params[:q]
+    @q = Gig.ransack(@keywords)
     @gigs = @q.result(distinct: true).where(status: Gig::GIG_STATUS_ACTIVE)
   end
 
@@ -120,7 +120,7 @@ class GigsController < ApplicationController
 
       notification = Notification.post(from: current_user, notifiable: current_user, to: recipient, action: Notification::NOTIFICATION_TYPE_ACCEPTED)
 
-      if gig.save! && notification
+      if gig.save!(validate: false) && notification
         flash[:notice] = 'Gig Accepted successfully...'
       else
         flash[:alert] = 'Your request could not be completed, please try again'
