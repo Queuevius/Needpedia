@@ -121,7 +121,7 @@ class GigsController < ApplicationController
       notification = Notification.post(from: current_user, notifiable: current_user, to: recipient, action: Notification::NOTIFICATION_TYPE_ACCEPTED)
 
       if gig.save!(validate: false) && notification
-        flash[:notice] = 'Gig Accepted successfully...'
+        flash[:notice] = 'Gig Accepted successfully.'
       else
         flash[:alert] = 'Your request could not be completed, please try again'
       end

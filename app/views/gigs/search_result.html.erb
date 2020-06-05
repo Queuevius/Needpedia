@@ -16,7 +16,47 @@
           <h5 class="alert alert-info"><%= @gigs.count %> results found for "<%= @keywords[:title_or_area_tag_cont] %>"</h5>
         </div>
       </div>
-      <%= render 'list', { gigs: @gigs, search: false } %>
+      <div class="row">
+        <% @gigs.each do |gig| %>
+          <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1">
+            <div class="ui-block shadow-lg rounded">
+              <div class="ui-block-content">
+                <div class="row">
+                  <div class="col-md-2 pr-0">
+                    <% if gig.images.present? %>
+                      <%= image_tag(gig.images.last, class: 'img-fluid img-thumbnail image-left') %>
+                    <% else %>
+                      <%= image_tag('default-post.jpg', class: 'img-fluid img-thumbnail image-left') %>
+                    <% end %>
+                  </div>
+                  <div class="col-md-10 pl-0">
+                    <div class="row">
+                      <div class="col-lg-12">
+                        <h3>
+                          <%= link_to gig.title, gig_path(gig), class: 'text-dark' %>
+                        </h3>
+                        <p><%= truncate(strip_tags(gig.body.to_s), length: 300) %></p>
+                        <em class="text-muted small">Author: <%= gig.user.name %></em><br>
+                        <em class="text-muted small"><%= gig.created_at.strftime('%d-%m-%Y') %></em>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
 </div>
+
+<style>
+    .image-left {
+      transition: filter .5s;
+      border-radius: 4px;
+      height: 90px;
+      width: 140px;
+    }
+
+</style>

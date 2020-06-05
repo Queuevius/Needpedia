@@ -28,7 +28,7 @@ class TransactionsController < ApplicationController
           notifiable: current_user,
           to: recipient, action: Notification::NOTIFICATION_TYPE_AWARDED
         )
-        flash[:notice] = 'Gig Awarded successfully...'
+        flash[:notice] = 'Gig Awarded successfully.'
       else
         flash[:alert] = 'Your request could not be completed, please try again.'
       end
