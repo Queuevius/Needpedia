@@ -48,4 +48,7 @@ class Post < ApplicationRecord
   scope :layer_posts, -> { where(post_type: POST_TYPE_LAYER) }
 
   ############################### Methods ################################
+  def parent_post_id
+    area_id
+  end
 end
