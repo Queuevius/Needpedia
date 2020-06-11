@@ -31,12 +31,39 @@ body > .alert {
   color: white;
 }
 
+.border-comments {
+  border-color: #e1e1f3 !important;
+}
+
 .btn-purple:hover {
   color: white;
 }
+
+.btn-yellow {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: white;
+}
+
+.btn-yellow:hover {
+  color: white;
+}
+
 .text-purple {
   color: #800080;
 }
+
 .trix-button-group--file-tools {
   display: none !important;
+}
+
+.media {
+  border-top: 1px dashed #DDDDDD;
+  padding: 20px 0;
+  margin: 0;
+}
+
+.media-body, .media-left, .media-right {
+  display: table-cell;
+  vertical-align: top;
 }

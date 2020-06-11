@@ -1,0 +1,23 @@
+<div class="container mb-5">
+  <div class="row mt-3">
+    <div class="col-md-12 text-center mb-2">
+      <h1><b><%= @type.pluralize.titleize %></b></h1>
+    </div>
+    <div class="col-md-12">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <%= link_to 'Back', posts_path(post_type: Post::POST_TYPE_LAYER), class: 'btn btn-primary' %>
+        </div>
+
+        <div class="col-sm-6 text-right">
+          <%= link_to new_post_path(post_type: Post::POST_TYPE_LAYER, post_id: @post.id, problem_id: nil), class: 'btn btn-primary' do %>
+            Create Layer Post
+          <% end %>
+          <%= link_to 'All Layers', all_layers_posts_path(), class: 'btn btn-warning' %>
+        </div>
+      </div>
+
+      <%= render 'list', posts: @posts, type: @post.post_type %>
+    </div>
+  </div>
+</div>

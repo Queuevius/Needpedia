@@ -1,14 +1,14 @@
 class PostsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_post, only: [:show, :edit, :update, :destroy]
-  before_action :set_type, only: [:index, :new, :problems, :proposals, :ideas]
-  before_action :set_area, only: [:proposals, :problems, :ideas]
+  before_action :set_type, only: [:index, :new, :problems, :proposals, :ideas, :layers]
+  before_action :set_area, only: [:proposals, :problems, :ideas, :layers]
 
   # GET /posts
   # GET /posts.json
   # Area posts
   def index
-    @posts = Post.area_posts
+    @posts = Post.posts_feed
   end
 
   def problems
@@ -23,6 +23,10 @@ class PostsController < ApplicationController
     @posts = Post.idea_posts.where(problem_id: @post.id)
   end
 
+  def layers
+    @posts = Post.layer_posts.where(post_id: @post.id)
+  end
+
   def all_problems
     @posts = Post.problem_posts
   end
@@ -34,15 +38,22 @@ class PostsController < ApplicationController
   def all_ideas
     @posts = Post.idea_posts
   end
+
+  def all_layers
+    @posts = Post.layer_posts
+  end
+
   # GET /posts/1
   # GET /posts/1.json
   def show
+    @comment = Comment.new
   end
 
   # GET /posts/new
   def new
     @area_id = params[:area_id]
     @problem_id = params[:problem_id]
+    @post_id = params[:post_id]
     @post = Post.new(post_type: @type)
   end
 
@@ -115,6 +126,6 @@ class PostsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def post_params
-    params.require(:post).permit(:title, :content, :user_id, :post_type, :area_id, :problem_id)
+    params.require(:post).permit(:title, :content, :user_id, :post_type, :area_id, :problem_id, :post_id)
   end
 end

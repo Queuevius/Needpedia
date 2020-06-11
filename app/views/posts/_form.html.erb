@@ -5,6 +5,7 @@
     <%= form.hidden_field :user_id, value: current_user.id %>
     <%= form.hidden_field :area_id, value: @area_id %>
     <%= form.hidden_field :problem_id, value: @problem_id %>
+    <%= form.hidden_field :post_id, value: @post_id %>
   <% end %>
   <div class="form-group">
     <%= form.text_field :title, autofocus: true, class: 'form-control', placeholder: "Title" %>
