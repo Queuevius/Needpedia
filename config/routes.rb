@@ -31,6 +31,7 @@ Rails.application.routes.draw do
     get 'ideas'
     collection do
       get 'search_result'
+      get 'all_areas'
       get 'all_layers'
       get 'all_problems'
       get 'all_proposals'

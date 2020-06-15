@@ -41,7 +41,7 @@ class Post < ApplicationRecord
   ############################### Scopes ################################
 
   scope :posts_feed, -> { where.not('post_type IN (?)', [POST_TYPE_IDEA, POST_TYPE_LAYER]) }
-  scope :area_posts, -> { where.not(post_type: POST_TYPE_IDEA) }
+  scope :area_posts, -> { where(post_type: POST_TYPE_AREA) }
   scope :problem_posts, -> { where(post_type: POST_TYPE_PROBLEM) }
   scope :proposal_posts, -> { where(post_type: POST_TYPE_PROPOSAL) }
   scope :idea_posts, -> { where(post_type: POST_TYPE_IDEA) }

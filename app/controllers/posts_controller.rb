@@ -27,6 +27,10 @@ class PostsController < ApplicationController
     @posts = Post.layer_posts.where(post_id: @post.id)
   end
 
+  def all_areas
+    @posts = Post.area_posts
+  end
+
   def all_problems
     @posts = Post.problem_posts
   end
@@ -104,8 +108,8 @@ class PostsController < ApplicationController
   end
 
   def search_result
-    keywords = params[:q]
-    @q = Post.ransack(keywords)
+    @keywords = params[:q]
+    @q = Post.ransack(@keywords)
     @posts = @q.result(distinct: true)
   end
 
