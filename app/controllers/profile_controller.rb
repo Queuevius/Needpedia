@@ -75,7 +75,7 @@ class ProfileController < ApplicationController
 
   def set_user
     if params[:uuid].present?
-      @user = User.find_by_uuid(params[:uuid])
+      @user = User.find_by(uuid: params[:uuid])
       @uuid = params[:uuid]
     else
       @user = current_user
