@@ -3,16 +3,26 @@
 
   <!-- Page Content  -->
   <div id="content" class="p-2">
-    <div class="container">
-      <% if @user.pictures.attached? %>
-        <% @user.pictures.each do |picture| %>
-          <div class="col-6 mb-2 float-left">
-            <%= link_to modal_picture_path(id: picture), remote: true do %>
-              <%= image_tag(picture, class: 'rounded img-fluid', alt: "Nature") %>
-            <% end %>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+        <div class="ui-block shadow-lg rounded">
+          <div class="ui-block-content">
+            <div class="container">
+              <div class="row">
+                <% if @user.pictures.attached? %>
+                  <% @user.pictures.each do |picture| %>
+                    <div class="col-6 mb-2 float-left">
+                      <%= link_to modal_picture_path(id: picture), remote: true do %>
+                        <%= image_tag(picture, class: 'rounded img-fluid', alt: "Nature") %>
+                      <% end %>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
           </div>
-        <% end %>
-      <% end %>
+        </div>
+      </div>
     </div>
   </div>
 </div>

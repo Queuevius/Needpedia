@@ -52,11 +52,6 @@ class ProfileController < ApplicationController
 
     respond_to do |format|
       if @user.update(user_params)
-        if params[:user][:pictures].present?
-          params[:user][:pictures].each do |image|
-            @user.pictures.attach(image)
-          end
-        end
         format.html { redirect_to add_details_path, notice: 'Aad detail was successfully updated.' }
         format.json { render :show, status: :ok, location: @user }
       else
