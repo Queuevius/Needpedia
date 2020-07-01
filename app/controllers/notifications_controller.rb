@@ -9,7 +9,7 @@ class NotificationsController < ApplicationController
   private
 
   def read_notification
-    notifications = current_user.notifications.where(read_at: nil)
+    notifications = current_user.notifications.unread
     notifications.update_all read_at: Time.now
   end
 end

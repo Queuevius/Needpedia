@@ -1,5 +1,6 @@
 class Post < ApplicationRecord
   has_rich_text :content
+  acts_as_taggable_on :tags
   ################################ Constants ############################
   POST_TYPE_AREA = 'area'.freeze
   POST_TYPE_PROBLEM = 'problem'.freeze
@@ -30,6 +31,10 @@ class Post < ApplicationRecord
   has_many :comments, as: :commentable, dependent: :destroy
 
   has_many :flags, as: :flagable, dependent: :destroy
+
+  has_many :likes, as: :likeable, dependent: :destroy
+
+  has_many :shares, as: :shareable, dependent: :destroy
 
   ############################### Validations ###########################
   validates :title, presence: true

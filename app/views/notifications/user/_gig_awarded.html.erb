@@ -1,6 +1,6 @@
 <div class="card">
   <div class="card-body">
-    <h5>You were awarded time credit by <%= actor.name %></h5>
+    <h5>You were awarded time credit by <%= link_to "#{actor.name}", wall_path(uuid: actor.uuid) %></h5>
     <em class="text-muted"><%= notification.created_at.strftime('%e %b %Y %H:%M %p') %></em>
   </div>
 </div>

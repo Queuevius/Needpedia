@@ -1,0 +1,15 @@
+<div class="wrapper d-flex align-items-stretch mb-10">
+  <%= render 'shared/sidebar' %>
+
+  <!-- Page Content  -->
+  <div id="content" class="p-4">
+    <div class="container">
+      <h4>About:</h4>
+      <p><%= @user.about %></p>
+      <h4>Location:</h4>
+      <p><%= @user.location %></p>
+      <h4 >Create Date:</h4>
+      <p><%= @user.created_at %></p>
+    </div>
+  </div>
+</div>

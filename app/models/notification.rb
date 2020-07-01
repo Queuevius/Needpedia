@@ -3,6 +3,9 @@ class Notification < ApplicationRecord
   ################################ Constants ############################
   NOTIFICATION_TYPE_ACCEPTED = 'gig_accepted'.freeze
   NOTIFICATION_TYPE_AWARDED = 'gig_awarded'.freeze
+  NOTIFICATION_TYPE_FRIEND_REQUEST = 'friend_request'.freeze
+  NOTIFICATION_TYPE_REQUEST_ACCEPTED = 'request_accept'.freeze
+  NOTIFICATION_TYPE_REQUEST_REJECTED = 'request_rejected'.freeze
 
   ################################ relationships ############################
   belongs_to :recipient, class_name: "User"

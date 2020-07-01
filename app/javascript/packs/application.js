@@ -9,6 +9,8 @@ require("@rails/activestorage").start()
 require("channels")
 require("local-time").start()
 import jquery from 'jquery';
+// import "../../assets/javascripts/jquery.raty"
+// import "../../assets/javascripts/ratyrate.js.erb"
 window.$ = window.jquery = jquery;
 
 window.Rails = Rails

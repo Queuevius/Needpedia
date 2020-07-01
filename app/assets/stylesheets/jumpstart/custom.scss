@@ -156,3 +156,101 @@ body {
   text-align: center;
   margin-bottom: 40px;
 }
+
+.avatar {
+  vertical-align: middle;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial;
+}
+
+/* The grid: Four equal columns that floats next to each other */
+.column {
+  float: left;
+  padding: 10px;
+}
+
+/* Style the images inside the grid */
+.column img {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.column img:hover {
+  opacity: 1;
+}
+
+#kaminari{
+  margin-bottom: 110px;
+  .pagination {
+    display: inline-block;
+  }
+  .pagination span {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+    border: 1px solid #ddd;
+    margin: 0 4px;
+  }
+
+
+  .pagination span.current{
+    background-color: #bbbec1;
+  }
+
+}
+
+.btn-secondary, .btn-secondary.disabled {
+  transition: 0.2s ease-in;
+  background-color: #ffffff;
+  color: #8d97ad;
+}
+
+.btn-rounded {
+  border-radius: 60px;
+  -webkit-border-radius: 60px;
+}
+
+.btn-secondary:hover, .btn-secondary.disabled:hover {
+  color: #ffffff !important;
+}
+
+#sidebar {
+  height: 100%;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #c1c5c8;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.margin-top {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+#tag_cloud{
+  with: 400px;
+  line-height: 1.6em;
+  .s{font-size: 0.8em}
+  .m{font-size: 1.2em}
+  .l{font-size: 1.8em}
+}

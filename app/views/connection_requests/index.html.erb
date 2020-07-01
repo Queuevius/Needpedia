@@ -1,0 +1,45 @@
+<!--<style type="text/css">-->
+<!--  .a{-->
+<!--    margin: -20px !important;-->
+<!--  }-->
+<!--  .b{-->
+<!--    padding-right: 0px !important;-->
+<!--    margin-top: -47px !important;-->
+<!--  }-->
+<!--</style>-->
+<div class="mini-spacer-with-no-space"></div>
+<div class="bg-light">
+  <div class="container profile-edit mini-spacer">
+    <div class="row">
+      <div class="col-xl-12 order-xl-12 col-lg-12 order-lg-12 col-md-12 order-md-12 col-sm-12 col-xs-12">
+        <div class="ui-block">
+          <div class="ui-block-title">
+            <h6 class="title">Connection Requests</h6>
+          </div>
+          <div class="ui-block-content">
+            <ul class="notification-list friend-requests">
+              <% @connection_requests.each do |connection_request| %>
+                <li>
+                  <% if connection_request.user.profile_image.attached? %>
+                    <div class="author-thumb">
+                      <%= image_tag "#{connection_request.user.image_file_name}.jpg" %>
+                    </div>
+                  <% else %>
+                    <%= image_tag 'profile.png', style: "height: 40px; border-radius: 100%; overflow: hidden; max-width: unset; display: inline-block;" %>
+                  <% end %>
+                  <div class="notification-event a">
+                    <a href="#" class="h6 notification-friend"><%= connection_request.user.name %></a>
+                  </div>
+                  <span class="notification-icon b">
+                    <%= link_to 'Accept', accept_invitation_path(:uuid => connection_request.uuid), class: 'accept-request' %>
+                    <%= link_to 'Delete', reject_invitation_path(:uuid => connection_request.uuid), method: :delete, :class => 'accept-request request-del' %>
+                  </span>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

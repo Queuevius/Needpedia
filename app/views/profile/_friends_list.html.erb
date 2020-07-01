@@ -1,0 +1,23 @@
+<div class="container">
+  <div class="row m-t-40 p-t-20 artist-box">
+    <% @friends.each do |friend| %>
+      <div class="col-lg-3 col-md-6 wrap-feature14-box p-t-20 p-l-20 p-r-20 friends-profiles">
+        <div class="aos-init">
+          <% if friend.profile_image.attached? %>
+            <%= image_tag friend.profile_image.variant(resize: "250x250"), class: 'img-responsive' %>
+          <% else %>
+            <%= image_tag "profile.png", class: 'img-responsive', style: 'width: 250px; height: 250px' %>
+          <% end %>
+          <div class="mb-5">
+            <%= render 'friend_card_details', friend: friend %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+<div id="kaminari">
+  <div class="row justify-content-center mb-5">
+    <%= paginate @friends %>
+  </div>
+</div>

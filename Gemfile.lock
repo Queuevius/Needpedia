@@ -28,6 +28,14 @@ GIT
   specs:
     gravatar_image_tag (1.2.0)
 
+GIT
+  remote: https://github.com/stympy/faker.git
+  revision: 605b405ff9804df525ced6186991b5313f40e0a9
+  branch: master
+  specs:
+    faker (2.13.0)
+      i18n (>= 1.6, < 2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -86,6 +94,8 @@ GEM
       minitest (~> 5.1)
       tzinfo (~> 1.1)
       zeitwerk (~> 2.2)
+    acts-as-taggable-on (6.5.0)
+      activerecord (>= 5.0, < 6.1)
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
     autoprefixer-rails (9.7.6)
@@ -287,6 +297,7 @@ GEM
       activesupport (>= 5.2.1)
       i18n
       polyamorous (= 2.3.2)
+    ratyrate (1.2.2.alpha)
     rb-fsevent (0.10.3)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
@@ -367,6 +378,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  acts-as-taggable-on (~> 6.0)
   administrate!
   awesome_print
   aws-sdk-s3
@@ -377,12 +389,14 @@ DEPENDENCIES
   devise (~> 4.7, >= 4.7.0)
   devise-bootstrapped!
   devise_masquerade (~> 1.2)
+  faker!
   file_validators
   font-awesome-sass (~> 5.6, >= 5.6.1)
   friendly_id (~> 5.2, >= 5.2.5)
   gravatar_image_tag!
   image_processing (~> 1.2)
   jbuilder (~> 2.7)
+  kaminari
   listen (>= 3.0.5, < 3.2)
   mini_magick (~> 4.9, >= 4.9.2)
   name_of_person (~> 1.1)
@@ -394,6 +408,7 @@ DEPENDENCIES
   puma (~> 4.1)
   rails (~> 6.0.2, >= 6.0.2.2)
   ransack
+  ratyrate
   sass-rails (>= 6)
   selenium-webdriver
   sidekiq (~> 6.0, >= 6.0.3)

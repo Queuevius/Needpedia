@@ -1,0 +1,22 @@
+<div class="spacer-with-no-bottom-margin">
+</div>
+<div class="mini-spacer-with-no-space feature14">
+  <div class="container">
+    <%= form_for(@connection_request, url: connection_requests_path, html: {method: :post}) do |f| %>
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="form-group label-floating">
+            <label class="control-label">Send a connection request to <%= @request_to.name %></label>
+            <%= f.text_area :message, autofocus: true, class: 'form-control', required: true, placeholder: 'Include a personal message',cols: 20, rows: 10 %>
+            <%= f.hidden_field :to, value: @request_to.uuid %>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-5">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+          <button class="btn btn-primary btn-lg full-width">Send</button>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

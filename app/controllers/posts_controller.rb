@@ -8,7 +8,11 @@ class PostsController < ApplicationController
   # GET /posts.json
   # Area posts
   def index
-    @posts = Post.posts_feed
+    if params[:tag]
+      @posts = Post.tagged_with(params[:tag])
+    else
+      @posts = Post.posts_feed
+    end
   end
 
   def problems
@@ -130,6 +134,6 @@ class PostsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def post_params
-    params.require(:post).permit(:title, :content, :user_id, :post_type, :area_id, :problem_id, :post_id)
+    params.require(:post).permit(:title, :content, :user_id, :post_type, :area_id, :problem_id, :post_id, :tag_list)
   end
 end

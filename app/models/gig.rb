@@ -42,6 +42,6 @@ class Gig < ApplicationRecord
   end
 
   def correct_amount
-    errors.add(:amount, 'can not be greater than available credit') if amount > user.credit_hours
+    errors.add(:amount, 'can not be greater than available credit') if amount > user.credit_hours || amount.nil?
   end
 end

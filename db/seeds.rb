@@ -5,4 +5,17 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-User.create(email: 'murtaza@gmail.com', password: 'password', admin: true, first_name: 'Murtaza', last_name: 'Khan')
+
+# User.destroy_all
+# User.create(email: 'murtaza@gmail.com', password: 'password', admin: true, first_name: 'Murtaza', last_name: 'Khan')
+
+20.times do |index|
+  u = User.new(
+      first_name: Faker::Name.first_name,
+      last_name: Faker::Name.last_name,
+      email: Faker::Internet.unique.email,
+      password: 'password',
+      # image_file_name: rand(1..16)
+  )
+  u.save!
+end

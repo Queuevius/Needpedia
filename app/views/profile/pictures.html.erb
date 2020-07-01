@@ -1,0 +1,18 @@
+<div class="wrapper d-flex align-items-stretch mb-10">
+  <%= render 'shared/sidebar' %>
+
+  <!-- Page Content  -->
+  <div id="content" class="p-2">
+    <div class="container">
+      <% if @user.pictures.attached? %>
+        <% @user.pictures.each do |picture| %>
+          <div class="col-6 mb-2 float-left">
+            <%= link_to modal_picture_path(id: picture), remote: true do %>
+              <%= image_tag(picture, class: 'rounded img-fluid', alt: "Nature") %>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

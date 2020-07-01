@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_09_182302) do
+ActiveRecord::Schema.define(version: 2020_06_29_102020) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "uuid-ossp"
 
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
@@ -65,6 +66,25 @@ ActiveRecord::Schema.define(version: 2020_06_09_182302) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
+  create_table "connection_requests", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "message"
+    t.string "status", default: "pending"
+    t.uuid "to"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.uuid "uuid", default: -> { "uuid_generate_v4()" }, null: false
+    t.index ["user_id"], name: "index_connection_requests_on_user_id"
+  end
+
+  create_table "connections", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "friend_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id", "friend_id"], name: "index_connections_on_user_id_and_friend_id", unique: true
+  end
+
   create_table "flags", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "flagable_id"
@@ -96,6 +116,15 @@ ActiveRecord::Schema.define(version: 2020_06_09_182302) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "status", default: "pending"
     t.index ["user_id"], name: "index_gigs_on_user_id"
+  end
+
+  create_table "likes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "likeable_id"
+    t.string "likeable_type"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_likes_on_user_id"
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -135,6 +164,42 @@ ActiveRecord::Schema.define(version: 2020_06_09_182302) do
     t.index ["user_id"], name: "index_services_on_user_id"
   end
 
+  create_table "shares", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "shareable_id"
+    t.string "shareable_type"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_shares_on_user_id"
+  end
+
+  create_table "taggings", id: :serial, force: :cascade do |t|
+    t.integer "tag_id"
+    t.string "taggable_type"
+    t.integer "taggable_id"
+    t.string "tagger_type"
+    t.integer "tagger_id"
+    t.string "context", limit: 128
+    t.datetime "created_at"
+    t.index ["context"], name: "index_taggings_on_context"
+    t.index ["tag_id", "taggable_id", "taggable_type", "context", "tagger_id", "tagger_type"], name: "taggings_idx", unique: true
+    t.index ["tag_id"], name: "index_taggings_on_tag_id"
+    t.index ["taggable_id", "taggable_type", "context"], name: "taggings_taggable_context_idx"
+    t.index ["taggable_id", "taggable_type", "tagger_id", "context"], name: "taggings_idy"
+    t.index ["taggable_id"], name: "index_taggings_on_taggable_id"
+    t.index ["taggable_type"], name: "index_taggings_on_taggable_type"
+    t.index ["tagger_id", "tagger_type"], name: "index_taggings_on_tagger_id_and_tagger_type"
+    t.index ["tagger_id"], name: "index_taggings_on_tagger_id"
+  end
+
+  create_table "tags", id: :serial, force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer "taggings_count", default: 0
+    t.index ["name"], name: "index_tags_on_name", unique: true
+  end
+
   create_table "transactions", force: :cascade do |t|
     t.bigint "recipient_id"
     t.bigint "actor_id"
@@ -166,6 +231,9 @@ ActiveRecord::Schema.define(version: 2020_06_09_182302) do
     t.boolean "admin", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.uuid "uuid", default: -> { "uuid_generate_v4()" }, null: false
+    t.string "location"
+    t.text "about"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -174,8 +242,11 @@ ActiveRecord::Schema.define(version: 2020_06_09_182302) do
   add_foreign_key "comments", "users"
   add_foreign_key "flags", "users"
   add_foreign_key "gigs", "users"
+  add_foreign_key "likes", "users"
   add_foreign_key "posts", "users"
   add_foreign_key "services", "users"
+  add_foreign_key "shares", "users"
+  add_foreign_key "taggings", "tags"
   add_foreign_key "user_gigs", "gigs"
   add_foreign_key "user_gigs", "users"
 end
