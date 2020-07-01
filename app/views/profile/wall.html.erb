@@ -29,6 +29,18 @@
     <div class="dropdown-divider"></div>
     <div class="row">
       <div class="col-md-12 text-center">
+        <h2>Shared by <%= current_user&.name %></h2>
+      </div>
+      <%= render 'posts/list', posts: @shared_posts, type: nil %>
+      <% if @shared_posts.blank? %>
+        <div class="col-md-12 text-center">
+          <h5 class="text-warning">Not shared any post</h5>
+        </div>
+      <% end %>
+    </div>
+    <div class="dropdown-divider"></div>
+    <div class="row">
+      <div class="col-md-12 text-center">
         <h2>Commented by <%= current_user&.name %></h2>
       </div>
       <%= render 'posts/list', posts: @commented_posts, type: nil %>

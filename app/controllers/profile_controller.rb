@@ -8,6 +8,7 @@ class ProfileController < ApplicationController
     @liked_posts = @user.likes.collect(&:likeable)
     @commented_posts = @user.comments.collect(&:commentable)
     @flagged_posts = @user.flags.collect(&:flagable)
+    @shared_posts = @user.shares.collect(&:shareable)
   end
 
   def about; end
