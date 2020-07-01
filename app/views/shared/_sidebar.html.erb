@@ -21,9 +21,11 @@
           <li>
             <%= link_to "Friends (#{@friends_count.count})", friends_path(uuid: @uuid) %>
           </li>
-          <li>
-            <%= link_to "Request (#{@connection_requests_count.count})", friend_request_path(uuid: @uuid) %>
-          </li>
+          <% if current_user.uuid == @user.uuid %>
+            <li>
+              <%= link_to "Request (#{@connection_requests_count.count})", friend_request_path(uuid: @uuid) %>
+            </li>
+            <% end %>
         </ul>
       </li>
       <li>
