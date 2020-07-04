@@ -11,9 +11,10 @@
         <div class="modal-body">
 
           <%= form.hidden_field :user_id, value: current_user.id %>
+          <%= form.hidden_field :from_feed, value: true %>
 
           <div class="form-group">
-            <%= select_tag "post_type", options_for_select([ ["Select One", ""], "Area", "Problem", "Proposal", "Idea" ]), class: "form form-group form-control", required: true %>
+            <%= select_tag "post_type", options_for_select(Post::POST_TYPES.reject{|x| x == Post::POST_TYPE_LAYER}), include_blank: 'Select Type', class: "form form-group form-control", required: true %>
           </div>
         </div>
         <div class="modal-footer">

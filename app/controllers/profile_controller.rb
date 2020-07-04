@@ -4,7 +4,7 @@ class ProfileController < ApplicationController
   before_action :connection_requests_count, only: [:wall, :about, :friends, :friend_request, :pictures]
 
   def wall
-    @posted_posts = @user.posts.where(post_type: Post::POST_TYPE_AREA)
+    @posted_posts = @user.posts.posts_feed
     @liked_posts = @user.likes.collect(&:likeable)
     @commented_posts = @user.comments.collect(&:commentable)
     @flagged_posts = @user.flags.collect(&:flagable)

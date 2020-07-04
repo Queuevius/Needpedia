@@ -62,6 +62,14 @@ class PostsController < ApplicationController
     @area_id = params[:area_id]
     @problem_id = params[:problem_id]
     @post_id = params[:post_id]
+    if params[:post] && params[:post][:from_feed]
+      if [Post::POST_TYPE_PROPOSAL, Post::POST_TYPE_PROBLEM].include?(@type)
+        @area_id = Post::GENERAL_AREA
+      elsif @type == Post::POST_TYPE_IDEA
+        @problem_id = Post::GENERAL_PROBLEM
+      else
+      end
+    end
     @post = Post.new(post_type: @type)
   end
 
