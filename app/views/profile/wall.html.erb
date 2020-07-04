@@ -1,11 +1,18 @@
 <div class="wrapper d-flex align-items-stretch mb-10">
   <%= render 'shared/sidebar' %>
 
+
+
   <!-- Page Content  -->
   <div id="content" class="p-4">
     <div class="row">
       <div class="col-md-12 text-center">
         <h2>Posted by <%= current_user&.name %></h2>
+      </div>
+      <div class="col-sm-6 text-right mb-2 offset-6">
+        <%= link_to modal_posts_path, remote: true, class: 'btn btn-primary' do %>
+          Add New Post
+        <% end %>
       </div>
       <%= render 'posts/list', posts: @posted_posts, type: nil %>
       <% if @posted_posts.blank? %>

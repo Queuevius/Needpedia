@@ -14,7 +14,7 @@ class ProfileController < ApplicationController
   def about; end
 
   def friends
-    @f = User.ransack(params[:f])
+    @f = User.ransack(params[:q])
     @friends = Kaminari.paginate_array(@user.links).page(params[:page]).per(12)
   end
 
@@ -35,8 +35,8 @@ class ProfileController < ApplicationController
   end
 
   def search_results
-    @f = User.ransack(params[:f])
-    @friends = @f.result.order("random()").page(params[:page]).per(12)
+    @f = User.ransack(params[:q])
+    @friends = @f.result.page(params[:page]).per(12)
     respond_to do |format|
       format.html
       format.js
@@ -47,17 +47,54 @@ class ProfileController < ApplicationController
     @user = current_user
   end
 
+  def profile_image; end
+
+  def update_profile_image
+
+    if current_user.update(user_params)
+      flash[:notice] = 'Your profile image has been changed'
+    else
+      flash[:alert] = @user.errors.full_messages.join(',')
+    end
+    redirect_to wall_path
+  end
+
+  def add_pictures
+    @profile_change = params[:profile_change]
+    @user = current_user
+  end
+
   def update_details
     @user = User.find(params[:user][:user_id])
 
     respond_to do |format|
       if @user.update(user_params)
-        format.html { redirect_to add_details_path, notice: 'Aad detail was successfully updated.' }
+        format.html { redirect_to about_path, notice: 'Your details have been successfully updated.' }
         format.json { render :show, status: :ok, location: @user }
       else
         flash[:alert] = @user.errors.full_messages.join(',')
         format.html { render :edit }
         format.json { render json: @user.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def create_pictures
+    @user = User.find(params[:user][:user_id])
+
+    respond_to do |format|
+      if @user.present?
+        if params[:user][:pictures].present?
+          params[:user][:pictures].each do |image|
+            @user.pictures.attach(image)
+          end
+        end
+        format.html {redirect_to pictures_path, notice: 'Aad detail was successfully updated.'}
+        format.json {render :show, status: :ok, location: @user}
+      else
+        flash[:alert] = @user.errors.full_messages.join(',')
+        format.html {render :edit}
+        format.json {render json: @user.errors, status: :unprocessable_entity}
       end
     end
   end

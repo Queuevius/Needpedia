@@ -1,0 +1,25 @@
+<div id="update-profile-image" class="modal fade" role="dialog">
+  <div class="modal-dialog  modal-lg">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Update Profile Image</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <%= form_with(model: current_user, url: update_profile_image_path, method: 'patch', local: true) do |form| %>
+        <div class="modal-body">
+
+          <div class="form-group">
+            <%= form.file_field :profile_image, multiple: false, accept: 'image/jpeg, image/png' %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <%= form.submit 'Submit', class: 'btn btn-primary'  %>
+        </div>
+
+      <% end %>
+    </div>
+
+  </div>
+</div>

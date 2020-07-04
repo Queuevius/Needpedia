@@ -117,6 +117,10 @@ class PostsController < ApplicationController
     @posts = @q.result(distinct: true)
   end
 
+  def modal
+    @post = Post.new()
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.

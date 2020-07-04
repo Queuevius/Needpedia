@@ -1,0 +1,27 @@
+<div id="new-post-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog  modal-lg">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Select Post Type</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <%= form_with(model: @post, url: new_post_path, method: 'get', local: true) do |form| %>
+        <div class="modal-body">
+
+          <%= form.hidden_field :user_id, value: current_user.id %>
+
+          <div class="form-group">
+            <%= select_tag "post_type", options_for_select([ ["Select One", ""], "Area", "Problem", "Proposal", "Idea" ]), class: "form form-group form-control", required: true %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <%= form.submit 'Submit', class: 'btn btn-primary'  %>
+        </div>
+
+      <% end %>
+    </div>
+
+  </div>
+</div>

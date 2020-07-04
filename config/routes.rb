@@ -26,6 +26,10 @@ Rails.application.routes.draw do
   get '/modal_picture', to: 'profile#modal_picture'
   get '/about', to: 'profile#about'
   get '/add_details', to: 'profile#add_details'
+  get '/add_pictures', to: 'profile#add_pictures'
+  get '/profile_image', to: 'profile#profile_image'
+  patch '/update_profile_image', to: 'profile#update_profile_image'
+  post '/create_pictures', to: 'profile#create_pictures'
   post '/search_results', to: 'profile#search_results'
   patch '/update_details', to: 'profile#update_details'
   get 'connections' => 'profile#my_connections'
@@ -54,6 +58,7 @@ Rails.application.routes.draw do
     get 'proposals'
     get 'ideas'
     collection do
+      get 'modal'
       get 'search_result'
       get 'all_areas'
       get 'all_layers'

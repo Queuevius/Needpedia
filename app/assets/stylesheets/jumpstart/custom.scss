@@ -240,6 +240,32 @@ body {
   background-color: #c1c5c8;
   overflow-x: hidden;
   padding-top: 20px;
+
+  .image-part {
+    position: relative;
+    width: 50%;
+  }
+  .middle {
+    transition: .5s ease;
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    left: 68%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .image-part:hover .img {
+    opacity: 0.3;
+  }
+
+  .image-part:hover .middle {
+    opacity: 1;
+  }
+  .text {
+    color: white !important;
+    font-size: 16px;
+  }
 }
 
 .margin-top {
