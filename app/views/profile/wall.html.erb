@@ -10,7 +10,10 @@
         <h2>Posted by <%= current_user&.name %></h2>
       </div>
       <div class="col-sm-6 text-right mb-2 offset-6">
-        <%= link_to modal_posts_path, remote: true, class: 'btn btn-primary' do %>
+        <%#= link_to modal_posts_path, remote: true, class: 'btn btn-primary' do %>
+<!--          Add New Post-->
+        <%# end %>
+        <%= link_to new_post_path(post_type: Post::POST_TYPE_SOCIAL_MEDIA), class: 'btn btn-primary' do %>
           Add New Post
         <% end %>
       </div>

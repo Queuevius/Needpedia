@@ -20,31 +20,33 @@
                   <% end %>
                 </div>
 
-                <div class="col-sm-9 text-right mb-2">
+                <% if @post.post_type != Post::POST_TYPE_SOCIAL_MEDIA %>
+                  <div class="col-sm-9 text-right mb-2">
 
-                  <div class="dropdown ml-1 float-right">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Layers
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                      <% if @post.post_type == Post::POST_TYPE_LAYER %>
-                        <%= link_to 'Default Layer', post_path(@post.parent_post), class: "dropdown-item #{post_type_color(@post.parent_post.post_type)}" %>
-                      <% end %>
-                      <%= link_to 'Add Layer', new_post_path(post_type: Post::POST_TYPE_LAYER, post_id: @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.id : @post.id), class: "dropdown-item" %>
-                      <% layers = @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.layers : @post.layers %>
-                      <% layers.each do |layer| %>
-                        <%= link_to layer.title, post_path(layer), class: 'dropdown-item' %>
-                      <% end %>
+                    <div class="dropdown ml-1 float-right">
+                      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Layers
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <% if @post.post_type == Post::POST_TYPE_LAYER %>
+                          <%= link_to 'Default Layer', post_path(@post.parent_post), class: "dropdown-item #{post_type_color(@post.parent_post.post_type)}" %>
+                        <% end %>
+                        <%= link_to 'Add Layer', new_post_path(post_type: Post::POST_TYPE_LAYER, post_id: @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.id : @post.id), class: "dropdown-item" %>
+                        <% layers = @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.layers : @post.layers %>
+                        <% layers.each do |layer| %>
+                          <%= link_to layer.title, post_path(layer), class: 'dropdown-item' %>
+                        <% end %>
+                      </div>
                     </div>
+                    <%= link_to 'Areas', all_areas_posts_path(), class: 'btn btn-primary' %>
+                    <%= link_to 'Problems', all_problems_posts_path(), class: 'btn btn-danger' %>
+                    <%= link_to 'Proposals', all_proposals_posts_path(), class: 'btn btn-purple' %>
+                    <%= link_to 'Ideas', all_ideas_posts_path(), class: 'btn btn-success' %>
+                    <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
+                      Edit
+                    <% end %>
                   </div>
-                  <%= link_to 'Areas', all_areas_posts_path(), class: 'btn btn-primary' %>
-                  <%= link_to 'Problems', all_problems_posts_path(), class: 'btn btn-danger' %>
-                  <%= link_to 'Proposals', all_proposals_posts_path(), class: 'btn btn-purple' %>
-                  <%= link_to 'Ideas', all_ideas_posts_path(), class: 'btn btn-success' %>
-                  <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
-                    Edit
-                  <% end %>
-                </div>
+                <% end %>
               </div>
             </div>
           </div>

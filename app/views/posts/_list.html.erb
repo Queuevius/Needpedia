@@ -4,12 +4,6 @@
       <% if posts.blank? && type.present? %>
         <h4 class="alert alert-warning">There are no <%= type.pluralize.titleize %> created yet <%= "for #{@post.title}" if @post.present? %></h4>
       <% end %>
-    <% else %>
-      <div class="row">
-        <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
-          <h5 class="alert alert-info"><%= @posts.count %> results found <%= "for '#{@keywords[:title_cont]}'" if @keywords[:title_cont].present? %></h5>
-        </div>
-      </div>
     <% end %>
   </div>
   <% posts.each do |post| %>

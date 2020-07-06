@@ -4,11 +4,30 @@
       <h1><b>Search results</b></h1>
     </div>
     <div class="col-md-12">
-      <div class="row">
-        <div class="col-sm-6">
+      <div class="row m-t-40 p-t-20 artist-box">
+        <div class="col-md-12">
+          <h3><b>Posts</b></h3>
+        </div>
+        <div class="col-md-12">
+          <div class="row">
+            <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
+              <h5 class="alert alert-info"><%= @posts.count %> posts and <%= @users.count %> users found <%= "for '#{@keywords[:title_cont]}'" if @keywords[:title_cont].present? %></h5>
+            </div>
+          </div>
         </div>
       </div>
       <%= render 'list', posts: @posts, type: @type %>
+    </div>
+
+    <div class="col-md-12">
+      <div class="row m-t-40 p-t-20 artist-box">
+        <div class="col-md-12">
+          <h3><b>Users</b></h3>
+          <div class="row justify-content-center">
+            <%= render 'profile/small_friends_list', friends: @users %>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

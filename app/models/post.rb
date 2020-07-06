@@ -7,12 +7,14 @@ class Post < ApplicationRecord
   POST_TYPE_PROPOSAL = 'proposal'.freeze
   POST_TYPE_IDEA = 'idea'.freeze
   POST_TYPE_LAYER = 'layer'.freeze
+  POST_TYPE_SOCIAL_MEDIA = 'social_media'.freeze
   POST_TYPES = [
     POST_TYPE_AREA,
     POST_TYPE_PROBLEM,
     POST_TYPE_PROPOSAL,
     POST_TYPE_IDEA,
-    POST_TYPE_LAYER
+    POST_TYPE_LAYER,
+    POST_TYPE_SOCIAL_MEDIA
   ].freeze
 
   GENERAL_AREA = ENV['GENERAL_AREA_ID']

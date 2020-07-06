@@ -1,8 +1,8 @@
 <div class="container">
-  <div class="row m-t-40 p-t-20 artist-box">
+  <div class="row m-t-40 p-t-20 artist-box justify-content-center ">
     <% @friends.each do |friend| %>
       <div class="col-lg-3 col-md-6 wrap-feature14-box p-t-20 p-l-20 p-r-20 friends-profiles">
-        <div class="aos-init">
+        <div class="aos-init ml-5">
           <% if friend.profile_image.attached? %>
             <%= image_tag friend.profile_image.variant(resize: "250x250"), class: 'img-responsive' %>
           <% else %>

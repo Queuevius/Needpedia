@@ -11,7 +11,7 @@ class PostsController < ApplicationController
     if params[:tag]
       @posts = Post.tagged_with(params[:tag])
     else
-      @posts = Post.posts_feed
+      @posts = Post.posts_feed.where.not(post_type: Post::POST_TYPE_SOCIAL_MEDIA).order('created_at desc')
     end
   end
 
@@ -122,7 +122,9 @@ class PostsController < ApplicationController
   def search_result
     @keywords = params[:q]
     @q = Post.ransack(@keywords)
+    @u = User.ransack(@keywords)
     @posts = @q.result(distinct: true)
+    @users = @u.result(distinct: true)
   end
 
   def modal
