@@ -122,7 +122,7 @@ class PostsController < ApplicationController
   def search_result
     @keywords = params[:q]
     @q = Post.ransack(@keywords)
-    @u = User.ransack(@keywords)
+    @u = User.ransack({ first_name_or_last_name_cont: @keywords[:title_cont] })
     @posts = @q.result(distinct: true)
     @users = @u.result(distinct: true)
   end
