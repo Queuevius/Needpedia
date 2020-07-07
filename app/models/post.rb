@@ -1,6 +1,7 @@
 class Post < ApplicationRecord
   has_rich_text :content
   acts_as_taggable_on :tags
+  has_many_attached :images
   ################################ Constants ############################
   POST_TYPE_AREA = 'area'.freeze
   POST_TYPE_PROBLEM = 'problem'.freeze

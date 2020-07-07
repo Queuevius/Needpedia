@@ -34,6 +34,7 @@ Rails.application.routes.draw do
   patch '/update_details', to: 'profile#update_details'
   get 'connections' => 'profile#my_connections'
   get 'friend_request' => 'profile#friend_request'
+  delete 'un_friend/:uuid' => 'profile#un_friend', as: 'un_friend'
   get 'tags/:tag' => 'posts#index', as: :tag
   authenticate :user, lambda {|u| u.admin?} do
     mount Sidekiq::Web => '/sidekiq'

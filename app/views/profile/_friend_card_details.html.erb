@@ -5,18 +5,19 @@
 </h6>
 <% if current_user.present? %>
   <% if current_user.id != friend.id %>
-    <% if friend.connection_status(current_user)[:status] == 'request_sent' %>
+    <% if friend.connection_status(current_user) && friend.connection_status(current_user)[:status] == 'request_sent' %>
       <a href="javascript:void(0);" class="btn waves-effect waves-light btn-rounded btn-secondary btn-block">Request
         Sent</a>
-    <% elsif friend.connection_status(current_user)[:status] == 'request_received' %>
+    <% elsif friend.connection_status(current_user) &&  friend.connection_status(current_user)[:status] == 'request_received' %>
       <%= link_to 'Accept', accept_invitation_path(:uuid => friend.connection_status(current_user)[:request_uuid]), class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block' %>
-    <% elsif friend.connection_status(current_user)[:status] == 'connected' %>
-      <%= link_to 'Connected','#', class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block' %>
+    <% elsif friend.connection_status(current_user) &&  friend.connection_status(current_user)[:status] == 'connected' %>
+      <%#= link_to 'Friends','#', class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block' %>
+      <%= link_to 'Unfriend', un_friend_path(uuid: @user.uuid), method: :delete, class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block', data: { confirm: "Are you sure?" } %>
     <% else %>
-      <%= link_to 'Connect', new_connection_request_path(:uuid => friend.uuid), class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block' %>
+      <%= link_to 'Add Friend', new_connection_request_path(:uuid => friend.uuid), class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block' %>
     <% end %>
   <% end %>
 <% else %>
-  <%= link_to 'Connect', new_connection_request_path(:uuid => friend.uuid), class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block' %>
+  <%= link_to 'Add Friend', new_connection_request_path(:uuid => friend.uuid), class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block' %>
 <% end %>
 

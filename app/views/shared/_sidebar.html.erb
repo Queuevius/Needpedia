@@ -1,6 +1,6 @@
 <nav id="sidebar">
   <div class="p-4 pt-5">
-    <div class="image-part">
+    <div class="image-part ml-3">
       <% if @user.profile_image.attached? %>
         <%= image_tag(@user.profile_image.variant(resize: "250x250"), class: 'img logo rounded-circle mb-2', alt: "Avatar") %>
       <% else %>
@@ -15,6 +15,26 @@
       <% end %>
     </div>
     <h4><%= @user.name %></h4>
+    <div class="ml-1 container">
+      <% if current_user.present? %>
+        <% if current_user.id != @user.id %>
+          <% if @user.connection_status(current_user)[:status] == 'request_sent' %>
+            <a href="javascript:void(0);" class="btn waves-effect waves-light btn-rounded btn-primary">Request
+              Sent</a>
+          <% elsif @user.connection_status(current_user)[:status] == 'request_received' || request_recieved?(@user.id, current_user.uuid) %>
+            <%= link_to 'Accept', accept_invitation_path(:uuid => @user.connection_status(current_user)[:request_uuid]), class: 'btn waves-effect waves-light btn-rounded btn-primary btn-block' %>
+          <% elsif @user.connection_status(current_user)[:status] == 'connected' %>
+            <%= link_to 'Unfriend', un_friend_path(uuid: @user.uuid), method: :delete, class: 'btn waves-effect waves-light btn-rounded btn-primary ml-2', data: { confirm: "Are you sure?" } %>
+          <% else %>
+            <%= link_to 'Add Friend', new_connection_request_path(:uuid => @user.uuid), class: 'btn waves-effect waves-light btn-rounded btn-primary' %>
+          <% end %>
+        <% end %>
+
+      <% else %>
+        <%= link_to 'Add Friend', new_connection_request_path(:uuid => @user.uuid), class: 'btn waves-effect waves-light btn-rounded btn-primary' %>
+      <% end %>
+
+    </div>
     <ul class="list-unstyled components mb-5">
       <li>
         <%= link_to 'Feed', wall_path(uuid: @uuid) %>

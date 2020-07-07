@@ -34,4 +34,15 @@ module ApplicationHelper
       'This Gig has been disabled'
     end
   end
+
+  def request_recieved?(id, uuid)
+    result = false
+    sender = User.find id
+    reciever = current_user
+    if uuid == reciever.uuid
+      connection_request = ConnectionRequest.where(user_id: sender.id, to: uuid, status: 'pending')
+      result = true if connection_request.present?
+    end
+    result
+  end
 end

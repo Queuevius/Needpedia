@@ -1,5 +1,5 @@
 class ProfileController < ApplicationController
-  before_action :set_user, only: [:wall, :about, :friends, :friend_request, :pictures]
+  before_action :set_user, only: [:wall, :about, :friends, :friend_request, :un_friend, :pictures]
   before_action :friend_count, only: [:wall, :about, :friends, :friend_request, :pictures]
   before_action :connection_requests_count, only: [:wall, :about, :friends, :friend_request, :pictures]
 
@@ -20,6 +20,21 @@ class ProfileController < ApplicationController
 
   def friend_request
     @connection_requests = ConnectionRequest.where(to: @user.uuid, status: 'pending').page(params[:page]).per(12)
+  end
+
+  def un_friend
+    links = current_user.links
+    if @user && links.include?(@user)
+      connections = Connection.where(user_id: @user.id, friend_id: current_user.id).or(Connection.where(user_id: current_user, friend_id: @user.id))
+      if connections.present? && connections.destroy_all
+        flash[:notice] = "You and #{@user.name} are no longer friends"
+      else
+        flash[:alert] = 'Sorry, your request was not successful. Please try later.'
+      end
+    else
+      flash[:alert] = "You are not friends with #{@user.name}, you can not unfriend this user"
+    end
+    redirect_to wall_path(uuid: @user.uuid)
   end
 
   def pictures; end

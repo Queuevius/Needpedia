@@ -74,6 +74,17 @@
                   <%= @post.content %>
                   <%= 'No details provided' if @post.content.blank? %>
                 </div>
+                <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-5 justify-content-center">
+                  <div class="row">
+                    <% if @post.images.present? %>
+                      <% @post.images.each do |image|  %>
+                        <div class="col-md-6">
+                          <%= image_tag(image, class: 'img-fluid') %>
+                        </div>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </div>
                 <div class="col-md-12 border-top border-comments">
                   <div class="row mt-3">
                     <div class="col-md-12 mb-2">
