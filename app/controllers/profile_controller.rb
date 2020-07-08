@@ -34,7 +34,9 @@ class ProfileController < ApplicationController
     else
       flash[:alert] = "You are not friends with #{@user.name}, you can not unfriend this user"
     end
-    redirect_to wall_path(uuid: @user.uuid)
+    redirect = params[:redirect]
+    redirect_to_uuid = redirect == 'current' ? current_user.uuid : @user.uuid
+    redirect_to wall_path(uuid: redirect_to_uuid)
   end
 
   def pictures; end
