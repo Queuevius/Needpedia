@@ -139,7 +139,15 @@
                 post_token_type: dropEvent.originalEvent.dataTransfer.getData('Text'),
               },
               success: function (data) {
-                editor.html.insert('<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><img src="/assets/' + data.post_token_type + ".png" + '" width="20"/></a>');
+
+								if(data.post_token_type == 'note'){
+									editor.html.insert('<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('note.png', width: "20") %>');
+								}else if(data.post_token_type == 'debate'){
+									editor.html.insert('<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('debate.png', width: "20") %>');
+								}else{
+									editor.html.insert('<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('question.png', width: "20") %>');
+								}
+
                 $.ajax({
                   url: '/post_tokens/token_modal',
                   type: "get",
