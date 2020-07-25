@@ -21,6 +21,7 @@ import 'data-confirm-modal'
 $(document).on("turbolinks:load", () => {
   $('[data-toggle="tooltip"]').tooltip()
   $('[data-toggle="popover"]').popover()
+	$('.fr-wrapper a:first-child').addClass('hideme');
 })
 
 require("trix")
