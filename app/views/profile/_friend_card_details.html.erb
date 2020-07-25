@@ -12,7 +12,7 @@
       <%= link_to 'Accept', accept_invitation_path(:uuid => friend.connection_status(current_user)[:request_uuid]), class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block' %>
     <% elsif friend.connection_status(current_user) &&  friend.connection_status(current_user)[:status] == 'connected' %>
       <%#= link_to 'Friends','#', class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block' %>
-      <%= link_to 'Unfriend', un_friend_path(uuid: @user.uuid), method: :delete, class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block', data: { confirm: "Are you sure?" } %>
+      <%= link_to 'Unfriend', un_friend_path(uuid: friend.uuid, redirect: 'current'), method: :delete, class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block', data: { confirm: "Are you sure?" } %>
     <% else %>
       <%= link_to 'Add Friend', new_connection_request_path(:uuid => friend.uuid), class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block' %>
     <% end %>

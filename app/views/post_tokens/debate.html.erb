@@ -1,0 +1,27 @@
+<%= render 'tokens', post_token: @post_token %>
+<div class="container">
+  <div class="row">
+    <div class="col-lg-12 col-md-12 pr-0">
+      <div class="ui-block shadow-lg rounded">
+        <div class="ui-block-content">
+          <div class="row">
+            <div class="col-lg-4 col-md-4">
+              <h3 class="text-center">Against</h3>
+              <%= render 'arguments', arguments: @post_token.token_ans_debate.where(debate_type: TokenAnsDebate::DEBATE_TYPE_AGAINST), debate_type_value: TokenAnsDebate::DEBATE_TYPE_AGAINST, place_holder: 'Argument Against' %>
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+              <h3 class="text-center">For</h3>
+              <%= render 'arguments', arguments: @post_token.token_ans_debate.where(debate_type: TokenAnsDebate::DEBATE_TYPE_FOR), debate_type_value: TokenAnsDebate::DEBATE_TYPE_FOR , place_holder: 'Argument For'%>
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+              <h3 class="text-center">Neutral</h3>
+              <%= render 'arguments', arguments: @post_token.token_ans_debate.where(debate_type: TokenAnsDebate::DEBATE_TYPE_NEUTRAL), debate_type_value: TokenAnsDebate::DEBATE_TYPE_NEUTRAL, place_holder: 'Argument Neutral' %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

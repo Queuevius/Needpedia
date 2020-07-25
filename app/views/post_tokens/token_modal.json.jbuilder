@@ -1,0 +1,1 @@
+json.extract! @post_token, :id, :post_token_type

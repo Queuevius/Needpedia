@@ -1,0 +1,23 @@
+<div class="container mb-1">
+  <div class="row mt-3">
+    <div class="col-md-12 text-center mb-1">
+      <h1><b><%= post_token.post_token_type&.titleize %></b></h1>
+    </div>
+    <div class="col-md-12">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <%= link_to 'Back', post_path(post_token.post_id), class: 'btn btn-primary float-left padding-top-10' %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ui-block shadow-lg rounded">
+    <div class="ui-block-content">
+      <div class="row">
+        <div class="col-sm-12 text-left mb-2">
+          <%= post_token.content %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

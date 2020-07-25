@@ -75,7 +75,18 @@ Rails.application.routes.draw do
     collection do
       get 'reason_modal'
     end
+    end
+
+  resources :post_tokens do
+    collection do
+      get 'token_modal'
+      get 'note'
+      get 'debate'
+      get 'question'
+    end
   end
+
+  resources :token_ans_debates
 
   resources :share, only: [:update]
 

@@ -39,6 +39,8 @@ class Post < ApplicationRecord
 
   has_many :shares, as: :shareable, dependent: :destroy
 
+  has_many :post_tokens, dependent: :destroy
+
   ############################### Validations ###########################
   validates :title, presence: true
   validates :post_type, presence: true, inclusion: { in: POST_TYPES }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_29_102020) do
+ActiveRecord::Schema.define(version: 2020_07_21_022425) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -138,6 +138,17 @@ ActiveRecord::Schema.define(version: 2020_06_29_102020) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "post_tokens", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "post_id", null: false
+    t.string "content"
+    t.string "post_token_type"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["post_id"], name: "index_post_tokens_on_post_id"
+    t.index ["user_id"], name: "index_post_tokens_on_user_id"
+  end
+
   create_table "posts", force: :cascade do |t|
     t.string "post_type"
     t.bigint "user_id", null: false
@@ -200,6 +211,19 @@ ActiveRecord::Schema.define(version: 2020_06_29_102020) do
     t.index ["name"], name: "index_tags_on_name", unique: true
   end
 
+  create_table "token_ans_debates", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "post_id", null: false
+    t.bigint "post_token_id", null: false
+    t.string "content"
+    t.string "debate_type"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["post_id"], name: "index_token_ans_debates_on_post_id"
+    t.index ["post_token_id"], name: "index_token_ans_debates_on_post_token_id"
+    t.index ["user_id"], name: "index_token_ans_debates_on_user_id"
+  end
+
   create_table "transactions", force: :cascade do |t|
     t.bigint "recipient_id"
     t.bigint "actor_id"
@@ -243,10 +267,15 @@ ActiveRecord::Schema.define(version: 2020_06_29_102020) do
   add_foreign_key "flags", "users"
   add_foreign_key "gigs", "users"
   add_foreign_key "likes", "users"
+  add_foreign_key "post_tokens", "posts"
+  add_foreign_key "post_tokens", "users"
   add_foreign_key "posts", "users"
   add_foreign_key "services", "users"
   add_foreign_key "shares", "users"
   add_foreign_key "taggings", "tags"
+  add_foreign_key "token_ans_debates", "post_tokens"
+  add_foreign_key "token_ans_debates", "posts"
+  add_foreign_key "token_ans_debates", "users"
   add_foreign_key "user_gigs", "gigs"
   add_foreign_key "user_gigs", "users"
 end

@@ -10,9 +10,24 @@
   <div class="form-group">
     <%= form.text_field :title, autofocus: true, class: 'form-control', placeholder: "Title" %>
   </div>
-
   <div class="form-group">
-    <%= form.rich_text_area :content, autofocus: true, class: 'form-control', placeholder: "Body" %>
+    <% if @post.persisted? %>
+      <div class="row" style="margin-left: 2px">
+        <div id="note" draggable="true">
+          <%= image_tag('note.png', class: 'token_img') %>
+        </div>
+
+        <div id="debate" draggable="true">
+          <%= image_tag('debate.png', class: 'token_img') %>
+        </div>
+
+        <div id="question" draggable="true">
+          <%= image_tag('question.png', class: 'token_img') %>
+        </div>
+      </div>
+    <% end %>
+
+    <%= form.text_area :content, autofocus: true, rows: 15, class: 'form-control', placeholder: "Body", id: 'froala-editor' %>
   </div>
 
   <div class="form-group">
@@ -21,7 +36,7 @@
 
   <% if @post.images.present? %>
     <div class="col-lg-12 col-md-12 ml-auto mr-auto">
-      <% @post.images.each do |image|  %>
+      <% @post.images.each do |image| %>
         <div class="col-md-3">
           <%= image_tag(image, :class => "img-responsive", width: "250") %>
         </div>
@@ -36,7 +51,7 @@
   <div class="form-group">
     <% if post.persisted? %>
       <div class="float-right">
-        <%= link_to 'Destroy', post, method: :delete, class: "text-danger", data: { confirm: 'Are you sure?' } %>
+        <%= link_to 'Destroy', post, method: :delete, class: "text-danger", data: {confirm: 'Are you sure?'} %>
       </div>
     <% end %>
 
@@ -49,3 +64,115 @@
     <% end %>
   </div>
 <% end %>
+
+<script>
+	var dragCallback = function (e) {
+		e.dataTransfer.setData('Text', this.id);
+	};
+
+  <% if !@post.persisted? %>
+    new FroalaEditor('#froala-editor', {
+        quickInsertEnabled: false,
+        toolbarButtons: {
+            'moreText': {
+                'buttons': ['bold', 'italic', 'underline', 'strikeThrough']
+            },
+            'moreParagraph': {
+                'buttons': ['alignLeft', 'alignCenter', 'formatOLSimple']
+            },
+            'moreRich': {
+                'buttons': ['insertLink']
+            },
+            'moreMisc': {
+                'buttons': ['undo', 'redo', 'fullscreen', 'print'],
+                'align': 'right',
+                'buttonsVisible': 2
+            }
+        }
+    });
+  <% else %>
+    // For Firefox to work.
+    document.querySelector('#note').addEventListener('dragstart', dragCallback);
+    document.querySelector('#debate').addEventListener('dragstart', dragCallback);
+    document.querySelector('#question').addEventListener('dragstart', dragCallback);
+    new FroalaEditor('#froala-editor', {
+        quickInsertEnabled: false,
+        toolbarButtons: {
+            moreText: {
+                buttons: ['bold', 'italic', 'underline', 'strikeThrough']
+            },
+            moreParagraph: {
+                buttons: ['alignLeft', 'alignCenter', 'formatOLSimple']
+            },
+            moreRich: {
+                buttons: ['insertLink']
+            },
+            moreMisc: {
+                buttons: ['undo', 'redo', 'fullscreen', 'print'],
+                align: 'right',
+                buttonsVisible: 2
+            }
+        },
+      events: {
+        initialized: function () {
+          var editor = this;
+
+          editor.events.on('drop', function (dropEvent) {
+            // Focus at the current posisiton.
+            editor.markers.insertAtPoint(dropEvent.originalEvent);
+            var $marker = editor.$el.find('.fr-marker');
+            $marker.replaceWith(FroalaEditor.MARKERS);
+            editor.selection.restore();
+
+            // Save into undo stack the current position.
+            if (!editor.undo.canDo()) editor.undo.saveStep();
+
+            // Insert HTML.
+            // editor.html.insert('<a href="#"><img src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.0.1/assets/svg/1f600.svg" width="25"/></a>');
+            $.ajax({
+              url: '/post_tokens',
+              type: "POST",
+              dataType: "JSON",
+              data: {
+                user_id: <%= current_user.id %>,
+                post_id: <%= @post.id %>,
+                post_token_type: dropEvent.originalEvent.dataTransfer.getData('Text'),
+              },
+              success: function (data) {
+                editor.html.insert('<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><img src="/assets/' + data.post_token_type + ".png" + '" width="20"/></a>');
+                $.ajax({
+                  url: '/post_tokens/token_modal',
+                  type: "get",
+                  data: {
+                    id: data.id,
+                  }
+                })
+              },
+              error: function (data) {
+              }
+            })
+
+            // Save into undo stack the changes.
+            editor.undo.saveStep();
+
+            // Stop event propagation.
+            dropEvent.preventDefault();
+            dropEvent.stopPropagation();
+
+            // Firefox show cursor.
+            if (editor.core.hasFocus() && editor.browser.mozilla) {
+              editor.events.disableBlur();
+              setTimeout(function () {
+                editor.$el.blur().focus();
+                editor.events.enableBlur();
+              }, 0);
+            }
+
+            return false;
+          }, true);
+        }
+      }
+	  })
+  <% end %>
+</script>
+

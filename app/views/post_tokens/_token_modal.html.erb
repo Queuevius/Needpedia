@@ -1,0 +1,25 @@
+<div id="myModal_token" class="modal fade" role="dialog">
+  <div class="modal-dialog  modal-lg">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add <%= @post_token.post_token_type.titleize %></h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <%= form_with(model: @post_token, remote: true) do |form| %>
+        <div class="modal-body">
+          <div class="form-group">
+            <%= form.rich_text_area :content, autofocus: true, class: 'form-control', placeholder: "Content" %>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <%= form.submit 'Create', class: 'btn btn-primary'  %>
+        </div>
+
+      <% end %>
+    </div>
+
+  </div>
+</div>

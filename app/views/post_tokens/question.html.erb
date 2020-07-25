@@ -1,0 +1,60 @@
+<%= render 'tokens', post_token: @post_token %>
+<div class="container mb-1">
+  <h1 class="text-center">Answers</h1>
+  <% if @post_token.token_ans_debate.present? %>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 ml-auto mr-auto mt-0 pt-0">
+        <div class="ui-block shadow-lg rounded">
+          <div class="ui-block-content">
+            <div class="row">
+              <% @post_token.token_ans_debate.each do |token_ans_debate| %>
+                <div class="col-lg-12 col-md-12 pb-1">
+                  <div class="media border border-comments p-3">
+                    <div class="media-body"><h5 class="media-heading"><%= token_ans_debate.user.name %></h5>
+                      <p><%= token_ans_debate.content %></p>
+                      <ul class="list-unstyled list-inline media-detail pull-left">
+                        <li><i class="fa fa-calendar"></i> <%= token_ans_debate.created_at.strftime('%d-%m-%Y') %></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <% end %>
+
+  <div class="row">
+    <div class="col-lg-12 col-md-12 mt-0 pt-0">
+      <div class="ui-block shadow-lg rounded">
+        <div class="ui-block-content">
+          <div class="row">
+            <div class="col-lg-12 col-md-12 ml-auto mr-auto mt-0 pt-0">
+              <%= form_with(model: @token_ans_debate, local: true) do |form| %>
+
+                <% if @post_token.present? %>
+                  <%= form.hidden_field :user_id, value: @post_token.user_id %>
+                  <%= form.hidden_field :post_token_id, value: @post_token.id %>
+                  <%= form.hidden_field :post_id, value: @post_token.post_id %>
+                <% end %>
+
+                <div class="form-group">
+                  <%= form.rich_text_area :content, autofocus: true, class: 'form-control', placeholder: "Content" %>
+                </div>
+
+                <div class="form-group">
+                  <%= form.submit 'Create', class: 'btn btn-primary' %>
+                </div>
+
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
