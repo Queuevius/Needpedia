@@ -285,3 +285,7 @@ body {
   width: 35px;
   padding: 5px
 }
+
+.fr-wrapper a:first-child {
+  display: none !important;
+}
