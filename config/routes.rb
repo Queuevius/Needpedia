@@ -93,6 +93,8 @@ Rails.application.routes.draw do
   resources :likes do
     collection do
       get 'unlike'
+      patch 'upvote'
+      patch 'downvote'
     end
   end
 

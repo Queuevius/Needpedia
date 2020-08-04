@@ -5,6 +5,8 @@ class TokenAnsDebate < ApplicationRecord
   belongs_to :post_token
   belongs_to :user
   belongs_to :post
+  has_many :likes, as: :likeable, dependent: :destroy
+  has_many :flags, as: :flagable, dependent: :destroy
 
   ################################ Constants ############################
   DEBATE_TYPE_AGAINST = 'against'.freeze

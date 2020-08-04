@@ -4,6 +4,7 @@ class TokenAnsDebatesController < ApplicationController
   # POST /token_ans_debates
   # POST /token_ans_debates.json
   def create
+
     @token_ans_debate = TokenAnsDebate.new(token_ans_debate_params)
     @post = Post.find(@token_ans_debate.post_id)
 
@@ -11,9 +12,9 @@ class TokenAnsDebatesController < ApplicationController
       if @token_ans_debate.save
 
         if @token_ans_debate.debate_type.present?
-          format.html { redirect_to debate_post_tokens_path(id: @token_ans_debate.post_token_id), notice: "#{@token_ans_debate.post_token.post_token_type} was successfully created." }
+          format.html { redirect_to debate_post_tokens_path(id: @token_ans_debate.post_token_id), notice: "Successfully created." }
         else
-          format.html { redirect_to question_post_tokens_path(id: @token_ans_debate.post_token_id), notice: "#{@token_ans_debate.post_token.post_token_type} was successfully created." }
+          format.html { redirect_to question_post_tokens_path(id: @token_ans_debate.post_token_id), notice: "Something went wrong." }
         end
 
         format.json { render :token_modal, post_token: @post_token }

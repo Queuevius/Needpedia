@@ -1,35 +1,61 @@
-<div class="row">
+<div class="row <%= 'border-right-debate' if debate_type_value != TokenAnsDebate::DEBATE_TYPE_NEUTRAL %>">
   <% arguments.each do |argument| %>
-    <div class="col-lg-12 col-md-12">
-      <div class="media border border-comments p-2">
-        <div class="media-body">
-          <em class="media-heading">
-            <strong><%= argument.user.name %></strong> wrote on <%= argument.created_at.strftime('%d-%m-%Y %l:%M %p') %>
-          </em>
+    <div class="col-lg-12 col-md-12 pb-1">
+      <div class="row">
+        <div class="col-md-2 col-lg-2 text-center pt-2">
+          <div><%= argument.likes.count %></div>
+          <%= link_to upvote_likes_path(likeable_id: argument.id, user_id: current_user.id, likeable_type: 'TokenAnsDebate', post_token_type: 'debate', post_token_id: @post_token.id), title: 'Up vote', remote: true, :method => :patch do %>
+            <i class="fa fa-arrow-circle-up" style="color: black;" aria-hidden="true"></i>
+          <% end %>
+          <%= link_to downvote_likes_path(flagable_id: argument.id, user_id: current_user.id, flagable_type: 'TokenAnsDebate', post_token_type: 'debate', post_token_id: @post_token.id), title: 'Down vote', remote: true, :method => :patch do %>
+            <i class="fa fa-arrow-circle-down" style="color: black;" aria-hidden="true"></i>
+          <% end %>
+          <div><%= argument.flags.count %></div>
+        </div>
+        <div class="col-md-10 col-lg-10 pl-0">
           <p><%= argument.content %></p>
         </div>
       </div>
+      <hr>
     </div>
   <% end %>
-  <hr>
-  <div class="col-lg-12 pt-3">
-    <%= form_with(model: @token_ans_debate, local: true) do |form| %>
+  <div class="col-lg-12 col-md-12">
+    <div id="intro-<%= debate_type_value %>" class="collapse">
+      <%= form_with(model: @token_ans_debate, local: true) do |form| %>
 
-      <% if @post_token.present? %>
-        <%= form.hidden_field :user_id, value: @post_token.user_id %>
-        <%= form.hidden_field :post_token_id, value: @post_token.id %>
-        <%= form.hidden_field :post_id, value: @post_token.post_id %>
-        <%= form.hidden_field :debate_type, value: debate_type_value %>
+        <% if @post_token.present? %>
+          <%= form.hidden_field :user_id, value: @post_token.user_id %>
+          <%= form.hidden_field :post_token_id, value: @post_token.id %>
+          <%= form.hidden_field :post_id, value: @post_token.post_id %>
+          <%= form.hidden_field :debate_type, value: debate_type_value %>
+        <% end %>
+
+        <div class="form-group">
+          <%= form.text_area :content, autofocus: true, rows: 3, class: 'form-control', placeholder: place_holder, id: 'froala-editor', required: true %>
+        </div>
+
+        <div class="form-group text-center">
+          <%= form.submit 'Add', class: 'btn btn-light pl-5 pr-5' %>
+        </div>
       <% end %>
-
-      <div class="form-group">
-        <%= form.text_area :content, autofocus: true, rows: 3, class: 'form-control', placeholder: place_holder, id: 'froala-editor', required: true %>
-      </div>
-
-      <div class="form-group">
-        <%= form.submit 'Create', class: 'btn btn-primary' %>
-      </div>
-
-    <% end %>
+    </div>
+    <div class="form-group text-center">
+      <button class="btn btn-light add-argument-btn-<%= debate_type_value %> pl-5 pr-5" data-toggle="collapse" data-target="#intro-<%= debate_type_value %>">Add</button>
+    </div>
   </div>
+  <hr>
 </div>
+<script>
+    $('.add-argument-btn-<%= debate_type_value %>').click(function(){
+        // $(this).toggle('hidden');
+        $(this).text(function(i,old){
+            // if (old == 'Add') {}
+            return old=='Add' ?  'Cancel' : 'Add';
+        });
+    });
+</script>
+<style>
+  .hidden {
+    display: none;
+  }
+</style>
