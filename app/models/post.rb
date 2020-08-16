@@ -2,6 +2,8 @@ class Post < ApplicationRecord
   has_rich_text :content
   acts_as_taggable_on :tags
   has_many_attached :images
+
+  before_save :clean_froala_link
   ################################ Constants ############################
   POST_TYPE_AREA = 'area'.freeze
   POST_TYPE_PROBLEM = 'problem'.freeze
@@ -60,5 +62,9 @@ class Post < ApplicationRecord
   ############################### Methods ################################
   def parent_post_id
     area_id
+  end
+
+  def clean_froala_link
+    self.content.body.to_s.remove("<p>Powered by <a href=\"https://www.froala.com/wysiwyg-editor?pb=1\" title=\"Froala Editor\">Froala Editor</a></p>")
   end
 end
