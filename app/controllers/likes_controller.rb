@@ -26,6 +26,10 @@ class LikesController < ApplicationController
     post_token_id = params[:post_token_id]
     @debate = TokenAnsDebate.find(@like.likeable_id)
     url = "/post_tokens/#{post_token_type}?id=#{post_token_id}"
+    if voted?(@like.likeable)
+      redirect_to url, alert: 'You have already voted.'
+      return
+    end
     respond_to do |format|
       if @like.save
         format.html { redirect_to url, notice: 'You added an Up vote.'}
@@ -44,6 +48,10 @@ class LikesController < ApplicationController
     post_token_id = params[:post_token_id]
     @debate = TokenAnsDebate.find(@flag.flagable_id)
     url = "/post_tokens/#{post_token_type}?id=#{post_token_id}"
+    if voted?(@flag.flagable)
+      redirect_to url, alert: 'You have already voted.'
+      return
+    end
     respond_to do |format|
       if @flag.save
         format.html { redirect_to url, notice: 'You added a Down vote.'}
@@ -83,5 +91,9 @@ class LikesController < ApplicationController
   end
   def flag_params
     params.permit(:flagable_id, :flagable_type, :user_id)
+  end
+
+  def voted?(argument)
+    argument.likes.pluck(:user_id).include?(current_user.id) || argument.flags.pluck(:user_id).include?(current_user.id)
   end
 end

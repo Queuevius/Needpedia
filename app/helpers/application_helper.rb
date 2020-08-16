@@ -45,4 +45,8 @@ module ApplicationHelper
     end
     result
   end
+
+  def voted?(argument)
+    argument.likes.pluck(:user_id).include?(current_user.id) || argument.flags.pluck(:user_id).include?(current_user.id)
+  end
 end

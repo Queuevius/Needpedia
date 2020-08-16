@@ -11,21 +11,21 @@
     <%= form.text_field :title, autofocus: true, class: 'form-control', placeholder: "Title" %>
   </div>
   <div class="form-group">
-    <% if @post.persisted? %>
-      <div class="row" style="margin-left: 2px">
-        <div id="note" draggable="true">
-          <%= image_tag('note.png', class: 'token_img') %>
-        </div>
+    <%# if @post.persisted? %>
+<!--      <div class="row" style="margin-left: 2px">-->
+<!--        <div id="note" draggable="true">-->
+          <%#= image_tag('note.png', class: 'token_img') %>
+<!--        </div>-->
 
-        <div id="debate" draggable="true">
-          <%= image_tag('debate.png', class: 'token_img') %>
-        </div>
+<!--        <div id="debate" draggable="true">-->
+          <%#= image_tag('debate.png', class: 'token_img') %>
+<!--        </div>-->
 
-        <div id="question" draggable="true">
-          <%= image_tag('question.png', class: 'token_img') %>
-        </div>
-      </div>
-    <% end %>
+<!--        <div id="question" draggable="true">-->
+          <%#= image_tag('question.png', class: 'token_img') %>
+<!--        </div>-->
+<!--      </div>-->
+    <%# end %>
 
     <%= form.text_area :content, autofocus: true, rows: 15, class: 'form-control', placeholder: "Body", id: 'froala-editor' %>
   </div>
@@ -70,117 +70,126 @@
 		e.dataTransfer.setData('Text', this.id);
 	};
 
-  <% if !@post.persisted? %>
-    new FroalaEditor('#froala-editor', {
-        quickInsertEnabled: false,
-        toolbarButtons: {
-            'moreText': {
-                'buttons': ['bold', 'italic', 'underline', 'strikeThrough']
-            },
-            'moreParagraph': {
-                'buttons': ['alignLeft', 'alignCenter', 'formatOLSimple']
-            },
-            'moreRich': {
-                'buttons': ['insertLink']
-            },
-            'moreMisc': {
-                'buttons': ['undo', 'redo', 'fullscreen', 'print'],
-                'align': 'right',
-                'buttonsVisible': 2
-            }
+  <% if @post.persisted? %>
+    FroalaEditor.DefineIcon('imageIcon', {SRC: "<%= image_path('note.png') %>", ALT: 'Image button', template: 'image'});
+    FroalaEditor.RegisterCommand('alert', {
+        title: 'Note',
+        icon: 'imageIcon',
+        focus: false,
+        undo: false,
+        refreshAfterCallback: false,
+        callback: function () {
+            dropToken(this, 'note');
         }
     });
-  <% else %>
-    // For Firefox to work.
-    document.querySelector('#note').addEventListener('dragstart', dragCallback);
-    document.querySelector('#debate').addEventListener('dragstart', dragCallback);
-    document.querySelector('#question').addEventListener('dragstart', dragCallback);
-    new FroalaEditor('#froala-editor', {
-        quickInsertEnabled: false,
-        toolbarButtons: {
-            moreText: {
-                buttons: ['bold', 'italic', 'underline', 'strikeThrough']
-            },
-            moreParagraph: {
-                buttons: ['alignLeft', 'alignCenter', 'formatOLSimple']
-            },
-            moreRich: {
-                buttons: ['insertLink']
-            },
-            moreMisc: {
-                buttons: ['undo', 'redo', 'fullscreen', 'print'],
-                align: 'right',
-                buttonsVisible: 2
-            }
-        },
-      events: {
-        initialized: function () {
-          var editor = this;
 
-          editor.events.on('drop', function (dropEvent) {
-            // Focus at the current posisiton.
-            editor.markers.insertAtPoint(dropEvent.originalEvent);
-            var $marker = editor.$el.find('.fr-marker');
-            $marker.replaceWith(FroalaEditor.MARKERS);
-            editor.selection.restore();
+    function dropToken(e, token_type) {
+        var editor = e;
+        e.selection.save();
+        // Save into undo stack the current position.
+        if (!editor.undo.canDo()) editor.undo.saveStep();
 
-            // Save into undo stack the current position.
-            if (!editor.undo.canDo()) editor.undo.saveStep();
-
-            // Insert HTML.
-            // editor.html.insert('<a href="#"><img src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.0.1/assets/svg/1f600.svg" width="25"/></a>');
-            $.ajax({
-              url: '/post_tokens',
-              type: "POST",
-              dataType: "JSON",
-              data: {
+        // Insert HTML.
+        // editor.html.insert('<a href="#"><img src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.0.1/assets/svg/1f600.svg" width="25"/></a>');
+        $.ajax({
+            url: '/post_tokens',
+            type: "POST",
+            dataType: "JSON",
+            data: {
                 user_id: <%= current_user.id %>,
-                post_id: <%= @post.id %>,
-                post_token_type: dropEvent.originalEvent.dataTransfer.getData('Text'),
-              },
-              success: function (data) {
+                post_id: <%= @post.id || 2 %>,
+                post_token_type: token_type,
+            },
+            success: function (data) {
 
-								if(data.post_token_type == 'note'){
-									editor.html.insert('<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('note.png', width: "20") %>');
-								}else if(data.post_token_type == 'debate'){
-									editor.html.insert('<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('debate.png', width: "20") %>');
-								}else{
-									editor.html.insert('<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('question.png', width: "20") %>');
-								}
+                if(data.post_token_type == 'note'){
+                    editor.html.insert('<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('note.png', width: "20") %>');
+                }else if(data.post_token_type == 'debate'){
+                    editor.html.insert('<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('debate.png', width: "20") %>');
+                }else{
+                    editor.html.insert('<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('question.png', width: "20") %>');
+                }
 
                 $.ajax({
-                  url: '/post_tokens/token_modal',
-                  type: "get",
-                  data: {
-                    id: data.id,
-                  }
+                    url: '/post_tokens/token_modal',
+                    type: "get",
+                    data: {
+                        id: data.id,
+                    }
                 })
-              },
-              error: function (data) {
-              }
-            })
+            },
+            error: function (data) {
+            }
+        })
 
-            // Save into undo stack the changes.
-            editor.undo.saveStep();
+        // Save into undo stack the changes.
+        editor.undo.saveStep();
 
-            // Stop event propagation.
-            dropEvent.preventDefault();
-            dropEvent.stopPropagation();
-
-            // Firefox show cursor.
-            if (editor.core.hasFocus() && editor.browser.mozilla) {
-              editor.events.disableBlur();
-              setTimeout(function () {
+        // Firefox show cursor.
+        if (editor.core.hasFocus() && editor.browser.mozilla) {
+            editor.events.disableBlur();
+            setTimeout(function () {
                 editor.$el.blur().focus();
                 editor.events.enableBlur();
-              }, 0);
-            }
-
-            return false;
-          }, true);
+            }, 0);
         }
+        return true;
+    }
+
+    FroalaEditor.DefineIcon('questionIcon', {SRC: "<%= image_path('question.png') %>", ALT: 'Image button', template: 'image'});
+    // FroalaEditor.DefineIcon('clear', {NAME: 'remove', SVG_KEY: 'remove'});
+    FroalaEditor.RegisterCommand('clear', {
+        title: 'Clear HTML',
+        icon: 'questionIcon',
+        focus: false,
+        undo: true,
+        refreshAfterCallback: true,
+        callback: function () {
+            dropToken(this, 'question');
+        }
+    });
+
+    FroalaEditor.DefineIcon('debateIcon', {SRC: "<%= image_path('debate.png') %>", ALT: 'Image button', template: 'image'});
+    // FroalaEditor.DefineIcon('insert', {NAME: 'plus', SVG_KEY: 'add'});
+    FroalaEditor.RegisterCommand('insert', {
+        title: 'Insert HTML',
+        icon: 'debateIcon',
+        focus: true,
+        undo: true,
+        refreshAfterCallback: true,
+        callback: function () {
+            dropToken(this, 'debate');
+        }
+    });
+
+  new FroalaEditor('#froala-editor', {
+      multiLine: false,
+      lineBreakerTags: null,
+      // Add the custom buttons in the toolbarButtons list, after the separator.
+      toolbarButtons: [['bold', 'italic', 'underline', 'strikeThrough'], ['alert', 'clear', 'insert', 'alignLeft', 'alignCenter', 'formatOLSimple', 'insertLink']]
+  })
+
+  <% else %>
+  new FroalaEditor('#froala-editor', {
+      quickInsertEnabled: false,
+      lineBreakerTags: null,
+      toolbarButtons: {
+          'moreText': {
+              'buttons': ['bold', 'italic', 'underline', 'strikeThrough']
+          },
+          'moreParagraph': {
+              'buttons': ['alignLeft', 'alignCenter', 'formatOLSimple']
+          },
+          'moreRich': {
+              'buttons': ['insertLink']
+          },
+          'moreMisc': {
+              'buttons': ['undo', 'redo', 'fullscreen', 'print'],
+              'align': 'right',
+              'buttonsVisible': 2
+          }
       }
-	  })
+  });
   <% end %>
 </script>
 

@@ -1,64 +1,3 @@
-<%#= render 'tokens', post_token: @post_token %>
-<!--<div class="container mb-1">-->
-<!--  <h1 class="text-center">Answers</h1>-->
-  <%# if @post_token.token_ans_debate.present? %>
-<!--    <div class="row">-->
-<!--      <div class="col-lg-12 col-md-12 ml-auto mr-auto mt-0 pt-0">-->
-<!--        <div class="ui-block shadow-lg rounded">-->
-<!--          <div class="ui-block-content">-->
-<!--            <div class="row">-->
-              <%# @post_token.token_ans_debate.each do |token_ans_debate| %>
-<!--                <div class="col-lg-12 col-md-12 pb-1">-->
-<!--                  <div class="media border border-comments p-3">-->
-<!--                    <div class="media-body"><h5 class="media-heading"><%#= token_ans_debate.user.name %></h5>-->
-<!--                      <p><%#= token_ans_debate.content %></p>-->
-<!--                      <ul class="list-unstyled list-inline media-detail pull-left">-->
-<!--                        <li><i class="fa fa-calendar"></i> <%#= token_ans_debate.created_at.strftime('%d-%m-%Y') %></li>-->
-<!--                      </ul>-->
-<!--                    </div>-->
-<!--                  </div>-->
-<!--                </div>-->
-              <%# end %>
-<!--            </div>-->
-
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
-  <%# end %>
-
-<!--  <div class="row">-->
-<!--    <div class="col-lg-12 col-md-12 mt-0 pt-0">-->
-<!--      <div class="ui-block shadow-lg rounded">-->
-<!--        <div class="ui-block-content">-->
-<!--          <div class="row">-->
-<!--            <div class="col-lg-12 col-md-12 ml-auto mr-auto mt-0 pt-0">-->
-              <%#= form_with(model: @token_ans_debate, local: true) do |form| %>
-
-                <%# if @post_token.present? %>
-                  <%#= form.hidden_field :user_id, value: @post_token.user_id %>
-                  <%#= form.hidden_field :post_token_id, value: @post_token.id %>
-                  <%#= form.hidden_field :post_id, value: @post_token.post_id %>
-                <%# end %>
-
-<!--                <div class="form-group">-->
-                  <%#= form.rich_text_area :content, autofocus: true, class: 'form-control', placeholder: "Content" %>
-<!--                </div>-->
-
-<!--                <div class="form-group">-->
-                  <%#= form.submit 'Create', class: 'btn btn-primary' %>
-<!--                </div>-->
-
-              <%# end %>
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
-
 <div class="container">
   <div class="row">
     <div class="col-md-12 text-center mb-2">
@@ -74,23 +13,50 @@
             <div class="col-lg-12 col-md-12">
               <h3 class="text-center">Answers</h3>
               <div class="row">
-                <% @post_token.token_ans_debate.each.each do |argument| %>
+                <% @answers.each do |argument| %>
                   <div class="col-lg-12 col-md-12 pb-1">
                     <div class="row">
-                      <div class="col-md-1 col-lg-1 text-center pt-2">
+                      <div class="col-md-2 col-lg-2 text-center pt-2">
                         <div><%= argument.likes.count %></div>
-                        <%= link_to upvote_likes_path(likeable_id: argument.id, user_id: current_user.id, likeable_type: 'TokenAnsDebate', post_token_type: 'question', post_token_id: @post_token.id), class: 'padding-14' , title: 'Up vote', remote: true, :method => :patch do %>
-                          <i class="fa fa-arrow-circle-up" style="color: black;" aria-hidden="true"></i>
-                        <% end %>
-                        <%= link_to downvote_likes_path(flagable_id: argument.id, user_id: current_user.id, flagable_type: 'TokenAnsDebate', post_token_type: 'question', post_token_id: @post_token.id), title: 'Down vote', remote: true, :method => :patch do %>
-                          <i class="fa fa-arrow-circle-down" style="color: black;" aria-hidden="true"></i>
+                        <% if !voted?(argument) %>
+                          <div class="row">
+                            <div class="col-lg-12">
+                              <%= link_to upvote_likes_path(likeable_id: argument.id, user_id: current_user.id, likeable_type: 'TokenAnsDebate', post_token_type: 'question', post_token_id: @post_token.id), class: 'padding-14' , title: 'Up vote', remote: true, :method => :patch do %>
+                                <i class="fa fa-arrow-circle-up" style="color: black;" aria-hidden="true"></i>
+                              <% end %>
+                            </div>
+                            <div class="col-lg-12">
+                              <%= link_to downvote_likes_path(flagable_id: argument.id, user_id: current_user.id, flagable_type: 'TokenAnsDebate', post_token_type: 'question', post_token_id: @post_token.id), title: 'Down vote', remote: true, :method => :patch do %>
+                                <i class="fa fa-arrow-circle-down" style="color: black;" aria-hidden="true"></i>
+                              <% end %>
+                            </div>
+                          </div>
+                        <% else %>
+                          <div class="row">
+                            <div class="col-lg-12">
+                              <a type="button" title="You already voted" disabled>
+                                <i class="fa fa-arrow-circle-up" style="color: grey;" aria-hidden="true"></i>
+                              </a>
+                            </div>
+                            <div class="col-lg-12">
+                              <a type="button" title="You already voted" disabled>
+                                <i class="fa fa-arrow-circle-down" style="color: grey;" aria-hidden="true"></i>
+                              </a>
+                            </div>
+                          </div>
                         <% end %>
                         <div><%= argument.flags.count %></div>
                       </div>
-                      <div class="col-md-11 col-lg-11 pl-0">
+                      <div class="col-md-10 col-lg-10 pl-0">
                         <p><%= argument.content %></p>
                       </div>
                     </div>
+                    <hr>
+                  </div>
+                <% end %>
+                <% if @answers.blank? %>
+                  <div class="col-lg-12 col-md-12 justify-content-center text-center pb-3 pt-2">
+                    <div class="text-warning text-center">No answers added yet</div>
                     <hr>
                   </div>
                 <% end %>
