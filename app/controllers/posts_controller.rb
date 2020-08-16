@@ -84,6 +84,7 @@ class PostsController < ApplicationController
 
     respond_to do |format|
       if @post.save
+        @post.clean_froala_link
         format.html { redirect_to @post, notice: 'Post was successfully created.' }
         format.json { render :show, status: :created, location: @post }
       else
@@ -99,6 +100,7 @@ class PostsController < ApplicationController
   def update
     respond_to do |format|
       if @post.update(post_params)
+        @post.clean_froala_link
         format.html { redirect_to @post, notice: 'Post was successfully updated.' }
         format.json { render :show, status: :ok, location: @post }
       else
