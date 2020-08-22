@@ -4,9 +4,12 @@ Rails.application.routes.draw do
   get 'share/create'
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :admin do
+    resources :post_tokens
+    resources :token_ans_debates
+    resources :connections
     resources :user_gigs
     resources :flags
-    resources :likes
+    # resources :likes
     resources :comments
     resources :gigs
     resources :posts
@@ -126,7 +129,7 @@ Rails.application.routes.draw do
   #   end
   # end
 
-  devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks"}
+  devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", :sessions => "users/sessions"}
   root to: 'home#index'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

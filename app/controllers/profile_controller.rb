@@ -5,9 +5,9 @@ class ProfileController < ApplicationController
 
   def wall
     @posted_posts = @user.posts.posts_feed
-    @liked_posts = @user.likes.collect(&:likeable)
+    @liked_posts = @user.likes.where(likeable_type: 'post').collect(&:likeable)
     @commented_posts = @user.comments.collect(&:commentable)
-    @flagged_posts = @user.flags.collect(&:flagable)
+    @flagged_posts = @user.flags.where(flagable_type: 'flag').collect(&:flagable)
     @shared_posts = @user.shares.collect(&:shareable)
   end
 

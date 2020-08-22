@@ -34,7 +34,8 @@ class Gig < ApplicationRecord
   validates :images, blob: { content_type: ['image/jpg', 'image/jpeg', 'image/png'], size_range: 1..3.megabytes }
 
   ############################### Scopes ################################
-  scope :active_progress, -> { where(status: [GIG_STATUS_ACTIVE, GIG_STATUS_PROGRESS]) }
+  # default_scope  { where(disabled: false) }
+  scope :active_progress, -> { where(status: [GIG_STATUS_ACTIVE, GIG_STATUS_PROGRESS], disabled: false) }
 
   ############################### methods ################################
   def activate_gig

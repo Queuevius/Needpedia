@@ -26,6 +26,7 @@ class PostDashboard < Administrate::BaseDashboard
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
     post_id: Field::Number,
+    disabled: Field::Boolean
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -34,9 +35,10 @@ class PostDashboard < Administrate::BaseDashboard
   # By default, it's limited to four items to reduce clutter on index pages.
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
-  content
+  post_type
+  title
   user
-  child_posts
+  disabled
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -51,6 +53,7 @@ class PostDashboard < Administrate::BaseDashboard
   parent_post
   layers
   comments
+  disabled
   flags
   id
   post_type
@@ -71,6 +74,7 @@ class PostDashboard < Administrate::BaseDashboard
   comments
   flags
   post_type
+  disabled
   title
   ].freeze
 

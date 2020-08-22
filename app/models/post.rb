@@ -52,12 +52,13 @@ class Post < ApplicationRecord
 
   ############################### Scopes ################################
 
-  scope :posts_feed, -> { where.not('post_type IN (?)', [POST_TYPE_IDEA, POST_TYPE_LAYER]) }
-  scope :area_posts, -> { where(post_type: POST_TYPE_AREA) }
-  scope :problem_posts, -> { where(post_type: POST_TYPE_PROBLEM) }
-  scope :proposal_posts, -> { where(post_type: POST_TYPE_PROPOSAL) }
-  scope :idea_posts, -> { where(post_type: POST_TYPE_IDEA) }
-  scope :layer_posts, -> { where(post_type: POST_TYPE_LAYER) }
+  # default_scope { where(disabled: false) }
+  scope :posts_feed, -> { where(disabled: false).where.not('post_type IN (?)', [POST_TYPE_IDEA, POST_TYPE_LAYER]) }
+  scope :area_posts, -> { where(post_type: POST_TYPE_AREA, disabled: false) }
+  scope :problem_posts, -> { where(post_type: POST_TYPE_PROBLEM, disabled: false) }
+  scope :proposal_posts, -> { where(post_type: POST_TYPE_PROPOSAL, disabled: false) }
+  scope :idea_posts, -> { where(post_type: POST_TYPE_IDEA, disabled: false) }
+  scope :layer_posts, -> { where(post_type: POST_TYPE_LAYER, disabled: false) }
 
   ############################### Methods ################################
   def parent_post_id

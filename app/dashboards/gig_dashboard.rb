@@ -20,6 +20,7 @@ class GigDashboard < Administrate::BaseDashboard
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
     status: Field::String,
+    disabled: Field::Boolean
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -28,10 +29,10 @@ class GigDashboard < Administrate::BaseDashboard
   # By default, it's limited to four items to reduce clutter on index pages.
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
-  body
   user
   title
   area_tag
+  disabled
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -49,6 +50,7 @@ class GigDashboard < Administrate::BaseDashboard
   created_at
   updated_at
   status
+  disabled
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -64,6 +66,7 @@ class GigDashboard < Administrate::BaseDashboard
   body
   amount
   status
+  disabled
   ].freeze
 
   # COLLECTION_FILTERS

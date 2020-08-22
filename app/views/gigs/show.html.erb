@@ -1,114 +1,122 @@
 <%= render 'shared/offer_buttons' %>
 
 <div class="container mb-5">
-  <div class="row mt-1">
-    <div class="col-md-12 text-center mb-2">
-      <h1><%= @gig.title %></h1>
+  <% if @gig.disabled %>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
+        <h4 class="alert alert-warning">This Page has been disabled by Admin, No activity is allowed</h4>
+      </div>
     </div>
-    <div class="col-md-12 mb-2">
-      <div class="row">
-        <div class="col-lg-12 col-md-12 ml-auto mr-auto">
-          <div class="row mb-2">
-            <div class="col-lg-6 col-md-6 text-left">
-              <%= link_to gigs_path, class: 'btn btn-primary' do %>
-                Back
-              <% end %>
-            </div>
-            <div class="col-lg-6 col-md-6 text-right">
-              <% if @gig.user == current_user %>
-                <%= link_to edit_gig_path(@gig), class: 'btn btn-light ml-2 text-primary' do %>
-                  Edit
+  <% else %>
+    <div class="row mt-1">
+      <div class="col-md-12 text-center mb-2">
+        <h1><%= @gig.title %></h1>
+      </div>
+      <div class="col-md-12 mb-2">
+        <div class="row">
+          <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+            <div class="row mb-2">
+              <div class="col-lg-6 col-md-6 text-left">
+                <%= link_to gigs_path, class: 'btn btn-primary' do %>
+                  Back
                 <% end %>
-                <% if @gig.status == Gig::GIG_STATUS_ACTIVE %>
-                  <%= link_to gig_disable_path(@gig), class: 'btn btn-light ml-2 text-warning' , method: :put, data: { confirm: 'Are you sure?' } do %>
-                    Disable
-                  <% end %>
-                <% end %>
-                <%= link_to @gig, method: :delete, class: 'btn btn-light text-danger', data: { confirm: 'Are you sure?' } do %>
-                  <i class="fa fa-trash" aria-hidden="true"></i> Delete
-                <% end %>
-              <% end %>
-            </div>
-          </div>
-          <div class="ui-block shadow-lg rounded">
-            <div class="ui-block-content">
-              <div class="row">
-                <div class="col-lg-12 col-md-12 mb-3">
-                  <div class="row">
-                    <div class="col-lg-6 col-md-6">
-                      <h1><%= @gig.area_tag %></h1>
-                      <h5 class="text-info">Credits: <%= @gig.amount %></h5>
-                    </div>
-                    <div class="col-lg-6 col-md-6 pull-right pt-3">
-                      <div class="justify-content-center float-right text-center">
-                        <em>Author: <%= @gig.user.name %></em><br>
-                        <em><%= @gig.created_at.strftime('%d-%m-%Y') %></em>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <% if @gig.status != Gig::GIG_STATUS_PENDING  %>
-                  <div class="col-lg-12 col-md-12 mb-2">
-                    <div class="dropdown-divider text-color-red"></div>
-                    <div class="row">
-                      <div class="col-lg-10 col-md-10 text-center">
-                        <div class="text-warning">
-                          <%= gig_status_text(@gig) %>
-                        </div>
-                      </div>
-                      <div class="col-lg-2 col-md-2 text-right">
-                        <div class="badge badge-primary"><%= @gig.status %></div>
-                      </div>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                  </div>
-                <% end %>
-
-                <div class="col-lg-12 col-md-12 ml-auto mr-auto">
-                  <%= @gig.body %>
-                </div>
-                <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-3">
-                  <div class="row">
-                    <% if @gig.images.present? %>
-                      <% @gig.images.each do |image|  %>
-                        <div class="col-md-6">
-                          <%= image_tag(image, class: 'img-fluid') %>
-                        </div>
-                      <% end %>
-                    <% end %>
-                  </div>
-                </div>
               </div>
-              <div class="row">
-                <div class="col-lg-12 col-md-12 ml-auto mr-auto">
-                  <% if @gig.credit_transaction.nil? && @gig.user != current_user %>
-
-                    <% if @gig.users.include?(current_user) %>
-                      <button type="button" title="You have accepted this already" class="btn btn-success float-right ml-2" disabled>
-                        <i class="fa fa-check" aria-hidden="true"></i> Accept
-                      </button>
-                    <% else %>
-                      <%= link_to accept_gigs_path(gig_id: @gig.id), method: :put, class: 'btn btn-success float-right ml-2' do %>
-                        <i class="fa fa-check" aria-hidden="true"></i> Accept
-                      <% end %>
-                    <% end %>
-                    <%#= link_to gigs_path, class: 'btn btn-warning float-right ml-2' do %>
-<!--                      <i class="fa fa-flag" aria-hidden="true"></i> Flag Post-->
-                    <%# end %>
+              <div class="col-lg-6 col-md-6 text-right">
+                <% if @gig.user == current_user %>
+                  <%= link_to edit_gig_path(@gig), class: 'btn btn-light ml-2 text-primary' do %>
+                    Edit
                   <% end %>
-                  <% if @gig.user == current_user && @gig.credit_transaction.nil? %>
-
-                    <% if @gig.users.blank? %>
-                      <button type="button" title="No User accepted this Gig yet" class="btn btn-primary float-right ml-2" disabled>
-                        <i class="fa fa-tasks" aria-hidden="true"></i> Award
-                      </button>
-                    <% else %>
-                      <%= link_to award_transactions_path(gig_id: @gig.id), class: 'btn btn-primary float-right' do %>
-                        <i class="fa fa-tasks" aria-hidden="true"></i> Award
-                      <% end %>
+                  <% if @gig.status == Gig::GIG_STATUS_ACTIVE %>
+                    <%= link_to gig_disable_path(@gig), class: 'btn btn-light ml-2 text-warning' , method: :put, data: { confirm: 'Are you sure?' } do %>
+                      Disable
                     <% end %>
                   <% end %>
+                  <%= link_to @gig, method: :delete, class: 'btn btn-light text-danger', data: { confirm: 'Are you sure?' } do %>
+                    <i class="fa fa-trash" aria-hidden="true"></i> Delete
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+            <div class="ui-block shadow-lg rounded">
+              <div class="ui-block-content">
+                <div class="row">
+                  <div class="col-lg-12 col-md-12 mb-3">
+                    <div class="row">
+                      <div class="col-lg-6 col-md-6">
+                        <h1><%= @gig.area_tag %></h1>
+                        <h5 class="text-info">Credits: <%= @gig.amount %></h5>
+                      </div>
+                      <div class="col-lg-6 col-md-6 pull-right pt-3">
+                        <div class="justify-content-center float-right text-center">
+                          <em>Author: <%= @gig.user.name %></em><br>
+                          <em><%= @gig.created_at.strftime('%d-%m-%Y') %></em>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <% if @gig.status != Gig::GIG_STATUS_PENDING  %>
+                    <div class="col-lg-12 col-md-12 mb-2">
+                      <div class="dropdown-divider text-color-red"></div>
+                      <div class="row">
+                        <div class="col-lg-10 col-md-10 text-center">
+                          <div class="text-warning">
+                            <%= gig_status_text(@gig) %>
+                          </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 text-right">
+                          <div class="badge badge-primary"><%= @gig.status %></div>
+                        </div>
+                      </div>
+                      <div class="dropdown-divider"></div>
+                    </div>
+                  <% end %>
+
+                  <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+                    <%= @gig.body %>
+                  </div>
+                  <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-3">
+                    <div class="row">
+                      <% if @gig.images.present? %>
+                        <% @gig.images.each do |image|  %>
+                          <div class="col-md-6">
+                            <%= image_tag(image, class: 'img-fluid') %>
+                          </div>
+                        <% end %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+                    <% if @gig.credit_transaction.nil? && @gig.user != current_user %>
+
+                      <% if @gig.users.include?(current_user) %>
+                        <button type="button" title="You have accepted this already" class="btn btn-success float-right ml-2" disabled>
+                          <i class="fa fa-check" aria-hidden="true"></i> Accept
+                        </button>
+                      <% else %>
+                        <%= link_to accept_gigs_path(gig_id: @gig.id), method: :put, class: 'btn btn-success float-right ml-2' do %>
+                          <i class="fa fa-check" aria-hidden="true"></i> Accept
+                        <% end %>
+                      <% end %>
+                      <%#= link_to gigs_path, class: 'btn btn-warning float-right ml-2' do %>
+  <!--                      <i class="fa fa-flag" aria-hidden="true"></i> Flag Post-->
+                      <%# end %>
+                    <% end %>
+                    <% if @gig.user == current_user && @gig.credit_transaction.nil? %>
+
+                      <% if @gig.users.blank? %>
+                        <button type="button" title="No User accepted this Gig yet" class="btn btn-primary float-right ml-2" disabled>
+                          <i class="fa fa-tasks" aria-hidden="true"></i> Award
+                        </button>
+                      <% else %>
+                        <%= link_to award_transactions_path(gig_id: @gig.id), class: 'btn btn-primary float-right' do %>
+                          <i class="fa fa-tasks" aria-hidden="true"></i> Award
+                        <% end %>
+                      <% end %>
+                    <% end %>
+                  </div>
                 </div>
               </div>
             </div>
@@ -116,5 +124,5 @@
         </div>
       </div>
     </div>
-  </div>
+  <% end %>
 </div>
