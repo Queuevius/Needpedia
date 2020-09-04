@@ -49,4 +49,8 @@ module ApplicationHelper
   def voted?(argument)
     argument.likes.pluck(:user_id).include?(current_user.id) || argument.flags.pluck(:user_id).include?(current_user.id)
   end
+
+  def post_token(post, user)
+    PostToken.where(post_id: post.id, user_id: user.id).last
+  end
 end

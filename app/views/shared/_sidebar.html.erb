@@ -58,6 +58,18 @@
       <li>
         <%= link_to 'About', about_path(uuid: @uuid) %>
       </li>
+      <li>
+        <%= link_to 'Tracking', tracking_path(uuid: @uuid) %>
+      </li>
+      <li>
+        <%= link_to 'Debate Tokens', debate_tokens_path(uuid: @uuid) %>
+      </li>
+      <li>
+        <%= link_to 'Question Tokens', question_tokens_path(uuid: @uuid) %>
+      </li>
+      <li>
+        <%= link_to 'Notes Tokens', note_tokens_path(uuid: @uuid) %>
+      </li>
 
     </ul>
   </div>

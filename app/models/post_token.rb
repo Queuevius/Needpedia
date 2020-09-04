@@ -8,9 +8,16 @@ class PostToken < ApplicationRecord
 
   ################################ Constants ############################
   TOKEN_TYPE_NOTE = 'note'.freeze
+  TOKEN_TYPE_QUESTION = 'question'.freeze
   TOKEN_TYPE_DEBATE = 'debate'.freeze
   TOKEN_TYPES = [
       TOKEN_TYPE_NOTE,
+      TOKEN_TYPE_QUESTION,
       TOKEN_TYPE_DEBATE
   ].freeze
+
+  ################################# Scopes #############################
+  scope :note_tokens, -> { where(post_token_type: TOKEN_TYPE_NOTE) }
+  scope :question_tokens, -> { where(post_token_type: TOKEN_TYPE_QUESTION) }
+  scope :debate_tokens, -> { where(post_token_type: TOKEN_TYPE_DEBATE) }
 end

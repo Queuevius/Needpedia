@@ -27,6 +27,10 @@ Rails.application.routes.draw do
   get '/friends', to: 'profile#friends'
   get '/pictures', to: 'profile#pictures'
   get '/modal_picture', to: 'profile#modal_picture'
+  get '/tracking', to: 'profile#tracking'
+  get '/debate_tokens', to: 'profile#debate_tokens'
+  get '/question_tokens', to: 'profile#question_tokens'
+  get '/note_tokens', to: 'profile#note_tokens'
   get '/about', to: 'profile#about'
   get '/add_details', to: 'profile#add_details'
   get '/add_pictures', to: 'profile#add_pictures'
@@ -61,6 +65,7 @@ Rails.application.routes.draw do
     get 'problems'
     get 'proposals'
     get 'ideas'
+    patch 'track_post'
     collection do
       get 'modal'
       get 'search_result'

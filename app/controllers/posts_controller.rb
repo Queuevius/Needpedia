@@ -2,7 +2,7 @@ class PostsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_post, only: [:show, :edit, :update, :destroy]
   before_action :set_type, only: [:index, :new, :problems, :proposals, :ideas, :layers]
-  before_action :set_area, only: [:proposals, :problems, :ideas, :layers]
+  before_action :set_area, only: [:proposals, :problems, :ideas, :layers, :track_post]
 
   # GET /posts
   # GET /posts.json
@@ -127,6 +127,22 @@ class PostsController < ApplicationController
     @u = User.ransack({ first_name_or_last_name_cont: @keywords[:title_cont] })
     @posts = @q.result(distinct: true)
     @users = @u.result(distinct: true)
+  end
+
+  def track_post
+    begin
+      tracking_post = current_user.tracking_posts.where(post_id: @post.id)
+      if tracking_post.present?
+        tracking_post.destroy_all
+        flash[:notice] = 'You have DeActivated Tracking for this Post.'
+      else
+        UserPost.create!(user_id: current_user.id, post_id: @post.id, post_type: @post.post_type)
+        flash[:notice] = 'You have activated Tracking for this Post.'
+      end
+    rescue StandardError => e
+      flash[:alert] = "An Error occurred: #{e}"
+    end
+    redirect_back(fallback_location: post_path(@post))
   end
 
   def modal

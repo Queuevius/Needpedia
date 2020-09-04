@@ -17,6 +17,9 @@ class User < ApplicationRecord
   has_many :transferred_transactions, class_name: 'Transaction', foreign_key: :actor_id
   has_many :received_transactions, class_name: 'Transaction', foreign_key: :recipient_id
 
+  has_many :user_posts, dependent: :destroy
+  has_many :tracking_posts, class_name: 'UserPost', dependent: :destroy
+
   has_many :user_gigs
   has_many :gigs, through: :user_gigs, dependent: :destroy
 

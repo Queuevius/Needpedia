@@ -1,7 +1,7 @@
 class ProfileController < ApplicationController
-  before_action :set_user, only: [:wall, :about, :friends, :friend_request, :un_friend, :pictures]
-  before_action :friend_count, only: [:wall, :about, :friends, :friend_request, :pictures]
-  before_action :connection_requests_count, only: [:wall, :about, :friends, :friend_request, :pictures]
+  before_action :set_user, only: [:wall, :about, :friends, :friend_request, :un_friend, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking]
+  before_action :friend_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking]
+  before_action :connection_requests_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking]
 
   def wall
     @posted_posts = @user.posts.posts_feed
@@ -65,6 +65,23 @@ class ProfileController < ApplicationController
   end
 
   def profile_image; end
+
+  def tracking
+    @tracking_posts = @user.tracking_posts
+  end
+
+  def debate_tokens
+    @debate_tokens = Post.where(id: @user.post_tokens.debate_tokens.pluck(:post_id))
+  end
+
+  def question_tokens
+    @question_tokens = Post.where(id: @user.post_tokens.question_tokens.pluck(:post_id))
+  end
+
+  def note_tokens
+    @note_tokens = Post.where(id: @user.post_tokens.note_tokens.pluck(:post_id))
+  end
+
 
   def update_profile_image
 

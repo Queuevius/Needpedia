@@ -137,7 +137,12 @@
                             <% end %>
                             <span><%= @post.shares.count %></span>
                           </div>
-                          <div class="col-md-9">
+                          <div class="col-md-1">
+                            <div class="btn btn-secondary">
+                              <%= check_box_tag "tracking", current_user.tracking_posts.pluck(:post_id).include?(@post.id), current_user.tracking_posts.pluck(:post_id).include?(@post.id), data: {url: post_track_post_path(@post.id), remote: true, method: :patch} %>
+                            </div>
+                          </div>
+                          <div class="col-md-8">
                             <div class="mb-5">
                               <%= render 'comments/form', comment: @comment, layer: @post %>
                             </div>
