@@ -44,7 +44,9 @@ class Post < ApplicationRecord
   has_many :post_tokens, dependent: :destroy
 
   has_many :user_posts, dependent: :destroy
-  has_many :tracking_users, class_name: 'UserPost', dependent: :destroy
+  has_many :users, through: :user_posts, dependent: :destroy
+
+  has_many :notifications, dependent: :destroy
 
   ############################### Validations ###########################
   validates :title, presence: true

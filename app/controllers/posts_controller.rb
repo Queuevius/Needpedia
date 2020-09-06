@@ -101,6 +101,7 @@ class PostsController < ApplicationController
     respond_to do |format|
       if @post.update(post_params)
         @post.clean_froala_link
+        Notification.post(from: current_user, notifiable: current_user, to: @post.users, action: Notification::NOTIFICATION_TYPE_POST_UPDATED, post_id: @post.id)
         format.html { redirect_to @post, notice: 'Post was successfully updated.' }
         format.json { render :show, status: :ok, location: @post }
       else
