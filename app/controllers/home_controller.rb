@@ -11,4 +11,8 @@ class HomeController < ApplicationController
 
   def time_bank
   end
+
+  def chat
+    @f = User.ransack(params[:q])
+  end
 end

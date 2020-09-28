@@ -1,0 +1,27 @@
+<div id="content" class="pl-2">
+  <div class="col-md-12 text-center">
+    <h2><b>Find a friend</b></h2>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="container mb-3">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8">
+              <%= search_form_for @f, url: search_results_path, method: :post do |f| %>
+                <div class="row no-gutters align-items-center">
+                  <div class="col">
+                    <%= f.text_field :first_name_or_last_name_cont, class: 'form-control form-control-lg', placeholder: "Search" %>
+                  </div>
+                  <div class="col-auto">
+                    <button class="ml-2 btn btn-lg btn-secondary search-button" type="submit">Go</button>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

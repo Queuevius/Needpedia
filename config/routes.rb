@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   get '/privacy', to: 'home#privacy'
   get '/time_bank', to: 'home#time_bank'
   get '/terms', to: 'home#terms'
+  get '/chat', to: 'home#chat'
   get '/wall', to: 'profile#wall'
   get '/friends', to: 'profile#friends'
   get '/pictures', to: 'profile#pictures'

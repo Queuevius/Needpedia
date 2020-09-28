@@ -17,7 +17,9 @@
           Add New Post
         <% end %>
       </div>
-      <%= render 'posts/list', posts: @posted_posts, type: nil %>
+      <div class="col-md-12">
+        <%= render 'posts/list', posts: @posted_posts, type: nil %>
+      </div>
       <% if @posted_posts.blank? %>
         <div class="col-md-12 text-center">
           <h5 class="text-warning">Not posted yet</h5>

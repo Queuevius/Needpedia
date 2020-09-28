@@ -70,6 +70,11 @@
       <li>
         <%= link_to 'Notes Tokens', note_tokens_path(uuid: @uuid) %>
       </li>
+      <li>
+        <%= link_to registration_path(current_user), data: { confirm: "Are you sure? You cannot undo this." }, method: :delete do %>
+          <p class="text-danger">Deactivate my account</p>
+        <% end %>
+      </li>
 
     </ul>
   </div>
