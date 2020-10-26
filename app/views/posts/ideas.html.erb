@@ -6,7 +6,7 @@
     <div class="col-md-12">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <%= link_to 'Problem', post_problems_path(post_id: @post.id, post_type: Post::POST_TYPE_PROBLEM), class: 'btn btn-danger' %>
+          <%= link_to 'Problem', post_path(@post.id), class: 'btn btn-danger' %>
         </div>
 
         <div class="col-sm-6 text-right">

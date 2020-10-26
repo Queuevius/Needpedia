@@ -8,19 +8,43 @@
         <div class="col-md-12">
           <h3><b>Posts</b></h3>
         </div>
+
+        <div class="col-md-12">
+          <div class="row text-right">
+            <div class="col-lg-12 col-md-12">
+              <div class="ui-block shadow-lg rounded">
+                <div class="ui-block-content">
+                  <%= link_to new_post_path(post_type: Post::POST_TYPE_AREA), class: 'btn btn-default' do %>
+                      <%= image_tag('area_icon.svg', height: "50%", width: "50%", title: 'Create Area') %>
+                    <% end %>
+                  <%= link_to new_post_path(post_type: Post::POST_TYPE_PROBLEM, post: { from_feed: true }), class: 'btn btn-default' do %>
+                    <%= image_tag('problem_icon.svg', height: "50%", width: "50%", title: 'Create Problem') %>
+                  <% end %>
+                  <%= link_to new_post_path(post_type: Post::POST_TYPE_PROPOSAL, post: { from_feed: true }), class: 'btn btn-default' do %>
+                    <%= image_tag('proposal_icon.svg', height: "50%", width: "50%", title: 'Create Proposal') %>
+                  <% end %>
+                  <%= link_to new_post_path(post_type: Post::POST_TYPE_IDEA, post: { from_feed: true }), class: 'btn btn-default' do %>
+                    <%= image_tag('idea_icon.svg', height: "50%", width: "50%", title: 'Create Idea') %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="col-md-12">
           <div class="row">
             <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
               <h5 class="alert alert-info"><%= @posts.count %> posts and <%= @users.count %> users found <%= "for '#{@keywords[:title_cont]}'" if @keywords[:title_cont].present? %></h5>
             </div>
           </div>
-          <div class="row">
-            <div class="col-sm-6 text-right mb-2 offset-6">
-              <%= link_to new_post_path(post_type: Post::POST_TYPE_AREA), class: 'btn btn-primary' do %>
-                Add New Post
-              <% end %>
-            </div>
-          </div>
+<!--          <div class="row">-->
+<!--            <div class="col-sm-6 text-right mb-2 offset-6">-->
+              <%#= link_to new_post_path(post_type: Post::POST_TYPE_AREA), class: 'btn btn-primary' do %>
+<!--                Add New Post-->
+              <%# end %>
+<!--            </div>-->
+<!--          </div>-->
         </div>
       </div>
       <%= render 'list', posts: @posts, type: @type %>

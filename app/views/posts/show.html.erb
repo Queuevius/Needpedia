@@ -45,10 +45,23 @@
                           <% end %>
                         </div>
                       </div>
-                      <%= link_to 'Areas', all_areas_posts_path(), class: 'btn btn-primary' %>
-                      <%= link_to 'Problems', all_problems_posts_path(), class: 'btn btn-danger' %>
-                      <%= link_to 'Proposals', all_proposals_posts_path(), class: 'btn btn-purple' %>
-                      <%= link_to 'Ideas', all_ideas_posts_path(), class: 'btn btn-success' %>
+                      <%= link_to all_areas_posts_path(), class: 'btn btn-default' do %>
+                        <%= image_tag('area_icon.svg', height: "50%", width: "40%", title: 'See All Area posts') %>
+                      <% end %>
+                      <%#= link_to 'Problems', all_problems_posts_path(), class: 'btn btn-danger' %>
+                      <%= link_to post_problems_path(post_id: @post.id, post_type: Post::POST_TYPE_PROBLEM), class: 'btn btn-default' do %>
+                        <%= image_tag('problem_icon.svg', height: "50%", width: "40%", title: 'Problems') %>
+                      <% end %>
+                      <%#= link_to 'Proposals', all_proposals_posts_path(), class: 'btn btn-purple' %>
+                      <%= link_to post_proposals_path(post_id: @post.id, post_type: Post::POST_TYPE_PROPOSAL), class: 'btn btn-default' do %>
+                        <%= image_tag('proposal_icon.svg', height: "50%", width: "40%", title: 'Proposals') %>
+                      <% end %>
+                      <% if @post.post_type == Post::POST_TYPE_PROBLEM %>
+                        <%= link_to post_ideas_path(post_id: @post.id, post_type: Post::POST_TYPE_IDEA), class: 'btn btn-default' do %>
+                          <%= image_tag('idea_icon.svg', height: "50%", width: "40%", title: 'Ideas') %>
+                        <% end %>
+                      <% end %>
+
                       <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
                         Edit
                       <% end %>
