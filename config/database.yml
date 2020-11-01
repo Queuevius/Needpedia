@@ -81,7 +81,6 @@ test:
 production:
   <<: *default
   database: needpedia_production
-  user: deploy
+  username: deploy
   password: 2manyWalls
-  username: needpedia
   password: <%= ENV['NEEDPEDIA_DATABASE_PASSWORD'] %>

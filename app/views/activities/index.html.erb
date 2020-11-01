@@ -1,0 +1,17 @@
+<%# @activities.each do |activity| %>
+<!--  <div class="activity">-->
+    <%#= link_to activity.owner.name, activity.owner if activity.owner %>
+    <%#= render_activity activity %>
+<!--  </div>-->
+<%# end %>
+<div class="wrapper d-flex align-items-stretch mb-10">
+  <%= render 'shared/sidebar' %>
+  <!-- Page Content  -->
+  <div id="content" class="p-4">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <%= render_activities @activities %>
+      </div>
+    </div>
+  </div>
+</div>

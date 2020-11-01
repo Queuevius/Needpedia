@@ -1,7 +1,7 @@
 class ProfileController < ApplicationController
-  before_action :set_user, only: [:wall, :about, :friends, :friend_request, :un_friend, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking]
-  before_action :friend_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking]
-  before_action :connection_requests_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking]
+  before_action :set_user, only: [:wall, :about, :friends, :friend_request, :un_friend, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed]
+  before_action :friend_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed]
+  before_action :connection_requests_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed]
 
   def wall
     @posted_posts = @user.posts.posts_feed
@@ -131,6 +131,10 @@ class ProfileController < ApplicationController
         format.json {render json: @user.errors, status: :unprocessable_entity}
       end
     end
+  end
+
+  def feed
+    @activities = PublicActivity::Activity.order('created_at DESC').limit(20)
   end
 
   private

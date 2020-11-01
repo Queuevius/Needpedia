@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   get '/chat', to: 'home#chat'
   get '/wall', to: 'profile#wall'
   get '/friends', to: 'profile#friends'
+  get '/feed', to: 'profile#feed'
   get '/pictures', to: 'profile#pictures'
   get '/modal_picture', to: 'profile#modal_picture'
   get '/tracking', to: 'profile#tracking'
@@ -79,6 +80,7 @@ Rails.application.routes.draw do
   end
 
   resources :comments
+  resources :activities, only: [:index]
 
   resources :flags do
     collection do
