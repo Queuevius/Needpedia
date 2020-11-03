@@ -1,13 +1,16 @@
 class ShareController < ApplicationController
   before_action :authenticate_user!
 
-  def update
+  def create
     @share = Share.new(share_params)
     @post = Post.find(@share.shareable_id)
 
     respond_to do |format|
       if @share.save
-        format.html { redirect_to post_path(@post), notice: 'share was successfully added.' }
+        if @share.shareable_type == 'Post'
+          create_activity(@share.shareable, 'post.share')
+        end
+        format.html { redirect_to post_path(@post), notice: "You shared #{@post.title}." }
         format.json { render :show, status: :created, location: @share }
       else
         flash[:alert] = @share.errors.full_messages.join(',')
@@ -22,5 +25,9 @@ class ShareController < ApplicationController
   # Only allow a list of trusted parameters through.
   def share_params
     params.permit(:shareable_id, :shareable_type, :user_id)
+  end
+
+  def create_activity(post, event)
+    ActivityService.new(object: post, event: event, owner: current_user).call
   end
 end

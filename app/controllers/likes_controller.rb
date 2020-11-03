@@ -10,7 +10,29 @@ class LikesController < ApplicationController
 
     respond_to do |format|
       if @like.save
-        format.html { redirect_to post_path(@post), notice: 'Like was successfully added.' }
+        if @like.likeable_type == 'Post'
+          create_activity(@like.likeable, 'post.like')
+        end
+        format.html { redirect_to post_path(@post), notice: "You liked #{@post.title}." }
+        format.json { render :show, status: :created, location: @like }
+      else
+        flash[:alert] = @like.errors.full_messages.join(',')
+        format.html { redirect_to post_path(@post) }
+        format.json { render json: @like.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def create
+    @like = Like.new(like_params)
+    @post = Post.find(@like.likeable_id)
+
+    respond_to do |format|
+      if @like.save
+        if @like.likeable_type == 'Post'
+          create_activity(@like.likeable, 'post.like')
+        end
+        format.html { redirect_to post_path(@post), notice: "You liked #{@post.title}." }
         format.json { render :show, status: :created, location: @like }
       else
         flash[:alert] = @like.errors.full_messages.join(',')
@@ -95,5 +117,9 @@ class LikesController < ApplicationController
 
   def voted?(argument)
     argument.likes.pluck(:user_id).include?(current_user.id) || argument.flags.pluck(:user_id).include?(current_user.id)
+  end
+
+  def create_activity(post, event)
+    ActivityService.new(object: post, event: event, owner: current_user).call
   end
 end

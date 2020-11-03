@@ -1,7 +1,6 @@
 require 'sidekiq/web'
 
 Rails.application.routes.draw do
-  get 'share/create'
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :admin do
     resources :post_tokens
@@ -99,7 +98,7 @@ Rails.application.routes.draw do
 
   resources :token_ans_debates
 
-  resources :share, only: [:update]
+  resources :share
 
   resources :likes do
     collection do

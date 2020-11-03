@@ -5,6 +5,9 @@
     <div class="row">
       <div class="col-md-12 text-center">
         <%= render_activities @activities %>
+        <% if @activities.blank? %>
+          No activity by this by <%= @user.name %>
+        <% end %>
       </div>
     </div>
   </div>

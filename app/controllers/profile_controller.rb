@@ -134,7 +134,11 @@ class ProfileController < ApplicationController
   end
 
   def feed
-    @activities = PublicActivity::Activity.order('created_at DESC').limit(20)
+    if @uuid
+      @activities = PublicActivity::Activity.where(owner_id: @user.id).order('created_at DESC').limit(50)
+    else
+      @activities = PublicActivity::Activity.order('created_at DESC').limit(50)
+    end
   end
 
   private

@@ -85,6 +85,7 @@ class PostsController < ApplicationController
     respond_to do |format|
       if @post.save
         @post.clean_froala_link
+        create_activity(@post, 'post.create')
         format.html { redirect_to @post, notice: 'Post was successfully created.' }
         format.json { render :show, status: :created, location: @post }
       else
@@ -102,6 +103,7 @@ class PostsController < ApplicationController
       if @post.update(post_params)
         @post.clean_froala_link
         Notification.post(from: current_user, notifiable: current_user, to: @post.users, action: Notification::NOTIFICATION_TYPE_POST_UPDATED, post_id: @post.id)
+        create_activity(@post, 'post.update')
         format.html { redirect_to @post, notice: 'Post was successfully updated.' }
         format.json { render :show, status: :ok, location: @post }
       else
@@ -168,5 +170,9 @@ class PostsController < ApplicationController
   # Only allow a list of trusted parameters through.
   def post_params
     params.require(:post).permit(:title, :content, :user_id, :post_type, :area_id, :problem_id, :post_id, :tag_list, images: [])
+  end
+
+  def create_activity(post, event)
+    ActivityService.new(object: post, event: event, owner: current_user).call
   end
 end

@@ -1,10 +1,8 @@
 class Post < ApplicationRecord
+  include PublicActivity::Model
   has_rich_text :content
   acts_as_taggable_on :tags
   has_many_attached :images
-
-  include PublicActivity::Model
-  tracked owner: ->(controller, model) { controller && controller.current_user }
   # after_save :clean_froala_link
   ################################ Constants ############################
   POST_TYPE_AREA = 'area'.freeze
