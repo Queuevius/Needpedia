@@ -110,12 +110,12 @@ Rails.application.configure do
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
 
-  config.action_mailer.default_url_options = { :host => 'needpedia.org' }
+  config.action_mailer.default_url_options = { :host => 'www.needpedia.org' }
   config.action_mailer.raise_delivery_errors = true
   # configuration for sending emails
   config.action_mailer.delivery_method = :mailgun
   config.action_mailer.mailgun_settings = {
-    domain: 'needpedia.org',
-    api_key: 'key-0dc2727ccb2c4b325c53825a28bcf4b6'
+    domain: 'www.needpedia.org',
+    api_key: 'fc0468f6f765d08df5e691c43bb6ed0f-aff2d1b9-abde3aa1'
   }
 end
