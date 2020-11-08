@@ -12,9 +12,8 @@ class UserDashboard < Administrate::BaseDashboard
     email: Field::String,
     password: Field::String.with_options(searchable: false),
     encrypted_password: Field::String,
-    reset_password_token: Field::String,
-    reset_password_sent_at: Field::DateTime,
     remember_created_at: Field::DateTime,
+    confirmed_at: Field::DateTime,
     first_name: Field::String,
     last_name: Field::String,
     announcements_last_read_at: Field::DateTime,
@@ -40,15 +39,11 @@ class UserDashboard < Administrate::BaseDashboard
   SHOW_PAGE_ATTRIBUTES = %i[
   id
   email
-  encrypted_password
-  reset_password_token
-  reset_password_sent_at
-  remember_created_at
   first_name
   last_name
-  announcements_last_read_at
   admin
   disabled
+  confirmed_at
   created_at
   updated_at
   ].freeze
@@ -58,13 +53,10 @@ class UserDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
   email
-  encrypted_password
-  reset_password_token
-  reset_password_sent_at
-  remember_created_at
   first_name
   last_name
   disabled
+  confirmed_at
   admin
   ].freeze
 
