@@ -4,6 +4,9 @@ class User < ApplicationRecord
   devise :masqueradable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :confirmable
 
   after_create :add_default_credit
+  before_destroy :delete_notifications
+
+  validate :password_complexity
 
   has_rich_text :about
 
@@ -78,5 +81,16 @@ class User < ApplicationRecord
   # this method checks if a link exist between current user and the user in sent in argument
   def is_connected_with(user)
     links.include? user
+  end
+
+  def delete_notifications
+    notifications = Notification.where("actor_id = ? OR recipient_id = ?", self.id, self.id)
+    notifications.destroy_all if notifications.present?
+  end
+
+  def password_complexity
+    return if password.blank? || password =~ /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])/
+
+    errors.add :password, 'Complexity requirement not met. Please use: 1 uppercase, 1 lowercase, 1 digit and 1 special character'
   end
 end

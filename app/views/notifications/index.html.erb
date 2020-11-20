@@ -12,7 +12,7 @@
 
     <div class="col-md-12">
       <% @notifications.each do |notification| %>
-        <%= render "notifications/#{notification.notifiable_type.underscore}/#{notification.action.underscore}", actor: notification.actor, notifiable: notification.notifiable, notification: notification %>
+        <%= render "notifications/#{notification.notifiable_type.underscore}/#{notification.action.underscore}", actor: notification.actor, notifiable: notification.notifiable, notification: notification if notification.actor.present? %>
       <% end %>
     </div>
   </div>

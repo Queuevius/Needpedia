@@ -65,9 +65,11 @@ class PostTokensController < ApplicationController
   def debate
     @token_ans_debate = TokenAnsDebate.new
     @post_token = PostToken.find_by_id(params[:id])
-    @for_arguments = @post_token.token_ans_debate.where(debate_type: TokenAnsDebate::DEBATE_TYPE_FOR).left_joins(:likes).group(:id).order('COUNT(likes.id) DESC')
-    @other_arguments = @post_token.token_ans_debate.where(debate_type: TokenAnsDebate::DEBATE_TYPE_NEUTRAL).left_joins(:likes).group(:id).order('COUNT(likes.id) DESC')
-    @against_arguments = @post_token.token_ans_debate.where(debate_type: TokenAnsDebate::DEBATE_TYPE_AGAINST).left_joins(:likes).group(:id).order('COUNT(likes.id) DESC')
+    if @post_token.present?
+      @for_arguments = @post_token.token_ans_debate.where(debate_type: TokenAnsDebate::DEBATE_TYPE_FOR).left_joins(:likes).group(:id).order('COUNT(likes.id) DESC')
+      @other_arguments = @post_token.token_ans_debate.where(debate_type: TokenAnsDebate::DEBATE_TYPE_NEUTRAL).left_joins(:likes).group(:id).order('COUNT(likes.id) DESC')
+      @against_arguments = @post_token.token_ans_debate.where(debate_type: TokenAnsDebate::DEBATE_TYPE_AGAINST).left_joins(:likes).group(:id).order('COUNT(likes.id) DESC')
+    end
     respond_to do |format|
       format.html
     end
@@ -76,7 +78,9 @@ class PostTokensController < ApplicationController
   def question
     @token_ans_debate = TokenAnsDebate.new
     @post_token = PostToken.find_by_id(params[:id])
-    @answers = @post_token.token_ans_debate.left_joins(:likes).group(:id).order('COUNT(likes.id) DESC')
+    if @post_token.present?
+      @answers = @post_token.token_ans_debate.left_joins(:likes).group(:id).order('COUNT(likes.id) DESC')
+    end
     respond_to do |format|
       format.html
     end

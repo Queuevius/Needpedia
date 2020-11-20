@@ -1,4 +1,4 @@
-class ShareController < ApplicationController
+class SharesController < ApplicationController
   before_action :authenticate_user!
 
   def create

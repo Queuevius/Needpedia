@@ -98,7 +98,7 @@ Rails.application.routes.draw do
 
   resources :token_ans_debates
 
-  resources :share
+  resources :shares
 
   resources :likes do
     collection do

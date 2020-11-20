@@ -144,7 +144,7 @@
                                 <i class="fa fa-share" aria-hidden="true"></i>
                               </div>
                             <% else %>
-                              <%= link_to share_path(shareable_id: @post.id, user_id: current_user.id, shareable_type: 'Post'), title: 'Share this post', class: 'btn btn-secondary', remote: true, :method => :patch do %>
+                              <%= link_to shares_path(shareable_id: @post.id, user_id: current_user.id, shareable_type: 'Post'), title: 'Share this post', class: 'btn btn-secondary', remote: true, method: :post do %>
                                 <i class="fa fa-share"  aria-hidden="true"></i>
                               <% end %>
                             <% end %>

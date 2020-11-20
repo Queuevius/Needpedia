@@ -1,1 +1,1 @@
-<%= render 'public_activity/post/post', post: activity.trackable, activity: activity, event: 'liked'  %>
+<%= render 'public_activity/post/post', post: activity.trackable, activity: activity, event: 'liked' if activity.trackable.present? %>

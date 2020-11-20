@@ -392,6 +392,9 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.7)
+    valid_email2 (3.5.0)
+      activemodel (>= 3.2)
+      mail (~> 2.5)
     warden (1.2.8)
       rack (>= 2.0.6)
     web-console (4.0.1)
@@ -465,6 +468,7 @@ DEPENDENCIES
   spring-watcher-listen (~> 2.0.0)
   turbolinks (~> 5)
   tzinfo-data
+  valid_email2
   web-console (>= 3.3.0)
   webdrivers
   webpacker (~> 4.0)
