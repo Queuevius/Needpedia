@@ -7,26 +7,34 @@
     <div class="col-lg-12 col-md-12 pr-0">
       <div class="ui-block shadow-lg rounded">
         <div class="ui-block-content">
-          <div class="row">
-            <div class="col-sm-12 text-left mb-2 text-center pb-3 border-bottome">
-              <%= @post_token.content %>
-            </div>
-            <div class="col-lg-4 col-md-4">
-              <h3 class="text-center">For</h3>
-              <%= render 'arguments', arguments: @for_arguments, debate_type_value: TokenAnsDebate::DEBATE_TYPE_FOR , place_holder: 'Argument For'%>
-            </div>
+          <% if @post_token.present? %>
+            <div class="row">
+              <div class="col-sm-12 text-left mb-2 text-center pb-3 border-bottome">
+                <%= @post_token.content %>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <h3 class="text-center">For</h3>
+                <%= render 'arguments', arguments: @for_arguments, debate_type_value: TokenAnsDebate::DEBATE_TYPE_FOR , place_holder: 'Argument For'%>
+              </div>
 
-            <div class="col-lg-4 col-md-4">
-              <h3 class="text-center">Other</h3>
-              <%= render 'arguments', arguments: @other_arguments, debate_type_value: TokenAnsDebate::DEBATE_TYPE_NEUTRAL, place_holder: 'Argument Neutral' %>
-            </div>
+              <div class="col-lg-4 col-md-4">
+                <h3 class="text-center">Other</h3>
+                <%= render 'arguments', arguments: @other_arguments, debate_type_value: TokenAnsDebate::DEBATE_TYPE_NEUTRAL, place_holder: 'Argument Neutral' %>
+              </div>
 
-            <div class="col-lg-4 col-md-4">
-              <h3 class="text-center">Against</h3>
-              <%= render 'arguments', arguments: @against_arguments, debate_type_value: TokenAnsDebate::DEBATE_TYPE_AGAINST, place_holder: 'Argument Against' %>
-            </div>
+              <div class="col-lg-4 col-md-4">
+                <h3 class="text-center">Against</h3>
+                <%= render 'arguments', arguments: @against_arguments, debate_type_value: TokenAnsDebate::DEBATE_TYPE_AGAINST, place_holder: 'Argument Against' %>
+              </div>
 
-          </div>
+            </div>
+          <% else %>
+            <div class="row">
+              <div class="col-sm-12 text-left mb-2 text-center pb-3 border-bottome">
+                <div class="alert alert-warning">Content not available, this token or owner of this token was deleted</div>
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>

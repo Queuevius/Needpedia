@@ -114,52 +114,64 @@
   <!--                        </div>-->
   <!--                      </div>-->
                         <div class="row">
-                          <div class="col-md-1">
-                            <% if @post.flags.pluck(:user_id).include?(current_user.id) %>
-                              <%= link_to flag_path(id: @post.id), class: 'btn btn-primary', title: 'Un-Flag this post', remote: true, :method => :delete do %>
-                                <i class="fa fa-flag" aria-hidden="true"></i>
+                          <% if current_user %>
+                            <div class="col-md-1">
+                              <% if @post.flags.pluck(:user_id).include?(current_user.id) %>
+                                <%= link_to flag_path(id: @post.id), class: 'btn btn-primary', title: 'Un-Flag this post', remote: true, :method => :delete do %>
+                                  <i class="fa fa-flag" aria-hidden="true"></i>
+                                <% end %>
+                              <% else %>
+                                <%= link_to reason_modal_flags_path(post_id: @post.id), title: 'Flag this post', class: 'btn btn-secondary', remote: true do %>
+                                  <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                                <% end %>
                               <% end %>
-                            <% else %>
-                              <%= link_to reason_modal_flags_path(post_id: @post.id), title: 'Flag this post', class: 'btn btn-secondary', remote: true do %>
-                                <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                              <span><%= @post.flags.count %></span>
+                            </div>
+                            <div class="col-md-1">
+                              <% if @post.likes.pluck(:user_id).include?(current_user.id) %>
+                                <%= link_to like_path(id: @post.id), class: 'btn btn-primary', title: 'Un-Like this post', remote: true, :method => :delete do %>
+                                  <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                                <% end %>
+                              <% else %>
+                                <%= link_to like_path(likeable_id: @post.id, user_id: current_user.id, likeable_type: 'Post'), title: 'Like this post', class: 'btn btn-secondary', remote: true, :method => :patch do %>
+                                  <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                                <% end %>
                               <% end %>
-                            <% end %>
-                            <span><%= @post.flags.count %></span>
-                          </div>
-                          <div class="col-md-1">
-                            <% if @post.likes.pluck(:user_id).include?(current_user.id) %>
-                              <%= link_to like_path(id: @post.id), class: 'btn btn-primary', title: 'Un-Like this post', remote: true, :method => :delete do %>
-                                <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                              <span><%= @post.likes.count %></span>
+                            </div>
+                            <div class="col-md-1">
+                              <% if @post.shares.pluck(:user_id).include?(current_user.id) %>
+                                <div class="btn btn-primary" title="Already Shared by me">
+                                  <i class="fa fa-share" aria-hidden="true"></i>
+                                </div>
+                              <% else %>
+                                <%= link_to shares_path(shareable_id: @post.id, user_id: current_user.id, shareable_type: 'Post'), title: 'Share this post', class: 'btn btn-secondary', remote: true, method: :post do %>
+                                  <i class="fa fa-share"  aria-hidden="true"></i>
+                                <% end %>
                               <% end %>
-                            <% else %>
-                              <%= link_to like_path(likeable_id: @post.id, user_id: current_user.id, likeable_type: 'Post'), title: 'Like this post', class: 'btn btn-secondary', remote: true, :method => :patch do %>
-                                <i class="fa fa-thumbs-up" aria-hidden="true"></i>
-                              <% end %>
-                            <% end %>
-                            <span><%= @post.likes.count %></span>
-                          </div>
-                          <div class="col-md-1">
-                            <% if @post.shares.pluck(:user_id).include?(current_user.id) %>
-                              <div class="btn btn-primary" title="Already Shared by me">
-                                <i class="fa fa-share" aria-hidden="true"></i>
-                              </div>
-                            <% else %>
-                              <%= link_to shares_path(shareable_id: @post.id, user_id: current_user.id, shareable_type: 'Post'), title: 'Share this post', class: 'btn btn-secondary', remote: true, method: :post do %>
-                                <i class="fa fa-share"  aria-hidden="true"></i>
-                              <% end %>
-                            <% end %>
-                            <span><%= @post.shares.count %></span>
-                          </div>
-                          <div class="col-md-1">
+                              <span><%= @post.shares.count %></span>
+                            </div>
+                            <div class="col-md-1">
                             <div class="btn btn-secondary" id="checkbox-btn">
                               <%= check_box_tag "tracking", current_user.tracking_posts.pluck(:post_id).include?(@post.id), current_user.tracking_posts.pluck(:post_id).include?(@post.id), data: {url: post_track_post_path(@post.id), remote: true, method: :patch}, class: "btn btn-secondary" %>
                             </div>
                           </div>
-                          <div class="col-md-8">
-                            <div class="mb-5">
-                              <%= render 'comments/form', comment: @comment, layer: @post %>
+                            <div class="col-md-8">
+                              <div class="mb-5">
+                                <%= render 'comments/form', comment: @comment, layer: @post %>
+                              </div>
                             </div>
-                          </div>
+                          <% else %>
+                            <div class="col-md-1">
+                              <span><%= @post.flags.count %></span> flags
+                            </div>
+                            <div class="col-md-1">
+                              <span><%= @post.likes.count %></span> likes
+                            </div>
+                            <div class="col-md-1">
+                              <span><%= @post.shares.count %></span> shares
+                            </div>
+                          <% end %>
 
                         </div>
                       </div>
