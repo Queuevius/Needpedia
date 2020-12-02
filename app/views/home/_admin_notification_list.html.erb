@@ -1,0 +1,9 @@
+<ul>
+  <% notifications.each do |an| %>
+    <h5>
+      <li class="text-<%= color %>">
+        <%= an.message %>
+      </li>
+    </h5>
+  <% end %>
+</ul>

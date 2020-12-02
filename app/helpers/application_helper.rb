@@ -18,8 +18,8 @@ module ApplicationHelper
   end
 
   def unread_notification(user)
-    count = user.notifications.unread.count
-    'unread-notificatios' if count.positive?
+    count = user&.notifications&.unread&.count
+    'unread-notificatios' if count&.positive?
   end
 
   def gig_status_text(gig)

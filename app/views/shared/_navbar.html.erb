@@ -5,110 +5,72 @@
   </div>
 <% end %>
 
-<nav class="navbar sticky-top navbar-expand-md navbar-light bg-light navbar-custom">
-  <div class="container justify-content-between">
-
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMain" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarMain">
-      <ul class="navbar-nav mr-auto mt-2 mt-md-0">
-      </ul>
-
-      <ul class="navbar-nav">
-<!--        <li class="nav-item"><%#= link_to "What's New", announcements_path, class: "nav-link #{unread_announcements(current_user)}" %></li>-->
-        <% if user_signed_in? %>
-
-          <li class="nav-item pr-5">
-            <%= link_to root_path, class: 'nav-link' do %>
-              <span><i class="fa fa-home" style="font-size: x-large" aria-hidden="true"></i></span>
-            <% end %>
-          </li>
-          <li class="nav-item dropdown pr-5">
-            <%= link_to "#", id: "navbar-dropdown-search", class: "nav-link dropdown-toggle", data: {target: "nav-search-dropdown", toggle: "dropdown"}, aria: {haspopup: true, expanded: false} do %>
-              <i class="fa fa-neuter" style="font-size: x-large; aria-hidden:true" title="Search"></i>
-            <% end %>
-            <div id="nav-search-dropdown" class="dropdown-menu px-4 py-3" aria-labelledby="navbar-dropdown">
-              <%= search_form_for @q, url: search_result_posts_path, id: "drop-down-search" do |f| %>
-                <div class="row no-gutters align-items-center">
-                  <div class="col">
-                    <%= f.text_field :title_cont, class: 'form-control form-control-sm', placeholder: 'Search' %>
-                  </div>
-                  <div class="col-auto">
-                    <button class="btn btn-sm btn-secondary" type="submit"><i class="fa fa-search"></i></button>
-                  </div>
-                </div>
-              <% end %>
-            </div>
-          </li>
-          <li class="nav-item pr-5">
-            <%= link_to wall_path, class: 'nav-link' do %>
-              <span><i class="fa fa-rss" style="font-size: x-large" aria-hidden="true"></i></span>
-            <% end %>
-          </li>
-          <li class="nav-item pr-5">
-            <%= link_to chat_path, class: 'nav-link' do %>
-              <span><i class="far fa-comment-dots" style="font-size: x-large"></i></span>
-            <% end %>
-          </li>
-
-          <li class="nav-item pr-5">
-            <%= link_to time_bank_path, class: "nav-link" do %>
-              <i class="fa fa-university" title="Time Bank" aria-hidden="true" style="font-size: x-large"></i>
-            <% end %>
-          </li>
-
-          <li class="nav-item pr-5">
-            <%= link_to notifications_path, class: "nav-link #{unread_notification(current_user)}" do %>
-              <span><i class="far fa-bell" aria-hidden="true" style="font-size: x-large"></i></span>
-            <% end %>
-          </li>
-
-          <li class="nav-item dropdown pr-5">
-            <%= link_to "#", id: "navbar-dropdown", class: "nav-link dropdown-toggle", data: {target: "nav-account-dropdown", toggle: "dropdown"}, aria: {haspopup: true, expanded: false} do %>
-              <i class="fa fa-user" style="font-size: x-large; aria-hidden:true"></i>
-              <% if current_user.admin? %>
-                <span class="logged-in">●</span>
-              <% end  %>
-            <% end %>
-            <div id="nav-account-dropdown" class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar-dropdown">
-              <% if current_user.admin? %>
-                <%= link_to "Admin Area", admin_root_path, class: "dropdown-item" %>
-              <% end %>
-              <%= link_to current_user ? current_user&.name : 'Profile', feed_path, class: "dropdown-item" %>
-              <div class="dropdown-divider"></div>
-              <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
-            </div>
-          </li>
-<!--          <li class="nav-item">-->
-            <%#= link_to notifications_path, class: "nav-link" do %>
-<!--              <span><i class="far fa-bell" aria-hidden="true"></i></span>-->
-            <%# end %>
-<!--          </li>-->
-
-<!--          <li class="nav-item dropdown">-->
-            <%#= link_to "#", id: "navbar-dropdown", class: "nav-link dropdown-toggle", data: { target: "nav-account-dropdown", toggle: "dropdown" }, aria: { haspopup: true, expanded: false } do %>
-              <%#= image_tag avatar_path(current_user, size: 40), height: 20, width: 20, class: "rounded" %>
-<!--              <i class="fa fa-user" style="font-size: x-large; aria-hidden:true"></i>-->
-            <%# end %>
-<!--            <div id="nav-account-dropdown" class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar-dropdown">-->
-              <%# if current_user.admin? && respond_to?(:admin_root_path) %>
-                <%#= link_to "Admin Area", admin_root_path, class: "dropdown-item" %>
-              <%# end %>
-              <%#= link_to "Settings", edit_user_registration_path, class: "dropdown-item" %>
-<!--              <div class="dropdown-divider"></div>-->
-              <%#= link_to "Logout", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
-<!--            </div>-->
-<!--          </li>-->
-
-        <% else %>
-          <li class="nav-item"><%= link_to "Sign Up", new_user_registration_path, class: "nav-link" %></li>
-          <li class="nav-item"><%= link_to "Login", new_user_session_path, class: "nav-link" %></li>
+<div class="d-flex navbar navbar-custom sticky-top" id="navbar-container">
+  <ul class="list-inline mx-auto justify-content-center">
+    <li>
+      <%= link_to root_path do %>
+        <span><i class="fa fa-home" style="font-size: x-large" aria-hidden="true"></i></span>
+      <% end %>
+    </li>
+    <% if user_signed_in? %>
+      <li>
+        <%= link_to "#", id: "navbar-dropdown-search", class: "dropdown-toggle", data: {target: "nav-search-dropdown", toggle: "dropdown"}, aria: {haspopup: true, expanded: false} do %>
+          <i class="fa fa-neuter" style="font-size: x-large; aria-hidden:true" title="Search"></i>
         <% end %>
-      </ul>
-      <ul class="navbar-nav mr-auto mt-2 mt-md-0">
-      </ul>
-    </div>
-  </div>
-</nav>
+        <div id="nav-search-dropdown" class="dropdown-menu px-4 py-3" aria-labelledby="navbar-dropdown">
+          <%= search_form_for @q, url: search_result_posts_path, id: "drop-down-search" do |f| %>
+            <div class="row no-gutters align-items-center">
+              <div class="col">
+                <%= f.text_field :title_cont, class: 'form-control form-control-sm', placeholder: 'Search' %>
+              </div>
+              <div class="col-auto">
+                <button class="btn btn-sm btn-secondary" type="submit"><i class="fa fa-search"></i></button>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </li>
+      <li>
+        <%= link_to wall_path do %>
+          <span><i class="fa fa-rss" style="font-size: x-large" aria-hidden="true"></i></span>
+        <% end %>
+      </li>
+      <li>
+        <%= link_to chat_path do %>
+          <span><i class="far fa-comment-dots" style="font-size: x-large"></i></span>
+        <% end %>
+      </li>
+      <li>
+        <%= link_to time_bank_path do %>
+          <i class="fa fa-university" title="Time Bank" aria-hidden="true" style="font-size: x-large"></i>
+        <% end %>
+      </li>
+      <li>
+        <%= link_to notifications_path, class: "#{unread_notification(current_user)}" do %>
+          <span><i class="far fa-bell" aria-hidden="true" style="font-size: x-large"></i></span>
+        <% end %>
+      </li>
+      <li>
+        <%= link_to "#", id: "navbar-dropdown", class: "dropdown-toggle", data: {target: "nav-account-dropdown", toggle: "dropdown"}, aria: {haspopup: true, expanded: false} do %>
+          <i class="fa fa-user" style="font-size: x-large; aria-hidden:true"></i>
+          <% if current_user.admin? %>
+            <span class="logged-in">●</span>
+          <% end  %>
+        <% end %>
+        <div id="nav-account-dropdown" class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar-dropdown">
+          <% if current_user.admin? %>
+            <%= link_to "Admin Area", admin_root_path, class: "dropdown-item" %>
+          <% end %>
+          <%= link_to current_user ? current_user&.name : 'Profile', feed_path, class: "dropdown-item" %>
+          <div class="dropdown-divider"></div>
+          <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
+        </div>
+      </li>
+    <% else %>
+      <li class="nav-item"><%= link_to "Sign Up", new_user_registration_path, class: 'mt-2' %></li>
+      <li class="nav-item"><%= link_to "Login", new_user_session_path, class: 'mt-2' %></li>
+    <% end %>
+  </ul>
+</div>
+
+

@@ -9,14 +9,17 @@ require("@rails/activestorage").start()
 require("channels")
 require("local-time").start()
 import jquery from 'jquery';
-// import "../../assets/javascripts/jquery.raty"
-// import "../../assets/javascripts/ratyrate.js.erb"
 window.$ = window.jquery = jquery;
 
 window.Rails = Rails
 
 import 'bootstrap'
 import 'data-confirm-modal'
+
+require ( 'summernote/dist/summernote-bs4.js' ) ;
+// stylesheet for summernote (for Boostrap 4 version)
+require ( 'summernote/dist/summernote-bs4.css' ) ;
+import 'summernote'
 
 $(document).on("turbolinks:load", () => {
   $('[data-toggle="tooltip"]').tooltip()

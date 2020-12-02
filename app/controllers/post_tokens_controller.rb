@@ -1,6 +1,7 @@
 class PostTokensController < ApplicationController
   before_action :authenticate_user!
   before_action :set_post_token, only: [:update, :destroy]
+  skip_before_action :verify_authenticity_token
 
   # POST /post_tokens
   # POST /post_tokens.json

@@ -1,3 +1,19 @@
+<div class="alert alert-dark alert-dismissible fade show p-3 m-3" role="alert">
+  <h3 class="text-center">Administration messages</h3>
+  <% if current_user.nil? && @messages_for_guests.present? %>
+    <%= render 'home/admin_notification_list', notifications: @messages_for_guests, color: 'primary' %>
+  <% end %>
+  <% if current_user && current_user.last_login_at.blank? && @messages_for_new_comers.present? %>
+    <%= render 'home/admin_notification_list', notifications: @messages_for_new_comers, color: 'success' %>
+  <% end %>
+
+  <% if @messages_for_all.present? %>
+    <%= render 'home/admin_notification_list', notifications: @messages_for_all, color: 'dark' %>
+  <% end %>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
 <%= render 'search'  %>
 <div class="container mb-5">
   <div class="row mt-5">
@@ -6,7 +22,7 @@
       <h3>The Wiki for all solutions, to all problems</h3>
 
       <div class="container pt-3">
-        <iframe width="70%" height="400px" src="https://www.youtube.com/embed/ac3c5nIkrsc?start=5" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <iframe width="70%" height="400px" src="<%= @home_video_link %>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
 
       <div class="container pt-5 text-center">
@@ -24,7 +40,7 @@
           <h3 class="title-normal mb-3 text-dark">The Token System</h3>
           <div class="row">
             <div class="col-md-6">
-              <%= image_tag("tokens2.png", {:style => "width:500px;"}) %>
+              <%= image_tag("tokens2.png", {:style => "width:300px;"}) %>
             </div>
             <div class="col-md-6 text-center">
               <p class="customer-quote mt-5">"We’ve innovated upon the hypertext system used by Wikipedia and others to make it possible for everyone to drop debates and notes directly into pages, after any word; all while being neatly embedded into little icons called “tokens”. The token system lets citizens and experts publicly dismantle false information, myths, and fallacies. Debate tokens even let you rate people’s arguments individually, so that everyone can see which concerns actually matter most to people. Ultimately our goal is to create the world’s greatest problem solving engine.&quot; <br/>
@@ -49,7 +65,7 @@
               </p>
             </div>
             <div class="col-md-6">
-              <%= image_tag("layers2.png", {:style => "width:500px;"}) %>
+              <%= image_tag("layers2.png", {:style => "width:300px;"}) %>
             </div>
           </div>
         </div>

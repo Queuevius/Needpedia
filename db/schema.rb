@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_01_063900) do
+ActiveRecord::Schema.define(version: 2020_12_02_064528) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -64,6 +64,13 @@ ActiveRecord::Schema.define(version: 2020_11_01_063900) do
     t.index ["recipient_type", "recipient_id"], name: "index_activities_on_recipient_type_and_recipient_id"
     t.index ["trackable_id", "trackable_type"], name: "index_activities_on_trackable_id_and_trackable_type"
     t.index ["trackable_type", "trackable_id"], name: "index_activities_on_trackable_type_and_trackable_id"
+  end
+
+  create_table "admin_notifications", force: :cascade do |t|
+    t.text "message"
+    t.string "audience"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "announcements", force: :cascade do |t|
@@ -136,6 +143,12 @@ ActiveRecord::Schema.define(version: 2020_11_01_063900) do
     t.string "status", default: "pending"
     t.boolean "disabled", default: false
     t.index ["user_id"], name: "index_gigs_on_user_id"
+  end
+
+  create_table "home_videos", force: :cascade do |t|
+    t.string "link"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "likes", force: :cascade do |t|
@@ -295,6 +308,7 @@ ActiveRecord::Schema.define(version: 2020_11_01_063900) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
+    t.datetime "last_login_at"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

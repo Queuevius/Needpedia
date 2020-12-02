@@ -101,7 +101,7 @@ class PostsController < ApplicationController
   def update
     respond_to do |format|
       if @post.update(post_params)
-        @post.clean_froala_link
+        # @post.clean_froala_link
         Notification.post(from: current_user, notifiable: current_user, to: @post.users, action: Notification::NOTIFICATION_TYPE_POST_UPDATED, post_id: @post.id)
         create_activity(@post, 'post.update')
         format.html { redirect_to @post, notice: 'Post was successfully updated.' }

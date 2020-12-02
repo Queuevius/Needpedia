@@ -98,6 +98,8 @@ GEM
       activerecord (>= 5.0, < 6.1)
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
+    administrate-field-select (2.1.0)
+      administrate (~> 0.1, >= 0.1.5)
     airbrussh (1.4.0)
       sshkit (>= 1.6.1, != 1.7.0)
     autoprefixer-rails (9.7.6)
@@ -425,6 +427,7 @@ PLATFORMS
 DEPENDENCIES
   acts-as-taggable-on (~> 6.0)
   administrate!
+  administrate-field-select (~> 2.0)
   awesome_print
   aws-sdk-s3
   bootsnap (>= 1.4.2)
