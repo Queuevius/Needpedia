@@ -1,9 +1,8 @@
-<ul>
-  <% notifications.each do |an| %>
-    <h5>
-      <li class="text-<%= color %>">
-        <%= an.message %>
-      </li>
-    </h5>
-  <% end %>
-</ul>
+<% notifications.each do |an| %>
+  <div class="alert alert-<%= color %> alert-dismissible fade show" role="alert">
+    <%= an.message %>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+<% end %>

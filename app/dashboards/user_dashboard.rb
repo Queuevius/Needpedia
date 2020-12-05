@@ -58,6 +58,7 @@ class UserDashboard < Administrate::BaseDashboard
   disabled
   confirmed_at
   admin
+  password
   ].freeze
 
   # COLLECTION_FILTERS
