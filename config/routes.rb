@@ -40,7 +40,7 @@ Rails.application.routes.draw do
   get '/profile_image', to: 'profile#profile_image'
   patch '/update_profile_image', to: 'profile#update_profile_image'
   post '/create_pictures', to: 'profile#create_pictures'
-  post '/search_results', to: 'profile#search_results'
+  get '/search_results', to: 'profile#search_results'
   patch '/update_details', to: 'profile#update_details'
   get 'connections' => 'profile#my_connections'
   get 'friend_request' => 'profile#friend_request'
