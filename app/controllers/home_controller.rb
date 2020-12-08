@@ -1,4 +1,5 @@
 class HomeController < ApplicationController
+  after_action :read_new_comers_message, only: [:index]
   def index
     # @q = Post.ransack(params[:q])
     @messages_for_guests = AdminNotification.for_guests
@@ -19,5 +20,13 @@ class HomeController < ApplicationController
 
   def chat
     @f = User.ransack(params[:q])
+  end
+
+  private
+
+  def read_new_comers_message
+    return unless current_user.present?
+
+    current_user.update(last_login_at: Time.now) if current_user.confirmed_at.present?
   end
 end

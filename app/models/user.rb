@@ -3,9 +3,6 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :masqueradable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :confirmable
 
-  Warden::Manager.after_authentication do |user,auth,opts|
-    user.update(last_login_at: Time.now)
-  end
 
   after_create :add_default_credit
   before_destroy :delete_notifications
