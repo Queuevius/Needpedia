@@ -18,23 +18,25 @@
           </div>
           <div class="ui-block-content">
             <ul class="notification-list friend-requests">
-              <% @connection_requests.each do |connection_request| %>
-                <li>
-                  <% if connection_request.user.profile_image.attached? %>
-                    <div class="author-thumb">
-                      <%= image_tag "#{connection_request.user.image_file_name}.jpg" %>
+              <% if @connection_requests.present? %>
+                <% @connection_requests.each do |connection_request| %>
+                  <li>
+                    <% if connection_request&.user&.profile_image&.attached? %>
+                      <div class="author-thumb">
+                        <%= image_tag "#{connection_request&.user&.image_file_name}.jpg" %>
+                      </div>
+                    <% else %>
+                      <%= image_tag 'profile.png', style: "height: 40px; border-radius: 100%; overflow: hidden; max-width: unset; display: inline-block;" %>
+                    <% end %>
+                    <div class="notification-event a">
+                      <a href="#" class="h6 notification-friend"><%= connection_request&.user&.name %></a>
                     </div>
-                  <% else %>
-                    <%= image_tag 'profile.png', style: "height: 40px; border-radius: 100%; overflow: hidden; max-width: unset; display: inline-block;" %>
-                  <% end %>
-                  <div class="notification-event a">
-                    <a href="#" class="h6 notification-friend"><%= connection_request.user.name %></a>
-                  </div>
-                  <span class="notification-icon b">
-                    <%= link_to 'Accept', accept_invitation_path(:uuid => connection_request.uuid), class: 'accept-request' %>
-                    <%= link_to 'Delete', reject_invitation_path(:uuid => connection_request.uuid), method: :delete, :class => 'accept-request request-del' %>
-                  </span>
-                </li>
+                    <span class="notification-icon b">
+                      <%= link_to 'Accept', accept_invitation_path(:uuid => connection_request.uuid), class: 'accept-request' %>
+                      <%= link_to 'Delete', reject_invitation_path(:uuid => connection_request.uuid), method: :delete, :class => 'accept-request request-del' %>
+                    </span>
+                  </li>
+                <% end %>
               <% end %>
             </ul>
           </div>

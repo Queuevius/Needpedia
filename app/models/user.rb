@@ -4,7 +4,7 @@ class User < ApplicationRecord
   devise :masqueradable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :confirmable
 
 
-  after_create :add_default_credit
+  after_create :add_default_credit, :create_admin_notifications
   before_destroy :delete_notifications
 
   validate :password_complexity
@@ -57,6 +57,16 @@ class User < ApplicationRecord
 
   def add_default_credit
     TransactionService.new(actor: nil, recipient: self, gig: nil, amount: 1, type: Transaction::TRANSACTION_TYPE_DEFAULT).call
+  end
+
+  def create_admin_notifications
+    notifications = AdminNotification.where(audience: [AdminNotification::ALL, AdminNotification::NEW_COMERS])
+    admin = User.where(admin: true)&.first
+    return unless notifications.present? && admin.present?
+
+    notifications.each do |notification|
+      Notification.post(from: admin, notifiable: admin, to: self, action: Notification::NOTIFICATION_TYPE_ADMIN_NOTIFICATION, admin_notification_id: notification.id)
+    end
   end
 
   def connection_status(current_user)

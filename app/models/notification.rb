@@ -7,17 +7,19 @@ class Notification < ApplicationRecord
   NOTIFICATION_TYPE_REQUEST_ACCEPTED = 'request_accept'.freeze
   NOTIFICATION_TYPE_REQUEST_REJECTED = 'request_rejected'.freeze
   NOTIFICATION_TYPE_POST_UPDATED = 'post_updated'.freeze
+  NOTIFICATION_TYPE_ADMIN_NOTIFICATION = 'admin_notification'.freeze
 
   ################################ relationships ############################
   belongs_to :recipient, class_name: "User"
   belongs_to :actor, class_name: "User"
   belongs_to :notifiable, polymorphic: true
   belongs_to :post, optional: true
+  belongs_to :admin_notification, optional: true
 
   scope :unread, -> { where(read_at: nil) }
   scope :recent, -> { order(created_at: :desc).limit(5) }
 
-  def self.post(to:, from:, action:, notifiable:, post_id: nil)
+  def self.post(to:, from:, action:, notifiable:, post_id: nil, admin_notification_id: nil)
     recipients = Array.wrap(to)
     notifications = []
 
@@ -25,10 +27,11 @@ class Notification < ApplicationRecord
       notifications = recipients.uniq.each do |recipient|
         Notification.create(
           notifiable: notifiable,
-          action:     action,
-          recipient:  recipient,
-          actor:      from,
-          post_id:    post_id
+          action: action,
+          recipient: recipient,
+          actor: from,
+          post_id: post_id,
+          admin_notification_id: admin_notification_id
         )
       end
     end

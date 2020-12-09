@@ -1,0 +1,33 @@
+<div class="card mb-1">
+  <div class="card-body">
+    <div id="module" class="container">
+      <h5 class="collapse" id="notification-<%= notification.id %>" aria-expanded="false"><%= notification&.admin_notification&.message %></h5>
+      <a role="button" class="collapsed" data-toggle="collapse" href="#notification-<%= notification.id %>" aria-expanded="false" aria-controls="collapseExample"></a>
+    </div>
+  </div>
+</div>
+<hr>
+
+<style>
+
+  #module a.collapsed:after {
+    content: '+ Show More';
+  }
+
+  #module a:not(.collapsed):after {
+    content: '- Show Less';
+  }
+
+  #module #notification-<%= notification.id %>.collapse:not(.show) {
+    overflow: hidden;
+    width:250px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    height: 1.4em;
+  }
+
+  #module #notification-<%= notification.id %>.collapsing {
+    height: 1.4em;
+  }
+</style>
