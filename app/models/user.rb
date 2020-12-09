@@ -14,7 +14,7 @@ class User < ApplicationRecord
   has_person_name
 
   has_many :notifications, foreign_key: :recipient_id
-  has_many :services
+  has_many :services, dependent: :destroy
   has_many :posts, dependent: :destroy
   has_many :posted_gigs, class_name: 'Gig', dependent: :destroy
 
@@ -43,7 +43,7 @@ class User < ApplicationRecord
   has_many :inverse_connections, class_name: 'Connection', foreign_key: 'friend_id'
   has_many :inverse_friends, through: :inverse_connections, source: :user
 
-  has_many :connection_requests
+  has_many :connection_requests, dependent: :destroy
 
   has_one_attached :profile_image
 

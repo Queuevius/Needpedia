@@ -4,7 +4,7 @@
       <div class="col-lg-3 col-md-6 wrap-feature14-box p-t-20 p-l-20 p-r-20 friends-profiles">
         <div class="aos-init ml-5">
           <% if friend.profile_image.attached? %>
-            <%= image_tag friend.profile_image.variant(resize: "250x250"), class: 'img-responsive' %>
+            <%= image_tag friend.profile_image, class: 'img-responsive', style: 'width: 250px; height: 250px' %>
           <% else %>
             <%= image_tag "profile.png", class: 'img-responsive', style: 'width: 250px; height: 250px' %>
           <% end %>
