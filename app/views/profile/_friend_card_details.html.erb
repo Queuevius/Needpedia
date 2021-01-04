@@ -16,6 +16,7 @@
     <% else %>
       <%= link_to 'Add Friend', new_connection_request_path(:uuid => friend.uuid), class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block' %>
     <% end %>
+    <%= link_to 'Message', conversations_path(receiver_id: friend.id), method: :post, class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block' %>
   <% end %>
 <% else %>
   <%= link_to 'Add Friend', new_connection_request_path(:uuid => friend.uuid), class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block' %>

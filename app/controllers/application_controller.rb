@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
 
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :masquerade_user!
-  before_action :set_ransack
+  before_action :set_ransack, :read_message
 
   protected
 
@@ -14,5 +14,12 @@ class ApplicationController < ActionController::Base
 
   def set_ransack
     @q = Post.ransack(params[:q])
+  end
+
+  def read_message
+    if current_user && params[:controller] == 'conversations' && params['action'] == 'index' || params['action'] == 'show'
+      messages = current_user.messages.unread.where(read_at: nil)
+      messages.update_all read_at: Time.now
+    end
   end
 end

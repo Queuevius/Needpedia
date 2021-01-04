@@ -1,0 +1,91 @@
+<div class="pl-2">
+  <div class="col-md-12 text-center">
+    <h2><b>Find a friend</b></h2>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8">
+              <%= search_form_for @f, url: search_results_path do |f| %>
+                <div class="row no-gutters align-items-center">
+                  <div class="col">
+                    <%= f.text_field :first_name_or_last_name_cont, class: 'form-control form-control-lg', placeholder: "Search" %>
+                  </div>
+                  <div class="col-auto">
+                    <button class="ml-2 btn btn-lg btn-secondary search-button" type="submit">Go</button>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mb-5 mt-5">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1">
+          <div class="ui-block shadow-lg rounded">
+            <div class="ui-block-content">
+              <div class="row">
+                <div class="container">
+                  <div class="content-wrapper">
+                    <div class="row gutters">
+                      <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <h5 class="title">Conversations</h5>
+                      </div>
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="card m-0">
+                          <div class="row no-gutters">
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-3 col-3">
+                              <div class="users-container">
+                                <ul class="users">
+                                  <% if conversations.present? %>
+                                    <% conversations.each do |chat| %>
+                                      <% user = chat_user(chat) %>
+                                      <%= link_to conversation_path(chat), style: 'color: black' do %>
+                                        <li class="person <%= 'active-user' if chat.id == conversation&.id %>" data-chat="<%= chat.id == conversation&.id ? 'person1' : 'person' %>">
+                                          <div class="user">
+                                            <% if user&.profile_image&.attached? %>
+                                              <%= image_tag user.profile_image %>
+                                            <% else %>
+                                              <%= image_tag 'profile.png', :class=>'connection-profile-image' %>
+                                            <% end %>
+                                          </div>
+                                          <p class="name-time">
+                                            <span class="name"><%= user.name %></span>
+                                          </p>
+                                        </li>
+                                      <% end %>
+                                    <% end %>
+                                  <% else %>
+                                    <li class="person2 pl-4" data-chat="person1">
+                                      No conversations
+                                    </li>
+                                  <% end %>
+                                </ul>
+                              </div>
+                            </div>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
+                              <%= render 'messages', conversation: conversation, message: message %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

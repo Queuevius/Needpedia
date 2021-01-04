@@ -1,0 +1,23 @@
+<% if conversation.present? %>
+  <div class="selected-user">
+    <span>To: <span class="name"><%= conversation.users.first.name %></span></span>
+  </div>
+  <div class="chat-container">
+    <ul class="chat-box chatContainerScroll <%= 'scroll_wanted' if conversation.messages.count > 5  %>">
+      <li></li>
+      <% conversation.messages.each do |msg| %>
+        <%= render 'message', message: msg %>
+      <% end %>
+    </ul>
+    <%= form_with(model: message, remote: true) do |f| %>
+      <div class="form-group mt-2">
+        <%= f.text_area :body, class: 'form-control', required: true, cols: 10, placeholder: 'Write your reply here...' %>
+        <%= f.hidden_field :user_id, value: current_user.id %>
+        <%= f.hidden_field :conversation_id, value: conversation.id %>
+      </div>
+      <div class="form-group">
+        <%= f.submit 'Send', class: 'btn btn-primary btn-sm pull-right mb-3' %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

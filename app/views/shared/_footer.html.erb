@@ -2,7 +2,10 @@
   <div class="container">
     <span>© <%= Date.today.year %> Needpedia</span>
     <ul class="list-inline mb-0 float-right">
-      <li class="list-inline-item mr-3"><%= link_to "Terms", terms_path, class: 'text-dark' %></li>
+      <li class="list-inline-item mr-3"><%= link_to "Contact Us", contact_us_path, class: 'text-dark' %></li>
+      <li class="list-inline-item mr-3"><%= link_to "FAQs", contact_us_path, class: 'text-dark' %></li>
+      <li class="list-inline-item mr-3"><%= link_to "About Us", about_us_path, class: 'text-dark' %></li>
+      <li class="list-inline-item mr-3"><%= link_to "Terms of Service", terms_path, class: 'text-dark' %></li>
       <li class="list-inline-item mr-3"><%= link_to "Privacy", privacy_path, class: 'text-dark' %></li>
     </ul>
   </div>

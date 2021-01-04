@@ -1,0 +1,40 @@
+<div class="container mb-5">
+  <div class="row mt-3">
+    <div class="col-md-12 text-center mb-2">
+      <h1><b>FAQs</b></h1>
+    </div>
+    <div class="col-md-12">
+      <div class="ui-block shadow-lg rounded">
+        <div class="ui-block-content">
+          <div class="row">
+            <div class="col-sm-12">
+              <div id="accordion">
+                <% @faqs.each_with_index do |faq, index| %>
+                  <div class="card">
+                    <div class="card-header" id="heading_<%= faq.id %>">
+                      <h5 class="mb-0">
+                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse_<%= faq.id %>" aria-expanded="false" aria-controls="collapse_<%= faq.id %>">
+                          <strong>Question:</strong> <%= faq.question %>
+                        </button>
+                      </h5>
+                    </div>
+                    <div id="collapse_<%= faq.id %>" class="collapse <%= 'show' if index == 0 %>" aria-labelledby="heading_<%= faq.id %>" data-parent="#accordion">
+                      <div class="card-body">
+                        <strong>Answer:</strong> <%= faq.answer.html_safe %>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  p {
+    margin: 15px;
+  }
+</style>

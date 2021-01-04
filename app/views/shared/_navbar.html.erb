@@ -36,7 +36,8 @@
         <% end %>
       </li>
       <li>
-        <%= link_to chat_path do %>
+        <%= link_to conversations_path, class: "#{unread_messages(current_user)}", id: "#{set_id_for_icon(current_user, params)}" do %>
+        <%#= link_to chat_path do %>
           <span><i class="far fa-comment-dots" style="font-size: x-large"></i></span>
         <% end %>
       </li>

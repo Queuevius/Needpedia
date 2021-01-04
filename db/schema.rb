@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_09_073654) do
+ActiveRecord::Schema.define(version: 2021_01_04_174507) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -111,6 +111,18 @@ ActiveRecord::Schema.define(version: 2020_12_09_073654) do
     t.index ["user_id", "friend_id"], name: "index_connections_on_user_id_and_friend_id", unique: true
   end
 
+  create_table "conversations", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "faqs", force: :cascade do |t|
+    t.text "question"
+    t.text "answer"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "flags", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "flagable_id"
@@ -158,6 +170,17 @@ ActiveRecord::Schema.define(version: 2020_12_09_073654) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_likes_on_user_id"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "conversation_id", null: false
+    t.datetime "read_at"
+    t.text "body"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["conversation_id"], name: "index_messages_on_conversation_id"
+    t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -270,6 +293,15 @@ ActiveRecord::Schema.define(version: 2020_12_09_073654) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "user_conversations", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "conversation_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["conversation_id"], name: "index_user_conversations_on_conversation_id"
+    t.index ["user_id"], name: "index_user_conversations_on_user_id"
+  end
+
   create_table "user_gigs", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "gig_id", null: false
@@ -320,6 +352,8 @@ ActiveRecord::Schema.define(version: 2020_12_09_073654) do
   add_foreign_key "flags", "users"
   add_foreign_key "gigs", "users"
   add_foreign_key "likes", "users"
+  add_foreign_key "messages", "conversations"
+  add_foreign_key "messages", "users"
   add_foreign_key "post_tokens", "posts"
   add_foreign_key "post_tokens", "users"
   add_foreign_key "posts", "users"
@@ -329,6 +363,8 @@ ActiveRecord::Schema.define(version: 2020_12_09_073654) do
   add_foreign_key "token_ans_debates", "post_tokens"
   add_foreign_key "token_ans_debates", "posts"
   add_foreign_key "token_ans_debates", "users"
+  add_foreign_key "user_conversations", "conversations"
+  add_foreign_key "user_conversations", "users"
   add_foreign_key "user_gigs", "gigs"
   add_foreign_key "user_gigs", "users"
   add_foreign_key "user_posts", "posts"

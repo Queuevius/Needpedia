@@ -11,6 +11,10 @@ class HomeController < ApplicationController
 
   def terms
   end
+  
+  def faq
+    @faqs = Faq.all
+  end
 
   def privacy
   end

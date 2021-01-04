@@ -24,6 +24,9 @@ Rails.application.routes.draw do
   get '/privacy', to: 'home#privacy'
   get '/time_bank', to: 'home#time_bank'
   get '/terms', to: 'home#terms'
+  get '/about_us', to: 'home#about_us'
+  get '/contact_us', to: 'home#contact_us'
+  get '/faq', to: 'home#faq'
   get '/chat', to: 'home#chat'
   get '/wall', to: 'profile#wall'
   get '/friends', to: 'profile#friends'
@@ -123,6 +126,11 @@ Rails.application.routes.draw do
     collection do
       get 'award'
     end
+  end
+
+  resources :conversations
+  resources :messages do
+    patch 'read'
   end
 
   # resources :profiles do

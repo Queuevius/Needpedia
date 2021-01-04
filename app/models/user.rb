@@ -49,6 +49,11 @@ class User < ApplicationRecord
 
   has_many_attached :pictures
 
+  has_many :messages, dependent: :destroy
+
+  has_many :user_conversations, dependent: :destroy
+  has_many :conversations, through: :user_conversations
+
   def credit_hours
     active_gigs_amount = posted_gigs.active_progress.sum(:amount)
     sum = (received_transactions&.sum(:amount) - transferred_transactions&.sum(:amount) - active_gigs_amount).round(1)

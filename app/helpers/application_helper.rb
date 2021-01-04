@@ -22,6 +22,19 @@ module ApplicationHelper
     'unread-notificatios' if count&.positive?
   end
 
+  def unread_messages(user)
+    count = user&.messages&.unread&.count
+    'unread-notificatios' if count&.positive?
+  end
+
+  def set_id_for_icon(user, params)
+    if params[:controller] == 'conversations' && params['action'] == 'index' || params['action'] == 'show'
+      'chat_icon'
+    else
+      "chat_icon_#{current_user.id}"
+    end
+  end
+
   def gig_status_text(gig)
     case gig.status
     when Gig::GIG_STATUS_PROGRESS
