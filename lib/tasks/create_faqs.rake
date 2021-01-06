@@ -39,10 +39,6 @@ namespace :faqs do
                               created_at: Time.now, updated_at: Time.now,
                               question: "What about hackers?",
                               answer: '<p>Hackers are a serious concern for any website, fortunately we’re not the first people to have to deal with them. And we don’t need sensitive information from users to operate, so the way we see it is that if banks can survive hackers, Needpedia can too. </p>'
-                            }, {
-                              created_at: Time.now, updated_at: Time.now,
-                              question: "What about hackers?",
-                              answer: '<p>Hackers are a serious concern for any website, fortunately we’re not the first people to have to deal with them. And we don’t need sensitive information from users to operate, so the way we see it is that if banks can survive hackers, Needpedia can too. </p>'
                             },
                             {
                               created_at: Time.now, updated_at: Time.now,

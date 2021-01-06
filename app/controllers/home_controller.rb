@@ -13,7 +13,7 @@ class HomeController < ApplicationController
   end
   
   def faq
-    @faqs = Faq.all
+    @faqs = Faq.all.order('created_at ASC')
   end
 
   def privacy

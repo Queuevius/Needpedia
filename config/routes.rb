@@ -3,6 +3,7 @@ require 'sidekiq/web'
 Rails.application.routes.draw do
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :admin do
+    resources :faqs
     resources :home_videos
     resources :admin_notifications
     resources :post_tokens
