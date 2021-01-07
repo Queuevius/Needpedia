@@ -29,7 +29,7 @@
                       <%= image_tag 'profile.png', style: "height: 40px; border-radius: 100%; overflow: hidden; max-width: unset; display: inline-block;" %>
                     <% end %>
                     <div class="notification-event a">
-                      <a href="#" class="h6 notification-friend"><%= connection_request&.user&.name %></a>
+                      <%= link_to "#{connection_request&.user&.name}", feed_path(uuid: connection_request&.user&.uuid) %>
                     </div>
                     <span class="notification-icon b">
                       <%= link_to 'Accept', accept_invitation_path(:uuid => connection_request.uuid), class: 'accept-request' %>
