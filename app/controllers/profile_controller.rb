@@ -141,6 +141,18 @@ class ProfileController < ApplicationController
     end
   end
 
+  def get_users
+    term = params[:term]
+    if !term.is_a?(String) || term.blank?
+      return []
+    end
+
+    @users = User.where.not(id: params[:excluded_ids]).where('first_name ILIKE ? OR last_name ILIKE ?', "#{term}%", "#{term}%").map{|item| {:id=>item.id,:text => item.name, profile_picture: item.profile_image.attached? ? url_for(item.profile_image) : ActionController::Base.helpers.asset_path('profile.png')}}
+    respond_to do |format|
+      format.json { render json: @users }
+    end
+  end
+
   private
 
   # Only allow a list of trusted parameters through.

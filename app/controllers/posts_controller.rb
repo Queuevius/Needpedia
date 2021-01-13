@@ -71,10 +71,12 @@ class PostsController < ApplicationController
       end
     end
     @post = Post.new(post_type: @type)
+    @private_users = @post.private_users << current_user
   end
 
   # GET /posts/1/edit
   def edit
+    @private_users = @post.private_users
   end
 
   # POST /posts
@@ -84,7 +86,8 @@ class PostsController < ApplicationController
 
     respond_to do |format|
       if @post.save
-        @post.clean_froala_link
+        # @post.clean_froala_link
+        UserPrivatePost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_AREA
         create_activity(@post, 'post.create')
         format.html { redirect_to @post, notice: 'Post was successfully created.' }
         format.json { render :show, status: :created, location: @post }
@@ -101,6 +104,7 @@ class PostsController < ApplicationController
   def update
     respond_to do |format|
       if @post.update(post_params)
+        create_private_users
         # @post.clean_froala_link
         Notification.post(from: current_user, notifiable: current_user, to: @post.users, action: Notification::NOTIFICATION_TYPE_POST_UPDATED, post_id: @post.id)
         create_activity(@post, 'post.update')
@@ -159,6 +163,16 @@ class PostsController < ApplicationController
     @post = Post.find_by_id(params[:id])
   end
 
+  def create_private_users
+    user_ids = params[:post][:user_ids]
+    return unless user_ids.present?
+
+    user_ids.each do |user|
+      post = UserPrivatePost.where(post_id: @post.id, user_id: user.to_i)
+      UserPrivatePost.create(post_id: @post.id, user_id: user.to_i) if post.blank?
+    end
+  end
+
   def set_area
     @post = Post.find_by_id(params[:post_id])
   end
@@ -169,7 +183,7 @@ class PostsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def post_params
-    params.require(:post).permit(:title, :content, :user_id, :post_type, :area_id, :problem_id, :post_id, :tag_list, images: [])
+    params.require(:post).permit(:title, :content, :user_id, :post_type, :area_id, :problem_id, :private, :post_id, :tag_list, images: [])
   end
 
   def create_activity(post, event)

@@ -22,6 +22,12 @@ body {
   margin-bottom: 13px;
 }
 
+.private-checkbox {
+  background: transparent;
+  border: 2px solid #101010;
+  border-radius: inherit;
+}
+
 #drop-down-search {
   width: 300px !important;
 }

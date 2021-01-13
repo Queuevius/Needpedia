@@ -41,6 +41,7 @@ Rails.application.routes.draw do
   get '/about', to: 'profile#about'
   get '/add_details', to: 'profile#add_details'
   get '/add_pictures', to: 'profile#add_pictures'
+  get '/get_users', to: 'profile#get_users'
   get '/profile_image', to: 'profile#profile_image'
   patch '/update_profile_image', to: 'profile#update_profile_image'
   post '/create_pictures', to: 'profile#create_pictures'
