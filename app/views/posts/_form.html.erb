@@ -52,47 +52,13 @@
   </div>
 
   <div id="private-users-section">
-    <% if @post.post_type == Post::POST_TYPE_AREA && @post.private? %>
-      <div class="row pb-4">
-      <div class="col-md-12 col-lg-12 col-xl-12 col-sm-12">
-        <h5>Who can see this post:</h5>
-      </div>
-      <div class="col-md-12 col-lg-12 col-xl-12 col-sm-12 pb-4">
-        <div class="row">
-          <% if @private_users.present? %>
-            <% @private_users.each do |user| %>
-              <div class="col-md-4 col-lg-4 col-xl-4 col-sm-6">
-                <div class="row">
-                  <div class="col-sm-4 text-right">
-                    <% if user.profile_image.attached? %>
-                      <%= image_tag user.profile_image, class: 'img-responsive', style: 'width: 55px; height: 55px' %>
-                    <% else %>
-                      <%= image_tag "profile.png", class: 'img-responsive', style: 'width: 55px; height: 55px' %>
-                    <% end %>
-                  </div>
-                  <div class="col-sm-4 pt-2 pl-0">
-                    <h6><%= user.name %></h6>
-                    <small>
-                      <%= link_to 'Remove', post_remove_private_user_path(post_id: @post.id, user_id: user.id), method: :delete, class: 'text text-danger' %>
-                    </small>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-          <% end %>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-6 col-xl-6 col-sm-6">
-        <div class="row">
-          <div class="col-3 col-md-3 pt-2">Add User:</div>
-          <div class="col-8 col-md-8 float-left pl-0">
-            <div class="form-group">
-              <%= select_tag 'post[user_ids][]', {include_blank: false, required: true, include_hidden: false}, class: 'form-control select2', data: { type: 'Use Case Goal' } %>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <% if @post.post_type == Post::POST_TYPE_AREA %>
+      <% if !@post.persisted? %>
+        <%= render 'private_users_list', private_users: @private_users, post: @post %>
+      <% elsif @post.persisted? && @post.private? %>
+        <%= render 'private_users_list', private_users: @private_users, post: @post %>
+      <% else %>
+      <% end %>
     <% end %>
   </div>
 
