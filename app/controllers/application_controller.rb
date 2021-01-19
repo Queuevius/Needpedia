@@ -18,8 +18,8 @@ class ApplicationController < ActionController::Base
 
   def read_message
     if current_user && params[:controller] == 'conversations' && params['action'] == 'index' || params['action'] == 'show'
-      messages = current_user.messages.unread.where(read_at: nil)
-      messages.update_all read_at: Time.now
+      messages = current_user&.messages&.unread&.where(read_at: nil)
+      messages.update_all read_at: Time.now if messages.present?
     end
   end
 end

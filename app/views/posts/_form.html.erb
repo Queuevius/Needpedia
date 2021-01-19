@@ -26,7 +26,7 @@
         <div class="input-group mb-3">
           <div class="input-group-prepend">
             <div class="input-group-text private-checkbox">
-              <%= form.check_box :private %>
+              <%= form.check_box :private, onchange: 'togglePrivateSection()' %>
             </div>
             <label class="form-check-label pl-2 pt-1">
               Make this area private?
@@ -51,45 +51,50 @@
     <%= form.text_field :tag_list, class: 'form-control', placeholder: "Tags (separated by commas)" %>
   </div>
 
-  <% if @post.post_type == Post::POST_TYPE_AREA %>
-    <div class="row pb-4">
-    <div class="col-md-12 col-lg-12 col-xl-12 col-sm-12">
-      <h5>Who can see this post:</h5>
-    </div>
-    <div class="col-md-12 col-lg-12 col-xl-12 col-sm-12 pb-4">
-      <div class="row">
-        <% if @private_users.present? %>
-          <% @private_users.each do |user| %>
-            <div class="col-md-4 col-lg-4 col-xl-4 col-sm-6">
-              <div class="row">
-                <div class="col-sm-4 text-right">
-                  <% if user.profile_image.attached? %>
-                    <%= image_tag user.profile_image, class: 'img-responsive', style: 'width: 55px; height: 55px' %>
-                  <% else %>
-                    <%= image_tag "profile.png", class: 'img-responsive', style: 'width: 55px; height: 55px' %>
-                  <% end %>
-                </div>
-                <div class="col-sm-4 pt-2 pl-0">
-                  <h6><%= user.name %></h6>
+  <div id="private-users-section">
+    <% if @post.post_type == Post::POST_TYPE_AREA && @post.private? %>
+      <div class="row pb-4">
+      <div class="col-md-12 col-lg-12 col-xl-12 col-sm-12">
+        <h5>Who can see this post:</h5>
+      </div>
+      <div class="col-md-12 col-lg-12 col-xl-12 col-sm-12 pb-4">
+        <div class="row">
+          <% if @private_users.present? %>
+            <% @private_users.each do |user| %>
+              <div class="col-md-4 col-lg-4 col-xl-4 col-sm-6">
+                <div class="row">
+                  <div class="col-sm-4 text-right">
+                    <% if user.profile_image.attached? %>
+                      <%= image_tag user.profile_image, class: 'img-responsive', style: 'width: 55px; height: 55px' %>
+                    <% else %>
+                      <%= image_tag "profile.png", class: 'img-responsive', style: 'width: 55px; height: 55px' %>
+                    <% end %>
+                  </div>
+                  <div class="col-sm-4 pt-2 pl-0">
+                    <h6><%= user.name %></h6>
+                    <small>
+                      <%= link_to 'Remove', post_remove_private_user_path(post_id: @post.id, user_id: user.id), method: :delete, class: 'text text-danger' %>
+                    </small>
+                  </div>
                 </div>
               </div>
-            </div>
+            <% end %>
           <% end %>
-        <% end %>
+        </div>
       </div>
-    </div>
-    <div class="col-md-6 col-lg-6 col-xl-6 col-sm-6">
-      <div class="row">
-        <div class="col-3 col-md-3 pt-2">Add User:</div>
-        <div class="col-8 col-md-8 float-left pl-0">
-          <div class="form-group">
-            <%= select_tag 'post[user_ids][]', {include_blank: false, required: true, include_hidden: false}, class: 'form-control select2', data: { type: 'Use Case Goal' } %>
+      <div class="col-md-6 col-lg-6 col-xl-6 col-sm-6">
+        <div class="row">
+          <div class="col-3 col-md-3 pt-2">Add User:</div>
+          <div class="col-8 col-md-8 float-left pl-0">
+            <div class="form-group">
+              <%= select_tag 'post[user_ids][]', {include_blank: false, required: true, include_hidden: false}, class: 'form-control select2', data: { type: 'Use Case Goal' } %>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <% end %>
   </div>
-  <% end %>
 
   <div class="form-group">
 
@@ -100,7 +105,27 @@
 <% end %>
 
 <script>
+
+    if($('#post_private').is(":checked")) {
+        $('#private-users-section').show();
+        applySelect2();
+    } else {
+        $('#private-users-section').hide();
+    }
+
+    function togglePrivateSection() {
+        if($('#post_private').is(":checked")) {
+            $('#private-users-section').show();
+            applySelect2();
+        } else {
+            $('#private-users-section').hide();
+        }
+    }
+
   <% if @post.persisted? %>
+    $('#private-users-section').show();
+    applySelect2();
+
     var NoteButton = function (context) {
         var ui = $.summernote.ui;
 
@@ -227,34 +252,47 @@
   <% end %>
 
 
-  $('#post_user_ids_').select2({
-      placeholder: 'Search',
-      quietMillis: 200,
-      multiple: true,
-      minimumInputLength: 2,
-      ajax: {
-          delay: 250,
-          dataType: "JSON",
-          url: "<%= get_users_path %>",
-          data: function (params) {
-              var query = {
-                  term: params.term,
-                  excluded_ids: <%= @post.private_users.ids %>
-              };
+    function applySelect2() {
+        var results = [];
+        <% @post.private_users.each do |user| %>
+            results.push({
+                id: '<%= user.id %>',
+                text: '<%= user.name %>'
+            });
+        <% end %>
+        agent = $('#post_user_ids_').select2({
+            placeholder: 'Search',
+            quietMillis: 200,
+            multiple: true,
+            minimumInputLength: 2,
+            data: results,
+            ajax: {
+                delay: 250,
+                dataType: "JSON",
+                url: "<%= get_users_path %>",
+                data: function (params) {
+                    var query = {
+                        term: params.term,
+                        excluded_ids: <%= @post.private_users.ids %>
+                    };
 
-              // Query parameters will be ?search=[term]&type=public
-              return query;
-          },
-          processResults: function (data) {
-              return {
-                  results: data
-              };
-          },
-      },
-      templateResult: formatRepo,
-      templateSelection: formatRepoSelection
+                    // Query parameters will be ?search=[term]&type=public
+                    return query;
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+            },
+            templateResult: formatRepo,
+            templateSelection: formatRepoSelection
 
-  });
+        });
+<!--        let selected = <%#= @post.private_users.collect(&:name).to_json.html_safe %>-->
+        agent.val(<%= @post.private_users.collect(&:name).to_json.html_safe %>);
+        agent.trigger('change');
+    }
 
   function formatRepo (user) {
       if (user.loading) return user.text;

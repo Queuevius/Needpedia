@@ -26,7 +26,8 @@ class PostDashboard < Administrate::BaseDashboard
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
     post_id: Field::Number,
-    disabled: Field::Boolean
+    disabled: Field::Boolean,
+    private: Field::Boolean
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -37,6 +38,7 @@ class PostDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
   post_type
   title
+  private
   user
   disabled
   ].freeze

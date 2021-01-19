@@ -88,6 +88,7 @@ class PostsController < ApplicationController
       if @post.save
         # @post.clean_froala_link
         UserPrivatePost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_AREA
+        check_if_should_be_private(@post)
         create_activity(@post, 'post.create')
         format.html { redirect_to @post, notice: 'Post was successfully created.' }
         format.json { render :show, status: :created, location: @post }
@@ -126,6 +127,19 @@ class PostsController < ApplicationController
       format.html { redirect_to posts_url, notice: 'Post was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+
+  def remove_private_user
+    @post = Post.find(params[:post_id])
+    user_id = params[:user_id]
+    user_private_post = UserPrivatePost.where(post_id: @post.id, user_id: user_id)
+    if user_id && user_private_post.present?
+      user_private_post.destroy_all
+      flash[:notice] = 'User removed successfully'
+    else
+      flash[:alert] = 'Something went wrong, please try later'
+    end
+    redirect_to edit_post_path(@post)
   end
 
   def search_result
@@ -170,6 +184,19 @@ class PostsController < ApplicationController
     user_ids.each do |user|
       post = UserPrivatePost.where(post_id: @post.id, user_id: user.to_i)
       UserPrivatePost.create(post_id: @post.id, user_id: user.to_i) if post.blank?
+    end
+  end
+
+  def check_if_should_be_private(post)
+    case true
+    when post.post_type.in?([Post::POST_TYPE_PROPOSAL, Post::POST_TYPE_PROBLEM])
+      post.update(private: true) if post.parent_area&.private?
+    when post.post_type == Post::POST_TYPE_IDEA
+      post.update(private: true) if post.problem&.parent_area&.private?
+    when post.post_type == Post::POST_TYPE_LAYER
+      post.update(private: true) if post.parent_post&.private?
+    else
+      true
     end
   end
 

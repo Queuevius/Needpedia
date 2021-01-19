@@ -14,7 +14,11 @@ Rails.application.routes.draw do
     # resources :likes
     resources :comments
     resources :gigs
-    resources :posts
+    resources :posts do
+      collection do
+        get 'private_posts'
+      end
+    end
     resources :users
     resources :announcements
     resources :notifications
@@ -73,6 +77,7 @@ Rails.application.routes.draw do
     get 'problems'
     get 'proposals'
     get 'ideas'
+    delete 'remove_private_user'
     patch 'track_post'
     collection do
       get 'modal'
