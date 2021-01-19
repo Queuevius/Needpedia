@@ -2,8 +2,7 @@
 lock "~> 3.14.1"
 
 set :application, "needpedia"
-# set :repo_url, "git@github.com:Queuevius/Needpedia2.git"
-set :repo_url, "https://murtazazarkhwan:NYUSa7%25y3ZGE3j%26GG@github.com/Queuevius/Needpedia2.git"
+set :repo_url, "git@github.com:Queuevius/Needpedia2.git"
 
 set :deploy_to, "/home/deploy/#{fetch :application}"
 
