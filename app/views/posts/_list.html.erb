@@ -31,10 +31,8 @@
                 <div class="col-lg-12">
                   <h2>
                     <span class="<%= post_type_color(post.post_type) %>"><%= post.post_type.titleize %>: </span>
-                    <% unless check_if_private?(post) %>
-                      <i class="fa fa-globe" aria-hidden="true" style="font-size: 20px; color: blue;" title="Public Post"></i>
-                    <% else %>
-                      <i class="fa fa-lock" aria-hidden="true" style="font-size: 20px; color: yellowgreen;" title="Private Post"></i>
+                    <% if check_if_private?(post) %>
+                      <i class="fa fa-lock" aria-hidden="true" style="font-size: 20px;" title="Private Post"></i>
                     <% end %>
                     <%= link_to post.title, post_path(post), class: 'text-dark' %>
                   </h2>

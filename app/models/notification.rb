@@ -8,6 +8,8 @@ class Notification < ApplicationRecord
   NOTIFICATION_TYPE_REQUEST_REJECTED = 'request_rejected'.freeze
   NOTIFICATION_TYPE_POST_UPDATED = 'post_updated'.freeze
   NOTIFICATION_TYPE_ADMIN_NOTIFICATION = 'admin_notification'.freeze
+  NOTIFICATION_TYPE_POST_USER_ADDED = 'user_added'.freeze
+  NOTIFICATION_TYPE_POST_USER_REMOVED = 'user_removed'.freeze
 
   ################################ relationships ############################
   belongs_to :recipient, class_name: "User"
