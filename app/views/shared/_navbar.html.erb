@@ -35,12 +35,22 @@
           <span><i class="fa fa-rss" style="font-size: x-large" aria-hidden="true"></i></span>
         <% end %>
       </li>
-      <li>
-        <%= link_to conversations_path, class: "#{unread_messages(current_user)}", id: "#{set_id_for_icon(current_user, params)}" do %>
-        <%#= link_to chat_path do %>
-          <span><i class="far fa-comment-dots" style="font-size: x-large"></i></span>
-        <% end %>
+
+
+      <li class="nav-item dropdown" id="user-chat-icon" data-user-id="<%= current_user&.id %>">
+        <div id="hidden-div"></div>
+        <a class="nav-link dropdown-toggle <%= unread_messages(current_user) %>" href="#" id="<%= set_id_for_icon(current_user, params) %>" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-comment-dots" style="font-size: x-large; aria-hidden:true"></i>
+        </a>
+        <div class="dropdown-menu chat-dropdown" aria-labelledby="navbarDropdown">
+          <% current_user&.conversations.limit(3).order('created_at DESC').each do |conversation| %>
+            <% user = chat_user(conversation) %>
+            <%= render 'conversations/conversation', conversation: conversation, user: user %>
+          <% end %>
+          <%= link_to 'See All', conversations_path, class: 'dropdown-item text-right float-right conversation-item'%>
+        </div>
       </li>
+
       <li>
         <%= link_to time_bank_path do %>
           <i class="fa fa-university" title="Time Bank" aria-hidden="true" style="font-size: x-large"></i>
@@ -73,5 +83,12 @@
     <% end %>
   </ul>
 </div>
-
+<style>
+  .chat-dropdown {
+    width: 500px !important;
+  }
+    .conversation-item {
+      padding-left: 0px !important;
+    }
+</style>
 

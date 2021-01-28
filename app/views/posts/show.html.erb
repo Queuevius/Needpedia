@@ -16,9 +16,17 @@
       <div class="row mt-1">
         <div class="col-md-12 text-center mb-2">
           <% if @post.post_type == Post::POST_TYPE_LAYER %>
-            <h1 class="<%= post_type_color(@post.parent_post.post_type) %>"><%= @post.parent_post.title %> </h1>
+            <h1 class="<%= post_type_color(@post.parent_post.post_type) %>">
+              <% if check_if_private?(@post) %>
+                <i class="fa fa-lock" aria-hidden="true" style="font-size: 25px; color: black" title="Private Post"></i>
+              <% end %>
+              <%= @post.parent_post.title %>
+            </h1>
           <% else %>
             <h1 class="<%= post_type_color(@post.post_type != Post::POST_TYPE_LAYER ? @post.post_type : @post.parent_post.post_type) %>">
+              <% if check_if_private?(@post) %>
+                <i class="fa fa-lock" aria-hidden="true" style="font-size: 25px; color: black" title="Private Post"></i>
+              <% end %>
               <%= @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.title : @post.title %> </h1>
           <% end %>
         </div>

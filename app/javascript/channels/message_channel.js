@@ -10,18 +10,18 @@ consumer.subscriptions.create("MessageChannel", {
   },
 
   received(data) {
-    // Called when there's incoming data on the websocket for this channel
-  // document.getElementById("messages").innerHTML += data.html
     $('.chatContainerScroll > li').last().after(data.html);
-    let chat_icon = $('#chat_icon_' + data.reciever_id);
-    if (chat_icon.length) {
-        $('#chat_icon_' + data.reciever_id).addClass('unread-notificatios');
-    } else {
-        $.ajax({
-            url: data.path,
-            type: "PATCH",
-            dataType: "JSON"
-        });
-    }
-  }
+    let reciever_convo = $('.conversation-' + data.reciever_id);
+    let sender_convo = $('.conversation-' + data.sender_id);
+
+    reciever_convo.after(data.reciever_conversation);
+    sender_convo.after(data.sender_conversation);
+
+    sender_convo.remove();
+    reciever_convo.remove();
+    console.log('data.conversation', data.conversation);
+    $('#chat_icon_' + data.reciever_id).addClass('unread-notificatios');
+
+    $('.chatContainerScroll').animate({scrollTop: $('.chatContainerScroll .chat-hour:last').position().bottom});
+  },
 });

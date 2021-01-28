@@ -1,5 +1,6 @@
 class ConversationsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, :read_message
+  before_action :set_conversation, :read_message, only: [:show]
   def index
     @f = User.ransack(params[:q])
     @conversations = current_user.conversations.includes(:messages, :users).order('messages.created_at DESC')
@@ -11,7 +12,6 @@ class ConversationsController < ApplicationController
     @f = User.ransack(params[:q])
     @message = Message.new
     @conversations = current_user.conversations.includes(:messages, :users).order('messages.created_at DESC')
-    @conversation = Conversation.find(params[:id])
   end
 
   def create
@@ -23,5 +23,16 @@ class ConversationsController < ApplicationController
       conversation.save
     end
     redirect_to conversation_path(conversation)
+  end
+
+  private
+
+  def set_conversation
+    @conversation = Conversation.find(params[:id])
+  end
+
+  def read_message
+    messages = @conversation&.messages&.unread&.where.not(user_id: current_user&.id)
+    messages.update_all read_at: Time.now if messages.present?
   end
 end

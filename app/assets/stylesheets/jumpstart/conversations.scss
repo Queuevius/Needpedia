@@ -221,6 +221,10 @@
 
 .scroll_wanted {
   overflow-y: scroll;
+  height: 380px;
+  width: auto;
+  position: relative;
+  padding: 20px;
 }
 
 .chat-container li img {
