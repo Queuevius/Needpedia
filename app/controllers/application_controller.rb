@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
 
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :masquerade_user!
-  before_action :set_ransack
+  before_action :set_ransack, :conversations
 
   protected
 
@@ -14,5 +14,10 @@ class ApplicationController < ActionController::Base
 
   def set_ransack
     @q = Post.ransack(params[:q])
+    @u = User.ransack(params[:q])
+  end
+
+  def conversations
+    @conversations = current_user&.conversations.includes(:messages, :users).order('messages.created_at DESC') if current_user
   end
 end

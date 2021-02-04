@@ -10,7 +10,12 @@ consumer.subscriptions.create("MessageChannel", {
   },
 
   received(data) {
-    $('.chatContainerScroll > li').last().after(data.html);
+    let current_user_id = $('#user-chat-icon').data('user-id');
+    if (current_user_id == data.sender_id) {
+      $('.chatContainerScroll > li').last().after(data.sender_html);
+    } else {
+      $('.chatContainerScroll > li').last().after(data.reciever_html);
+    }
     let reciever_convo = $('.conversation-' + data.reciever_id);
     let sender_convo = $('.conversation-' + data.sender_id);
 

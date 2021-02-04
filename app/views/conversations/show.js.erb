@@ -1,0 +1,25 @@
+$("#modal-window").html('<%= escape_javascript(render 'conversations/navbar_message_section', conversation: @conversation) %>')
+$('#navbar-chat-messages').modal('show');
+
+<!--$('.modal-body').animate({scrollTop: 0},400);-->
+
+<!--$(".chatContainerScroll").animate({ scrollTop: $(".chatContainerScroll").height() }, "fast");-->
+
+<!--$('#navbar-chat-messages').animate({ scrollTop: $('.chat-right').height() }, "fast");-->
+
+<!--$('.chatContainerScroll').animate({scrollTop: $('.chatContainerScroll .chat-hour:last').height()});-->
+
+<!--$('.modal .modal-body').animate({ scrollTop: $('.modal .modal-body').offset().top }, 'slow');-->
+
+$('#modal-window').on('shown.bs.modal', function (event) {
+    $target = $('#section-3');
+    console.log('$target.offset()', $target.offset());
+    $('.scroll_wantedd').animate({
+        scrollTop: 30000 + 'px'
+    }, 'fast');
+
+    $('.modal-body').animate({
+       scrollTop: $target.offset().top + 'px'
+   }, 'fast');
+
+});

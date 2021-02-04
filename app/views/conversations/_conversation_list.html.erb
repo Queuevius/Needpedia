@@ -51,16 +51,25 @@
                                       <% user = chat_user(chat) %>
                                       <%= link_to conversation_path(chat), style: 'color: black' do %>
                                         <li class="person <%= 'active-user' if chat.id == conversation&.id %>" data-chat="<%= chat.id == conversation&.id ? 'person1' : 'person' %>">
-                                          <div class="user">
-                                            <% if user&.profile_image&.attached? %>
-                                              <%= image_tag user.profile_image %>
-                                            <% else %>
-                                              <%= image_tag 'profile.png', :class=>'connection-profile-image' %>
-                                            <% end %>
+                                          <div class="row">
+                                            <div class="col-3">
+                                              <div class="user">
+                                                <% if user&.profile_image&.attached? %>
+                                                  <%= image_tag user.profile_image %>
+                                                <% else %>
+                                                  <%= image_tag 'profile.png', :class=>'connection-profile-image' %>
+                                                <% end %>
+                                              </div>
+                                            </div>
+                                            <div class="col-7">
+                                              <p class="name-time">
+                                                <span class="name"><%= user.name %></span>
+                                              </p>
+                                            </div>
+                                            <div class="col-2">
+                                              <div class="pt-2 unread-section <%= unread_msg_in_navbar(chat, current_user) %>"></div>
+                                            </div>
                                           </div>
-                                          <p class="name-time">
-                                            <span class="name"><%= user.name %></span>
-                                          </p>
                                         </li>
                                       <% end %>
                                     <% end %>

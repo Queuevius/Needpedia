@@ -1,24 +1,30 @@
-namespace :assets do
-  desc 'Precompile assets locally and then rsync to web servers'
-  task :precompile do
-    run_locally do
-      with rails_env: stage_of_env do
-        execute :bundle, 'exec rake assets:precompile'
+namespace :deploy do
+
+  desc 'Automatically skip asset compile if possible'
+  task :auto_skip_assets do
+    asset_locations = %r(^(Gemfile\.lock|app/assets|lib/assets|vendor/asset))
+
+    revisions = []
+    on roles :app do
+      within current_path do
+        revisions << capture(:cat, 'REVISION').strip
       end
     end
 
-    on roles(:web), in: :parallel do |server|
-      run_locally do
-        execute :rsync,
-                "-a --delete ./public/packs/ #{fetch(:user)}@#{server.hostname}:#{shared_path}/public/packs/"
-        execute :rsync,
-                "-a --delete ./public/assets/ #{fetch(:user)}@#{server.hostname}:#{shared_path}/public/assets/"
-      end
-    end
+    # Never skip asset compile when servers are running on different code
+    next if revisions.uniq.length > 1
 
-    run_locally do
-      execute :rm, '-rf public/assets'
-      execute :rm, '-rf public/packs'
+    changed_files = `git diff --name-only #{revisions.first}`.split
+    if changed_files.grep(asset_locations).none?
+      puts Airbrussh::Colors.green('** Assets have not changed since last deploy.')
+      invoke 'deploy:skip_assets'
     end
   end
+
+  desc 'Skip asset compile'
+  task :skip_assets do
+    puts Airbrussh::Colors.yellow('** Skipping asset compile.')
+    Rake::Task['deploy:assets:precompile'].clear_actions
+  end
+
 end

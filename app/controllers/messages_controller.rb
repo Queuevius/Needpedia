@@ -5,10 +5,11 @@ class MessagesController < ApplicationController
       @message = Message.create(message_params)
       reciever = @message.conversation.users.reject { |x| x == current_user }.last
       message_read_path = message_read_path(@message.id)
-      html = ApplicationController.render partial: 'conversations/message', locals: {  message: @message, current_user: current_user }
+      sender_html = ApplicationController.render partial: 'conversations/right_message', locals: {  message: @message, current_user: current_user }
+      reciever_html = ApplicationController.render partial: 'conversations/left_message', locals: {  message: @message, current_user: current_user }
       reciever_conversation = ApplicationController.render partial: 'conversations/conversation', locals: { conversation: @message.conversation, user: reciever, current_user: current_user }
       sender_conversation = ApplicationController.render partial: 'conversations/conversation', locals: { conversation: @message.conversation, user: current_user, current_user: reciever }
-      ActionCable.server.broadcast('conversation_channel', html: html, reciever_conversation: reciever_conversation, sender_conversation: sender_conversation, reciever_id: reciever.id, path: message_read_path, sender_id: current_user.id)
+      ActionCable.server.broadcast('conversation_channel', sender_html: sender_html, reciever_html: reciever_html, reciever_conversation: reciever_conversation, sender_conversation: sender_conversation, reciever_id: reciever.id, path: message_read_path, sender_id: current_user.id)
       format.js
     end
   end

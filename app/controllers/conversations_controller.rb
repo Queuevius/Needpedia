@@ -1,5 +1,5 @@
 class ConversationsController < ApplicationController
-  before_action :authenticate_user!, :read_message
+  before_action :authenticate_user!
   before_action :set_conversation, :read_message, only: [:show]
   def index
     @f = User.ransack(params[:q])
@@ -12,6 +12,10 @@ class ConversationsController < ApplicationController
     @f = User.ransack(params[:q])
     @message = Message.new
     @conversations = current_user.conversations.includes(:messages, :users).order('messages.created_at DESC')
+    respond_to do |format|
+      format.html
+      format.js
+    end
   end
 
   def create
@@ -23,6 +27,14 @@ class ConversationsController < ApplicationController
       conversation.save
     end
     redirect_to conversation_path(conversation)
+  end
+
+  def users
+    term = params[:q]["first_name_or_last_name_cont"]
+    @conversations = current_user&.conversations.joins(:users).where('users.first_name ILIKE ? OR users.last_name ILIKE ?', "#{term}%", "#{term}%").uniq
+    respond_to do |format|
+      format.js
+    end
   end
 
   private

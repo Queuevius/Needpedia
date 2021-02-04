@@ -1,0 +1,46 @@
+<div id="navbar-chat-messages" class="modal fade" role="dialog">
+  <div class="modal-dialog  modal-lg">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <% user = chat_user(conversation) %>
+        <h4 class="modal-title"><%= user&.name %></h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+        <div class="modal-body">
+          <div class="chat-container">
+            <ul class="chat-box chatContainerScroll scroll_wantedd" style="background: #f4f5fb;">
+              <% conversation.messages.order('created_at ASC').each do |msg| %>
+                <%= render 'message', message: msg %>
+              <% end %>
+            </ul>
+            <%= form_with(model: Message.new, remote: true) do |f| %>
+              <div class="form-group mt-2">
+                <%= f.text_area :body, class: 'form-control', required: true, cols: 10, placeholder: 'Write your reply here...' %>
+                <%= f.hidden_field :user_id, value: current_user.id %>
+                <%= f.hidden_field :conversation_id, value: conversation.id %>
+              </div>
+              <div class="form-group">
+                <%= f.submit 'Send', class: 'btn btn-primary btn-sm pull-right mb-3' %>
+              </div>
+            <% end %>
+          </div>
+          <div id="section-3"></div>
+        </div>
+        <div class="modal-footer"></div>
+    </div>
+
+  </div>
+</div>
+<style>
+  .scroll_wantedd {
+    max-height: 350px;
+    overflow: auto;
+    padding: 20px;
+  }
+  .modal-body {
+    max-height: 380px;
+    overflow: auto;
+  }
+</style>

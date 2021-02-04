@@ -334,6 +334,18 @@ a[href="https://www.froala.com/wysiwyg-editor?pb=1"] {
       background-color: #e8edf2;
     }
   }
+
+  .chat-dropdown {
+    width: 350% !important;
+    right: auto;
+    left: 50%;
+    -webkit-transform: translate(-50%, 0);
+    -o-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+  }
+  .conversation-item {
+    padding-left: 0px !important;
+  }
 }
 
 @media (min-width: 1024px) and (max-width: 1199.98px){
@@ -361,6 +373,17 @@ a[href="https://www.froala.com/wysiwyg-editor?pb=1"] {
     li a:hover {
       background-color: #e8edf2;
     }
+  }
+  .chat-dropdown {
+    width: 350% !important;
+    right: auto;
+    left: 50%;
+    -webkit-transform: translate(-50%, 0);
+    -o-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+  }
+  .conversation-item {
+    padding-left: 0px !important;
   }
 }
 
@@ -390,6 +413,17 @@ a[href="https://www.froala.com/wysiwyg-editor?pb=1"] {
       background-color: #e8edf2;
     }
   }
+  .chat-dropdown {
+    width: 350% !important;
+    right: auto;
+    left: 50%;
+    -webkit-transform: translate(-50%, 0);
+    -o-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+  }
+  .conversation-item {
+    padding-left: 0px !important;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 991.98px){
@@ -418,6 +452,17 @@ a[href="https://www.froala.com/wysiwyg-editor?pb=1"] {
       background-color: #e8edf2;
     }
   }
+  .chat-dropdown {
+    width: 350% !important;
+    right: auto;
+    left: 50%;
+    -webkit-transform: translate(-50%, 0);
+    -o-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+  }
+  .conversation-item {
+    padding-left: 0px !important;
+  }
 }
 
 @media (max-width: 767.98px){
@@ -445,6 +490,17 @@ a[href="https://www.froala.com/wysiwyg-editor?pb=1"] {
     li a:hover {
       background-color: #e8edf2;
     }
+  }
+  .chat-dropdown {
+    width: 350% !important;
+    right: auto;
+    left: 50%;
+    -webkit-transform: translate(-50%, 0);
+    -o-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+  }
+  .conversation-item {
+    padding-left: 0px !important;
   }
 }
 

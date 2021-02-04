@@ -135,7 +135,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :conversations
+  resources :conversations do
+    collection do
+      get 'users'
+    end
+  end
   resources :messages do
     patch 'read'
   end

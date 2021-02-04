@@ -38,16 +38,31 @@
 
 
       <li class="nav-item dropdown" id="user-chat-icon" data-user-id="<%= current_user&.id %>">
-        <div id="hidden-div"></div>
-        <a class="nav-link dropdown-toggle <%= unread_messages(current_user) %>" href="#" id="<%= set_id_for_icon(current_user, params) %>" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link <%= unread_messages(current_user) %>" href="#" id="<%= set_id_for_icon(current_user, params) %>" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="fa fa-comment-dots" style="font-size: x-large; aria-hidden:true"></i>
         </a>
         <div class="dropdown-menu chat-dropdown" aria-labelledby="navbarDropdown">
-          <% current_user&.conversations.limit(3).order('created_at DESC').each do |conversation| %>
-            <% user = chat_user(conversation) %>
-            <%= render 'conversations/conversation', conversation: conversation, user: user %>
-          <% end %>
-          <%= link_to 'See All', conversations_path, class: 'dropdown-item text-right float-right conversation-item'%>
+          <div class="row">
+            <div class="col-2 col-md-2"></div>
+            <div class="col-8 col-md-8">
+              <div class="form-group">
+                <%#= select_tag 'user', {include_blank: false, required: true, include_hidden: false}, class: 'form-control select2', data: { type: 'Use Case Goal' } %>
+                <%= search_form_for @u, url: users_conversations_path, id: "drop-down-user-ssearch", remote: true do |f| %>
+                  <div class="row no-gutters align-items-center">
+                    <div class="col">
+                      <%= f.text_field :first_name_or_last_name_cont, class: 'form-control form-control-sm', placeholder: 'Search' %>
+                    </div>
+                    <div class="col-auto">
+                      <button class="btn btn-sm btn-secondary" type="submit"><i class="fa fa-search"></i></button>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+            <div class="col-12 col-md-12" id="navbar-conversations">
+              <%= render 'conversations/navbar_conversation_list', conversations: @conversations %>
+            </div>
+          </div>
         </div>
       </li>
 
@@ -83,12 +98,12 @@
     <% end %>
   </ul>
 </div>
-<style>
-  .chat-dropdown {
-    width: 500px !important;
-  }
-    .conversation-item {
-      padding-left: 0px !important;
-    }
-</style>
+<script>
+  $('#user').select2({
+      placeholder: 'Search',
+      quietMillis: 200,
+      multiple: true,
+      minimumInputLength: 2
+  })
+</script>
 
