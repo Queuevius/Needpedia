@@ -333,6 +333,9 @@ a[href="https://www.froala.com/wysiwyg-editor?pb=1"] {
     li a:hover {
       background-color: #e8edf2;
     }
+    .img-section {
+      margin-right: 5px;
+    }
   }
 
   .chat-dropdown {
@@ -345,6 +348,13 @@ a[href="https://www.froala.com/wysiwyg-editor?pb=1"] {
   }
   .conversation-item {
     padding-left: 0px !important;
+  }
+  .navbar-image {
+    height: 55px;
+    width: 55px;
+  }
+  .img-section {
+    margin-right: -35px;
   }
 }
 
@@ -385,6 +395,14 @@ a[href="https://www.froala.com/wysiwyg-editor?pb=1"] {
   .conversation-item {
     padding-left: 0px !important;
   }
+  .navbar-image {
+    height: 55px;
+    width: 55px;
+  }
+
+  .img-section {
+    margin-right: 5px;
+  }
 }
 
 @media (min-width: 992px) and (max-width: 1023.98px){
@@ -424,6 +442,14 @@ a[href="https://www.froala.com/wysiwyg-editor?pb=1"] {
   .conversation-item {
     padding-left: 0px !important;
   }
+  .navbar-image {
+    height: 55px;
+    width: 55px;
+  }
+
+  .img-section {
+    margin-right: 1px;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 991.98px){
@@ -451,6 +477,10 @@ a[href="https://www.froala.com/wysiwyg-editor?pb=1"] {
     li a:hover {
       background-color: #e8edf2;
     }
+
+    .img-section {
+      margin-right: 30px;
+    }
   }
   .chat-dropdown {
     width: 350% !important;
@@ -462,6 +492,11 @@ a[href="https://www.froala.com/wysiwyg-editor?pb=1"] {
   }
   .conversation-item {
     padding-left: 0px !important;
+  }
+
+  .navbar-image {
+    height: 55px;
+    width: 55px;
   }
 }
 
@@ -492,7 +527,7 @@ a[href="https://www.froala.com/wysiwyg-editor?pb=1"] {
     }
   }
   .chat-dropdown {
-    width: 350% !important;
+    width: 350px !important;
     right: auto;
     left: 50%;
     -webkit-transform: translate(-50%, 0);
@@ -501,6 +536,14 @@ a[href="https://www.froala.com/wysiwyg-editor?pb=1"] {
   }
   .conversation-item {
     padding-left: 0px !important;
+  }
+  .navbar-image {
+    height: 35px;
+    width: 35px;
+  }
+
+  .img-section {
+    margin-right: 10px;
   }
 }
 

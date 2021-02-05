@@ -4,6 +4,9 @@
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
+        <%= link_to back_conversations_path, data: { dismiss: 'modal', target: 'conversation-modal', toggle: 'modal'}, remote: true do %>
+          <i class="fa fa-chevron-circle-left pt-1 pr-3" aria-hidden="true" style="font-size: 24px; color: black" title="Back"></i>
+        <% end %>
         <% user = chat_user(conversation) %>
         <h4 class="modal-title"><%= user&.name %></h4>
         <button type="button" class="close" data-dismiss="modal">&times;</button>

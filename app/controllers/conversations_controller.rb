@@ -37,6 +37,13 @@ class ConversationsController < ApplicationController
     end
   end
 
+  def back
+    @conversations = current_user&.conversations.includes(:messages, :users).order('messages.created_at DESC')
+    respond_to do |format|
+      format.js
+    end
+  end
+
   private
 
   def set_conversation

@@ -138,6 +138,7 @@ Rails.application.routes.draw do
   resources :conversations do
     collection do
       get 'users'
+      get 'back'
     end
   end
   resources :messages do

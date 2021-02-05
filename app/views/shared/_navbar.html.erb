@@ -42,27 +42,7 @@
           <i class="fa fa-comment-dots" style="font-size: x-large; aria-hidden:true"></i>
         </a>
         <div class="dropdown-menu chat-dropdown" aria-labelledby="navbarDropdown">
-          <div class="row">
-            <div class="col-2 col-md-2"></div>
-            <div class="col-8 col-md-8">
-              <div class="form-group">
-                <%#= select_tag 'user', {include_blank: false, required: true, include_hidden: false}, class: 'form-control select2', data: { type: 'Use Case Goal' } %>
-                <%= search_form_for @u, url: users_conversations_path, id: "drop-down-user-ssearch", remote: true do |f| %>
-                  <div class="row no-gutters align-items-center">
-                    <div class="col">
-                      <%= f.text_field :first_name_or_last_name_cont, class: 'form-control form-control-sm', placeholder: 'Search' %>
-                    </div>
-                    <div class="col-auto">
-                      <button class="btn btn-sm btn-secondary" type="submit"><i class="fa fa-search"></i></button>
-                    </div>
-                  </div>
-                <% end %>
-              </div>
-            </div>
-            <div class="col-12 col-md-12" id="navbar-conversations">
-              <%= render 'conversations/navbar_conversation_list', conversations: @conversations %>
-            </div>
-          </div>
+          <%= render 'conversations/chat_menu_section', conversations: @conversations %>
         </div>
       </li>
 

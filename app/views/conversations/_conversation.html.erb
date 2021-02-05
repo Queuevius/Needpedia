@@ -1,18 +1,18 @@
 <%= link_to conversation_path(conversation), class: "dropdown-item conversation-item conversation-#{user&.id} pt-0 pb-0", remote: true do %>
 
   <div class="row pl-0 ml-0 text-left">
-    <div class="col-sm-2 img-section">
+    <div class="col-2 img-section">
       <% if user&.profile_image&.attached? %>
-        <%= image_tag user.profile_image, class: 'img-responsive', style: 'width: 55px; height: 55px' %>
+        <%= image_tag user.profile_image, class: 'img-responsive navbar-image' %>
       <% else %>
-        <%= image_tag "profile.png", class: 'img-responsive', style: 'width: 55px; height: 55px' %>
+        <%= image_tag "profile.png", class: 'img-responsive navbar-image' %>
       <% end %>
     </div>
-    <div class="col-sm-9 ml-0 pl-0">
+    <div class="col-6 ml-0 pl-0">
       <h5><%= user&.name %></h5>
       <span class="d-inline-block text-truncate text-muted" style="max-width: 150px;"><%= conversation&.messages&.first&.body %></span>
     </div>
-    <div class="col-sm-1">
+    <div class="col-1">
       <div class="pt-2 unread-section <%= unread_msg_in_navbar(conversation, current_user) %>" id="unread-user"></div>
     </div>
   </div>
