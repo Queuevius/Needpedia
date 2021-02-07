@@ -20,6 +20,13 @@ class Post < ApplicationRecord
     POST_TYPE_SOCIAL_MEDIA
   ].freeze
 
+  CORE_POST_TYPES = [
+    POST_TYPE_AREA,
+    POST_TYPE_PROBLEM,
+    POST_TYPE_PROPOSAL,
+    POST_TYPE_IDEA
+  ].freeze
+
   GENERAL_AREA = ENV['GENERAL_AREA_ID']
   GENERAL_PROBLEM = ENV['GENERAL_PROBLEM_ID']
   ################################ Relationships ########################
@@ -76,5 +83,9 @@ class Post < ApplicationRecord
   def clean_froala_link
     body = self.content.body.to_s.remove("Powered by")
     self.update(content: body)
+  end
+
+  def type_of?(type)
+    post_type == type
   end
 end

@@ -9,7 +9,7 @@ module PostsHelper
     when post.post_type == Post::POST_TYPE_IDEA
       post.problem&.parent_area&.private? && !post.problem&.parent_area&.private_users&.include?(current_user)
     when Post::POST_TYPE_LAYER
-      post.parent_post&.private? && !post.parent_post&private_users&.include?(current_user)
+      post.parent_post&.private? && !post.parent_post&.private_users&.include?(current_user)
     else
       false
     end

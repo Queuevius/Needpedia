@@ -37,9 +37,7 @@
                 <div class="ui-block-content">
                   <div class="row">
                     <div class="col-sm-3 text-left mb-2">
-                      <%= link_to posts_path, class: 'btn btn-primary' do %>
-                        Back
-                      <% end %>
+                      <%= link_to 'Back', :back, class: 'btn btn-primary' %>
                     </div>
 
                     <% if @post.post_type != Post::POST_TYPE_SOCIAL_MEDIA %>
@@ -88,6 +86,34 @@
                 </div>
               </div>
             </div>
+            <% if Post::CORE_POST_TYPES.include?(@post.post_type) %>
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+                    <div class="ui-block shadow-lg rounded">
+                      <div class="ui-block-content">
+                        <div class="row">
+                          <div class="col-sm-3">
+                            <span>
+                              <% if @post.type_of?(Post::POST_TYPE_PROBLEM) || @post.type_of?(Post::POST_TYPE_PROPOSAL) %>
+                                <%= link_to 'Area', post_path(@post.parent_area), title: @post.title %> >
+                                <%= link_to @post.type_of?(Post::POST_TYPE_PROBLEM) ? 'Problem' : 'Proposal', post_path(@post), title: @post.title %>
+                              <% elsif @post.type_of?(Post::POST_TYPE_AREA) %>
+                                <%= link_to 'Area', post_path(@post), title: @post.title %>
+                              <% elsif @post.type_of?(Post::POST_TYPE_IDEA) %>
+                                <%= link_to 'Area', post_path(@post&.problem&.parent_area), title: @post.title %> >
+                                <%= link_to 'Problem', post_path(@post.problem), title: @post.title %> >
+                                <%= link_to 'Idea', post_path(@post), title: @post.title %>
+                              <% end %>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
             <% if @post.post_type == Post::POST_TYPE_LAYER %>
               <div class="col-md-12 text-center mb-2">
                 <h1>Layer </h1>
