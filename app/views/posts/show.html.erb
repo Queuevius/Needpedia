@@ -93,17 +93,17 @@
                     <div class="ui-block shadow-lg rounded">
                       <div class="ui-block-content">
                         <div class="row">
-                          <div class="col-sm-3">
+                          <div class="col-12">
                             <span>
                               <% if @post.type_of?(Post::POST_TYPE_PROBLEM) || @post.type_of?(Post::POST_TYPE_PROPOSAL) %>
-                                <%= link_to 'Area', post_path(@post.parent_area), title: @post.title %> >
-                                <%= link_to @post.type_of?(Post::POST_TYPE_PROBLEM) ? 'Problem' : 'Proposal', post_path(@post), title: @post.title %>
+                                <%= link_to truncate(@post&.parent_area&.title, length: 30), post_path(@post&.parent_area), title: @post&.parent_area&.title %> >
+                                <%= link_to truncate(@post&.title, length: 30), post_path(@post), title: @post&.title %>
                               <% elsif @post.type_of?(Post::POST_TYPE_AREA) %>
-                                <%= link_to 'Area', post_path(@post), title: @post.title %>
+                                <%= link_to truncate(@post&.title, length: 30), post_path(@post), title: @post.title %>
                               <% elsif @post.type_of?(Post::POST_TYPE_IDEA) %>
-                                <%= link_to 'Area', post_path(@post&.problem&.parent_area), title: @post.title %> >
-                                <%= link_to 'Problem', post_path(@post.problem), title: @post.title %> >
-                                <%= link_to 'Idea', post_path(@post), title: @post.title %>
+                                <%= link_to truncate(@post&.problem&.parent_area&.title, length: 30), post_path(@post.problem.parent_area), title: @post&.problem&.parent_area&.title %> >
+                                <%= link_to truncate(@post&.problem&.title, length: 30), post_path(@post&.problem), title: @post.problem.title %> >
+                                <%= link_to truncate(@post&.title, length: 30), post_path(@post), title: @post.title %>
                               <% end %>
                             </span>
                           </div>

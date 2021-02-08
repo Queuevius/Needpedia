@@ -11,7 +11,7 @@ server '18.217.9.251', user: 'deploy', roles: %w{app db web}
 
 # role-based syntax
 # ==================
-before 'deploy:starting', 'deploy:auto_skip_assets'
+# before 'deploy:starting', 'deploy:auto_skip_assets'
 # Defines a role with one or multiple servers. The primary server in each
 # group is considered to be the first unless any hosts have the primary
 # property set. Specify the username and a domain or IP for the server.
