@@ -196,7 +196,7 @@
                               </div>
                               <div class="col-md-1">
                               <div class="btn btn-secondary" id="checkbox-btn">
-                                <%= check_box_tag "tracking", current_user.tracking_posts.pluck(:post_id).include?(@post.id), current_user.tracking_posts.pluck(:post_id).include?(@post.id), data: {url: post_track_post_path(@post.id), remote: true, method: :patch}, class: "btn btn-secondary" %>
+                                <%= check_box_tag "tracking", current_user.tracking_posts.pluck(:post_id).include?(@post.id), current_user.tracking_posts.pluck(:post_id).include?(@post.id), remote: true, method: :patch, class: "", title: 'Track this post' %>
                               </div>
                             </div>
                               <div class="col-md-8">
@@ -235,6 +235,22 @@
 <script>
     $('#checkbox-btn').click(function(){
         const checkboxValue = $("#tracking").prop("checked");
+        trackRequest();
+        if (checkboxValue == true) {
+            $("#tracking").prop("checked", false);
+        } else {
+            $("#tracking").prop("checked", true);
+        }
+    });
+    $('#tracking').change(function() {
+        if (this.checked) {
+            $("#tracking").prop("checked", false);
+        } else {
+            $("#tracking").prop("checked", true);
+        }
+    });
+    function trackRequest() {
+        const checkboxValue = $("#tracking").prop("checked");
         $.ajax({
             url: "<%= post_track_post_path(@post.id) %>",
             type: "PATCH",
@@ -243,10 +259,6 @@
                 tracking: checkboxValue
             }
         });
-        if (checkboxValue == true) {
-            $("#tracking").prop("checked", false);
-        } else {
-            $("#tracking").prop("checked", true);
-        }
-    });
+
+    }
 </script>

@@ -31,7 +31,9 @@
       <div class="col-md-12 text-center">
         <h2>Liked by <%= current_user&.name %></h2>
       </div>
-      <%= render 'posts/list', posts: @liked_posts, type: nil %>
+      <div class="col-md-12">
+        <%= render 'posts/list', posts: @liked_posts, type: nil %>
+      </div>
       <% if @liked_posts.blank? %>
         <div class="col-md-12 text-center">
           <h5 class="text-warning">Not liked any post</h5>
@@ -43,7 +45,9 @@
       <div class="col-md-12 text-center">
         <h2>Shared by <%= current_user&.name %></h2>
       </div>
-      <%= render 'posts/list', posts: @shared_posts, type: nil %>
+      <div class="col-md-12">
+        <%= render 'posts/list', posts: @shared_posts, type: nil %>
+      </div>
       <% if @shared_posts.blank? %>
         <div class="col-md-12 text-center">
           <h5 class="text-warning">Not shared any post</h5>
@@ -55,7 +59,9 @@
       <div class="col-md-12 text-center">
         <h2>Commented by <%= current_user&.name %></h2>
       </div>
-      <%= render 'posts/list', posts: @commented_posts, type: nil %>
+      <div class="col-md-12">
+        <%= render 'posts/list', posts: @commented_posts, type: nil %>
+      </div>
       <% if @commented_posts.blank? %>
         <div class="col-md-12 text-center">
           <h5 class="text-warning">Not Flagged any post</h5>
@@ -67,7 +73,9 @@
       <div class="col-md-12 text-center">
         <h2>Flagged by <%= current_user&.name %></h2>
       </div>
-      <%= render 'posts/list', posts: @flagged_posts, type: nil %>
+      <div class="col-md-12">
+        <%= render 'posts/list', posts: @flagged_posts, type: nil %>
+      </div>
       <% if @flagged_posts.blank? %>
         <div class="col-md-12 text-center">
           <h5 class="text-warning">Not Flagged any post</h5>

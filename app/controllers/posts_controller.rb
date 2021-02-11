@@ -125,7 +125,7 @@ class PostsController < ApplicationController
   def destroy
     @post.destroy
     respond_to do |format|
-      format.html { redirect_to posts_url, notice: 'Post was successfully destroyed.' }
+      format.html { redirect_to wall_path(), notice: 'Post was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
@@ -148,7 +148,7 @@ class PostsController < ApplicationController
   def search_result
     @keywords = params[:q]
     @q = Post.ransack(@keywords)
-    @u = User.ransack({ first_name_or_last_name_cont: @keywords[:title_cont] })
+    @u = User.ransack({ first_name_or_last_name_or_full_name_cont: @keywords[:title_cont] })
     @posts = @q.result(distinct: true)
     @users = @u.result(distinct: true)
   end
@@ -158,10 +158,10 @@ class PostsController < ApplicationController
       tracking_post = current_user.tracking_posts.where(post_id: @post.id)
       if tracking_post.present?
         tracking_post.destroy_all
-        flash[:notice] = 'You have DeActivated Tracking for this Post.'
+        # flash[:notice] = 'You have DeActivated Tracking for this Post.'
       else
         UserPost.create!(user_id: current_user.id, post_id: @post.id, post_type: @post.post_type)
-        flash[:notice] = 'You have activated Tracking for this Post.'
+        # flash[:notice] = 'You have activated Tracking for this Post.'
       end
     rescue StandardError => e
       flash[:alert] = "An Error occurred: #{e}"

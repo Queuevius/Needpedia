@@ -109,4 +109,10 @@ class User < ApplicationRecord
 
     errors.add :password, 'Complexity requirement not met. Please use: 1 uppercase, 1 lowercase, 1 digit and 1 special character'
   end
+
+  ransacker :full_name, formatter: proc { |v| v.mb_chars.downcase.to_s } do |parent|
+    Arel::Nodes::NamedFunction.new('LOWER',
+                                   [Arel::Nodes::NamedFunction.new('concat_ws',
+                                                                   [Arel::Nodes::SqlLiteral.new("' '"), parent.table[:first_name], parent.table[:last_name]])])
+  end
 end
