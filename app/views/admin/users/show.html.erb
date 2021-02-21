@@ -25,6 +25,7 @@ as well as a link to its edit page.
 
   <div>
     <%= link_to "Login As User", masquerade_path(page.resource), class: "button" %>
+    <%= link_to "Profile", feed_path(uuid: page.resource.uuid), class: "button", target: '_blank' %>
 
     <%= link_to(
       "#{t("administrate.actions.edit")} #{page.page_title}",

@@ -135,9 +135,13 @@ class ProfileController < ApplicationController
 
   def feed
     if @uuid
-      @activities = PublicActivity::Activity.where(owner_id: @user.id).order('created_at DESC').limit(50)
+      activities = PublicActivity::Activity.where(owner_id: @user.id).order('created_at DESC').limit(50)
+      posts = activities.select { |p| p.trackable_type == 'Post'}.map(&:trackable_id).uniq
+      private_post_ids = Post.includes(:private_users).where(id: posts, private: true).reject{ |p| p.private_users&.include?(current_user) }&.pluck(:id)
+      @activities = activities.reject { |p| private_post_ids.include?(p.trackable_id) }
     else
       @activities = PublicActivity::Activity.order('created_at DESC').limit(50)
+      @activities = @activities.select { |p| p.trackable&.private == false }
     end
   end
 

@@ -20,7 +20,8 @@ class UserDashboard < Administrate::BaseDashboard
     admin: Field::Boolean,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
-    disabled: Field::Boolean
+    disabled: Field::Boolean,
+    profile_image: Field::ActiveStorage
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -30,6 +31,7 @@ class UserDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
   id
+  profile_image
   email
   disabled
   ].freeze
@@ -46,6 +48,7 @@ class UserDashboard < Administrate::BaseDashboard
   confirmed_at
   created_at
   updated_at
+  profile_image
   ].freeze
 
   # FORM_ATTRIBUTES

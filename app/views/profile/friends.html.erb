@@ -1,42 +1,43 @@
-<div class="wrapper d-flex align-items-stretch mb-10">
-  <%= render 'shared/sidebar' %>
-
+<div class="row">
+  <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12"><%= render 'shared/sidebar' %></div>
+  <div class="col-md-9 col-lg-9 col-xl-9 col-sm-12">
   <!-- Page Content  -->
-  <div id="content" class="pl-2">
-    <div class="col-md-12 text-center">
-      <h2><b>Friends</b></h2>
-    </div>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="container mb-3">
-            <div class="row justify-content-center">
-              <div class="col-12 col-md-10 col-lg-8">
-                <%= search_form_for @f, url: search_results_path, method: :get, remote: true do |f| %>
-                  <div class="row no-gutters align-items-center">
-                    <div class="col">
-                      <%= f.text_field :first_name_or_last_name_cont, class: 'form-control form-control-lg', placeholder: "Search" %>
+    <div id="content" class="pl-2">
+      <div class="col-md-12 text-center">
+        <h2><b>Friends</b></h2>
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="container mb-3">
+              <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-8">
+                  <%= search_form_for @f, url: search_results_path, method: :get, remote: true do |f| %>
+                    <div class="row no-gutters align-items-center">
+                      <div class="col">
+                        <%= f.text_field :first_name_or_last_name_cont, class: 'form-control form-control-lg', placeholder: "Search" %>
+                      </div>
+                      <div class="col-auto">
+                        <button class="ml-2 btn btn-lg btn-secondary search-button" type="submit">Go</button>
+                      </div>
                     </div>
-                    <div class="col-auto">
-                      <button class="ml-2 btn btn-lg btn-secondary search-button" type="submit">Go</button>
-                    </div>
-                  </div>
-                <% end %>
+                  <% end %>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="row m-t-40 p-t-20 artist-box">
-        <div class="col-md-12">
-          <div class="row" id="friends-list-div">
-            <%= render 'small_friends_list', friends: @friends %>
+        <div class="row m-t-40 p-t-20 artist-box">
+          <div class="col-md-12">
+            <div class="row" id="friends-list-div">
+              <%= render 'small_friends_list', friends: @friends %>
+            </div>
           </div>
         </div>
-      </div>
-      <div id="kaminari">
-        <div class="row justify-content-center mb-5">
-          <%= paginate @friends %>
+        <div id="kaminari">
+          <div class="row justify-content-center mb-5">
+            <%= paginate @friends %>
+          </div>
         </div>
       </div>
     </div>
