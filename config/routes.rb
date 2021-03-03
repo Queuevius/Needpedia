@@ -19,7 +19,11 @@ Rails.application.routes.draw do
         get 'private_posts'
       end
     end
-    resources :users
+    resources :users do
+      collection do
+        delete 'bulk_delete'
+      end
+    end
     resources :announcements
     resources :notifications
     # resources :services
@@ -158,7 +162,7 @@ Rails.application.routes.draw do
   #   end
   # end
 
-  devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", :sessions => "users/sessions"}
+  devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", :sessions => "users/sessions", registrations: 'users/registrations'}
   root to: 'home#index'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end
