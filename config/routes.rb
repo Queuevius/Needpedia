@@ -3,6 +3,9 @@ require 'sidekiq/web'
 Rails.application.routes.draw do
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :admin do
+    resources :answers
+    resources :questions
+    resources :questionnaires
     resources :faqs
     resources :home_videos
     resources :admin_notifications
@@ -22,6 +25,8 @@ Rails.application.routes.draw do
     resources :users do
       collection do
         delete 'bulk_delete'
+        get 'send_confirmation_link'
+        get 'unconfirmed_users'
       end
     end
     resources :announcements
@@ -84,6 +89,7 @@ Rails.application.routes.draw do
     delete 'remove_private_user'
     patch 'track_post'
     collection do
+      delete 'destroy_activity'
       get 'modal'
       get 'search_result'
       get 'all_areas'

@@ -125,8 +125,16 @@ class PostsController < ApplicationController
   def destroy
     @post.destroy
     respond_to do |format|
-      format.html { redirect_to wall_path(), notice: 'Post was successfully destroyed.' }
+      format.html { redirect_to wall_path, notice: 'Post was successfully destroyed.' }
       format.json { head :no_content }
+    end
+  end
+
+  def destroy_activity
+    @activity = PublicActivity::Activity.find(params[:id])
+    @activity.destroy
+    respond_to do |format|
+      format.html { redirect_to feed_path, notice: 'Post was successfully destroyed.' }
     end
   end
 

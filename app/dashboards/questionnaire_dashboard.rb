@@ -1,6 +1,6 @@
 require "administrate/base_dashboard"
 
-class UserDashboard < Administrate::BaseDashboard
+class QuestionnaireDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #
@@ -9,20 +9,11 @@ class UserDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    email: Field::String,
-    password: Field::String.with_options(searchable: false),
-    encrypted_password: Field::String,
-    remember_created_at: Field::DateTime,
-    confirmed_at: Field::DateTime,
-    first_name: Field::String,
-    last_name: Field::String,
-    announcements_last_read_at: Field::DateTime,
-    admin: Field::Boolean,
+    title: Field::Text,
+    active: Field::Boolean,
+    questions: Field::HasMany,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
-    disabled: Field::Boolean,
-    profile_image: Field::ActiveStorage,
-    questionnaires: Field::HasMany
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -32,39 +23,28 @@ class UserDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
   id
-  first_name
-  last_name
-  profile_image
-  email
-  disabled
+  title
+  active
+  created_at
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
   id
-  email
-  first_name
-  last_name
-  admin
-  disabled
-  confirmed_at
+  title
+  active
+  questions
   created_at
   updated_at
-  profile_image
   ].freeze
 
   # FORM_ATTRIBUTES
   # an array of attributes that will be displayed
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
-  email
-  first_name
-  last_name
-  disabled
-  confirmed_at
-  admin
-  password
+  title
+  active
   ].freeze
 
   # COLLECTION_FILTERS
@@ -79,10 +59,10 @@ class UserDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how users are displayed
+  # Overwrite this method to customize how questionnaires are displayed
   # across all pages of the admin dashboard.
   #
-  def display_resource(user)
-    user.name
+  def display_resource(questionnaire)
+    questionnaire.title
   end
 end

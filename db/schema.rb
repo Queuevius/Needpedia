@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_12_171909) do
+ActiveRecord::Schema.define(version: 2021_03_09_113959) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,6 +80,16 @@ ActiveRecord::Schema.define(version: 2021_01_12_171909) do
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "answers", force: :cascade do |t|
+    t.text "body"
+    t.bigint "user_id"
+    t.bigint "question_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["question_id"], name: "index_answers_on_question_id"
+    t.index ["user_id"], name: "index_answers_on_user_id"
   end
 
   create_table "comments", force: :cascade do |t|
@@ -221,6 +231,21 @@ ActiveRecord::Schema.define(version: 2021_01_12_171909) do
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
+  create_table "questionnaires", force: :cascade do |t|
+    t.text "title"
+    t.boolean "active"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "questions", force: :cascade do |t|
+    t.bigint "questionnaire_id", null: false
+    t.text "body"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["questionnaire_id"], name: "index_questions_on_questionnaire_id"
+  end
+
   create_table "services", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "provider"
@@ -331,6 +356,15 @@ ActiveRecord::Schema.define(version: 2021_01_12_171909) do
     t.index ["user_id"], name: "index_user_private_posts_on_user_id"
   end
 
+  create_table "user_questionnaires", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "questionnaire_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["questionnaire_id"], name: "index_user_questionnaires_on_questionnaire_id"
+    t.index ["user_id"], name: "index_user_questionnaires_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -358,6 +392,8 @@ ActiveRecord::Schema.define(version: 2021_01_12_171909) do
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "answers", "questions"
+  add_foreign_key "answers", "users"
   add_foreign_key "comments", "users"
   add_foreign_key "flags", "users"
   add_foreign_key "gigs", "users"
@@ -367,6 +403,7 @@ ActiveRecord::Schema.define(version: 2021_01_12_171909) do
   add_foreign_key "post_tokens", "posts"
   add_foreign_key "post_tokens", "users"
   add_foreign_key "posts", "users"
+  add_foreign_key "questions", "questionnaires"
   add_foreign_key "services", "users"
   add_foreign_key "shares", "users"
   add_foreign_key "taggings", "tags"
@@ -381,4 +418,6 @@ ActiveRecord::Schema.define(version: 2021_01_12_171909) do
   add_foreign_key "user_posts", "users"
   add_foreign_key "user_private_posts", "posts"
   add_foreign_key "user_private_posts", "users"
+  add_foreign_key "user_questionnaires", "questionnaires"
+  add_foreign_key "user_questionnaires", "users"
 end

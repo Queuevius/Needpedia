@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   after_create :add_default_credit, :create_admin_notifications
   before_destroy :delete_notifications
+  before_create :skip_confirmation_notification!
 
   validate :password_complexity
 
@@ -53,6 +54,11 @@ class User < ApplicationRecord
 
   has_many :user_conversations, dependent: :destroy
   has_many :conversations, through: :user_conversations
+
+  has_many :user_questionnaires, dependent: :destroy
+  has_many :questionnaires, through: :user_questionnaires
+
+  has_many :answers, dependent: :destroy
 
   def credit_hours
     active_gigs_amount = posted_gigs.active_progress.sum(:amount)
