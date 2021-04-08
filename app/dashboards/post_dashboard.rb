@@ -27,6 +27,8 @@ class PostDashboard < Administrate::BaseDashboard
     updated_at: Field::DateTime,
     post_id: Field::Number,
     disabled: Field::Boolean,
+    editing_disabled: Field::Boolean,
+    layering_disabled: Field::Boolean,
     private: Field::Boolean
   }.freeze
 
@@ -41,6 +43,8 @@ class PostDashboard < Administrate::BaseDashboard
   private
   user
   disabled
+  editing_disabled
+  layering_disabled
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -56,6 +60,8 @@ class PostDashboard < Administrate::BaseDashboard
   layers
   comments
   disabled
+  editing_disabled
+  layering_disabled
   flags
   id
   post_type
@@ -77,6 +83,8 @@ class PostDashboard < Administrate::BaseDashboard
   flags
   post_type
   disabled
+  editing_disabled
+  layering_disabled
   title
   ].freeze
 

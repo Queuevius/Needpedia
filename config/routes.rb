@@ -1,8 +1,10 @@
 require 'sidekiq/web'
 
 Rails.application.routes.draw do
+  get 'how_tos/index'
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :admin do
+    resources :how_tos
     resources :answers
     resources :questions
     resources :questionnaires

@@ -14,11 +14,13 @@
                     <div class="col-lg-5 col-xl-5 col-sm-12 col-md-5 text-right pt-2">
                       <em class="float-right"><%= activity.created_at.strftime('%m/%d/%Y %l:%M %p') %></em>
                     </div>
-                    <div class="col-lg-1 col-xl-1 col-sm-12 col-md-1 text-right pr-1">
-                      <%= link_to destroy_activity_posts_path(id: activity.id), class: 'btn btn-default', method: :delete, data: { confirm: 'Are you sure?' } do %>
-                        <i class="fa fa-trash-alt" style="font-size: 18px" title="Delete this post"></i>
-                      <% end %>
-                    </div>
+                    <% if activity&.owner&.id == current_user&.id %>
+                      <div class="col-lg-1 col-xl-1 col-sm-12 col-md-1 text-right pr-1">
+                        <%= link_to destroy_activity_posts_path(id: activity.id), class: 'btn btn-default', method: :delete, data: { confirm: 'Are you sure?' } do %>
+                          <i class="fa fa-trash-alt" style="font-size: 18px" title="Delete this post"></i>
+                        <% end %>
+                      </div>
+                    <% end %>
                   </div>
                   <hr class="mt-0">
                   <%= post.content %>

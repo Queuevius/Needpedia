@@ -15,6 +15,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def save_questionnaire_data
     # add custom create logic here
+    return unless params[:questionnaire_id].present?
+
     questionnaire = Questionnaire.find(params[:questionnaire_id])
     questionnaire.questions.each do |q|
       q.answers.create(body: params["answer_#{q.id}"], user_id: resource.id)

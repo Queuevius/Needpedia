@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_09_113959) do
+ActiveRecord::Schema.define(version: 2021_04_08_173413) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -173,6 +173,13 @@ ActiveRecord::Schema.define(version: 2021_03_09_113959) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "how_tos", force: :cascade do |t|
+    t.text "question"
+    t.text "answer"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "likes", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "likeable_id"
@@ -228,6 +235,8 @@ ActiveRecord::Schema.define(version: 2021_03_09_113959) do
     t.integer "post_id"
     t.boolean "disabled", default: false
     t.boolean "private", default: false
+    t.boolean "editing_disabled", default: false
+    t.boolean "layering_disabled", default: false
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
@@ -386,6 +395,11 @@ ActiveRecord::Schema.define(version: 2021_03_09_113959) do
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
     t.datetime "last_login_at"
+    t.boolean "message_notifications", default: false
+    t.boolean "track_notifications", default: false
+    t.boolean "daily_notifications", default: false
+    t.datetime "daily_notification_time"
+    t.boolean "all_notifications", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

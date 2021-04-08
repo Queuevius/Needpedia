@@ -3,6 +3,7 @@
     <div class="ui-block shadow-lg rounded">
       <div class="ui-block-content">
         <h1 class="text-center">Sign Up</h1>
+        <% questionnaire = Questionnaire.first %>
         <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
           <%= devise_error_messages! %>
 
@@ -14,20 +15,29 @@
             <%= f.email_field :email, autofocus: false, class: 'form-control', placeholder: "Email Address" %>
           </div>
 
-          <div class="form-group">
-            <%= f.password_field :password, autocomplete: "off", class: 'form-control', placeholder: 'Password' %>
-          </div>
+          <% if questionnaire&.active? %>
+            <div class="form-group">
+              <%= f.hidden_field :password, value: 'testUser1!' %>
+            </div>
 
-          <div class="form-group">
-            <%= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control', placeholder: 'Confirm Password' %>
-          </div>
+            <div class="form-group">
+              <%= f.hidden_field :password_confirmation,  value: 'testUser1!' %>
+            </div>
+          <% else %>
+            <div class="form-group">
+              <%= f.password_field :password, autocomplete: "off", class: 'form-control', placeholder: 'Password' %>
+            </div>
+
+            <div class="form-group">
+              <%= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control', placeholder: 'Confirm Password' %>
+            </div>
+          <% end %>
 
           <div class="form-group">
             <%= recaptcha_tags %>
           </div>
 
           <div class="form-group">
-            <% questionnaire = Questionnaire.where(title: 'Sign up').last %>
             <% if questionnaire&.active? %>
               <button type="button" class="btn btn-primary btn-block btn-lg" data-toggle="modal" data-target="#signUpQuestionnaire">
                 Sign up
@@ -37,39 +47,41 @@
             <% end %>
           </div>
 
-          <!-- Modal -->
-          <div class="modal fade" id="signUpQuestionnaire" tabindex="-1" role="dialog" aria-labelledby="signUpQuestionnaireTitle" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLongTitle">Sign Up questionnaire</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <%= hidden_field_tag :questionnaire_id, questionnaire.id %>
-                  <% questionnaire.questions.each_with_index do |q, index| %>
-                    <%= hidden_field_tag "question_#{q.id}_id", q.id %>
-                    <div class="card">
-                      <div class="card-body">
-                        <div class="text-dark">
-                          <h4>Question <%= index + 1 %>: <%= q.body %></h4>
-                        </div>
-                        <div class="form-group">
-                          <%= text_field_tag "answer_#{q.id}", "", { autofocus: true, class: 'form-control', placeholder: "Answer"} %>
+          <% if questionnaire&.active? %>
+            <!-- Modal -->
+            <div class="modal fade" id="signUpQuestionnaire" tabindex="-1" role="dialog" aria-labelledby="signUpQuestionnaireTitle" aria-hidden="true">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <%= hidden_field_tag :questionnaire_id, questionnaire&.id %>
+                    <% questionnaire.questions.each_with_index do |q, index| %>
+                      <%= hidden_field_tag "question_#{q.id}_id", q.id %>
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="text-dark">
+                            <h4>Question <%= index + 1 %>: <%= q.body.html_safe %></h4>
+                          </div>
+                          <div class="form-group">
+                            <%= text_field_tag "answer_#{q.id}", "", { autofocus: true, class: 'form-control', placeholder: "Answer"} %>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  <% end %>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  <%= f.submit "Save changes", class: "btn btn-primary" %>
+                    <% end %>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <%= f.submit "Save changes", class: "btn btn-primary" %>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          <% end %>
         <% end %>
 
         <div class="text-center">

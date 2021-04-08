@@ -1,9 +1,35 @@
 <div class="row">
   <div class="col-lg-4 col-md-6 ml-auto mr-auto">
-    <h1 class="text-center">Account</h1>
 
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
       <%= devise_error_messages! %>
+
+      <h1 class="text-center">Notification</h1>
+
+      <div class="ml-5">
+        <div class="form-group">
+          <p class="form-check-input mb-4"> Email </p><br>
+          <%= f.check_box :message_notifications, class: "form-check-input mt-2 mr-3" %>
+          <h5 class="ml-3">Message Notifications</h5>
+        </div>
+
+        <div class="form-group">
+          <%= f.check_box :track_notifications, class: "form-check-input mt-2 mr-3" %>
+          <h5 class="ml-3">Post you're tracking</h5>
+        </div>
+
+        <div class="form-group">
+          <%= f.check_box :daily_notifications, class: "form-check-input mt-2 mr-3" %>
+          <h5 class="ml-3">Daily @ <%= f.time_field :daily_notification_time %></h5>
+        </div>
+
+        <div class="form-group">
+          <%= f.check_box :all_notifications, class: "form-check-input mt-2 mr-3" %>
+          <h5 class="ml-3">All Notifications</h5>
+        </div>
+      </div>
+
+      <h1 class="text-center">Account</h1>
 
       <div class="form-group">
         <%= f.text_field :name, autofocus: false, class: 'form-control', placeholder: "Full Name" %>

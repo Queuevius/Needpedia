@@ -7,6 +7,7 @@ class HomeController < ApplicationController
     @messages_for_new_comers = AdminNotification.for_new_comers
     @home_video_link = HomeVideo.last
     @home_video_link = @home_video_link.present? ? 'https://www.youtube.com/embed/' + @home_video_link.link.split('?v=')[1] : 'https://www.youtube.com/embed/ac3c5nIkrsc?start=5'
+    @how_tos = HowTo.all
   end
 
   def terms

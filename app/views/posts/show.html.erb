@@ -44,9 +44,15 @@
                       <div class="col-sm-9 text-right mb-2">
 
                         <div class="dropdown ml-1 float-right">
-                          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Layers
-                          </button>
+                          <% if @post.layering_disabled? %>
+                            <button type="button" class="btn btn-secondary dropdown-toggle disabled" data-toggle="tooltip" data-placement="top" title="Adding Layers disabled by Admins">
+                              Layers
+                            </button>
+                          <% else %>
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              Layers
+                            </button>
+                          <% end %>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <% if @post.post_type == Post::POST_TYPE_LAYER %>
                               <%= link_to 'Default Layer', post_path(@post.parent_post), class: "dropdown-item #{post_type_color(@post.parent_post.post_type)}" %>
@@ -77,8 +83,14 @@
                           <% end %>
                         <% end %>
 
-                        <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
-                          Edit
+                        <% if @post.editing_disabled? %>
+                          <button type="button" class="btn btn-primary disabled" data-toggle="tooltip" data-placement="top" title="Editing disabled by Admins">
+                            Edit
+                          </button>
+                        <% else %>
+                          <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
+                            Edit
+                          <% end %>
                         <% end %>
                       </div>
                     <% end %>
