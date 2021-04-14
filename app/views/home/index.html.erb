@@ -44,22 +44,30 @@
                         <h5 class="mb-0">
                           <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse_<%= how_to.id %>" aria-expanded="false" aria-controls="collapse_<%= how_to.id %>">
                             <div class="row">
-                              <div class="col-md-9">
-                                <%= how_to.question %>
-                              </div>
-                              <div class="col-md-3">
-                                <%= image_tag(how_to.question_picture, :class => "img-responsive", width: "100", height: "60") %>
-                              </div>
+                                <% if how_to.question_picture.attached? %>
+                                  <div class="col-md-6 text-left">
+                                    <%= how_to.question %>
+                                  </div>
+                                  <div class="col-md-6 text-left">
+                                    <%= image_tag(how_to.question_picture, :class => "img-responsive mh-60 mw-300", width: "100%", height: "100%") %>
+                                  </div>
+                                <% else %>
+                                  <div class="col-md-12">
+                                    <%= how_to.question %>
+                                  </div>
+                                <% end %>
                             </div>
                           </button>
                         </h5>
                       </div>
-                      <div id="collapse_<%= how_to.id %>" class="collapse" aria-labelledby="heading_<%= how_to.id %>" data-parent="#accordion">
+                      <div id="collapse_<%= how_to.id %>" class="collapse ui-block" aria-labelledby="heading_<%= how_to.id %>" data-parent="#accordion">
                         <div class="card-body">
                           <div class="row">
-                            <div class="col-md-4">
-                              <%= image_tag(how_to.answer_picture, :class => "img-responsive", width: "300", height: "250") %>
-                            </div>
+                            <% if how_to.answer_picture.attached? %>
+                              <div class="col-md-4">
+                                <%= image_tag(how_to.answer_picture, :class => "img-responsive mh-60 mw-300", width: "100%", height: "100%") %>
+                              </div>
+                            <% end %>
                             <div class="col-md-8 text-left">
                               <h6 class="float-left"><%= how_to.answer.html_safe %></h6>
                             </div>

@@ -1,0 +1,22 @@
+<table id="Table_03" width="900" height="20%" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding-left: 50px; text-align: left;">
+      <h1>Hi <%= @receiver.name %>!</h1>
+      <p>Today's Activity:</p>
+      <% if @posts.present? %>
+        <% @posts.each do |post| %>
+          <p><a href="<%= "#{@domain}/posts/#{post.id}" %>" target="_blank"> <%= post.title %></a> was updated.</p>
+          <br>
+        <% end %>
+      <% end %>
+      <% if @messages.present? %>
+        <% @messages.each do |message| %>
+          <p>You received a new <a href="<%= "#{@domain}/conversations/#{message.conversation.id}" %>" target="_blank">message</a> from <%= message.user.name %></p>
+        <% end %>
+      <% end %>
+      <p>
+        If you have any questions or other feedback let us know at <b>Needpedia@gmail.com</b>
+      </p>
+    </td>
+  </tr>
+</table>

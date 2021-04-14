@@ -3,6 +3,7 @@ class PostsController < ApplicationController
   before_action :set_post, only: [:show, :edit, :update, :destroy]
   before_action :set_type, only: [:index, :new, :problems, :proposals, :ideas, :layers]
   before_action :set_area, only: [:proposals, :problems, :ideas, :layers, :track_post]
+  after_action :send_update_email, only: [:update]
 
   # GET /posts
   # GET /posts.json
@@ -229,5 +230,13 @@ class PostsController < ApplicationController
 
   def create_activity(post, event)
     ActivityService.new(object: post, event: event, owner: current_user).call
+  end
+
+  def send_update_email
+    @post.users.each do |user|
+      next if user.all_notifications? || user.daily_notifications? || !user.track_notifications?
+
+      UserMailer.send_tracking_email(actor: current_user, receiver: user, post: @post).deliver
+    end
   end
 end

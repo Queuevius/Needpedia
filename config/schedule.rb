@@ -5,13 +5,11 @@
 
 # Example:
 #
-# set :output, "/path/to/my/cron_log.log"
+set :output, 'log/whenever.log'
 #
-# every 2.hours do
-#   command "/usr/bin/some_great_command"
-#   runner "MyModel.some_method"
-#   rake "some:great:rake:task"
-# end
+every 15.minutes do
+  rake "emails:send_daily_emails"
+end
 #
 # every 4.days do
 #   runner "AnotherModel.prune_old_records"
