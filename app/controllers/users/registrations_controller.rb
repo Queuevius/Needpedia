@@ -2,6 +2,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
   prepend_before_action :check_captcha, only: [:create] # Change this to be any actions you want to protect.
   prepend_after_action :save_questionnaire_data, only: [:create]
 
+  def update
+    time = params[:daily_notification_time]
+    if time.present?
+      parsed_time = Time.parse(time)
+      @user.update(daily_notification_time: parsed_time) if parsed_time
+    end
+    super
+  end
   private
 
   def check_captcha

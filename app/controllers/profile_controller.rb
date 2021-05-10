@@ -140,6 +140,7 @@ class ProfileController < ApplicationController
     #   private_post_ids = Post.includes(:private_users).where(id: posts, private: true).reject{ |p| p.private_users&.include?(current_user) }&.pluck(:id)
     #   @activities = activities.reject { |p| private_post_ids.include?(p.trackable_id) }
     # else
+    # @activities = PublicActivity::Activity.includes(:owner, trackable: [:flags, :likes, :comments, :shares, :post_tokens, :notifications, images_attachment: :blob]).order('created_at DESC').limit(50)
       @activities = PublicActivity::Activity.order('created_at DESC').limit(50)
       @activities = @activities.select { |p| p.trackable&.private == false }
     # end

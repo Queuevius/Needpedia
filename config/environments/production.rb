@@ -112,10 +112,4 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = { :host => 'www.needpedia.org' }
   config.action_mailer.raise_delivery_errors = true
-  # configuration for sending emails
-  # config.action_mailer.delivery_method = :mailgun
-  # config.action_mailer.mailgun_settings = {
-  #   domain: 'www.needpedia.org',
-  #   api_key: 'fc0468f6f765d08df5e691c43bb6ed0f-aff2d1b9-abde3aa1'
-  # }
 end
