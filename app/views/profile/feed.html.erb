@@ -8,6 +8,32 @@
         No activity by this by <%= @user.name %>
       <% end %>
     </div>
+    <div id="infinite-scrolling" class="hide">
+      <%= paginate @activities, theme: 'default' %>
+    </div>
   </div>
 </div>
 
+<script>
+    $(document).on('turbolinks:load', function () {
+        if ($('.pagination').length && $('#content').length) {
+            $(window).on('scroll', function(){
+                more_posts_url = $('.pagination .next_page a').attr('href');
+                if(more_posts_url) {
+                    more_posts_url = more_posts_url;
+                } else {
+                    more_posts_url= $('.pagination .next a').attr('href');
+                }
+                if (more_posts_url && $(window).scrollTop() > $(document).height() - $(window).height() - 60) {
+                    $('.pagination').html('<img src="/assets/ajax-loader.gif" alt="Loading..." title="Loading..." />');
+                    $.getScript(more_posts_url);
+                }
+            });
+        }
+    });
+</script>
+<style>
+  .pagination > li {
+    display: none;
+  }
+</style>

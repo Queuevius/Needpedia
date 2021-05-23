@@ -1,0 +1,7 @@
+$('#content').append('<%= j render_activities @activities %>');
+<% if @activities.next_page %>
+  $('.pagination').replaceWith('<%= j paginate @activities %>');
+<% else %>
+  $(window).off('scroll');
+  $('.pagination').remove();
+<% end %>

@@ -141,8 +141,13 @@ class ProfileController < ApplicationController
     #   @activities = activities.reject { |p| private_post_ids.include?(p.trackable_id) }
     # else
     # @activities = PublicActivity::Activity.includes(:owner, trackable: [:flags, :likes, :comments, :shares, :post_tokens, :notifications, images_attachment: :blob]).order('created_at DESC').limit(50)
-      @activities = PublicActivity::Activity.order('created_at DESC').limit(50)
+      @activities = PublicActivity::Activity.order('created_at DESC')
       @activities = @activities.select { |p| p.trackable&.private == false }
+      @activities = Kaminari.paginate_array(@activities).page(params[:page]).per 10
+      respond_to do |format|
+        format.html
+        format.js
+      end
     # end
   end
 

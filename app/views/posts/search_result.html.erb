@@ -35,7 +35,7 @@
         <div class="col-md-12">
           <div class="row">
             <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
-              <h5 class="alert alert-info"><%= @posts.count %> posts and <%= @users.count %> users found <%= "for '#{@keywords[:title_cont]}'" if @keywords[:title_cont].present? %></h5>
+              <h5 class="alert alert-info"><%= @posts&.total_count %> posts and <%= @users&.total_count %> users found <%= "for '#{@keywords[:title_cont]}'" if @keywords[:title_cont].present? %></h5>
             </div>
           </div>
 <!--          <div class="row">-->
@@ -47,15 +47,37 @@
 <!--          </div>-->
         </div>
       </div>
-      <%= render 'list', posts: @posts, type: @type %>
+      <div id="post-content">
+        <%= render 'list', posts: @posts, type: @type %>
+      </div>
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-3"></div>
+          <div class="col-md-6">
+            <div id="infinite-scrolling" class="justify-content-center">
+              <%= paginate @posts, param_name: :posts %>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="col-md-12">
       <div class="row m-t-40 p-t-20 artist-box">
         <div class="col-md-12">
           <h3><b>Users</b></h3>
-          <div class="row justify-content-center">
+          <div class="row justify-content-center" id="users-content">
             <%= render 'profile/small_friends_list', friends: @users %>
+          </div>
+          <div class="col-md-12">
+            <div class="row">
+              <div class="col-md-3"></div>
+              <div class="col-md-6">
+                <div id="infinite-scrolling" class="justify-content-center">
+                  <%= paginate @users, param_name: :users %>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

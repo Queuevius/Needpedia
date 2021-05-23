@@ -160,6 +160,8 @@ class PostsController < ApplicationController
     @u = User.ransack({ first_name_or_last_name_or_full_name_cont: @keywords[:title_cont] })
     @posts = @q.result(distinct: true)
     @users = @u.result(distinct: true)
+    @posts = Kaminari.paginate_array(@posts).page(params[:posts]).per 10
+    @users = Kaminari.paginate_array(@users).page(params[:users]).per 12
   end
 
   def track_post
