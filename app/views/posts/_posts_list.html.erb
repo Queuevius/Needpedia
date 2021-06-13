@@ -1,0 +1,44 @@
+<div class="row">
+  <% posts.each do |post| %>
+    <% if post.post_type == Post::POST_TYPE_AREA %>
+      <% next if post.private? && !post.private_users&.include?(current_user) %>
+    <% end %>
+
+    <% if post.post_type.in?([Post::POST_TYPE_PROPOSAL,Post::POST_TYPE_PROBLEM]) %>
+      <% next if post.parent_area&.private? && !post.parent_area&.private_users&.include?(current_user) %>
+    <% end %>
+
+    <% if post.post_type == Post::POST_TYPE_IDEA %>
+      <% next if post.problem&.parent_area&.private? && !post.problem&.parent_area&.private_users&.include?(current_user) %>
+    <% end %>
+
+    <% if post.post_type == Post::POST_TYPE_LAYER %>
+      <% next if post.parent_post&.private? && !post.parent_post&.private_users&.include?(current_user) %>
+    <% end %>
+    <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1">
+      <div class="ui-block shadow-lg rounded">
+        <div class="ui-block-content">
+          <div class="row">
+            <div class="col-8">
+              <div class="row">
+                <div class="col-lg-2">
+                  <% if post.images.present? %>
+                    <%= image_tag(post.images.first, class: 'img-fluid') %>
+                  <% else %>
+                    <%= image_tag('missing.jpg', class: 'img-fluid') %>
+                  <% end %>
+                </div>
+                <div class="col-lg-10">
+                  <h6>
+                    <%= link_to post.title, post_path(post), class: 'text-dark' %>
+                  </h6>
+                  <p><%= post.content %></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,6 +1,6 @@
 <div class="row pb-4">
   <div class="col-md-12 col-lg-12 col-xl-12 col-sm-12">
-    <h5>Who can see this post:</h5>
+    <h5><%= type == 'private' ? 'Who can see this post:' : 'Who can see this curated post:' %></h5>
   </div>
   <div class="col-md-12 col-lg-12 col-xl-12 col-sm-12 pb-4">
     <div class="row">
@@ -19,7 +19,11 @@
                 <h6><%= user.name %></h6>
                 <% if post.persisted? %>
                   <small>
-                    <%= link_to 'Remove', post_remove_private_user_path(post_id: @post.id, user_id: user.id), method: :delete, class: 'text text-danger' %>
+                    <% if type == 'private' %>
+                      <%= link_to 'Remove', post_remove_private_user_path(post_id: @post.id, user_id: user.id), method: :delete, class: 'text text-danger' %>
+                    <% else %>
+                      <%= link_to 'Remove', post_remove_curated_user_path(post_id: @post.id, user_id: user.id), method: :delete, class: 'text text-danger' %>
+                    <% end %>
                   </small>
                 <% end %>
               </div>
@@ -34,7 +38,7 @@
       <div class="col-3 col-md-3 pt-2">Add User:</div>
       <div class="col-8 col-md-8 float-left pl-0">
         <div class="form-group">
-          <%= select_tag 'post[user_ids][]', {include_blank: false, required: true, include_hidden: false}, class: 'form-control select2', data: { type: 'Use Case Goal' } %>
+          <%= select_tag "#{type == 'private' ? 'post[user_ids][]' : 'post[curated_user_ids][]'}", {include_blank: false, required: true, include_hidden: false}, class: 'form-control select2', data: { type: 'Use Case Goal' } %>
         </div>
       </div>
     </div>

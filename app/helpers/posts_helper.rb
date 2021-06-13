@@ -1,5 +1,7 @@
 module PostsHelper
   def allowed_to_see?(post, current_user)
+    return false unless current_user
+
     post.private? && !post.private_users.include?(current_user)
     case post.post_type
     when Post::POST_TYPE_AREA

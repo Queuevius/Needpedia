@@ -22,7 +22,7 @@
       </div>
     </div>
     <% if @post.post_type == Post::POST_TYPE_AREA && !@post.persisted? %>
-      <div class="col-md-6 col-lg-6 col-xl-6 col-sm-12">
+      <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12">
         <div class="input-group mb-3">
           <div class="input-group-prepend">
             <div class="input-group-text private-checkbox">
@@ -30,6 +30,19 @@
             </div>
             <label class="form-check-label pl-2 pt-1">
               Make this area private?
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12">
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <div class="input-group-text private-checkbox">
+              <%= form.check_box :curated, onchange: 'toggleCuratedSection()' %>
+            </div>
+            <label class="form-check-label pl-2 pt-1">
+              Make this area curated?
             </label>
           </div>
         </div>
@@ -54,9 +67,20 @@
   <div id="private-users-section">
     <% if @post.post_type == Post::POST_TYPE_AREA %>
       <% if !@post.persisted? %>
-        <%= render 'private_users_list', private_users: @private_users, post: @post %>
+        <%= render 'private_users_list', private_users: @private_users, post: @post, type: 'private' %>
       <% elsif @post.persisted? && @post.private? %>
-        <%= render 'private_users_list', private_users: @private_users, post: @post %>
+        <%= render 'private_users_list', private_users: @private_users, post: @post, type: 'private' %>
+      <% else %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div id="curated-users-section">
+    <% if @post.post_type == Post::POST_TYPE_AREA %>
+      <% if !@post.persisted? %>
+        <%= render 'private_users_list', private_users: @curated_users, post: @post, type: 'curated' %>
+      <% elsif @post.persisted? && @post.curated? %>
+        <%= render 'private_users_list', private_users: @curated_users, post: @post, type: 'curated' %>
       <% else %>
       <% end %>
     <% end %>
@@ -74,23 +98,41 @@
 
     if($('#post_private').is(":checked")) {
         $('#private-users-section').show();
-        applySelect2();
+        formulateSelectField('.select2', 'private');
     } else {
         $('#private-users-section').hide();
+    }
+
+    if($('#post_curated').is(":checked")) {
+        $('#curated-users-section').show();
+        formulateSelectField('.select2', 'curated');
+    } else {
+        $('#curated-users-section').hide();
     }
 
     function togglePrivateSection() {
         if($('#post_private').is(":checked")) {
             $('#private-users-section').show();
-            applySelect2();
+            formulateSelectField('.select2', 'private');
         } else {
             $('#private-users-section').hide();
         }
     }
 
+    function toggleCuratedSection() {
+        if($('#post_curated').is(":checked")) {
+            $('#curated-users-section').show();
+            formulateSelectField('.select2', 'curated');
+        } else {
+            $('#curated-users-section').hide();
+        }
+    }
+
   <% if @post.persisted? %>
     $('#private-users-section').show();
-    applySelect2();
+    $('#curated-users-section').show();
+    formulateSelectField('.select2', 'private');
+    formulateSelectField('.select2', 'curated');
 
     var NoteButton = function (context) {
         var ui = $.summernote.ui;
@@ -218,15 +260,32 @@
   <% end %>
 
 
-    function applySelect2() {
+    // function applySelect2() {
+    //     formulateSelectField('.select2', 'private');
+    //     formulateSelectField('.select2', 'curated');
+    // }
+
+    function formulateSelectField(selector, type) {
         var results = [];
-        <% @post.private_users.each do |user| %>
+        var exclude_ids;
+        if (type == 'private') {
+            <% @post.private_users.each do |user| %>
+              results.push({
+                  id: '<%= user.id %>',
+                  text: '<%= user.name %>'
+              });
+            <% end %>
+            exclude_ids = <%= @post.private_users.ids %>
+        } else {
+            <% @post.curated_users.each do |user| %>
             results.push({
                 id: '<%= user.id %>',
                 text: '<%= user.name %>'
             });
-        <% end %>
-        agent = $('#post_user_ids_').select2({
+            <% end %>
+            exclude_ids = <%= @post.curated_users.ids %>
+        }
+        agent = $(selector).select2({
             placeholder: 'Search',
             quietMillis: 200,
             multiple: true,
@@ -239,7 +298,7 @@
                 data: function (params) {
                     var query = {
                         term: params.term,
-                        excluded_ids: <%= @post.private_users.ids %>
+                        excluded_ids: exclude_ids
                     };
 
                     // Query parameters will be ?search=[term]&type=public
@@ -255,8 +314,13 @@
             templateSelection: formatRepoSelection
 
         });
-<!--        let selected = <%#= @post.private_users.collect(&:name).to_json.html_safe %>-->
-        agent.val(<%= @post.private_users.collect(&:name).to_json.html_safe %>);
+
+        if (type == 'private') {
+            agent.val(<%= @post.private_users.collect(&:name).to_json.html_safe %>);
+        } else {
+            agent.val(<%= @post.curated_users.collect(&:name).to_json.html_safe %>);
+        }
+
         agent.trigger('change');
     }
 

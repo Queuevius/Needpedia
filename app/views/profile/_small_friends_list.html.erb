@@ -1,14 +1,16 @@
-<% friends.each do |friend| %>
-  <div class="col-lg-3 col-md-6 wrap-feature14-box p-t-20 p-l-20 p-r-20 friends-profiles justify-content-center">
-    <div class="aos-init ml-5 pl-3">
-      <% if friend.profile_image.attached? %>
-        <%= image_tag friend.profile_image, class: 'img-responsive profile-picture' %>
-      <% else %>
-        <%= image_tag "profile.png", class: 'img-responsive', style: 'width: 160px; height: 160px' %>
-      <% end %>
-      <div class="mb-5">
-        <%= render 'profile/friend_card_details', friend: friend %>
+<% if friends.present? %>
+  <% friends.each do |friend| %>
+    <div class="col-lg-3 col-md-6 wrap-feature14-box p-t-20 p-l-20 p-r-20 friends-profiles justify-content-center">
+      <div class="aos-init ml-5 pl-3">
+        <% if friend.profile_image.attached? %>
+          <%= image_tag friend.profile_image, class: 'img-responsive profile-picture' %>
+        <% else %>
+          <%= image_tag "profile.png", class: 'img-responsive', style: 'width: 160px; height: 160px' %>
+        <% end %>
+        <div class="mb-5">
+          <%= render 'profile/friend_card_details', friend: friend %>
+        </div>
       </div>
     </div>
-  </div>
+  <% end %>
 <% end %>

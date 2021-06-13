@@ -47,34 +47,173 @@
 <!--          </div>-->
         </div>
       </div>
-      <div id="post-content">
-        <%= render 'list', posts: @posts, type: @type %>
-      </div>
-      <div class="col-md-12">
-        <div class="row">
-          <div class="col-md-3"></div>
-          <div class="col-md-6">
-            <div id="infinite-scrolling" class="justify-content-center">
-              <%= paginate @posts, param_name: :posts %>
+
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link <%= 'active' if @active_tab == 'posts' %>" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true"><h5><b>Posts</b></h5></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= 'active' if @active_tab == 'people' %>" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false"><h5><b>People</b></h5></a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade <%= 'show active' if @active_tab == 'posts' %>" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+          <div class="row pt-3">
+            <div class="col-lg-12 col-md-12">
+              <div class="ui-block shadow-lg rounded">
+                <div class="ui-block-content">
+                  <div class="row">
+                    <div class="col-12">
+                      <%= search_form_for @q, url: search_result_posts_path do |f| %>
+                        <div class="row no-gutters align-items-center">
+                          <div class="col-6">
+                            <div class="form-group row">
+                              <label for="inputPassword" class="col-sm-3 col-form-label">Keyword</label>
+                              <div class="col-sm-8">
+                                <%= f.text_field :title_cont, class: 'form-control', placeholder: "Search" %>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-6">
+                            <div class="form-group row">
+                              <label for="inputPassword" class="col-sm-3 col-form-label">Author</label>
+                              <div class="col-sm-8">
+                                <%= f.text_field :user_first_name_cont, class: 'form-control', placeholder: "Author" %>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-6">
+                            <div class="form-group row">
+                              <label for="inputPassword" class="col-sm-3 col-form-label">Post Type</label>
+                              <div class="col-sm-8">
+                                <%= f.select(:post_type_cont , options_for_select(Post::POST_TYPES.map { |r| [r.titleize, r] }, @post_type), {:include_blank => "Select Post Type"}, {class: 'selectpicker form-control', autofocus: false })%>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-6">
+                            <div class="form-group row">
+                              <label for="inputPassword" class="col-sm-3 col-form-label">Access Type</label>
+                              <div class="col-sm-8">
+                                <%= select_tag 'access_type', options_for_select(%w[All Public Curated], @access_type), include_blank: 'Select Access Type', class: "form form-group form-control" %>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-6">
+                            <div class="form-group row">
+                              <label for="inputPassword" class="col-sm-3 col-form-label">Sorted By</label>
+                              <div class="col-sm-8">
+                                <%= select_tag "sorted_by", options_for_select(%w[Highest-Rated Highest-Rated/View New Random], @sorted_by), include_blank: 'Select Access Type', class: "form form-group form-control" %>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-6">
+                            <div class="form-group row">
+                              <div class="col-sm-2"></div>
+                              <div class="col-sm-9">
+                                <%= f.submit 'Search', class: 'btn btn-secondary float-right' %>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="col-md-12">
-      <div class="row m-t-40 p-t-20 artist-box">
-        <div class="col-md-12">
-          <h3><b>Users</b></h3>
-          <div class="row justify-content-center" id="users-content">
-            <%= render 'profile/small_friends_list', friends: @users %>
+          <div id="post-content">
+            <% if @posts.blank? %>
+              <div class="row">
+                <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1">
+                  <div class="ui-block shadow-lg rounded">
+                    <div class="ui-block-content">
+                      <div class="row">
+                        <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
+                          <h6 class="alert alert-warning">There doesn’t currently seem to be anything on that on Needpedia, would you like to be the one to add it?</h6>
+                        </div>
+                      </div>
+                      <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
+                        <%= link_to new_post_path(post_type: Post::POST_TYPE_AREA), class: 'btn btn-primary' do %>
+                          Add New Post
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+            <%= render 'posts_list', posts: @posts, type: @type %>
           </div>
           <div class="col-md-12">
             <div class="row">
               <div class="col-md-3"></div>
               <div class="col-md-6">
                 <div id="infinite-scrolling" class="justify-content-center">
-                  <%= paginate @users, param_name: :users %>
+                  <%= paginate @posts, param_name: :posts %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade <%= 'show active' if @active_tab == 'people' %>" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+
+          <div class="row pt-3">
+            <div class="col-lg-12 col-md-12">
+              <div class="ui-block shadow-lg rounded">
+                <div class="ui-block-content">
+                  <div class="row">
+                    <div class="col-12">
+                      <%= search_form_for @u, url: search_result_posts_path do |f| %>
+                        <div class="row no-gutters align-items-center">
+                          <div class="col-6">
+                            <div class="form-group row">
+                              <label class="col-sm-2 col-form-label">Name</label>
+                              <div class="col-sm-9">
+                                <%= f.text_field :first_name_or_last_name_or_full_name_cont, class: 'form-control', placeholder: "Search" %>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-6">
+                            <div class="form-group row">
+                              <div class="col-sm-2"></div>
+                              <div class="col-sm-9">
+                                <%= f.submit 'Search', class: 'btn btn-secondary float-right' %>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <div class="row m-t-40 p-t-20 artist-box">
+              <div class="col-md-12">
+                <div class="row justify-content-center" id="users-content">
+                  <%= render 'profile/small_friends_list', friends: @users %>
+                </div>
+                <div class="col-md-12">
+                  <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6">
+                      <div id="infinite-scrolling" class="justify-content-center">
+                        <%= paginate @users, param_name: :users %>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -84,3 +223,12 @@
     </div>
   </div>
 </div>
+<script>
+  var post_type = $('#q_post_type_cont').val();
+  if (post_type == 'social_media') {
+      console.log('post_type q', post_type);
+      $('#access_type').val('');
+      $('#access_type').parent('div').parent('div').toggle('hidden');
+  }
+  console.log('post_type', post_type);
+</script>

@@ -9,7 +9,8 @@ class Notification < ApplicationRecord
   NOTIFICATION_TYPE_POST_UPDATED = 'post_updated'.freeze
   NOTIFICATION_TYPE_ADMIN_NOTIFICATION = 'admin_notification'.freeze
   NOTIFICATION_TYPE_POST_USER_ADDED = 'user_added'.freeze
-  NOTIFICATION_TYPE_POST_USER_REMOVED = 'user_removed'.freeze
+  NOTIFICATION_TYPE_POST_CURATED_USER_ADDED = 'curated_user_added'.freeze
+  NOTIFICATION_TYPE_POST_CURATED_USER_REMOVED = 'curated_user_removed'.freeze
 
   ################################ relationships ############################
   belongs_to :recipient, class_name: "User"

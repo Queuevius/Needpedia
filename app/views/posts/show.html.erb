@@ -83,13 +83,19 @@
                           <% end %>
                         <% end %>
 
-                        <% if @post.editing_disabled? %>
-                          <button type="button" class="btn btn-primary disabled" data-toggle="tooltip" data-placement="top" title="Editing disabled by Admins">
-                            Edit
-                          </button>
-                        <% else %>
-                          <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
-                            Edit
+                        <% if current_user.present? %>
+                          <% if @post.editing_disabled? %>
+                            <button type="button" class="btn btn-primary disabled" data-toggle="tooltip" data-placement="top" title="Editing disabled by Admins">
+                              Edit
+                            </button>
+                          <% elsif !@post.curated? %>
+                            <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
+                              Edit
+                            <% end %>
+                          <% elsif @post.curated? && @post&.curated_users&.include?(current_user) %>
+                            <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
+                              Edit
+                            <% end %>
                           <% end %>
                         <% end %>
                       </div>

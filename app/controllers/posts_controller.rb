@@ -73,11 +73,13 @@ class PostsController < ApplicationController
     end
     @post = Post.new(post_type: @type)
     @private_users = @post.private_users << current_user
+    @curated_users = @post.curated_users << current_user
   end
 
   # GET /posts/1/edit
   def edit
     @private_users = @post.private_users
+    @curated_users = @post.curated_users
   end
 
   # POST /posts
@@ -89,8 +91,11 @@ class PostsController < ApplicationController
       if @post.save
         # @post.clean_froala_link
         UserPrivatePost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_AREA
+        UserCuratedPost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_AREA
         check_if_should_be_private(@post)
+        check_if_should_be_curated(@post)
         create_private_users
+        create_curated_users
         create_activity(@post, 'post.create')
         format.html { redirect_to @post, notice: 'Post was successfully created.' }
         format.json { render :show, status: :created, location: @post }
@@ -108,6 +113,7 @@ class PostsController < ApplicationController
     respond_to do |format|
       if @post.update(post_params)
         create_private_users
+        create_curated_users
         # @post.clean_froala_link
         Notification.post(from: current_user, notifiable: current_user, to: @post.users, action: Notification::NOTIFICATION_TYPE_POST_UPDATED, post_id: @post.id)
         create_activity(@post, 'post.update')
@@ -154,14 +160,39 @@ class PostsController < ApplicationController
     redirect_to edit_post_path(@post)
   end
 
+  def remove_curated_user
+    @post = Post.find(params[:post_id])
+    user_id = params[:user_id]
+    user = User.find(user_id)
+    user_curated_post = UserCuratedPost.where(post_id: @post.id, user_id: user_id)
+    if user_id && user_curated_post.present?
+      user_curated_post.destroy_all
+      Notification.post(from: current_user, notifiable: user, to: user, action: Notification::NOTIFICATION_TYPE_POST_CURATED_USER_REMOVED, post_id: @post.id)
+      flash[:notice] = 'User removed successfully'
+    else
+      flash[:alert] = 'Something went wrong, please try later'
+    end
+    redirect_to edit_post_path(@post)
+  end
+
   def search_result
     @keywords = params[:q]
-    @q = Post.ransack(@keywords)
-    @u = User.ransack({ first_name_or_last_name_or_full_name_cont: @keywords[:title_cont] })
-    @posts = @q.result(distinct: true)
-    @users = @u.result(distinct: true)
-    @posts = Kaminari.paginate_array(@posts).page(params[:posts]).per 10
-    @users = Kaminari.paginate_array(@users).page(params[:users]).per 12
+    @active_tab = 'posts'
+    if @keywords[:first_name_or_last_name_or_full_name_cont].present?
+      @active_tab = 'people'
+      query_service = UserSearchService.new(params)
+      users = query_service.filter
+      @users = Kaminari.paginate_array(users).page(params[:users]).per 10
+      @posts = Kaminari.paginate_array([]).page(params[:posts]).per 10
+    else
+      query_service = PostSearchService.new(params)
+      posts = query_service.filter
+      @posts = Kaminari.paginate_array(posts).page(params[:posts]).per 10
+      @access_type = params[:access_type]
+      @post_type = params[:q][:post_type_cont]
+      @sorted_by = params[:sorted_by]
+      @users = Kaminari.paginate_array([]).page(params[:users]).per 10
+    end
   end
 
   def track_post
@@ -204,6 +235,19 @@ class PostsController < ApplicationController
     end
   end
 
+  def create_curated_users
+    user_ids = params[:post][:curated_user_ids]
+    return unless user_ids.present?
+
+    user_ids.each do |user|
+      post = UserCuratedPost.where(post_id: @post.id, user_id: user.to_i)
+      UserCuratedPost.create(post_id: @post.id, user_id: user.to_i) if post.blank?
+
+      user = User.find(user.to_i)
+      Notification.post(from: current_user, notifiable: user, to: user, action: Notification::NOTIFICATION_TYPE_POST_CURATED_USER_ADDED, post_id: @post.id)
+    end
+  end
+
   def check_if_should_be_private(post)
     case true
     when post.post_type.in?([Post::POST_TYPE_PROPOSAL, Post::POST_TYPE_PROBLEM])
@@ -212,6 +256,19 @@ class PostsController < ApplicationController
       post.update(private: true) if post.problem&.parent_area&.private?
     when post.post_type == Post::POST_TYPE_LAYER
       post.update(private: true) if post.parent_post&.private?
+    else
+      true
+    end
+  end
+
+  def check_if_should_be_curated(post)
+    case true
+    when post.post_type.in?([Post::POST_TYPE_PROPOSAL, Post::POST_TYPE_PROBLEM])
+      post.update(private: true) if post.parent_area&.curated?
+    when post.post_type == Post::POST_TYPE_IDEA
+      post.update(private: true) if post.problem&.parent_area&.curated?
+    when post.post_type == Post::POST_TYPE_LAYER
+      post.update(private: true) if post.parent_post&.curated?
     else
       true
     end
@@ -227,7 +284,7 @@ class PostsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def post_params
-    params.require(:post).permit(:title, :content, :user_id, :post_type, :area_id, :problem_id, :private, :post_id, :tag_list, images: [])
+    params.require(:post).permit(:title, :content, :user_id, :post_type, :area_id, :problem_id, :private, :curated, :post_id, :tag_list, images: [])
   end
 
   def create_activity(post, event)

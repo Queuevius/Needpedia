@@ -89,6 +89,7 @@ Rails.application.routes.draw do
     get 'proposals'
     get 'ideas'
     delete 'remove_private_user'
+    delete 'remove_curated_user'
     patch 'track_post'
     collection do
       delete 'destroy_activity'

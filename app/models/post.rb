@@ -56,6 +56,9 @@ class Post < ApplicationRecord
   has_many :user_private_posts, dependent: :destroy
   has_many :private_users, through: :user_private_posts, source: :user, dependent: :destroy
 
+  has_many :user_curated_posts, dependent: :destroy
+  has_many :curated_users, through: :user_curated_posts, source: :user, dependent: :destroy
+
   has_many :notifications, dependent: :destroy
 
   ############################### Validations ###########################
