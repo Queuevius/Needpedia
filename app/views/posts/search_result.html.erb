@@ -14,17 +14,8 @@
             <div class="col-lg-12 col-md-12">
               <div class="ui-block shadow-lg rounded">
                 <div class="ui-block-content">
-                  <%= link_to new_post_path(post_type: Post::POST_TYPE_AREA), class: 'btn btn-default' do %>
-                      <%= image_tag('area_icon.svg', height: "50%", width: "50%", title: 'Create Area Post') %>
-                    <% end %>
-                  <%= link_to new_post_path(post_type: Post::POST_TYPE_PROBLEM, post: { from_feed: true }), class: 'btn btn-default' do %>
-                    <%= image_tag('problem_icon.svg', height: "50%", width: "50%", title: 'Create Problem Post') %>
-                  <% end %>
-                  <%= link_to new_post_path(post_type: Post::POST_TYPE_IDEA, post: { from_feed: true }), class: 'btn btn-default' do %>
-                    <%= image_tag('idea_icon.svg', height: "50%", width: "50%", title: 'Create Idea Post') %>
-                  <% end %>
-                  <%= link_to new_post_path(post_type: Post::POST_TYPE_PROPOSAL, post: { from_feed: true }), class: 'btn btn-default' do %>
-                    <%= image_tag('proposal_icon.svg', height: "50%", width: "50%", title: 'Create Proposal Post') %>
+                  <%= link_to new_post_path(post_type: Post::POST_TYPE_AREA), class: 'btn btn-primary' do %>
+                    Create Area Post
                   <% end %>
                 </div>
               </div>
@@ -150,7 +141,7 @@
                 </div>
               </div>
             <% end %>
-            <%= render 'posts_list', posts: @posts, type: @type %>
+            <%= render 'posts_list', posts: @sorted_by == 'Random' ? @posts.shuffle : @posts, type: @type %>
           </div>
           <div class="col-md-12">
             <div class="row">

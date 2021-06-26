@@ -17,22 +17,23 @@
     <% end %>
     <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1">
       <div class="ui-block shadow-lg rounded">
-        <div class="ui-block-content">
+        <div class="ui-block-content custom-width">
           <div class="row">
-            <div class="col-8">
+            <div class="col-12">
               <div class="row">
-                <div class="col-lg-2">
+                <div class="col-2">
                   <% if post.images.present? %>
                     <%= image_tag(post.images.first, class: 'img-fluid') %>
                   <% else %>
                     <%= image_tag('missing.jpg', class: 'img-fluid') %>
                   <% end %>
                 </div>
-                <div class="col-lg-10">
+                <div class="col-10">
                   <h6>
                     <%= link_to post.title, post_path(post), class: 'text-dark' %>
                   </h6>
-                  <p><%= post.content %></p>
+                  <p><%= truncate(strip_tags(post&.content&.to_s), length: 150) %></p>
+<!--                  <p><%#= post.content %></p>-->
                 </div>
               </div>
             </div>
@@ -42,3 +43,10 @@
     </div>
   <% end %>
 </div>
+<style>
+  .custom-width {
+    max-height: 200px !important;
+    min-height: 125px !important;
+    height: 125px !important;
+  }
+</style>
