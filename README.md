@@ -34,3 +34,10 @@ RECAPTCHA_SITE_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
 GENERAL_AREA_ID=1 (where 1 is the DB id of any Area post)
 
 GENERAL_PROBLEM_ID=2 (where 2 is the DB id of any Area post)
+
+
+
+*****Additional Documentation 
+
+-Milestone 106: Curated Posts and Search Page Upgrade:
+https://docs.google.com/document/d/1lp530HkuAmWH5P2A5-nVEeg66fLvoQtlT7bUJFlxVnQ/edit?usp=sharing
