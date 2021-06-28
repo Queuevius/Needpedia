@@ -39,5 +39,10 @@ GENERAL_PROBLEM_ID=2 (where 2 is the DB id of any Area post)
 
 *****Additional Documentation 
 
--Milestone 106: Curated Posts and Search Page Upgrade:
-https://docs.google.com/document/d/1lp530HkuAmWH5P2A5-nVEeg66fLvoQtlT7bUJFlxVnQ/edit?usp=sharing
+---Milestone 105: Create Curated Posts and Upgrade Search Page
+-Milestone description: https://docs.google.com/document/d/1DZJTUHFfsIuhQ6LlNM6HXx6WjZq5jSsQaO7wQseWMs8/edit?usp=sharing
+-Milestone documentation: https://docs.google.com/document/d/1lp530HkuAmWH5P2A5-nVEeg66fLvoQtlT7bUJFlxVnQ/edit?usp=sharing
+
+---M106: Create [wiki post] Buttons and Limit Size of Wiki Posts in Lists
+-Milestone description: https://docs.google.com/document/d/1JiPESiUPhGrHMQJRTc0LXsB2k9mAp884s_rgzn_J51c/edit?usp=sharing
+-Milestone documentation: https://docs.google.com/document/d/1SN7N7ETLNs0nIISQPwhB0E0DrYMbEICVm_adWo8GjSc/edit?usp=sharing
