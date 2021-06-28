@@ -4,9 +4,9 @@ Needpedia's goal is to create a community of devs who use it's "Layer System" an
 That said, the tools we're making for activists and scientists can also be used for respectable/ethical businesses, so once Needpedia's doing well we plan on creating a separate, worker-owned, for-profit business that specializes in using the tools we've made here to serve businesses, and generate funding for legal defense, (for Needpedia). 
 
  Needpedia has an FAQ section here: https://needpedia.org/faq 
- a 'how to' section on the homepage at Needpedia.org 
+ and a 'how to' section on the homepage at Needpedia.org 
 
-*Please also remember that as far as I'm concerned, Needpedia's dev community is the backbone of this entire operation, so if there is Anything I can do to support you, or that we can add to this project to make it work better, I definitely want to know. My personal email address is Anthonydunn97202@gmail.com - Even if I can't answer your question I can probably find someone who can.
+*Please also remember that Needpedia's dev community is the backbone of this entire operation, so if there is Anything I can do to support you, or that we can add to this project to make it work better, I definitely want to know. My personal email address is Anthonydunn97202@gmail.com - Even if I can't answer your question I can probably find someone who can.
       -Anthony Brasher, Needpedia's founder
 
 
