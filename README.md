@@ -46,3 +46,12 @@ GENERAL_PROBLEM_ID=2 (where 2 is the DB id of any Area post)
 ---M106: Create [wiki post] Buttons and Limit Size of Wiki Posts in Lists
 -Milestone description: https://docs.google.com/document/d/1JiPESiUPhGrHMQJRTc0LXsB2k9mAp884s_rgzn_J51c/edit?usp=sharing
 -Milestone documentation: https://docs.google.com/document/d/1SN7N7ETLNs0nIISQPwhB0E0DrYMbEICVm_adWo8GjSc/edit?usp=sharing
+
+
+Docker Setup Steps:
+1. Follow this link to install docker https://docs.docker.com/engine/install/ubuntu/
+2. Follow this link to install docker compose https://docs.docker.com/compose/install/
+3. Stop your local running postgresql service by command `sudo service postgresql stop`
+4. Go to project directory and run command `sudo docker-compose build` (NOTE: Its only for first time)
+5. After successfully build run command `sudo docker-compose up`
+ You project will be running on `localhost:3000`

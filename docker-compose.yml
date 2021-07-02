@@ -1,0 +1,30 @@
+version: "3.3"
+
+services:
+  need_pedia:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    environment:
+      RAILS_ENV: "development"
+      POSTGRES_USER: "need_pedia"
+      POSTGRES_PASSWORD: "need_pedia"
+      POSTGRES_DB: "need_pedia_development"
+      RAILS_MASTER_KEY: "3593c442e98e61bb1d073d8d590b905f"
+    volumes:
+      - ./:/workspace
+      - ./docker/database.yml:/workspace/config/database.yml
+    links:
+      - db
+    depends_on:
+      - db
+  db:
+    image: postgres:11.6
+    environment:
+      POSTGRES_USER: "need_pedia"
+      POSTGRES_PASSWORD: "need_pedia"
+      POSTGRES_DB: "need_pedia_development"
+    ports:
+      - "5432:5432"
+      
