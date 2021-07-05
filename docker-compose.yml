@@ -11,7 +11,9 @@ services:
       POSTGRES_USER: "need_pedia"
       POSTGRES_PASSWORD: "need_pedia"
       POSTGRES_DB: "need_pedia_development"
-      RAILS_MASTER_KEY: "3593c442e98e61bb1d073d8d590b905f"
+      RECAPTCHA_SECRET_KEY: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
+      RECAPTCHA_SITE_KEY: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+      RAILS_MASTER_KEY: "ebfbe695bcc876920f7ab978207afd91"
     volumes:
       - ./:/workspace
       - ./docker/database.yml:/workspace/config/database.yml
@@ -27,4 +29,3 @@ services:
       POSTGRES_DB: "need_pedia_development"
     ports:
       - "5432:5432"
-      
