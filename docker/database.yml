@@ -1,0 +1,17 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: <%= Rails.application.credentials.dig(:POSTGRES_USER) %>
+  password: <%= Rails.application.credentials.dig(:POSTGRES_PASSWORD) %>
+  host: db
+  port: 5432
+  database: <%= Rails.application.credentials.dig(:POSTGRES_DB) %>
+
+development:
+  <<: *default
+  database: needpedia_development
+
+test:
+  <<: *default
+  database: needpedia_test
