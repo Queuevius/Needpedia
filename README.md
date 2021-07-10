@@ -50,8 +50,9 @@ GENERAL_PROBLEM_ID=2 (where 2 is the DB id of any Area post)
 
 Docker Setup Steps:
 1. Follow this link to install docker https://docs.docker.com/engine/install/ubuntu/
+   (Devs running Ubuntu Hirsute can instead use the terminal command `sudo snap install docker`)
 2. Follow this link to install docker compose https://docs.docker.com/compose/install/
 3. Stop your local running postgresql service by command `sudo service postgresql stop`
-4. Go to project directory and run command `sudo docker-compose build` (NOTE: Its only for first time)
+4. Go to project directory, left click: "Open in terminal" and run command `sudo docker-compose build` (NOTE: Its only for first time)
 5. After successfully build run command `sudo docker-compose up`
- You project will be running on `localhost:3000`
+ You project will be running on `localhost:3000` (as a URL)
