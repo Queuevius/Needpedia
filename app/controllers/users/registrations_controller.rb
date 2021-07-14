@@ -1,5 +1,5 @@
 class Users::RegistrationsController < Devise::RegistrationsController
-  prepend_before_action :check_captcha, only: [:create] # Change this to be any actions you want to protect.
+  # prepend_before_action :check_captcha, only: [:create] # Change this to be any actions you want to protect.
   prepend_after_action :save_questionnaire_data, only: [:create]
 
   def update

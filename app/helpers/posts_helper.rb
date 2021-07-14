@@ -37,4 +37,14 @@ module PostsHelper
 
     response
   end
+
+  def rating_count(ratings, number)
+    ratings.where(rating: number).count
+  end
+
+  def rating_color(ratings, current_user, rating)
+    return 'text-dark' if ratings.blank? || current_user.blank? || rating.blank?
+
+    ratings&.pluck(:user_id)&.include?(current_user.id) && ratings&.where(user_id: current_user.id)&.last&.rating == rating ? 'text-primary' : 'text-dark'
+  end
 end

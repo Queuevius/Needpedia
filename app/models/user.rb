@@ -36,6 +36,8 @@ class User < ApplicationRecord
 
   has_many :likes, dependent: :destroy
 
+  has_many :ratings, dependent: :destroy
+
   has_many :shares, dependent: :destroy
 
   has_many :connections

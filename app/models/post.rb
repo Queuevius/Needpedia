@@ -11,6 +11,7 @@ class Post < ApplicationRecord
   POST_TYPE_IDEA = 'idea'.freeze
   POST_TYPE_LAYER = 'layer'.freeze
   POST_TYPE_SOCIAL_MEDIA = 'social_media'.freeze
+  POST_TYPE_WIKI_POSTS_ONLY = 'Wiki Posts Only'.freeze
   POST_TYPES = [
     POST_TYPE_AREA,
     POST_TYPE_PROBLEM,
@@ -26,6 +27,8 @@ class Post < ApplicationRecord
     POST_TYPE_PROPOSAL,
     POST_TYPE_IDEA
   ].freeze
+
+  TYPES_FOR_SEARCH = [POST_TYPE_WIKI_POSTS_ONLY] + POST_TYPES
 
   GENERAL_AREA = ENV['GENERAL_AREA_ID']
   GENERAL_PROBLEM = ENV['GENERAL_PROBLEM_ID']
@@ -45,6 +48,8 @@ class Post < ApplicationRecord
   has_many :flags, as: :flagable, dependent: :destroy
 
   has_many :likes, as: :likeable, dependent: :destroy
+
+  has_many :ratings, as: :rateable, dependent: :destroy
 
   has_many :shares, as: :shareable, dependent: :destroy
 
