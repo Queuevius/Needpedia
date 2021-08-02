@@ -1,4 +1,4 @@
-***Note from founder to dev community
+<h>Note from founder to dev community
 Needpedia's goal is to create a community of devs who use it's "Layer System" and other tools to collaborate directly with users, to optimize Needpedia, and to optimize the world. It can be used to work on anything from random volunteer organizations halfway accross the world, to exposing all known problems with giant evil corporations in your own backyard. Which is why it needs to be an Open Source community instead of a business. (Most sponsors aren't going to like that)
 
 That said, the tools we're making for activists and scientists can also be used for respectable/ethical businesses, (to profit), so once Needpedia's doing well we plan on creating a separate, worker-owned business that specializes in using the tools we've made here to serve respectable businesses, and generate funding for legal defense trust fund, (for Needpedia. 
