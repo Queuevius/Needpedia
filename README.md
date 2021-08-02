@@ -24,6 +24,7 @@ That said, the tools we're making for activists and scientists can also be used 
 
 
 <b>Setting up locally without Docker:</b><br>
+
 Before starting, it is important you have the desired environment, you'll need to install
 - Ruby (instructions for your operating system can be found here https://www.ruby-lang.org/en/documentation/installation/)
 - PostgresQL (download instructions are here https://www.postgresql.org/)
@@ -41,7 +42,8 @@ Once you have all these installed on your local machine, you can follow the bell
 RECAPTCHA_SECRET_KEY=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
 RECAPTCHA_SITE_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
 
-#### Optional
+
+Optional:
 
 GENERAL_AREA_ID=1 (where 1 is the DB id of any Area post)
 
@@ -50,9 +52,12 @@ GENERAL_PROBLEM_ID=2 (where 2 is the DB id of any Area post)
 
 
 
+
 <b>Server/Devops documentation:</b><br>
 See file named: Devops Documentation
 https://github.com/Queuevius/Needpedia2/blob/master/Devops%20Documentation
+
+
 
 
 
