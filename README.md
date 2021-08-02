@@ -1,4 +1,4 @@
-<b>Note from founder to dev community</b>
+<b>Note from founder to dev community</b><br>
 Needpedia's goal is to create a community of devs who use it's "Layer System" and other tools to collaborate directly with users, to optimize Needpedia, and to optimize the world. It can be used to work on anything from random volunteer organizations halfway accross the world, to exposing all known problems with giant evil corporations in your own backyard. Which is why it needs to be an Open Source community instead of a business. (Most sponsors aren't going to like that)
 
 That said, the tools we're making for activists and scientists can also be used for respectable/ethical businesses, (to profit), so once Needpedia's doing well we plan on creating a separate, worker-owned business that specializes in using the tools we've made here to serve respectable businesses, and generate funding for legal defense trust fund, (for Needpedia. 
@@ -13,7 +13,7 @@ That said, the tools we're making for activists and scientists can also be used 
 
 
 
-***Setting up locally with Docker (Recommended):
+<b>Setting up locally with Docker (Recommended):</b><br>
 1. Follow this link to install docker https://docs.docker.com/engine/install/ubuntu/
    (Devs running Ubuntu Hirsute can instead use the terminal command `sudo snap install docker`)
 2. Follow this link to install docker compose https://docs.docker.com/compose/install/
@@ -23,7 +23,7 @@ That said, the tools we're making for activists and scientists can also be used 
  You project will be running on `localhost:3000` (as a URL)
 
 
-***Setting up locally without Docker:
+<b>Setting up locally without Docker:</b><br>
 Before starting, it is important you have the desired environment, you'll need to install
 - Ruby (instructions for your operating system can be found here https://www.ruby-lang.org/en/documentation/installation/)
 - PostgresQL (download instructions are here https://www.postgresql.org/)
@@ -37,7 +37,7 @@ Once you have all these installed on your local machine, you can follow the bell
 - create DB, run command rails db:create
 - run migrations, run command: rails db:migrate
 
-***Environment variables for for development
+<b>Environment variables for for development</b><br>
 RECAPTCHA_SECRET_KEY=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
 RECAPTCHA_SITE_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
 
@@ -50,14 +50,14 @@ GENERAL_PROBLEM_ID=2 (where 2 is the DB id of any Area post)
 
 
 
-***Server/Devops documentation:
+<b>Server/Devops documentation:</b><br>
 See file named: Devops Documentation
 https://github.com/Queuevius/Needpedia2/blob/master/Devops%20Documentation
 
 
 
 
-***Milestone Documentation 
+<b>Milestone Documentation</b><br>
 
 ---Milestone 105: Create Curated Posts and Upgrade Search Page
 -Milestone description: https://docs.google.com/document/d/1DZJTUHFfsIuhQ6LlNM6HXx6WjZq5jSsQaO7wQseWMs8/edit?usp=sharing
