@@ -1,0 +1,22 @@
+                    DevOps Services of Needpedia.org
+
+Our Services:
+We set up an horizontal auto scaling group property where if the initial servers CPU utilization goes above 55% the auto scaling will launch another server. From this diagram you can have better understanding of what we did.
+
+
+In autoscaling we need Load balancer is used to distribute the traffic to the previous and new servers now all the traffic of your server will be passed through the load balancer that will decide if we use new servers (incase of much traffic at needpedia). 
+Needpedia-2ndlb-1899830509.us-east-2.elb.amazonaws.com , this is the new end point for needpedia because now the traffic has to pass through the load balancer so we have fix some changes with your domain configuration the changes.
+The important thing is that we setup limit for load balancer is 55%  it means that when you have much traffic and it increase the 55% of your previous server than the load balancer will setup automatically the new server and upcomming traffic will utilize the new server and needpedia will work smoothly and there will be 3 servers available for managing the site amazon will charge when you will utilize so don't worry about that in below section I will explain the budget.
+
+User Capacity of Server:
+Our new setup of server can handle traffic of  up to 2K - 3K  of users  on daily basis with having no issues
+Budget/Cost Estimation:
+What will be estimated fix monthly Amazon service fee?
+We are using the server t2.micro and it will take average 9$ /month and it is fixed. The load balancers that are using for handling traffic with auto scaling it will take nearly 11$ per month.
+So the fixed cost which you have to pay every month is total :
+     $9+ $11 = $20 (estimated)
+Did AutoScaling  Charges Extra ?
+No, Autoscaling doesn't charges any extra as you say "One should pay Extra when he use Extra" so when we have more traffic and our traffic utilize the server then amazon will charge for server otherwise the answer is no.
+What extra should you pay  to Amazon when we have more traffic let's calculate for 1000 users?
+Let's say 1000 user came on the site and they used the first server auto scaling  launches 2 server and we are using t2.micro servers in our autoscaling so their cost is 0.0081$/hour.
+Hence , In total the estimated cost will be around 25-30$/month if the extra server is handling the traffic of 1000 users 24/7 for one month.
