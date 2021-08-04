@@ -1,10 +1,10 @@
 # Needpedia
 Needpedia's goal is to create a community of devs who use it's "Layer System" and other tools to collaborate directly with users to optimize Needpedia, while others use it to optimize countless different things in the world. It can be used to do anything from support a volunteer organization halfway accross the world,  to making public all problems with an evil corporation in your own backyard. Which is why it needs to be an Open Source community instead of a business. (Most sponsors aren't going to like that)
 
-That said, the tools we're making for activists and scientists can also be used for respectable/ethical businesses, so once Needpedia's doing well we plan on creating a separate, worker-owned, for-profit business that specializes in using the tools we've made here to serve businesses, and generate funding for legal defense, (for Needpedia). 
+That said, the tools we're making for activists and scientists can also be used for respectable/ethical businesses, so once Needpedia's doing well we plan on creating a separate, worker-owned, for-profit business that specializes in using the tools we've made here to serve businesses, and generate funding for legal defense, (for Needpedia).
 
- Needpedia has an FAQ section here: https://needpedia.org/faq 
- and a 'how to' section on the homepage at Needpedia.org 
+ Needpedia has an FAQ section here: https://needpedia.org/faq
+ and a 'how to' section on the homepage at Needpedia.org
 
 *Please also remember that Needpedia's dev community is the backbone of this entire operation, so if there is Anything I can do to support you, or that we can add to this project to make it work better, I definitely want to know. My personal email address is Anthonydunn97202@gmail.com - Even if I can't answer your question I can probably find someone who can.
       -Anthony Brasher, Needpedia's founder
@@ -37,7 +37,7 @@ GENERAL_PROBLEM_ID=2 (where 2 is the DB id of any Area post)
 
 
 
-*****Additional Documentation 
+*****Additional Documentation
 
 ---Milestone 105: Create Curated Posts and Upgrade Search Page
 -Milestone description: https://docs.google.com/document/d/1DZJTUHFfsIuhQ6LlNM6HXx6WjZq5jSsQaO7wQseWMs8/edit?usp=sharing
@@ -55,3 +55,7 @@ Docker Setup Steps:
 4. Go to project directory and run command `sudo docker-compose build` (NOTE: Its only for first time)
 5. After successfully build run command `sudo docker-compose up`
  You project will be running on `localhost:3000`
+
+Local Mails:
+
+All emails from the system can be checked locally on `http://localhost:3000/letter_opener`

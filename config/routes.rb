@@ -1,6 +1,7 @@
 require 'sidekiq/web'
 
 Rails.application.routes.draw do
+  mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
   get 'how_tos/index'
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :admin do

@@ -1,6 +1,10 @@
 version: "3.3"
 
 services:
+  my-redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
   need_pedia:
     build:
       context: .
@@ -11,6 +15,7 @@ services:
       POSTGRES_USER: "need_pedia"
       POSTGRES_PASSWORD: "need_pedia"
       POSTGRES_DB: "need_pedia_development"
+      REDIS_URL: "redis://my-redis:6379/1"
       RECAPTCHA_SECRET_KEY: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
       RECAPTCHA_SITE_KEY: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
       RAILS_MASTER_KEY: "ebfbe695bcc876920f7ab978207afd91"
