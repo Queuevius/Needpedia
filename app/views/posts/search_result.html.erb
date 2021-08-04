@@ -62,7 +62,7 @@
                             <div class="form-group row">
                               <label for="inputPassword" class="col-sm-3 col-form-label">Keyword</label>
                               <div class="col-sm-8">
-                                <%= f.text_field :title_cont, class: 'form-control', placeholder: "Search" %>
+                                <%= f.text_field :title_cont, class: 'form-control' %>
                               </div>
                             </div>
                           </div>
@@ -71,7 +71,7 @@
                             <div class="form-group row">
                               <label for="inputPassword" class="col-sm-3 col-form-label">Author</label>
                               <div class="col-sm-8">
-                                <%= f.text_field :user_first_name_cont, class: 'form-control', placeholder: "Author" %>
+                                <%= f.text_field :user_first_name_cont, class: 'form-control' %>
                               </div>
                             </div>
                           </div>
@@ -80,7 +80,8 @@
                             <div class="form-group row">
                               <label for="inputPassword" class="col-sm-3 col-form-label">Post Type</label>
                               <div class="col-sm-8">
-                                <%= f.select(:post_type_cont , options_for_select(Post::POST_TYPES.map { |r| [r.titleize, r] }, @post_type), {:include_blank => "Select Post Type"}, {class: 'selectpicker form-control', autofocus: false })%>
+                                <%#= f.select(:post_type_cont , options_for_select(Post::TYPES_FOR_SEARCH.map { |r| [r.titleize, r] }, @post_type), { include_blank: false }, {class: 'selectpicker form-control', autofocus: false })%>
+                                <%= select_tag 'post_type', options_for_select(Post::TYPES_FOR_SEARCH.map { |r| [r.titleize, r] }, @post_type), include_blank: false , class: "form form-group form-control" %>
                               </div>
                             </div>
                           </div>
@@ -89,7 +90,7 @@
                             <div class="form-group row">
                               <label for="inputPassword" class="col-sm-3 col-form-label">Access Type</label>
                               <div class="col-sm-8">
-                                <%= select_tag 'access_type', options_for_select(%w[All Public Curated], @access_type), include_blank: 'Select Access Type', class: "form form-group form-control" %>
+                                <%= select_tag 'access_type', options_for_select(%w[Public All Curated], @access_type), include_blank: false , class: "form form-group form-control" %>
                               </div>
                             </div>
                           </div>
@@ -98,7 +99,7 @@
                             <div class="form-group row">
                               <label for="inputPassword" class="col-sm-3 col-form-label">Sorted By</label>
                               <div class="col-sm-8">
-                                <%= select_tag "sorted_by", options_for_select(%w[Highest-Rated Highest-Rated/View New Random], @sorted_by), include_blank: 'Select Access Type', class: "form form-group form-control" %>
+                                <%= select_tag "sorted_by", options_for_select(%w[Highest-Rated Highest-Rated/View New Random], @sorted_by), include_blank: false, class: "form form-group form-control" %>
                               </div>
                             </div>
                           </div>
@@ -107,7 +108,7 @@
                             <div class="form-group row">
                               <div class="col-sm-2"></div>
                               <div class="col-sm-9">
-                                <%= f.submit 'Search', class: 'btn btn-secondary float-right' %>
+                                <%= f.submit 'Search', class: 'btn btn-primary float-right' %>
                               </div>
                             </div>
                           </div>
@@ -221,5 +222,4 @@
       $('#access_type').val('');
       $('#access_type').parent('div').parent('div').toggle('hidden');
   }
-  console.log('post_type', post_type);
 </script>

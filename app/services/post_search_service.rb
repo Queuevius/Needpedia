@@ -3,9 +3,10 @@ class PostSearchService
     @ransack_fields = params[:q]
     @access_type = params[:access_type]
     @sorted_by = params[:sorted_by]
+    @post_type = params[:post_type] || ''
   end
 
-  attr_accessor :ransack_fields, :access_type, :sorted_by
+  attr_accessor :ransack_fields, :access_type, :sorted_by, :post_type
 
   def filter
     q = Post.ransack(ransack_fields)
@@ -17,7 +18,15 @@ class PostSearchService
     end
 
     if sorted_by.present?
-      sort_posts(sorted_by, posts)
+      posts = sort_posts(sorted_by, posts)
+    end
+
+    if post_type == Post::POST_TYPE_WIKI_POSTS_ONLY
+      posts = posts.where(post_type: Post::CORE_POST_TYPES)
+    elsif post_type == ''
+      posts
+    else
+      posts = posts.where(post_type: post_type)
     end
 
     posts

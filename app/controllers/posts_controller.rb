@@ -189,7 +189,7 @@ class PostsController < ApplicationController
       posts = query_service.filter
       @posts = Kaminari.paginate_array(posts).page(params[:posts]).per 10
       @access_type = params[:access_type]
-      @post_type = params[:q][:post_type_cont]
+      @post_type = params[:post_type]
       @sorted_by = params[:sorted_by]
       @users = Kaminari.paginate_array([]).page(params[:users]).per 10
     end

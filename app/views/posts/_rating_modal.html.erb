@@ -1,0 +1,14 @@
+<div class="row">
+  <% Rating::RATINGS.each do |rating| %>
+    <div class="col-2">
+      <b><%= rating %>:</b>
+    </div>
+  <% end %>
+</div>
+<div class="row">
+  <% Rating::RATINGS.each do |rating| %>
+    <div class="col-2">
+      <span class="pl-0 ml-0 btn btn-link rating-count-<%= post.id %>-<%= rating %> <%= rating_color(post.ratings, current_user, rating) %>"><%= rating_count(post.ratings, rating) %></span>
+    </div>
+  <% end %>
+</div>

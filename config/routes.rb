@@ -63,6 +63,7 @@ Rails.application.routes.draw do
   post '/create_pictures', to: 'profile#create_pictures'
   get '/search_results', to: 'profile#search_results'
   patch '/update_details', to: 'profile#update_details'
+  patch '/change_rating', to: 'ratings#change_rating'
   get 'connections' => 'profile#my_connections'
   get 'friend_request' => 'profile#friend_request'
   delete 'un_friend/:uuid' => 'profile#un_friend', as: 'un_friend'
@@ -133,6 +134,10 @@ Rails.application.routes.draw do
       patch 'downvote'
     end
   end
+
+  # resources :ratings, only: [:create] do
+  #   patch 'change_rating'
+  # end
 
   resources :gigs do
     put 'disable'

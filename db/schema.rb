@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_05_113110) do
+ActiveRecord::Schema.define(version: 2021_07_11_111202) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -257,6 +257,16 @@ ActiveRecord::Schema.define(version: 2021_06_05_113110) do
     t.index ["questionnaire_id"], name: "index_questions_on_questionnaire_id"
   end
 
+  create_table "ratings", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "rating"
+    t.bigint "rateable_id"
+    t.string "rateable_type"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_ratings_on_user_id"
+  end
+
   create_table "services", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "provider"
@@ -430,6 +440,7 @@ ActiveRecord::Schema.define(version: 2021_06_05_113110) do
   add_foreign_key "post_tokens", "users"
   add_foreign_key "posts", "users"
   add_foreign_key "questions", "questionnaires"
+  add_foreign_key "ratings", "users"
   add_foreign_key "services", "users"
   add_foreign_key "shares", "users"
   add_foreign_key "taggings", "tags"
