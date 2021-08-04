@@ -6,7 +6,7 @@ class User < ApplicationRecord
 
   after_create :add_default_credit, :create_admin_notifications
   before_destroy :delete_notifications
-  before_create :skip_confirmation_notification!
+  # before_create :skip_confirmation_notification!
 
   validate :password_complexity
 
