@@ -1,0 +1,7 @@
+$(".comments_container").append("<%= j(render(partial: '/comments/list')) %>");
+
+<% if @comments.last_page? %>
+  $("#load-more-posts").addClass('invisible');
+<% else %>
+  $("#load-more-posts").attr("href", "<%= post_path(@post, page: (@comments.current_page+1)) %>");
+<% end %>

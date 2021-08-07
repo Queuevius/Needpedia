@@ -176,6 +176,10 @@ GEM
       railties (>= 5.2.0)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
+    dotenv (2.7.6)
+    dotenv-rails (2.7.6)
+      dotenv (= 2.7.6)
+      railties (>= 3.2)
     erubi (1.9.0)
     execjs (2.7.0)
     faraday (1.0.1)
@@ -458,6 +462,7 @@ DEPENDENCIES
   devise (~> 4.7, >= 4.7.0)
   devise-bootstrapped!
   devise_masquerade (~> 1.2)
+  dotenv-rails
   faker!
   file_validators
   font-awesome-sass (~> 5.6, >= 5.6.1)
