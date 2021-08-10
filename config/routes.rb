@@ -86,6 +86,10 @@ Rails.application.routes.draw do
   resources :connections
 
   resources :posts do
+    resources :comments do
+      delete 'remove_comment'
+      patch :inappropriate
+    end
     get 'layers'
     get 'problems'
     get 'proposals'

@@ -11,6 +11,8 @@ class Notification < ApplicationRecord
   NOTIFICATION_TYPE_POST_USER_ADDED = 'user_added'.freeze
   NOTIFICATION_TYPE_POST_CURATED_USER_ADDED = 'curated_user_added'.freeze
   NOTIFICATION_TYPE_POST_CURATED_USER_REMOVED = 'curated_user_removed'.freeze
+  NOTIFICATION_TYPE_COMMENT_EDITED = 'comment_edited'.freeze
+  NOTIFICATION_TYPE_COMMENT_DELETED = 'comment_deleted'.freeze
 
   ################################ relationships ############################
   belongs_to :recipient, class_name: "User"
@@ -25,7 +27,6 @@ class Notification < ApplicationRecord
   def self.post(to:, from:, action:, notifiable:, post_id: nil, admin_notification_id: nil)
     recipients = Array.wrap(to)
     notifications = []
-
     Notification.transaction do
       notifications = recipients.uniq.each do |recipient|
         Notification.create(

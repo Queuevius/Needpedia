@@ -1,0 +1,2 @@
+document.querySelector("#comment-form-<%= @comment.id %>").innerHTML = ("<%= j render 'form', comment: @comment %>")
+$("#comment-body-<%= @comment.id %>").hide();

@@ -55,8 +55,8 @@ class PostsController < ApplicationController
   # GET /posts/1
   # GET /posts/1.json
   def show
-    @comment = Comment.new
-    @comments = @post.comments.page(params[:page].present? ? params[:page] : 1).per(12).order('comments.created_at DESC')
+    @comment = Comment.new(parent_id: params[:parent_id])
+    @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('comments.created_at ASC')
   end
 
   # GET /posts/new

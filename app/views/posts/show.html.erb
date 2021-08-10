@@ -241,7 +241,7 @@
                       <div class="row comments_container">
                         <%= render 'comments/list', { post: @post } %>
                       </div>
-                      <% unless @comments.last_page? %>
+                      <% if !@comments.last_page? && @comments.present? %>
                         <%= link_to "Load more", post_path(@post, page: @comments.current_page + 1), id: "load-more-posts", class: 'd-flex justify-content-center text-center p-3 h6', remote: true %>
                       <% end %>
                     </div>
