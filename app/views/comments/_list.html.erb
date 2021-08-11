@@ -1,14 +1,47 @@
-<div class="row">
-  <% comments.order("comments.created_at DESC").each do |comment| %>
-    <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1">
-      <div class="media border border-comments p-3">
-        <div class="media-body"><h5 class="media-heading"><%= comment.user.name %></h5>
-          <p><%= comment.body %></p>
-          <ul class="list-unstyled list-inline media-detail pull-left">
-            <li><i class="fa fa-calendar"></i> <%= comment.created_at.strftime('%d-%m-%Y') %></li>
-          </ul>
+<% @comments.each do |comment| %>
+  <% unless comment.parent_id || !comment.persisted? %>
+    <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 border">
+      <div class="media">
+        <div class="media-body">
+          <h5 class="media-heading"><%= comment.user.name %></h5>
+          <% if comment.deleted? %>
+            <div class="card bg-light">
+              <div class="card-body font-italic text-secondary font-weight-bold">
+                <i class="fas fa-ban"></i>
+                Message deleted
+              </div>
+            </div>
+          <% else %>
+            <div id="comment-form-<%= comment.id %>"></div>
+            <p id="comment-body-<%= comment.id %>"><%= comment.body %></p>
+            <ul class="list-unstyled list-inline media-detail pull-left">
+              <li><i class="fa fa-calendar"></i> <%= comment.created_at.strftime('%d-%m-%Y') %></li>
+              <% if comment.created_at != comment.updated_at %>
+                <li class="mt-2">
+                  <span class='font-italic mt-2 text-secondary'>Edited: <%= comment.created_at.strftime('%d-%m-%Y') %></span>
+                </li>
+              <% end %>
+
+              <li class="mt-2">
+                <% if comment.user_id == current_user.id %>
+                  <%= link_to 'Edit', edit_post_comment_path(@post, comment.id), remote: true, class: 'mr-1' %>
+                  <%= link_to 'Delete', post_comment_remove_comment_path(@post.id, comment.id), method: :delete, class: 'mr-1' %>
+                  <%= link_to 'Reply', new_post_comment_path(@post, parent_id: comment.id), remote: true, class: 'mr-1' %>
+                <% else %>
+                  <%= link_to 'Reply', new_post_comment_path(@post, parent_id: comment.id), remote: true, class: 'mr-1' %>
+                  <%= link_to 'Mark inappropriate', post_comment_inappropriate_path(@post, comment.id), class: 'mr-1', method: :patch %>
+                <% end %>
+              </li>
+            </ul>
+          <% end %>
         </div>
       </div>
+      <% if comment.replies.any? %>
+        <% comment.replies.each do |reply| %>
+          <%= render partial: 'comments/reply', locals: { reply: reply } %>
+        <% end %>
+      <% end %>
+      <div id="reply-form-<%= comment.id %>"></div>
     </div>
   <% end %>
-</div>
+<% end %>

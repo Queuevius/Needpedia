@@ -32,7 +32,7 @@
                   <b>
                     <span id="rating_title-<%= post.id %>" class="text-dark" data-toggle="modal" data-target="#rating_modal-<%= post.id %>"><%= post&.ratings&.pluck(:rating)&.sum || 0 %></span>
 
-                  </b>   <b class="pl-2"><%= post.post_type.titleize %>:</b> <%= link_to post.title, post_path(post), class: 'text-dark', remote: true %>
+                  </b>   <b class="pl-2"><%= post.post_type.titleize %>:</b> <%= link_to post.title, post_path(post), class: 'text-dark' %>
                   </h6>
                   <p><%= truncate(strip_tags(post&.content&.to_s), length: 150) %></p>
 <!--                  <p><%#= post.content %></p>-->

@@ -238,7 +238,12 @@
                         </div>
                       </div>
                       <h4><%= @post.comments.count %> Comments</h4>
-                      <%= render 'comments/list', {comments: @post.comments, post: @post} %>
+                      <div class="row comments_container">
+                        <%= render 'comments/list', { post: @post } %>
+                      </div>
+                      <% if !@comments.last_page? && @comments.present? %>
+                        <%= link_to "Load more", post_path(@post, page: @comments.current_page + 1), id: "load-more-posts", class: 'd-flex justify-content-center text-center p-3 h6', remote: true %>
+                      <% end %>
                     </div>
                   </div>
                 </div>

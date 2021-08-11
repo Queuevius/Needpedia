@@ -1,0 +1,28 @@
+<div class="border-top">
+  <div class="media ml-5">
+    <div class="media-body"><h5 class="media-heading"><%= reply.user.name %></h5>
+      <% if reply.deleted? %>
+        <div class="card bg-light">
+          <div class="card-body font-italic text-secondary font-weight-bold">
+            <i class="fas fa-ban"></i>
+            Message deleted
+          </div>
+        </div>
+      <% else %>
+        <p><%= reply.body %></p>
+        <ul class="ist-unstyled list-inline media-detail pull-left">
+          <li class="mt-2">
+            <i class="fa fa-calendar"></i> <%= time_ago_in_words(reply.created_at) %> ago
+          </li>
+          <li class="mt-2">
+            <% if reply.user_id == current_user.id %>
+              <%= link_to 'Delete', post_comment_remove_comment_path(@post.id, reply.id), method: :delete %>
+            <% else %>
+              <%= link_to 'Mark inappropriate', post_comment_inappropriate_path(@post, reply.id), class: 'mr-1', method: :patch %>
+            <% end %>
+          </li>
+        </ul>
+      <% end %>
+    </div>
+  </div>
+</div>
