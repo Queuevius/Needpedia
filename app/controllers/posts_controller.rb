@@ -3,6 +3,7 @@ class PostsController < ApplicationController
   before_action :set_post, only: [:show, :edit, :update, :destroy]
   before_action :set_type, only: [:index, :new, :problems, :proposals, :ideas, :layers]
   before_action :set_area, only: [:proposals, :problems, :ideas, :layers, :track_post]
+  before_action :set_user, only: :new
   after_action :send_update_email, only: [:update]
 
   # GET /posts
@@ -219,6 +220,15 @@ class PostsController < ApplicationController
   private
 
   # Use callbacks to share common setup or constraints between actions.
+  def set_user
+    if params[:uuid].present?
+      @posted_to = User.find_by(uuid: params[:uuid])
+      @uuid = params[:uuid]
+    else
+      @posted_to = current_user
+    end
+  end
+
   def set_post
     @post = Post.find_by_id(params[:id])
   end
@@ -285,7 +295,7 @@ class PostsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def post_params
-    params.require(:post).permit(:title, :content, :user_id, :post_type, :area_id, :problem_id, :private, :curated, :post_id, :tag_list, images: [])
+    params.require(:post).permit(:title, :content, :user_id, :post_type, :area_id, :problem_id, :private, :curated, :post_id, :posted_to_id, :tag_list, images: [])
   end
 
   def create_activity(post, event)

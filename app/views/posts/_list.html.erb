@@ -30,7 +30,7 @@
               <div class="row">
                 <div class="col-lg-12">
                   <h2>
-                    <span class="<%= post_type_color(post.post_type) %>"><%= post.post_type.titleize %>: </span>
+                    <span class="<%= post_type_color(post.post_type) %>"><%= post.post_type == 'area' ? 'Subject' : post.post_type.titleize %>: </span>
                     <% if check_if_private?(post) %>
                       <i class="fa fa-lock" aria-hidden="true" style="font-size: 20px;" title="Private Post"></i>
                     <% end %>
@@ -51,7 +51,7 @@
                 <% end %>
               <% end %>
               <% if post&.user == current_user && params[:action] == 'wall' %>
-                <%= link_to post_path(post), class: 'btn btn-default', method: :delete, data: { confirm: 'Are you sure?' } do %>
+                <%= link_to post_path(post), class: 'btn btn-default', method: :delete, data: { confirm: 'All comments and other activity related to this post will be deleted' } do %>
                   <i class="fa fa-trash-alt" style="font-size: 18px" title="Delete this post"></i>
                 <% end %>
               <% end %>

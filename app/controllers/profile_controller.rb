@@ -4,7 +4,8 @@ class ProfileController < ApplicationController
   before_action :connection_requests_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed]
 
   def wall
-    @posted_posts = @user.posts.posts_feed
+    @f = Post.posts_feed.ransack(params[:q])
+    @posted_posts = @f.result.where(user_id: current_user.id).or(@f.result.where(posted_to: current_user.id))
     @liked_posts = @user.likes.where(likeable_type: 'Post').collect(&:likeable)
     @commented_posts = @user.comments.collect(&:commentable)
     @flagged_posts = @user.flags.where(flagable_type: 'Flag').collect(&:flagable)
@@ -141,9 +142,11 @@ class ProfileController < ApplicationController
     #   @activities = activities.reject { |p| private_post_ids.include?(p.trackable_id) }
     # else
     # @activities = PublicActivity::Activity.includes(:owner, trackable: [:flags, :likes, :comments, :shares, :post_tokens, :notifications, images_attachment: :blob]).order('created_at DESC').limit(50)
-      @activities = PublicActivity::Activity.order('created_at DESC')
-      @activities = @activities.select { |p| p.trackable&.private == false }
-      @activities = Kaminari.paginate_array(@activities).page(params[:page]).per 10
+      # @activities = PublicActivity::Activity.order('created_at DESC')
+      # @activities = @activities.select { |p| p.trackable&.private == false }
+      @f = Post.posts_feed.ransack(params[:q])
+      posts = @f.result.where(user_id: @user.friends.pluck(:id), private: false, disabled: false)
+      @posts = Kaminari.paginate_array(posts).page(params[:page]).per 10
       respond_to do |format|
         format.html
         format.js

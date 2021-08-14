@@ -1,6 +1,7 @@
 class Post < ApplicationRecord
   include PublicActivity::Model
   has_rich_text :content
+  has_one :content, class_name: 'ActionText::RichText', as: :record
   acts_as_taggable_on :tags
   has_many_attached :images
   # after_save :clean_froala_link
@@ -41,6 +42,7 @@ class Post < ApplicationRecord
   has_many :ideas, class_name: 'Post', foreign_key: :problem_id, dependent: :destroy
 
   belongs_to :parent_post, class_name: 'Post', foreign_key: :post_id, optional: true
+  belongs_to :posted_to, class_name: 'User', foreign_key: :posted_to_id, optional: true
   has_many :layers, class_name: 'Post', foreign_key: :post_id, dependent: :destroy
 
   has_many :comments, as: :commentable, dependent: :destroy
