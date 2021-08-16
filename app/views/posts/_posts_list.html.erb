@@ -1,15 +1,15 @@
 <div class="row">
   <% posts.each do |post| %>
-    <% if post.post_type == Post::POST_TYPE_AREA %>
+    <% if post.post_type == Post::POST_TYPE_SUBJECT %>
       <% next if post.private? && !post.private_users&.include?(current_user) %>
     <% end %>
 
     <% if post.post_type.in?([Post::POST_TYPE_PROPOSAL,Post::POST_TYPE_PROBLEM]) %>
-      <% next if post.parent_area&.private? && !post.parent_area&.private_users&.include?(current_user) %>
+      <% next if post.parent_subject&.private? && !post.parent_subject&.private_users&.include?(current_user) %>
     <% end %>
 
     <% if post.post_type == Post::POST_TYPE_IDEA %>
-      <% next if post.problem&.parent_area&.private? && !post.problem&.parent_area&.private_users&.include?(current_user) %>
+      <% next if post.problem&.parent_subject&.private? && !post.problem&.parent_subject&.private_users&.include?(current_user) %>
     <% end %>
 
     <% if post.post_type == Post::POST_TYPE_LAYER %>

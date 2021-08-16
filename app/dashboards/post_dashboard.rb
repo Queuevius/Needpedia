@@ -10,9 +10,9 @@ class PostDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     content: Field::RichText,
     user: Field::BelongsTo,
-    parent_area: Field::BelongsTo.with_options(class_name: "Post", forign_key: 'area_id'),
-    child_posts: Field::HasMany.with_options(class_name: "Post", forign_key: 'area_id'),
-    problem: Field::BelongsTo.with_options(class_name: "Post", forign_key: 'area_id'),
+    parent_subject: Field::BelongsTo.with_options(class_name: "Post", forign_key: 'subject_id'),
+    child_posts: Field::HasMany.with_options(class_name: "Post", forign_key: 'subject_id'),
+    problem: Field::BelongsTo.with_options(class_name: "Post", forign_key: 'subject_id'),
     ideas: Field::HasMany.with_options(class_name: "Post", forign_key: 'problem_id'),
     parent_post: Field::BelongsTo.with_options(class_name: "Post", forign_key: 'problem_id'),
     layers: Field::HasMany.with_options(class_name: "Post", forign_key: 'post_id'),
@@ -21,7 +21,7 @@ class PostDashboard < Administrate::BaseDashboard
     id: Field::Number,
     post_type: Field::String,
     title: Field::String,
-    area_id: Field::Number,
+    subject_id: Field::Number,
     problem_id: Field::Number,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
@@ -52,7 +52,7 @@ class PostDashboard < Administrate::BaseDashboard
   SHOW_PAGE_ATTRIBUTES = %i[
   content
   user
-  parent_area
+  parent_subject
   child_posts
   problem
   ideas
@@ -66,7 +66,7 @@ class PostDashboard < Administrate::BaseDashboard
   id
   post_type
   title
-  area_id
+  subject_id
   problem_id
   created_at
   updated_at

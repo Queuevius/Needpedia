@@ -68,7 +68,7 @@
                           <%#= image_tag('area_icon.svg', height: "50%", width: "40%", title: 'See All Area posts') %>
                         <%# end %>
                         <%#= link_to 'Problems', all_problems_posts_path(), class: 'btn btn-danger' %>
-                        <% if @post.post_type == Post::POST_TYPE_AREA %>
+                        <% if @post.post_type == Post::POST_TYPE_SUBJECT %>
                           <%= link_to post_problems_path(post_id: @post.id, post_type: Post::POST_TYPE_PROBLEM), class: 'btn btn-default' do %>
                             <%= image_tag('problem_icon.svg', height: "50%", width: "40%", title: 'Problems') %>
                           <% end %>
@@ -114,12 +114,12 @@
                           <div class="col-12">
                             <span>
                               <% if @post.type_of?(Post::POST_TYPE_PROBLEM) || @post.type_of?(Post::POST_TYPE_PROPOSAL) %>
-                                <%= link_to truncate(@post&.parent_area&.title, length: 30), post_path(@post&.parent_area), title: @post&.parent_area&.title %> >
+                                <%= link_to truncate(@post&.parent_subject&.title, length: 30), post_path(@post&.parent_subject), title: @post&.parent_subject&.title %> >
                                 <%= link_to truncate(@post&.title, length: 30), post_path(@post), title: @post&.title %>
-                              <% elsif @post.type_of?(Post::POST_TYPE_AREA) %>
+                              <% elsif @post.type_of?(Post::POST_TYPE_SUBJECT) %>
                                 <%= link_to truncate(@post&.title, length: 30), post_path(@post), title: @post.title %>
                               <% elsif @post.type_of?(Post::POST_TYPE_IDEA) %>
-                                <%= link_to truncate(@post&.problem&.parent_area&.title, length: 30), post_path(@post.problem.parent_area), title: @post&.problem&.parent_area&.title %> >
+                                <%= link_to truncate(@post&.problem&.parent_subject&.title, length: 30), post_path(@post.problem.parent_subject), title: @post&.problem&.parent_subject&.title %> >
                                 <%= link_to truncate(@post&.problem&.title, length: 30), post_path(@post&.problem), title: @post.problem.title %> >
                                 <%= link_to truncate(@post&.title, length: 30), post_path(@post), title: @post.title %>
                               <% end %>

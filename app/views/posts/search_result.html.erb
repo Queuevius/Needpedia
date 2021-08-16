@@ -14,7 +14,7 @@
             <div class="col-lg-12 col-md-12">
               <div class="ui-block shadow-lg rounded">
                 <div class="ui-block-content">
-                  <%= link_to new_post_path(post_type: Post::POST_TYPE_AREA), class: 'btn btn-primary' do %>
+                  <%= link_to new_post_path(post_type: Post::POST_TYPE_SUBJECT), class: 'btn btn-primary' do %>
                     Create Subject Post
                   <% end %>
                 </div>
@@ -31,7 +31,7 @@
           </div>
 <!--          <div class="row">-->
 <!--            <div class="col-sm-6 text-right mb-2 offset-6">-->
-              <%#= link_to new_post_path(post_type: Post::POST_TYPE_AREA), class: 'btn btn-primary' do %>
+              <%#= link_to new_post_path(post_type: Post::POST_TYPE_SUBJECT), class: 'btn btn-primary' do %>
 <!--                Add New Post-->
               <%# end %>
 <!--            </div>-->
@@ -81,7 +81,7 @@
                               <label for="inputPassword" class="col-sm-3 col-form-label">Post Type</label>
                               <div class="col-sm-8">
                                 <%#= f.select(:post_type_cont , options_for_select(Post::TYPES_FOR_SEARCH.map { |r| [r.titleize, r] }, @post_type), { include_blank: false }, {class: 'selectpicker form-control', autofocus: false })%>
-                                <%= select_tag 'post_type', options_for_select(Post::TYPES_FOR_SEARCH.map { |r| [r == 'area' ? 'Subject' : r.titleize, r] }, @post_type), include_blank: false , class: "form form-group form-control" %>
+                                <%= select_tag 'post_type', options_for_select(Post::TYPES_FOR_SEARCH.map { |r| [r.titleize, r] }, @post_type), include_blank: false , class: "form form-group form-control" %>
                               </div>
                             </div>
                           </div>
@@ -133,7 +133,7 @@
                         </div>
                       </div>
                       <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
-                        <%= link_to new_post_path(post_type: Post::POST_TYPE_AREA), class: 'btn btn-primary' do %>
+                        <%= link_to new_post_path(post_type: Post::POST_TYPE_SUBJECT), class: 'btn btn-primary' do %>
                           Add New Post
                         <% end %>
                       </div>

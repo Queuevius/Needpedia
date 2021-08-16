@@ -3,7 +3,7 @@
   <% if !@post.persisted? %>
     <%= form.hidden_field :post_type, value: @type %>
     <%= form.hidden_field :user_id, value: current_user.id %>
-    <%= form.hidden_field :area_id, value: @area_id %>
+    <%= form.hidden_field :subject_id, value: @subject_id %>
     <%= form.hidden_field :problem_id, value: @problem_id %>
     <%= form.hidden_field :post_id, value: @post_id %>
     <%= form.hidden_field :posted_to_id, value: @posted_to.id %>
@@ -22,7 +22,7 @@
         <%= form.file_field :images, multiple: true, accept: 'image/jpeg, image/png' %>
       </div>
     </div>
-    <% if @post.post_type == Post::POST_TYPE_AREA && !@post.persisted? %>
+    <% if @post.post_type == Post::POST_TYPE_SUBJECT && !@post.persisted? %>
       <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12">
         <div class="input-group mb-3">
           <div class="input-group-prepend">
@@ -66,7 +66,7 @@
   </div>
 
   <div id="private-users-section">
-    <% if @post.post_type == Post::POST_TYPE_AREA %>
+    <% if @post.post_type == Post::POST_TYPE_SUBJECT %>
       <% if !@post.persisted? %>
         <%= render 'private_users_list', private_users: @private_users, post: @post, type: 'private' %>
       <% elsif @post.persisted? && @post.private? %>
@@ -77,7 +77,7 @@
   </div>
 
   <div id="curated-users-section">
-    <% if @post.post_type == Post::POST_TYPE_AREA %>
+    <% if @post.post_type == Post::POST_TYPE_SUBJECT %>
       <% if !@post.persisted? %>
         <%= render 'private_users_list', private_users: @curated_users, post: @post, type: 'curated' %>
       <% elsif @post.persisted? && @post.curated? %>

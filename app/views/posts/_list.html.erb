@@ -7,16 +7,16 @@
     <% end %>
   </div>
   <% posts.each do |post| %>
-    <% if post.post_type == Post::POST_TYPE_AREA %>
+    <% if post.post_type == Post::POST_TYPE_SUBJECT %>
       <% next if post.private? && !post.private_users&.include?(current_user) %>
     <% end %>
 
     <% if post.post_type.in?([Post::POST_TYPE_PROPOSAL,Post::POST_TYPE_PROBLEM]) %>
-      <% next if post.parent_area&.private? && !post.parent_area&.private_users&.include?(current_user) %>
+      <% next if post.parent_subject&.private? && !post.parent_subject&.private_users&.include?(current_user) %>
     <% end %>
 
     <% if post.post_type == Post::POST_TYPE_IDEA %>
-      <% next if post.problem&.parent_area&.private? && !post.problem&.parent_area&.private_users&.include?(current_user) %>
+      <% next if post.problem&.parent_subject&.private? && !post.problem&.parent_subject&.private_users&.include?(current_user) %>
     <% end %>
 
     <% if post.post_type == Post::POST_TYPE_LAYER %>
@@ -30,7 +30,7 @@
               <div class="row">
                 <div class="col-lg-12">
                   <h2>
-                    <span class="<%= post_type_color(post.post_type) %>"><%= post.post_type == 'area' ? 'Subject' : post.post_type.titleize %>: </span>
+                    <span class="<%= post_type_color(post.post_type) %>"><%= post.post_type.titleize %>: </span>
                     <% if check_if_private?(post) %>
                       <i class="fa fa-lock" aria-hidden="true" style="font-size: 20px;" title="Private Post"></i>
                     <% end %>
@@ -42,7 +42,7 @@
               <em><%= post.created_at.strftime('%d-%m-%Y') %></em>
             </div>
             <div class="col-4 text-right">
-              <% if post.post_type == Post::POST_TYPE_AREA %>
+              <% if post.post_type == Post::POST_TYPE_SUBJECT %>
                 <%= link_to post_problems_path(post_id: post.id, post_type: Post::POST_TYPE_PROBLEM), class: 'btn btn-default' do %>
                   <%= image_tag('problem_icon.svg', height: "35%", width: "35%", title: 'See Problems in this Area') %>
                 <% end %>
