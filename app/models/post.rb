@@ -1,11 +1,12 @@
 class Post < ApplicationRecord
   include PublicActivity::Model
   has_rich_text :content
+  has_one :content, class_name: 'ActionText::RichText', as: :record
   acts_as_taggable_on :tags
   has_many_attached :images
   # after_save :clean_froala_link
   ################################ Constants ############################
-  POST_TYPE_AREA = 'area'.freeze
+  POST_TYPE_SUBJECT = 'subject'.freeze
   POST_TYPE_PROBLEM = 'problem'.freeze
   POST_TYPE_PROPOSAL = 'proposal'.freeze
   POST_TYPE_IDEA = 'idea'.freeze
@@ -13,7 +14,7 @@ class Post < ApplicationRecord
   POST_TYPE_SOCIAL_MEDIA = 'social_media'.freeze
   POST_TYPE_WIKI_POSTS_ONLY = 'Wiki Posts Only'.freeze
   POST_TYPES = [
-    POST_TYPE_AREA,
+    POST_TYPE_SUBJECT,
     POST_TYPE_PROBLEM,
     POST_TYPE_PROPOSAL,
     POST_TYPE_IDEA,
@@ -22,7 +23,7 @@ class Post < ApplicationRecord
   ].freeze
 
   CORE_POST_TYPES = [
-    POST_TYPE_AREA,
+    POST_TYPE_SUBJECT,
     POST_TYPE_PROBLEM,
     POST_TYPE_PROPOSAL,
     POST_TYPE_IDEA
@@ -34,13 +35,14 @@ class Post < ApplicationRecord
   GENERAL_PROBLEM = ENV['GENERAL_PROBLEM_ID']
   ################################ Relationships ########################
   belongs_to :user, optional: true
-  belongs_to :parent_area, class_name: 'Post', foreign_key: :area_id, optional: true
-  has_many :child_posts, class_name: 'Post', foreign_key: :area_id, dependent: :destroy
+  belongs_to :parent_subject, class_name: 'Post', foreign_key: :subject_id, optional: true
+  has_many :child_posts, class_name: 'Post', foreign_key: :subject_id, dependent: :destroy
 
   belongs_to :problem, class_name: 'Post', foreign_key: :problem_id, optional: true
   has_many :ideas, class_name: 'Post', foreign_key: :problem_id, dependent: :destroy
 
   belongs_to :parent_post, class_name: 'Post', foreign_key: :post_id, optional: true
+  belongs_to :posted_to, class_name: 'User', foreign_key: :posted_to_id, optional: true
   has_many :layers, class_name: 'Post', foreign_key: :post_id, dependent: :destroy
 
   has_many :comments, as: :commentable, dependent: :destroy
@@ -69,7 +71,7 @@ class Post < ApplicationRecord
   ############################### Validations ###########################
   validates :title, presence: true
   validates :post_type, presence: true, inclusion: { in: POST_TYPES }
-  validates :area_id, presence: true, if: proc { |s| s.post_type == POST_TYPE_PROBLEM || s.post_type == POST_TYPE_PROPOSAL }
+  validates :subject_id, presence: true, if: proc { |s| s.post_type == POST_TYPE_PROBLEM || s.post_type == POST_TYPE_PROPOSAL }
   validates :problem_id, presence: true, if: proc { |s| s.post_type == POST_TYPE_IDEA }
   # validates :post_id, presence: true, if: proc { |s| s.post_type == POST_TYPE_LAYER }
 
@@ -77,7 +79,7 @@ class Post < ApplicationRecord
 
   # default_scope { where(disabled: false) }
   scope :posts_feed, -> { where(disabled: false).where.not('post_type IN (?)', [POST_TYPE_IDEA, POST_TYPE_LAYER]) }
-  scope :area_posts, -> { where(post_type: POST_TYPE_AREA, disabled: false) }
+  scope :area_posts, -> { where(post_type: POST_TYPE_SUBJECT, disabled: false) }
   scope :problem_posts, -> { where(post_type: POST_TYPE_PROBLEM, disabled: false) }
   scope :proposal_posts, -> { where(post_type: POST_TYPE_PROPOSAL, disabled: false) }
   scope :idea_posts, -> { where(post_type: POST_TYPE_IDEA, disabled: false) }
@@ -85,7 +87,7 @@ class Post < ApplicationRecord
 
   ############################### Methods ################################
   def parent_post_id
-    area_id
+    subject_id
   end
 
   def clean_froala_link

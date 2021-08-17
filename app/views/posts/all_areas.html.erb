@@ -6,17 +6,17 @@
     <div class="col-md-12">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <%= link_to 'Back', posts_path(post_type: Post::POST_TYPE_AREA), class: 'btn btn-primary' %>
+          <%= link_to 'Back', posts_path(post_type: Post::POST_TYPE_SUBJECT), class: 'btn btn-primary' %>
         </div>
 
         <div class="col-sm-6 text-right">
-          <%= link_to new_post_path(post_type: Post::POST_TYPE_AREA), class: 'btn btn-primary' do %>
-            Create Area Post
+          <%= link_to new_post_path(post_type: Post::POST_TYPE_SUBJECT), class: 'btn btn-primary' do %>
+            Create Subject Post
           <% end %>
         </div>
       </div>
 
-      <%= render 'list', posts: @posts, type: Post::POST_TYPE_AREA %>
+      <%= render 'list', posts: @posts, type: Post::POST_TYPE_SUBJECT %>
     </div>
   </div>
 </div>

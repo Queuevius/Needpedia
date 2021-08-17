@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_08_142831) do
+ActiveRecord::Schema.define(version: 2021_08_16_174427) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -232,7 +232,7 @@ ActiveRecord::Schema.define(version: 2021_08_08_142831) do
     t.string "post_type"
     t.bigint "user_id", null: false
     t.string "title"
-    t.integer "area_id"
+    t.integer "subject_id"
     t.integer "problem_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -242,6 +242,7 @@ ActiveRecord::Schema.define(version: 2021_08_08_142831) do
     t.boolean "editing_disabled", default: false
     t.boolean "layering_disabled", default: false
     t.boolean "curated", default: false
+    t.integer "posted_to_id"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 

@@ -3,6 +3,7 @@ class PostsController < ApplicationController
   before_action :set_post, only: [:show, :edit, :update, :destroy]
   before_action :set_type, only: [:index, :new, :problems, :proposals, :ideas, :layers]
   before_action :set_area, only: [:proposals, :problems, :ideas, :layers, :track_post]
+  before_action :set_user, only: :new
   after_action :send_update_email, only: [:update]
 
   # GET /posts
@@ -17,11 +18,11 @@ class PostsController < ApplicationController
   end
 
   def problems
-    @posts = Post.problem_posts.where(area_id: @post.id)
+    @posts = Post.problem_posts.where(subject_id: @post.id)
   end
 
   def proposals
-    @posts = Post.proposal_posts.where(area_id: @post.id)
+    @posts = Post.proposal_posts.where(subject_id: @post.id)
   end
 
   def ideas
@@ -61,12 +62,12 @@ class PostsController < ApplicationController
 
   # GET /posts/new
   def new
-    @area_id = params[:area_id]
+    @subject_id = params[:subject_id]
     @problem_id = params[:problem_id]
     @post_id = params[:post_id]
     if params[:post] && params[:post][:from_feed]
       if [Post::POST_TYPE_PROPOSAL, Post::POST_TYPE_PROBLEM].include?(@type)
-        @area_id = Post::GENERAL_AREA
+        @subject_id = Post::GENERAL_AREA
       elsif @type == Post::POST_TYPE_IDEA
         @problem_id = Post::GENERAL_PROBLEM
       else
@@ -91,8 +92,8 @@ class PostsController < ApplicationController
     respond_to do |format|
       if @post.save
         # @post.clean_froala_link
-        UserPrivatePost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_AREA
-        UserCuratedPost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_AREA
+        UserPrivatePost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_SUBJECT
+        UserCuratedPost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_SUBJECT
         check_if_should_be_private(@post)
         check_if_should_be_curated(@post)
         create_private_users
@@ -219,6 +220,15 @@ class PostsController < ApplicationController
   private
 
   # Use callbacks to share common setup or constraints between actions.
+  def set_user
+    if params[:uuid].present?
+      @posted_to = User.find_by(uuid: params[:uuid])
+      @uuid = params[:uuid]
+    else
+      @posted_to = current_user
+    end
+  end
+
   def set_post
     @post = Post.find_by_id(params[:id])
   end
@@ -252,9 +262,9 @@ class PostsController < ApplicationController
   def check_if_should_be_private(post)
     case true
     when post.post_type.in?([Post::POST_TYPE_PROPOSAL, Post::POST_TYPE_PROBLEM])
-      post.update(private: true) if post.parent_area&.private?
+      post.update(private: true) if post.parent_subject&.private?
     when post.post_type == Post::POST_TYPE_IDEA
-      post.update(private: true) if post.problem&.parent_area&.private?
+      post.update(private: true) if post.problem&.parent_subject&.private?
     when post.post_type == Post::POST_TYPE_LAYER
       post.update(private: true) if post.parent_post&.private?
     else
@@ -265,9 +275,9 @@ class PostsController < ApplicationController
   def check_if_should_be_curated(post)
     case true
     when post.post_type.in?([Post::POST_TYPE_PROPOSAL, Post::POST_TYPE_PROBLEM])
-      post.update(private: true) if post.parent_area&.curated?
+      post.update(private: true) if post.parent_subject&.curated?
     when post.post_type == Post::POST_TYPE_IDEA
-      post.update(private: true) if post.problem&.parent_area&.curated?
+      post.update(private: true) if post.problem&.parent_subject&.curated?
     when post.post_type == Post::POST_TYPE_LAYER
       post.update(private: true) if post.parent_post&.curated?
     else
@@ -280,12 +290,12 @@ class PostsController < ApplicationController
   end
 
   def set_type
-    @type = params[:post_type] || Post::POST_TYPE_AREA
+    @type = params[:post_type] || Post::POST_TYPE_SUBJECT
   end
 
   # Only allow a list of trusted parameters through.
   def post_params
-    params.require(:post).permit(:title, :content, :user_id, :post_type, :area_id, :problem_id, :private, :curated, :post_id, :tag_list, images: [])
+    params.require(:post).permit(:title, :content, :user_id, :post_type, :subject_id, :problem_id, :private, :curated, :post_id, :posted_to_id, :tag_list, images: [])
   end
 
   def create_activity(post, event)

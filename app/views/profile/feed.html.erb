@@ -1,15 +1,40 @@
-
 <div class="row">
   <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12"><%= render 'shared/sidebar' %></div>
   <div class="col-md-9 col-lg-9 col-xl-9 col-sm-12">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="container mb-3">
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-10 col-lg-8">
+                <%= search_form_for @f, url: wall_path, method: :get do |f| %>
+                  <div class="row no-gutters align-items-center">
+                    <div class="col">
+                      <%= f.text_field :title_or_content_body_or_tags_name_cont, class: 'form-control form-control-lg', placeholder: "Search" %>
+                    </div>
+                    <div class="col-auto">
+                      <button class="ml-2 btn btn-lg btn-secondary search-button" type="submit">Go</button>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="content" class="p-4">
-      <%= render_activities @activities %>
-      <% if @activities.blank? %>
-        No activity by this by <%= @user.name %>
+      <div class="col-md-12">
+        <%= render 'posts/list', posts: @posts, type: nil %>
+      </div>
+      <% if @posts.blank? %>
+        <div class="col-md-12 text-center">
+          <h5 class="text-warning">Not posted yet</h5>
+        </div>
       <% end %>
     </div>
     <div id="infinite-scrolling" class="hide">
-      <%= paginate @activities, theme: 'default' %>
+      <%= paginate @posts, theme: 'default' %>
     </div>
   </div>
 </div>

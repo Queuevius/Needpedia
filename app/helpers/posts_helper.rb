@@ -4,12 +4,12 @@ module PostsHelper
 
     post.private? && !post.private_users.include?(current_user)
     case post.post_type
-    when Post::POST_TYPE_AREA
+    when Post::POST_TYPE_SUBJECT
       post.private? && !post.private_users.include?(current_user)
     when Post::POST_TYPE_PROPOSAL || POST_TYPE_PROBLEM
-      post.parent_area&.private? && !post.parent_area&.private_users&.include?(current_user)
+      post.parent_subject&.private? && !post.parent_subject&.private_users&.include?(current_user)
     when post.post_type == Post::POST_TYPE_IDEA
-      post.problem&.parent_area&.private? && !post.problem&.parent_area&.private_users&.include?(current_user)
+      post.problem&.parent_subject&.private? && !post.problem&.parent_subject&.private_users&.include?(current_user)
     when Post::POST_TYPE_LAYER
       post.parent_post&.private? && !post.parent_post&.private_users&.include?(current_user)
     else
@@ -19,16 +19,16 @@ module PostsHelper
 
   def check_if_private?(post)
     response = false
-    if post.post_type == Post::POST_TYPE_AREA
+    if post.post_type == Post::POST_TYPE_SUBJECT
       response = true if post.private?
     end
 
     if post.post_type.in?([Post::POST_TYPE_PROPOSAL, Post::POST_TYPE_PROBLEM])
-      response = true if post.parent_area&.private?
+      response = true if post.parent_subject&.private?
     end
 
     if post.post_type == Post::POST_TYPE_IDEA
-      response = true if post.problem&.parent_area&.private?
+      response = true if post.problem&.parent_subject&.private?
     end
 
     if post.post_type == Post::POST_TYPE_LAYER
