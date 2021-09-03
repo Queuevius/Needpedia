@@ -2,13 +2,12 @@ class Post < ApplicationRecord
   include PublicActivity::Model
   has_rich_text :content
   has_one :content, class_name: 'ActionText::RichText', as: :record
-  acts_as_taggable_on :tags
+  acts_as_taggable_on :tags, :resource_tags
   has_many_attached :images
   # after_save :clean_froala_link
   ################################ Constants ############################
   POST_TYPE_SUBJECT = 'subject'.freeze
   POST_TYPE_PROBLEM = 'problem'.freeze
-  POST_TYPE_PROPOSAL = 'proposal'.freeze
   POST_TYPE_IDEA = 'idea'.freeze
   POST_TYPE_LAYER = 'layer'.freeze
   POST_TYPE_SOCIAL_MEDIA = 'social_media'.freeze
@@ -16,7 +15,6 @@ class Post < ApplicationRecord
   POST_TYPES = [
     POST_TYPE_SUBJECT,
     POST_TYPE_PROBLEM,
-    POST_TYPE_PROPOSAL,
     POST_TYPE_IDEA,
     POST_TYPE_LAYER,
     POST_TYPE_SOCIAL_MEDIA
@@ -25,7 +23,6 @@ class Post < ApplicationRecord
   CORE_POST_TYPES = [
     POST_TYPE_SUBJECT,
     POST_TYPE_PROBLEM,
-    POST_TYPE_PROPOSAL,
     POST_TYPE_IDEA
   ].freeze
 
@@ -71,7 +68,7 @@ class Post < ApplicationRecord
   ############################### Validations ###########################
   validates :title, presence: true
   validates :post_type, presence: true, inclusion: { in: POST_TYPES }
-  validates :subject_id, presence: true, if: proc { |s| s.post_type == POST_TYPE_PROBLEM || s.post_type == POST_TYPE_PROPOSAL }
+  validates :subject_id, presence: true, if: proc { |s| s.post_type == POST_TYPE_PROBLEM }
   validates :problem_id, presence: true, if: proc { |s| s.post_type == POST_TYPE_IDEA }
   # validates :post_id, presence: true, if: proc { |s| s.post_type == POST_TYPE_LAYER }
 
@@ -81,7 +78,6 @@ class Post < ApplicationRecord
   scope :posts_feed, -> { where(disabled: false).where.not('post_type IN (?)', [POST_TYPE_IDEA, POST_TYPE_LAYER]) }
   scope :area_posts, -> { where(post_type: POST_TYPE_SUBJECT, disabled: false) }
   scope :problem_posts, -> { where(post_type: POST_TYPE_PROBLEM, disabled: false) }
-  scope :proposal_posts, -> { where(post_type: POST_TYPE_PROPOSAL, disabled: false) }
   scope :idea_posts, -> { where(post_type: POST_TYPE_IDEA, disabled: false) }
   scope :layer_posts, -> { where(post_type: POST_TYPE_LAYER, disabled: false) }
 

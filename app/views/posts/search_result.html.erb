@@ -54,9 +54,9 @@
             <div class="col-lg-12 col-md-12">
               <div class="ui-block shadow-lg rounded">
                 <div class="ui-block-content">
-                  <div class="row">
-                    <div class="col-12">
-                      <%= search_form_for @q, url: search_result_posts_path do |f| %>
+                  <%= search_form_for @q, url: search_result_posts_path do |f| %>
+                    <div class="row">
+                      <div class="col-12">
                         <div class="row no-gutters align-items-center">
                           <div class="col-6">
                             <div class="form-group row">
@@ -88,34 +88,91 @@
 
                           <div class="col-6">
                             <div class="form-group row">
-                              <label for="inputPassword" class="col-sm-3 col-form-label">Access Type</label>
-                              <div class="col-sm-8">
-                                <%= select_tag 'access_type', options_for_select(%w[Public All Curated], @access_type), include_blank: false , class: "form form-group form-control" %>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="col-6">
-                            <div class="form-group row">
                               <label for="inputPassword" class="col-sm-3 col-form-label">Sorted By</label>
                               <div class="col-sm-8">
                                 <%= select_tag "sorted_by", options_for_select(%w[Highest-Rated Highest-Rated/View New Random], @sorted_by), include_blank: false, class: "form form-group form-control" %>
                               </div>
                             </div>
                           </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <button class="btn btn-sm btn-secondary mb-3" type="button" data-toggle="collapse" data-target="#collapseAdvanceFilters" aria-expanded="false" aria-controls="collapseExample">
+                          Advance Filters <i class="fa fa-sliders" aria-hidden="true"></i>
+                        </button>
+                        <div class="collapse" id="collapseAdvanceFilters">
+                          <div class="row no-gutters align-items-center">
+                            <div class="col-6">
+                              <div class="form-group row">
+                                <label for="inputPassword" class="col-sm-3 col-form-label">Access Type</label>
+                                <div class="col-sm-8">
+                                  <%= select_tag 'access_type', options_for_select(%w[Public All Curated], @access_type), include_blank: false , class: "form form-group form-control" %>
+                                </div>
+                              </div>
+                            </div>
 
-                          <div class="col-6">
-                            <div class="form-group row">
-                              <div class="col-sm-2"></div>
-                              <div class="col-sm-9">
-                                <%= f.submit 'Search', class: 'btn btn-primary float-right' %>
+                            <div class="col-6">
+                              <div class="form-group row">
+                                <label for="inputPassword" class="col-sm-3 col-form-label">Subject</label>
+                                <div class="col-sm-8">
+                                  <%= text_field_tag 'subject', @subject, class: 'form-control' %>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-6">
+                              <div class="form-group row">
+                                <label for="inputPassword" class="col-sm-3 col-form-label">Problem</label>
+                                <div class="col-sm-8">
+                                  <%= text_field_tag 'problem', @problem, class: 'form-control' %>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-6">
+                              <div class="form-group row">
+                                <label for="inputPassword" class="col-sm-3 col-form-label">Idea</label>
+                                <div class="col-sm-8">
+                                  <%= text_field_tag 'idea', @idea, class: 'form-control' %>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-6">
+                              <div class="form-group row">
+                                <label for="inputPassword" class="col-sm-3 col-form-label">Location Tags</label>
+                                <div class="col-sm-8">
+                                  <%= text_field_tag 'location_tags', @location_tags, class: 'form-control' %>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-6">
+                              <div class="form-group row">
+                                <label for="inputPassword" class="col-sm-3 col-form-label">Resource Tags</label>
+                                <div class="col-sm-8">
+                                  <%= text_field_tag 'resource_tags', @resource_tags, class: 'form-control' %>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      <% end %>
+                      </div>
                     </div>
-                  </div>
+                    <div class="row">
+                      <div class="col-6"></div>
+                      <div class="col-6">
+                        <div class="form-group row">
+                          <div class="col-sm-2"></div>
+                          <div class="col-sm-9">
+                            <%= f.submit 'Search', class: 'btn btn-primary float-right' %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
                 </div>
               </div>
             </div>

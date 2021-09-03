@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_16_174427) do
+ActiveRecord::Schema.define(version: 2021_09_03_202021) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -244,6 +244,13 @@ ActiveRecord::Schema.define(version: 2021_08_16_174427) do
     t.boolean "curated", default: false
     t.integer "posted_to_id"
     t.index ["user_id"], name: "index_posts_on_user_id"
+  end
+
+  create_table "preformatted_messages", force: :cascade do |t|
+    t.text "body"
+    t.string "for_post_type"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "questionnaires", force: :cascade do |t|

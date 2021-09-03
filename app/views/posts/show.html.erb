@@ -72,10 +72,6 @@
                           <%= link_to post_problems_path(post_id: @post.id, post_type: Post::POST_TYPE_PROBLEM), class: 'btn btn-default' do %>
                             <%= image_tag('problem_icon.svg', height: "50%", width: "40%", title: 'Problems') %>
                           <% end %>
-                          <%#= link_to 'Proposals', all_proposals_posts_path(), class: 'btn btn-purple' %>
-                          <%= link_to post_proposals_path(post_id: @post.id, post_type: Post::POST_TYPE_PROPOSAL), class: 'btn btn-default' do %>
-                            <%= image_tag('proposal_icon.svg', height: "50%", width: "40%", title: 'Proposals') %>
-                          <% end %>
                         <% end %>
                         <% if @post.post_type == Post::POST_TYPE_PROBLEM %>
                           <%= link_to post_ideas_path(post_id: @post.id, post_type: Post::POST_TYPE_IDEA), class: 'btn btn-default' do %>
@@ -113,7 +109,7 @@
                         <div class="row">
                           <div class="col-12">
                             <span>
-                              <% if @post.type_of?(Post::POST_TYPE_PROBLEM) || @post.type_of?(Post::POST_TYPE_PROPOSAL) %>
+                              <% if @post.type_of?(Post::POST_TYPE_PROBLEM) %>
                                 <%= link_to truncate(@post&.parent_subject&.title, length: 30), post_path(@post&.parent_subject), title: @post&.parent_subject&.title %> >
                                 <%= link_to truncate(@post&.title, length: 30), post_path(@post), title: @post&.title %>
                               <% elsif @post.type_of?(Post::POST_TYPE_SUBJECT) %>
@@ -237,6 +233,11 @@
                           </div>
                         </div>
                       </div>
+
+                      <p>Tags: <%= raw @post.tag_list.map { |t| link_to "##{t}", tag_path(t) }.join(', ') %></p>
+                      <% if @post.post_type == Post::POST_TYPE_IDEA %>
+                        <p>Resource Tags: <%= raw @post.resource_tag_list.map { |t| link_to "##{t}", tag_path(t) }.join(', ') %></p>
+                      <% end  %>
                       <h4><%= @post.comments.count %> Comments</h4>
                       <div class="row comments_container">
                         <%= render 'comments/list', { post: @post } %>
