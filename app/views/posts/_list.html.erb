@@ -11,7 +11,7 @@
       <% next if post.private? && !post.private_users&.include?(current_user) %>
     <% end %>
 
-    <% if post.post_type.in?([Post::POST_TYPE_PROPOSAL,Post::POST_TYPE_PROBLEM]) %>
+    <% if post.post_type.in?([Post::POST_TYPE_PROBLEM]) %>
       <% next if post.parent_subject&.private? && !post.parent_subject&.private_users&.include?(current_user) %>
     <% end %>
 
@@ -45,9 +45,6 @@
               <% if post.post_type == Post::POST_TYPE_SUBJECT %>
                 <%= link_to post_problems_path(post_id: post.id, post_type: Post::POST_TYPE_PROBLEM), class: 'btn btn-default' do %>
                   <%= image_tag('problem_icon.svg', height: "35%", width: "35%", title: 'See Problems in this Area') %>
-                <% end %>
-                <%= link_to post_proposals_path(post_id: post.id, post_type: Post::POST_TYPE_PROPOSAL), class: 'btn btn-default btn-default pr-2' do %>
-                  <%= image_tag('proposal_icon.svg', height: "35%", width: "35%", title: 'See Proposals in this Area') %>
                 <% end %>
               <% end %>
               <% if post&.user == current_user && params[:action] == 'wall' %>

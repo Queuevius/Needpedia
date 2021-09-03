@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   get 'how_tos/index'
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :admin do
+    resources :preformatted_messages
     resources :how_tos
     resources :answers
     resources :questions
@@ -92,7 +93,6 @@ Rails.application.routes.draw do
     end
     get 'layers'
     get 'problems'
-    get 'proposals'
     get 'ideas'
     delete 'remove_private_user'
     delete 'remove_curated_user'
@@ -104,7 +104,6 @@ Rails.application.routes.draw do
       get 'all_areas'
       get 'all_layers'
       get 'all_problems'
-      get 'all_proposals'
       get 'all_ideas'
     end
   end

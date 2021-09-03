@@ -4,7 +4,7 @@
       <% next if post.private? && !post.private_users&.include?(current_user) %>
     <% end %>
 
-    <% if post.post_type.in?([Post::POST_TYPE_PROPOSAL,Post::POST_TYPE_PROBLEM]) %>
+    <% if post.post_type.in?([Post::POST_TYPE_PROBLEM]) %>
       <% next if post.parent_subject&.private? && !post.parent_subject&.private_users&.include?(current_user) %>
     <% end %>
 

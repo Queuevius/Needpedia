@@ -18,15 +18,19 @@ class PostsController < ApplicationController
   end
 
   def problems
-    @posts = Post.problem_posts.where(subject_id: @post.id)
-  end
-
-  def proposals
-    @posts = Post.proposal_posts.where(subject_id: @post.id)
+    post_type = 'problem'
+    sorted_by = 'Highest-Rated'
+    access_type = 'Public'
+    q = { title_cont: '', user_first_name_cont: '' }
+    redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type)
   end
 
   def ideas
-    @posts = Post.idea_posts.where(problem_id: @post.id)
+    post_type = 'idea'
+    sorted_by = 'Highest-Rated'
+    access_type = 'Public'
+    q = { title_cont: '', user_first_name_cont: '' }
+    redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type)
   end
 
   def layers
@@ -39,10 +43,6 @@ class PostsController < ApplicationController
 
   def all_problems
     @posts = Post.problem_posts
-  end
-
-  def all_proposals
-    @posts = Post.proposal_posts
   end
 
   def all_ideas
@@ -66,7 +66,7 @@ class PostsController < ApplicationController
     @problem_id = params[:problem_id]
     @post_id = params[:post_id]
     if params[:post] && params[:post][:from_feed]
-      if [Post::POST_TYPE_PROPOSAL, Post::POST_TYPE_PROBLEM].include?(@type)
+      if [Post::POST_TYPE_PROBLEM].include?(@type)
         @subject_id = Post::GENERAL_AREA
       elsif @type == Post::POST_TYPE_IDEA
         @problem_id = Post::GENERAL_PROBLEM
@@ -193,6 +193,11 @@ class PostsController < ApplicationController
       @access_type = params[:access_type]
       @post_type = params[:post_type]
       @sorted_by = params[:sorted_by]
+      @subject = params[:subject]
+      @problem = params[:problem]
+      @idea = params[:idea]
+      @location_tags = params[:location_tags]
+      @resource_tags = params[:resource_tags]
       @users = Kaminari.paginate_array([]).page(params[:users]).per 10
     end
   end
@@ -261,7 +266,7 @@ class PostsController < ApplicationController
 
   def check_if_should_be_private(post)
     case true
-    when post.post_type.in?([Post::POST_TYPE_PROPOSAL, Post::POST_TYPE_PROBLEM])
+    when post.post_type.in?([Post::POST_TYPE_PROBLEM])
       post.update(private: true) if post.parent_subject&.private?
     when post.post_type == Post::POST_TYPE_IDEA
       post.update(private: true) if post.problem&.parent_subject&.private?
@@ -274,7 +279,7 @@ class PostsController < ApplicationController
 
   def check_if_should_be_curated(post)
     case true
-    when post.post_type.in?([Post::POST_TYPE_PROPOSAL, Post::POST_TYPE_PROBLEM])
+    when post.post_type.in?([Post::POST_TYPE_PROBLEM])
       post.update(private: true) if post.parent_subject&.curated?
     when post.post_type == Post::POST_TYPE_IDEA
       post.update(private: true) if post.problem&.parent_subject&.curated?
@@ -295,7 +300,7 @@ class PostsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def post_params
-    params.require(:post).permit(:title, :content, :user_id, :post_type, :subject_id, :problem_id, :private, :curated, :post_id, :posted_to_id, :tag_list, images: [])
+    params.require(:post).permit(:title, :content, :user_id, :post_type, :subject_id, :problem_id, :private, :curated, :post_id, :posted_to_id, :tag_list, :resource_tag_list, images: [])
   end
 
   def create_activity(post, event)

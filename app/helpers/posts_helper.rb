@@ -6,7 +6,7 @@ module PostsHelper
     case post.post_type
     when Post::POST_TYPE_SUBJECT
       post.private? && !post.private_users.include?(current_user)
-    when Post::POST_TYPE_PROPOSAL || POST_TYPE_PROBLEM
+    when Post::POST_TYPE_PROBLEM
       post.parent_subject&.private? && !post.parent_subject&.private_users&.include?(current_user)
     when post.post_type == Post::POST_TYPE_IDEA
       post.problem&.parent_subject&.private? && !post.problem&.parent_subject&.private_users&.include?(current_user)
@@ -23,7 +23,7 @@ module PostsHelper
       response = true if post.private?
     end
 
-    if post.post_type.in?([Post::POST_TYPE_PROPOSAL, Post::POST_TYPE_PROBLEM])
+    if post.post_type.in?([Post::POST_TYPE_PROBLEM])
       response = true if post.parent_subject&.private?
     end
 

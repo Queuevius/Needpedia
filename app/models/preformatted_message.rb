@@ -1,0 +1,2 @@
+class PreformattedMessage < ApplicationRecord
+end
