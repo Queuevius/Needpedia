@@ -1,3 +1,7 @@
+# define multiple deployments
+set :stages, %w(production staging)
+set :default_stage, "production"
+
 # config valid for current version and patch releases of Capistrano
 lock "~> 3.14.1"
 
