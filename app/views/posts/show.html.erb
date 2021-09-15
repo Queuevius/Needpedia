@@ -44,7 +44,7 @@
                       <div class="col-sm-9 text-right mb-2">
 
                         <div class="dropdown ml-1 float-right">
-                          <% if @post.layering_disabled? %>
+                          <% if @post.layering_disabled? || @post.user_id != current_user.id %>
                             <button type="button" class="btn btn-secondary dropdown-toggle disabled" data-toggle="tooltip" data-placement="top" title="Adding Layers disabled by Admins">
                               Layers
                             </button>
@@ -80,7 +80,7 @@
                         <% end %>
 
                         <% if current_user.present? %>
-                          <% if @post.editing_disabled? %>
+                          <% if @post.editing_disabled? || @post.user_id != current_user.id %>
                             <button type="button" class="btn btn-primary disabled" data-toggle="tooltip" data-placement="top" title="Editing disabled by Admins">
                               Edit
                             </button>
