@@ -13,6 +13,8 @@ class Notification < ApplicationRecord
   NOTIFICATION_TYPE_POST_CURATED_USER_REMOVED = 'curated_user_removed'.freeze
   NOTIFICATION_TYPE_COMMENT_EDITED = 'comment_edited'.freeze
   NOTIFICATION_TYPE_COMMENT_DELETED = 'comment_deleted'.freeze
+  NOTIFICATION_TYPE_COMMENT_CREATED = 'comment_created'.freeze
+  NOTIFICATION_TYPE_COMMENT_REPLIED = 'comment_replied'.freeze
 
   ################################ relationships ############################
   belongs_to :recipient, class_name: "User"

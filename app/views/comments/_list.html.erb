@@ -15,7 +15,7 @@
             <div id="comment-form-<%= comment.id %>"></div>
             <p id="comment-body-<%= comment.id %>"><%= comment.body %></p>
             <ul class="list-unstyled list-inline media-detail pull-left">
-              <li><i class="fa fa-calendar"></i> <%= comment.created_at.strftime('%d-%m-%Y') %></li>
+              <li><i class="fa fa-calendar"></i> <%= time_ago_in_words(comment.created_at) %> ago</li>
               <% if comment.created_at != comment.updated_at %>
                 <li class="mt-2">
                   <span class='font-italic mt-2 text-secondary'>Edited: <%= comment.created_at.strftime('%d-%m-%Y') %></span>
@@ -29,7 +29,16 @@
                   <%= link_to 'Reply', new_post_comment_path(@post, parent_id: comment.id), remote: true, class: 'mr-1' %>
                 <% else %>
                   <%= link_to 'Reply', new_post_comment_path(@post, parent_id: comment.id), remote: true, class: 'mr-1' %>
-                  <%= link_to 'Mark inappropriate', post_comment_inappropriate_path(@post, comment.id), class: 'mr-1', method: :patch %>
+                  <% if comment.flags.pluck(:user_id).include?(current_user.id) %>
+                    <%= link_to flag_path(flagable_id: comment.id, flagable_type: 'Comment'), class: 'btn btn-primary', title: 'Un-Flag this comment', remote: true, :method => :delete do %>
+                      <i class="fa fa-flag" aria-hidden="true"></i>
+                    <% end %>
+                  <% else %>
+                    <%= link_to reason_modal_flags_path(flagable_id: comment.id, flagable_type: 'Comment'), title: 'Flag this comment', class: 'btn btn-secondary', remote: true do %>
+                      <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                    <% end %>
+                  <% end %>
+                  <span><%= comment.flags.count %></span>
                 <% end %>
               </li>
             </ul>

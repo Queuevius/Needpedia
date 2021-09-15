@@ -174,11 +174,11 @@
                             <% if current_user %>
                               <div class="col-md-1">
                                 <% if @post.flags.pluck(:user_id).include?(current_user.id) %>
-                                  <%= link_to flag_path(id: @post.id), class: 'btn btn-primary', title: 'Un-Flag this post', remote: true, :method => :delete do %>
+                                  <%= link_to flag_path(flagable_id: @post.id, flagable_type: 'Post'), class: 'btn btn-primary', title: 'Un-Flag this post', remote: true, :method => :delete do %>
                                     <i class="fa fa-flag" aria-hidden="true"></i>
                                   <% end %>
                                 <% else %>
-                                  <%= link_to reason_modal_flags_path(post_id: @post.id), title: 'Flag this post', class: 'btn btn-secondary', remote: true do %>
+                                  <%= link_to reason_modal_flags_path(flagable_id: @post.id, flagable_type: 'Post'), title: 'Flag this post', class: 'btn btn-secondary', remote: true do %>
                                     <i class="fa fa-flag-checkered" aria-hidden="true"></i>
                                   <% end %>
                                 <% end %>
