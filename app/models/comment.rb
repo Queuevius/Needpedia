@@ -13,7 +13,7 @@ class Comment < ApplicationRecord
   enum status: %i[active deleted]
 
   after_create :send_notification_to_users_on_comment, if: -> { parent_id.nil? && user_id != commentable.user_id }
-  after_create :send_notification_to_users_on_reply, unless: -> { parent_id.nil? }
+  after_create :send_notification_to_users_on_reply, if: -> { !parent_id.nil? && user_id != parent.user_id }
   after_update :send_notification_to_repliers_on_edit, if: -> { parent_id.nil? && active? && replies.active.present? }
   after_update :send_notification_to_repliers_on_delete, if: -> { parent_id.nil? && deleted? && replies.active.present? }
 
