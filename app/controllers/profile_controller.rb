@@ -5,7 +5,7 @@ class ProfileController < ApplicationController
 
   def wall
     @f = Post.posts_feed.ransack(params[:q])
-    @posted_posts = @f.result.where(user_id: current_user.id).or(@f.result.where(posted_to: current_user.id))
+    @posted_posts = @f.result.where(user_id: @user.id).or(@f.result.where(posted_to: @user.id))
     @liked_posts = @user.likes.where(likeable_type: 'Post').collect(&:likeable)
     @commented_posts = @user.comments.collect(&:commentable)
     @flagged_posts = @user.flags.where(flagable_type: 'Flag').collect(&:flagable)
@@ -53,7 +53,7 @@ class ProfileController < ApplicationController
   end
 
   def search_results
-    @f = User.ransack(params[:q])
+    @f = User.where.not(id: current_user.id).ransack(params[:q])
     @friends = @f.result.page(params[:page]).per(12)
     respond_to do |format|
       format.html
@@ -145,7 +145,7 @@ class ProfileController < ApplicationController
       # @activities = PublicActivity::Activity.order('created_at DESC')
       # @activities = @activities.select { |p| p.trackable&.private == false }
       @f = Post.posts_feed.ransack(params[:q])
-      posts = @f.result.where(user_id: @user.friends.pluck(:id), private: false, disabled: false)
+      posts = @f.result.where(user_id: @user.links.pluck(:id), private: false, disabled: false)
       @posts = Kaminari.paginate_array(posts).page(params[:page]).per 10
       respond_to do |format|
         format.html
