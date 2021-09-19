@@ -1,4 +1,4 @@
-<% @comments.each do |comment| %>
+<% comments.each do |comment| %>
   <% unless comment.parent_id || !comment.persisted? %>
     <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 border">
       <div class="media">
@@ -24,13 +24,13 @@
 
               <li class="mt-2">
                 <% if comment.user_id == current_user.id %>
-                  <%= link_to 'Edit', edit_post_comment_path(@post, comment.id), remote: true, class: 'mr-1' %>
-                  <%= link_to 'Delete', post_comment_remove_comment_path(@post.id, comment.id), method: :delete, class: 'mr-1' %>
-                  <%= link_to 'Reply', new_post_comment_path(@post, parent_id: comment.id), remote: true, class: 'mr-1' %>
+                  <%= link_to 'Edit', edit_post_comment_path(post, comment.id), remote: true, class: 'mr-1' %>
+                  <%= link_to 'Delete', post_comment_remove_comment_path(post.id, comment.id), method: :delete, class: 'mr-1' %>
+                  <%= link_to 'Reply', new_post_comment_path(post, parent_id: comment.id), remote: true, class: 'mr-1' %>
                 <% else %>
-                  <%= link_to 'Reply', new_post_comment_path(@post, parent_id: comment.id), remote: true, class: 'mr-1' %>
+                  <%= link_to 'Reply', new_post_comment_path(post, parent_id: comment.id), remote: true, class: 'mr-1' %>
                   <% if comment.flags.pluck(:user_id).include?(current_user.id) %>
-                    <%= link_to flag_path(flagable_id: comment.id, flagable_type: 'Comment'), class: 'btn btn-primary', title: 'Un-Flag this comment', remote: true, :method => :delete do %>
+                    <%= link_to flag_path(id: post.id, flagable_id: comment.id, flagable_type: 'Comment'), class: 'btn btn-primary', title: 'Un-Flag this comment', remote: true, :method => :delete do %>
                       <i class="fa fa-flag" aria-hidden="true"></i>
                     <% end %>
                   <% else %>
@@ -45,11 +45,11 @@
           <% end %>
         </div>
       </div>
-      <% if comment.replies.any? %>
-        <% comment.replies.each do |reply| %>
-          <%= render partial: 'comments/reply', locals: { reply: reply } %>
+      <div class="reply_container_<%= comment.id %>">
+        <% if comment.replies.any? %>
+          <%= render partial: 'comments/reply', locals: { replies: comment.replies, post: post } %>
         <% end %>
-      <% end %>
+      </div>
       <div id="reply-form-<%= comment.id %>"></div>
     </div>
   <% end %>

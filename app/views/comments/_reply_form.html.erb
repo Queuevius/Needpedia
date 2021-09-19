@@ -1,16 +1,16 @@
-<div class="card">
+<div class="card reply_form_<%= @comment.id %>">
   <div class="card-body">
-    <%= form_with(model: [@post, @comment]) do |f| %>
+    <%= form_with(model: [@post, @comment], local: false) do |f| %>
       <%= f.hidden_field :user_id, value: current_user.id %>
       <%= f.hidden_field :commentable_id, value: @post.id %>
       <%= f.hidden_field :commentable_type, value: 'Post' %>
       <%= f.hidden_field :parent_id %>
       <div class="form-group">
         <%= f.label 'Reply' %>
-        <%= f.text_area :body, class: 'form-control' %>
+        <%= f.text_area :body, class: 'form-control reply_body' %>
       </div>
       <%= f.submit 'Submit', class: 'btn btn-primary' %>
-      <%= link_to 'Cancel', post_path(@post), class: 'btn btn-secondary' %>
+      <button type="button" name="button" class='btn btn-secondary' onclick="this.closest('.card').remove();">Cancel</button>
     <% end %>
   </div>
 </div>
