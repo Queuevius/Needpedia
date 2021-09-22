@@ -10,13 +10,15 @@
             </div>
           </div>
         <% else %>
-          <p><%= reply.body %></p>
+          <div id="reply-form-<%= reply.id %>"></div>
+          <p id="reply-body-<%= reply.id %>"><%= reply.body %></p>
           <ul class="ist-unstyled list-inline media-detail pull-left">
             <li class="mt-2">
               <i class="fa fa-calendar"></i> <%= time_ago_in_words(reply.created_at) %> ago
             </li>
             <li class="mt-2">
               <% if reply.user_id == current_user.id %>
+                <%= link_to 'Edit', edit_post_comment_path(post, reply.id), remote: true, class: 'mr-1' %>
                 <%= link_to 'Delete', post_comment_remove_comment_path(post.id, reply.id), method: :delete %>
               <% else %>
                 <% if reply.flags.pluck(:user_id).include?(current_user.id) %>

@@ -1,8 +1,8 @@
-<div class="card reply_form_<%= @comment.id %>">
+<div class="card reply_form_<%= comment.id %>">
   <div class="card-body">
-    <%= form_with(model: [@post, @comment], local: false) do |f| %>
+    <%= form_with(model: [post, comment], local: false) do |f| %>
       <%= f.hidden_field :user_id, value: current_user.id %>
-      <%= f.hidden_field :commentable_id, value: @post.id %>
+      <%= f.hidden_field :commentable_id, value: post.id %>
       <%= f.hidden_field :commentable_type, value: 'Post' %>
       <%= f.hidden_field :parent_id %>
       <div class="form-group">

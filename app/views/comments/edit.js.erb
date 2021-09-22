@@ -1,2 +1,8 @@
-document.querySelector("#comment-form-<%= @comment.id %>").innerHTML = ("<%= j render 'form', comment: @comment %>")
-$("#comment-body-<%= @comment.id %>").hide();
+
+<% if @comment.parent_id.present? %>
+  document.querySelector("#reply-form-<%= @comment.id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { comment: @comment, post: @post })) %>")
+  $("#reply-body-<%= @comment.id %>").hide();
+<% else %>
+  document.querySelector("#comment-form-<%= @comment.id %>").innerHTML = ("<%= j(render(partial: 'form', locals: { comment: @comment, post: @post })) %>")
+  $("#comment-body-<%= @comment.id %>").hide();
+<% end %>

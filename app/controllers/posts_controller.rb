@@ -219,7 +219,7 @@ class PostsController < ApplicationController
   end
 
   def modal
-    @post = Post.new()
+    @post = Post.new
   end
 
   private
