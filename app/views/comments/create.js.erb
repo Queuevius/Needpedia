@@ -2,6 +2,6 @@
   $(".reply_container_<%= @comment.parent_id %>").append("<%= j(render(partial: '/comments/reply', locals: { replies: [@comment], post: @comment.commentable })) %>")
   $('.reply_body').val('');
 <% else %>
-  $(".comments_container_<%= @comment.commentable.id %>").append("<%= j(render(partial: '/comments/list', locals: { comments: [@comment], post: @comment.commentable })) %>")
+  $(".comments_container_<%= @comment.commentable.id %>").prepend("<%= j(render(partial: '/comments/list', locals: { comments: [@comment], post: @comment.commentable })) %>")
   $('#comment_body').val('');
 <% end %>

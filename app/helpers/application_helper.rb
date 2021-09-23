@@ -73,6 +73,6 @@ module ApplicationHelper
   end
 
   def post_comments(post)
-    post.comments.page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at ASC')
+    post.comments.page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
   end
 end
