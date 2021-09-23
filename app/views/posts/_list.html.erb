@@ -70,6 +70,9 @@
               </div>
             </div>
             <div class="col-md-2 mb-2">
+              <% if (!post.editing_disabled? || post.user_id == current_user.id) && post.post_type == Post::POST_TYPE_SOCIAL_MEDIA %>
+                  <%= link_to 'Edit', edit_post_path(post), class: 'mr-1' %>
+              <% end %>
               <% if post.flags.pluck(:user_id).include?(current_user.id) %>
                 <%= link_to flag_path(id: post.id, flagable_id: post.id, flagable_type: 'Post'), class: 'btn btn-primary', title: 'Un-Flag this post', remote: true, :method => :delete do %>
                   <i class="fa fa-flag" aria-hidden="true"></i>
