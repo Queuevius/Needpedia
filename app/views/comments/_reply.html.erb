@@ -16,23 +16,25 @@
             <li class="mt-2">
               <i class="fa fa-calendar"></i> <%= time_ago_in_words(reply.created_at) %> ago
             </li>
-            <li class="mt-2">
-              <% if reply.user_id == current_user.id %>
-                <%= link_to 'Edit', edit_post_comment_path(post, reply.id), remote: true, class: 'mr-1' %>
-                <%= link_to 'Delete', post_comment_remove_comment_path(post.id, reply.id), method: :delete %>
-              <% else %>
-                <% if reply.flags.pluck(:user_id).include?(current_user.id) %>
-                  <%= link_to flag_path(id: post.id, flagable_id: reply.id, flagable_type: 'Comment'), class: 'btn btn-primary', title: 'Un-Flag this comment', remote: true, method: :delete do %>
-                    <i class="fa fa-flag" aria-hidden="true"></i>
-                  <% end %>
+            <% if current_user %>
+              <li class="mt-2">
+                <% if reply.user_id == current_user.id %>
+                  <%= link_to 'Edit', edit_post_comment_path(post, reply.id), remote: true, class: 'mr-1' %>
+                  <%= link_to 'Delete', post_comment_remove_comment_path(post.id, reply.id), method: :delete %>
                 <% else %>
-                  <%= link_to reason_modal_flags_path(flagable_id: reply.id, flagable_type: 'Comment'), title: 'Flag this comment', class: 'btn btn-secondary', remote: true do %>
-                    <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                  <% if reply.flags.pluck(:user_id).include?(current_user.id) %>
+                    <%= link_to flag_path(id: post.id, flagable_id: reply.id, flagable_type: 'Comment'), class: 'btn btn-primary', title: 'Un-Flag this comment', remote: true, method: :delete do %>
+                      <i class="fa fa-flag" aria-hidden="true"></i>
+                    <% end %>
+                  <% else %>
+                    <%= link_to reason_modal_flags_path(flagable_id: reply.id, flagable_type: 'Comment'), title: 'Flag this comment', class: 'btn btn-secondary', remote: true do %>
+                      <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                    <% end %>
                   <% end %>
+                  <span><%= reply.flags.count %></span>
                 <% end %>
-                <span><%= reply.flags.count %></span>
-              <% end %>
-            </li>
+              </li>
+            <% end %>
           </ul>
         <% end %>
       </div>

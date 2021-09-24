@@ -44,7 +44,7 @@
                       <div class="col-sm-9 text-right mb-2">
 
                         <div class="dropdown ml-1 float-right">
-                          <% if @post.layering_disabled? || @post.user_id != current_user.id %>
+                          <% if @post.layering_disabled? %>
                             <button type="button" class="btn btn-secondary dropdown-toggle disabled" data-toggle="tooltip" data-placement="top" title="Adding Layers disabled by Admins">
                               Layers
                             </button>
