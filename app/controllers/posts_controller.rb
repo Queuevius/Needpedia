@@ -57,7 +57,7 @@ class PostsController < ApplicationController
   # GET /posts/1.json
   def show
     @comment = Comment.new(parent_id: params[:parent_id])
-    @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('comments.created_at ASC')
+    @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('comments.created_at DESC')
   end
 
   # GET /posts/new
@@ -219,7 +219,7 @@ class PostsController < ApplicationController
   end
 
   def modal
-    @post = Post.new()
+    @post = Post.new
   end
 
   private

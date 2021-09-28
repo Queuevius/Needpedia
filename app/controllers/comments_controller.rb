@@ -2,6 +2,12 @@ class CommentsController < ApplicationController
   before_action :authenticate_user!
   before_action :find_comment, only: [:remove_comment, :inappropriate]
 
+
+  def index
+    @post = Post.find(params[:post_id])
+    @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
+  end
+
   def new
     @post = Post.find(params[:post_id])
     @comment = @post.comments.new(parent_id: params[:parent_id])
@@ -23,6 +29,7 @@ class CommentsController < ApplicationController
         if @comment.commentable_type == 'Post'
           create_activity(@comment.commentable, 'post.commented_on')
         end
+        format.js
         format.html { redirect_to post_path(@post), notice: 'Comment was successfully created.' }
         format.json { render :show, status: :created, location: @comment }
       else

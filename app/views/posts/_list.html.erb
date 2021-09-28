@@ -69,6 +69,33 @@
                 <% end %>
               </div>
             </div>
+            <div class="col-md-2 mb-2">
+              <% if (!post.editing_disabled? || post.user_id == current_user.id) && post.post_type == Post::POST_TYPE_SOCIAL_MEDIA %>
+                  <%= link_to 'Edit', edit_post_path(post), class: 'mr-1' %>
+              <% end %>
+              <% if post.flags.pluck(:user_id).include?(current_user.id) %>
+                <%= link_to flag_path(id: post.id, flagable_id: post.id, flagable_type: 'Post'), class: 'btn btn-primary', title: 'Un-Flag this post', remote: true, :method => :delete do %>
+                  <i class="fa fa-flag" aria-hidden="true"></i>
+                <% end %>
+              <% else %>
+                <%= link_to reason_modal_flags_path(flagable_id: post.id, flagable_type: 'Post'), title: 'Flag this post', class: 'btn btn-secondary', remote: true do %>
+                  <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                <% end %>
+              <% end %>
+              <span><%= post.flags.count %></span>
+            </div>
+            <div class="col-md-12">
+              <div class="mb-5">
+                <%= render 'comments/form', comment: Comment.new, post: post %>
+              </div>
+            </div>
+            <div class="col-md-12 row comments_container_<%= post.id %> pl-4">
+              <% post_comments = post_comments(post)%>
+              <%= render 'comments/list', post: post, comments: post_comments %>
+            </div>
+            <% if !post_comments.last_page? && post_comments.present? %>
+              <%= link_to "Load more", comments_path(post_id: post.id, page: post_comments.current_page + 1), id: "load-more-posts-#{post.id}", class: 'w-100 d-flex justify-content-center text-center p-3 h6', remote: true %>
+            <% end %>
           </div>
         </div>
       </div>

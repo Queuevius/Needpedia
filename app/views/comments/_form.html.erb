@@ -1,13 +1,13 @@
-<%= form_with(model: comment, local: true) do |form| %>
+<%= form_with(model: comment, local: false) do |form| %>
 
   <%= form.hidden_field :user_id, value: current_user.id %>
-  <%= form.hidden_field :commentable_id, value: @post.id %>
+  <%= form.hidden_field :commentable_id, value: post.id %>
   <%= form.hidden_field :commentable_type, value: 'Post' %>
 
   <div class="row">
     <div class="col-md-10">
       <div class="form-group">
-        <%= form.text_field :body, class: 'form-control', placeholder: 'Add Comment' %>
+        <%= form.text_area :body, class: 'form-control', placeholder: 'Add Comment' %>
       </div>
     </div>
     <div class="col-md-2">

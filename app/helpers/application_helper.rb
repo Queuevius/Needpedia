@@ -71,4 +71,8 @@ module ApplicationHelper
   def post_token(post, user)
     PostToken.where(post_id: post.id, user_id: user.id).last
   end
+
+  def post_comments(post)
+    post.comments.page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
+  end
 end

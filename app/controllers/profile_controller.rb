@@ -6,9 +6,9 @@ class ProfileController < ApplicationController
   def wall
     @f = Post.posts_feed.ransack(params[:q])
     @posted_posts = @f.result.where(user_id: @user.id).or(@f.result.where(posted_to: @user.id))
-    @liked_posts = @user.likes.where(likeable_type: 'Post').collect(&:likeable)
-    @commented_posts = @user.comments.collect(&:commentable)
-    @flagged_posts = @user.flags.where(flagable_type: 'Flag').collect(&:flagable)
+    @liked_posts = @user.likes.where(likeable_type: 'Post').collect(&:likeable).uniq
+    @commented_posts = @user.comments.collect(&:commentable).uniq
+    @flagged_posts = @user.flags.where(flagable_type: 'Flag').collect(&:flagable).uniq
     @shared_posts = @user.shares.collect(&:shareable)
   end
 
