@@ -36,6 +36,16 @@
         <div class="col-md-12">
           <%= render 'posts/list', posts: @posted_posts, type: nil %>
         </div>
+        <div class="col-md-12">
+          <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-8">
+              <div id="infinite-scrolling" class="justify-content-center">
+                <%= paginate @posted_posts, param_name: :page %>
+              </div>
+            </div>
+          </div>
+        </div>
         <% if @posted_posts.blank? %>
           <div class="col-md-12 text-center">
             <h5 class="text-warning">Not posted yet</h5>

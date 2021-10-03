@@ -1,6 +1,6 @@
 <div class="card mb-1">
   <div class="card-body">
-    <h5><%= notification.actor.name %> replied your comment on post <%= link_to notification.post.title, post_path(notification.post_id) %></h5>
+    <h5><%= notification.actor.name %> replied to a comment on post <%= link_to notification.post.title, post_path(notification.post_id) %></h5>
     <em class="text-muted"><%= notification.created_at.strftime('%e %b %Y %H:%M %p') %></em>
   </div>
 </div>

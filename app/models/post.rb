@@ -81,6 +81,9 @@ class Post < ApplicationRecord
   scope :idea_posts, -> { where(post_type: POST_TYPE_IDEA, disabled: false) }
   scope :layer_posts, -> { where(post_type: POST_TYPE_LAYER, disabled: false) }
 
+  ################################ Callbacks ########################
+  after_create :send_notification_to_posted_to_user, if: -> { posted_to_id.present? }
+  after_create :send_notification_on_layer_create, if: -> { post_type == Post::POST_TYPE_LAYER && post_id.present? && parent_post.tracking_enabled? }
   ############################### Methods ################################
   def parent_post_id
     subject_id
@@ -93,5 +96,17 @@ class Post < ApplicationRecord
 
   def type_of?(type)
     post_type == type
+  end
+
+  def send_notification_to_posted_to_user
+    Notification.post(from: user, notifiable: user, to: posted_to, action: Notification::NOTIFICATION_TYPE_POST_CREATED, post_id: id)
+  end
+
+  def send_notification_on_layer_create
+    Notification.post(from: user, notifiable: user, to: parent_post.user, action: Notification::NOTIFICATION_TYPE_LAYER_CREATED, post_id: id)
+  end
+
+  def tracking_enabled?
+    UserPost.where(user_id: user_id, post_id: id).exists?
   end
 end

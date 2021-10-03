@@ -9,7 +9,9 @@
     <%= form.text_field :title, autofocus: true, class: 'form-control', placeholder: "Title" %>
   </div>
 
-  <% if !@post.persisted? && @type != Post::POST_TYPE_SOCIAL_MEDIA %>
+  <% if !@post.persisted? && @type == Post::POST_TYPE_LAYER %>
+    <%= form.hidden_field :post_type, value: Post::POST_TYPE_LAYER %>
+  <% elsif !@post.persisted? && @type != Post::POST_TYPE_SOCIAL_MEDIA %>
     <div class="form-group">
       <%= form.select :post_type, Post::CORE_POST_TYPES.map { |r| [r.titleize, r] } , {include_blank: false},  { class: "form-control"} %>
     </div>
@@ -216,10 +218,10 @@
             },
             success: function (data) {
 
-                if (data.post_token_type == 'note') {
+                if (data.post_token_type === 'note') {
                     var noteHTML = '<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('note.png', width: "20") %>';
                     editor.invoke('editor.pasteHTML', noteHTML);
-                } else if (data.post_token_type == 'debate') {
+                } else if (data.post_token_type === 'debate') {
                     var debateHTML = '<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('debate.png', width: "20") %>';
                     editor.invoke('editor.pasteHTML', debateHTML);
                 } else {

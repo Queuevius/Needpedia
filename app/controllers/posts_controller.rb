@@ -70,7 +70,6 @@ class PostsController < ApplicationController
         @subject_id = Post::GENERAL_AREA
       elsif @type == Post::POST_TYPE_IDEA
         @problem_id = Post::GENERAL_PROBLEM
-      else
       end
     end
     @post = Post.new(post_type: @type)
@@ -229,8 +228,6 @@ class PostsController < ApplicationController
     if params[:uuid].present?
       @posted_to = User.find_by(uuid: params[:uuid])
       @uuid = params[:uuid]
-    else
-      @posted_to = current_user
     end
   end
 

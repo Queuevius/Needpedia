@@ -4,14 +4,14 @@ class TokenAnsDebatesController < ApplicationController
   # POST /token_ans_debates
   # POST /token_ans_debates.json
   def create
-
     @token_ans_debate = TokenAnsDebate.new(token_ans_debate_params)
     @post = Post.find(@token_ans_debate.post_id)
 
     respond_to do |format|
       if @token_ans_debate.save
-
-        if @token_ans_debate.debate_type.present?
+        if @token_ans_debate.post_token.post_token_type == PostToken::TOKEN_TYPE_QUESTION
+          format.html { redirect_to question_post_tokens_path(id: @token_ans_debate.post_token_id), notice: "Successfully created." }
+        elsif @token_ans_debate.post_token.post_token_type == PostToken::TOKEN_TYPE_DEBATE && @token_ans_debate.debate_type.present?
           format.html { redirect_to debate_post_tokens_path(id: @token_ans_debate.post_token_id), notice: "Successfully created." }
         else
           format.html { redirect_to question_post_tokens_path(id: @token_ans_debate.post_token_id), notice: "Something went wrong." }
