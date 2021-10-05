@@ -1,5 +1,5 @@
 <% comments.each do |comment| %>
-  <% unless comment.parent_id || !comment.persisted? %>
+  <% unless comment.parent_id.present? || !comment.persisted? %>
     <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 border">
       <div class="media">
         <div class="media-body">

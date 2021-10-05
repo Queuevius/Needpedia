@@ -11,7 +11,7 @@ class Post < ApplicationRecord
   POST_TYPE_IDEA = 'idea'.freeze
   POST_TYPE_LAYER = 'layer'.freeze
   POST_TYPE_SOCIAL_MEDIA = 'social_media'.freeze
-  POST_TYPE_WIKI_POSTS_ONLY = 'Wiki Posts Only'.freeze
+  POST_TYPE_WIKI_POSTS_ONLY = 'All Wiki Posts'.freeze
   POST_TYPES = [
     POST_TYPE_SUBJECT,
     POST_TYPE_PROBLEM,
@@ -26,7 +26,7 @@ class Post < ApplicationRecord
     POST_TYPE_IDEA
   ].freeze
 
-  TYPES_FOR_SEARCH = [POST_TYPE_WIKI_POSTS_ONLY] + POST_TYPES
+  TYPES_FOR_SEARCH = [POST_TYPE_WIKI_POSTS_ONLY] + POST_TYPES + ['All']
 
   GENERAL_AREA = ENV['GENERAL_AREA_ID']
   GENERAL_PROBLEM = ENV['GENERAL_PROBLEM_ID']
