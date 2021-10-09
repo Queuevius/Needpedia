@@ -105,6 +105,8 @@ Rails.application.routes.draw do
       get 'all_layers'
       get 'all_problems'
       get 'all_ideas'
+      get 'have'
+      get 'want'
     end
   end
 

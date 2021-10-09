@@ -40,7 +40,7 @@
                       <%= link_to 'Back', :back, class: 'btn btn-primary' %>
                     </div>
 
-                    <% if @post.post_type != Post::POST_TYPE_SOCIAL_MEDIA %>
+                    <% if ![Post::POST_TYPE_SOCIAL_MEDIA, Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(@post.post_type) %>
                       <div class="col-sm-9 text-right mb-2">
 
                         <div class="dropdown ml-1 float-right">

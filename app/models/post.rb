@@ -12,12 +12,16 @@ class Post < ApplicationRecord
   POST_TYPE_LAYER = 'layer'.freeze
   POST_TYPE_SOCIAL_MEDIA = 'social_media'.freeze
   POST_TYPE_WIKI_POSTS_ONLY = 'All Wiki Posts'.freeze
+  POST_TYPE_HAVE = 'have'.freeze
+  POST_TYPE_WANT = 'want'.freeze
   POST_TYPES = [
     POST_TYPE_SUBJECT,
     POST_TYPE_PROBLEM,
     POST_TYPE_IDEA,
     POST_TYPE_LAYER,
-    POST_TYPE_SOCIAL_MEDIA
+    POST_TYPE_SOCIAL_MEDIA,
+    POST_TYPE_HAVE,
+    POST_TYPE_WANT
   ].freeze
 
   CORE_POST_TYPES = [

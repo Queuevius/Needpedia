@@ -8,10 +8,11 @@
   <div class="form-group">
     <%= form.text_field :title, autofocus: true, class: 'form-control', placeholder: "Title" %>
   </div>
-
   <% if !@post.persisted? && @type == Post::POST_TYPE_LAYER %>
     <%= form.hidden_field :post_type, value: Post::POST_TYPE_LAYER %>
-  <% elsif !@post.persisted? && @type != Post::POST_TYPE_SOCIAL_MEDIA %>
+  <% elsif !@post.persisted? && (@type == Post::POST_TYPE_SOCIAL_MEDIA || @type == Post::POST_TYPE_HAVE || @type == Post::POST_TYPE_WANT) %>
+    <%= form.hidden_field :post_type, value: @type %>
+  <% elsif !@post.persisted? %>
     <div class="form-group">
       <%= form.select :post_type, Post::CORE_POST_TYPES.map { |r| [r.titleize, r] } , {include_blank: false},  { class: "form-control"} %>
     </div>
@@ -23,8 +24,6 @@
     <div class="form-group">
       <%= form.select :problem_id, Post.where(post_type: Post::POST_TYPE_PROBLEM).map { |r| [r.title, r.id] } , {include_blank: "Select Subject"}, {  class: 'form-control hide', required: true } %>
     </div>
-  <% elsif !@post.persisted? && @type == Post::POST_TYPE_SOCIAL_MEDIA %>
-    <%= form.hidden_field :post_type, value: Post::POST_TYPE_SOCIAL_MEDIA %>
   <% end %>
   <div class="form-group">
 
