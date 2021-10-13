@@ -34,7 +34,7 @@
                           <%= image_tag('thumbs_for_bars.png', class: 'img-fluid missing-image') %>
                         <% end %>
                       </div>
-                      <div class="col-9 text-dark">
+                      <div class="col-9 text-dark text-break overflow-auto">
                         <b class="pl-2"><%= post.post_type.titleize %>:</b> <h6><%= post.title %></h6>
                         <p><%= truncate(strip_tags(post&.content&.to_s), length: 150) %></p>
                       </div>
@@ -99,5 +99,10 @@
   }
   .missing-image {
     height: 65%;
+  }
+  @media (max-width: 650px) {
+    .custom-width {
+      height: unset !important;
+    }
   }
 </style>

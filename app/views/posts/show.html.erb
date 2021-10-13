@@ -241,8 +241,9 @@
                           </div>
                         </div>
                       </div>
-
-                      <p>Tags: <%= raw @post.tag_list.map { |t| link_to "##{t}", tag_path(t) }.join(', ') %></p>
+                      <% unless [Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(@post.post_type) %>
+                        <p>Tags: <%= raw @post.tag_list.map { |t| link_to "##{t}", tag_path(t) }.join(', ') %></p>
+                      <% end %>
                       <% if @post.post_type == Post::POST_TYPE_IDEA %>
                         <p>Resource Tags: <%= raw @post.resource_tag_list.map { |t| link_to "##{t}", tag_path(t) }.join(', ') %></p>
                       <% end  %>
