@@ -74,11 +74,11 @@
       <% end %>
     </div>
   <% end %>
-
-  <div class="form-group">
-    <%= form.text_field :tag_list, class: 'form-control', placeholder: "Tags (separated by commas)" %>
-  </div>
-
+  <% unless [Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(@post.post_type) %>
+    <div class="form-group">
+      <%= form.text_field :tag_list, class: 'form-control', placeholder: "Tags (separated by commas)" %>
+    </div>
+  <% end %>
   <div class="form-group" id="resource_tags">
     <%= form.text_field :resource_tag_list, class: 'form-control', placeholder: "Resource Tags (separated by commas)" %>
   </div>

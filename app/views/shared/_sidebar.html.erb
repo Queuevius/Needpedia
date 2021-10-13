@@ -61,6 +61,12 @@
         <%= link_to 'About', about_path(uuid: @uuid) %>
       </li>
       <li>
+        <%= link_to 'Have', have_posts_path(uuid: params[:uuid]) %>
+      </li>
+      <li>
+        <%= link_to 'Want', want_posts_path(uuid: params[:uuid]) %>
+      </li>
+      <li>
         <%= link_to 'Tracking', tracking_path(uuid: @uuid) %>
       </li>
       <li>

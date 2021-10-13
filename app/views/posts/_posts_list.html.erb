@@ -21,24 +21,21 @@
           <div class="row">
             <div class="col-12">
               <div class="row">
-                <div class="col-1">
-                  <b>
-                    <span id="rating_title-<%= post.id %>" class="text-dark" data-toggle="modal" data-target="#rating_modal-<%= post.id %>"><%= post&.ratings&.pluck(:rating)&.sum || 0 %></span>
-                  </b>
-                </div>
+                <b>
+                  <span id="rating_title-<%= post.id %>" class="search-result-rating text-dark" data-toggle="modal" data-target="#rating_modal-<%= post.id %>"><%= post&.ratings&.pluck(:rating)&.sum || 0 %></span>
+                </b>
                 <div class="col-11">
                   <%= link_to post_path(post.id), class: 'text-decoration-none' do %>
                     <div class="row">
-                      <div class="col-2">
+                      <div class="col-3 search-result-img">
                         <% if post.images.present? %>
                           <%= image_tag(post.images.first, class: 'img-fluid') %>
                         <% else %>
                           <%= image_tag('thumbs_for_bars.png', class: 'img-fluid missing-image') %>
                         <% end %>
                       </div>
-                      <div class="col-10 text-dark">
-                        <b class="pl-2"><%= post.post_type.titleize %>:</b> <%= post.title %>
-                        </h6>
+                      <div class="col-9 text-dark">
+                        <b class="pl-2"><%= post.post_type.titleize %>:</b> <h6><%= post.title %></h6>
                         <p><%= truncate(strip_tags(post&.content&.to_s), length: 150) %></p>
                       </div>
                     </div>
