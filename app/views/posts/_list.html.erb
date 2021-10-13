@@ -60,7 +60,9 @@
               <% end %>
             </div>
             <div class="col-md-12">
-              <p>Tags: <%= raw post.tag_list.map { |t| link_to "##{t}", tag_path(t) }.join(', ') %></p>
+              <% unless [Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(post.post_type) %>
+                <p>Tags: <%= raw post.tag_list.map { |t| link_to "##{t}", tag_path(t) }.join(', ') %></p>
+              <% end %>
 
               <p><%= post.content %></p>
             </div>
