@@ -92,17 +92,14 @@
   <% end %>
 </div>
 <style>
-  .custom-width {
-    max-height: 200px !important;
-    min-height: 125px !important;
-    height: 125px !important;
-  }
   .missing-image {
     height: 65%;
   }
-  @media (max-width: 650px) {
+  @media (min-width: 766px) {
     .custom-width {
-      height: unset !important;
+      max-height: 200px !important;
+      min-height: 125px !important;
+      height: 125px !important;
     }
   }
 </style>
