@@ -68,19 +68,19 @@ body > .alert {
   margin: 0;
 }
 
-
 .media-body, .media-left, .media-right {
   display: table-cell;
   vertical-align: top;
 }
 
+.search-result-rating {
+  cursor: pointer;
+}
+
 @media (max-width: 760px) {
+  //
   .search-result-img {
     width: 100%;
     height: 100%;
   }
-}
-
-.search-result-rating {
-  cursor: pointer;
 }
