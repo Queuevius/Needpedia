@@ -14,8 +14,8 @@
             <div class="col-lg-12 col-md-12">
               <div class="ui-block shadow-lg rounded">
                 <div class="ui-block-content">
-                  <%= link_to new_post_path(post_type: Post::POST_TYPE_SUBJECT), class: 'btn btn-primary' do %>
-                    Create Wiki Post
+                  <%= link_to new_post_path(post_type: Post::POST_TYPE_SUBJECT), class: 'btn btn-primary', id: 'new_button' do %>
+                    Create Post
                   <% end %>
                 </div>
               </div>
@@ -96,6 +96,11 @@
                           </div>
                         </div>
                       </div>
+                    </div>
+                    <div class="row pb-4">
+                      <%= render 'searchable_tag_section', heading_text: 'Subject', main_section_id: 'subject-tag-section', searched_title: @subject_input_field, modal_section_id: 'subject_input_modal', input_field_name: 'subject_input_field', input_field_value: @subject_input_field %>
+                      <%= render 'searchable_tag_section', heading_text: 'Problem', main_section_id: 'problem-tag-section', searched_title: @problem_input_field, modal_section_id: 'problem_input_modal', input_field_name: 'problem_input_field', input_field_value: @problem_input_field %>
+                      <%= render 'searchable_tag_section', heading_text: 'Idea', main_section_id: 'idea-tag-section', searched_title: @idea_input_field, modal_section_id: 'idea_input_modal', input_field_name: 'idea_input_field', input_field_value: @idea_input_field %>
                     </div>
                     <div class="row">
                       <div class="col-md-12">
@@ -275,8 +280,12 @@
 <script>
   var post_type = $('#q_post_type_cont').val();
   if (post_type == 'social_media') {
-      console.log('post_type q', post_type);
       $('#access_type').val('');
       $('#access_type').parent('div').parent('div').toggle('hidden');
   }
+
+  $('#post_type').change(function (e) {
+      $(`#${e.target.value}-tag-section`).removeClass('hidden');
+  })
+
 </script>

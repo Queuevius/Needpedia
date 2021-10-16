@@ -44,7 +44,7 @@
               <%= form.check_box :private, onchange: 'togglePrivateSection()' %>
             </div>
             <label class="form-check-label pl-2 pt-1">
-              Make this area private?
+              Make this subject private?
             </label>
           </div>
         </div>
@@ -57,7 +57,7 @@
               <%= form.check_box :curated, onchange: 'toggleCuratedSection()' %>
             </div>
             <label class="form-check-label pl-2 pt-1">
-              Make this area curated?
+              Make this subject curated?
             </label>
           </div>
         </div>
@@ -266,26 +266,34 @@
     });
 
   <% else %>
-    $('#resource_tags').hide();
-    initSelect2('#post_subject_id', true, 'Select Subject');
-    initSelect2('#post_problem_id', true, 'Select Problem');
-  $('#summernote').summernote({
-      height: 150,
-      disableDragAndDrop: true,
-      toolbar: [
-          // [groupName, [list of button]]
-          ['style', ['bold', 'italic', 'underline', 'link']],
-          ['font', ['strikethrough', 'fontsize']],
-          ['para', ['ul', 'ol', 'paragraph']],
-          ['misc', ['undo', 'redo']]
-      ],
-      popover: {
-          image: [
-              ['remove', ['removeMedia']]
-          ],
-          link: []
-      }
-  });
+    <% if @post.post_type == Post::POST_TYPE_IDEA %>
+      $('#resource_tags').show();
+      initSelect2('#post_subject_id', false, 'Select Subject');
+      initSelect2('#post_problem_id', false, 'Select Problem');
+    <% elsif @post.post_type == Post::POST_TYPE_PROBLEM %>
+      initSelect2('#post_subject_id', false, 'Select Subject');
+    <% else %>
+      $('#resource_tags').hide();
+      initSelect2('#post_subject_id', true, 'Select Subject');
+      initSelect2('#post_problem_id', true, 'Select Problem');
+    <% end %>
+    $('#summernote').summernote({
+        height: 150,
+        disableDragAndDrop: true,
+        toolbar: [
+            // [groupName, [list of button]]
+            ['style', ['bold', 'italic', 'underline', 'link']],
+            ['font', ['strikethrough', 'fontsize']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['misc', ['undo', 'redo']]
+        ],
+        popover: {
+            image: [
+                ['remove', ['removeMedia']]
+            ],
+            link: []
+        }
+    });
   <% end %>
 
     $('#post_post_type').change(function(e) {

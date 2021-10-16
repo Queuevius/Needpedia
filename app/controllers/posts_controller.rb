@@ -21,7 +21,7 @@ class PostsController < ApplicationController
     post_type = 'problem'
     sorted_by = 'Highest-Rated'
     access_type = 'Public'
-    q = { title_cont: '', user_first_name_cont: '' }
+    q = { title_cont: @post.title, user_first_name_cont: '' }
     redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type)
   end
 
@@ -80,9 +80,9 @@ class PostsController < ApplicationController
 
   # GET /posts/new
   def new
-    @subject_id = params[:subject_id]
-    @problem_id = params[:problem_id]
-    @post_id = params[:post_id]
+    @subject_title = params[:subject_title]
+    @problem_title = params[:problem_title]
+    @idea_title = params[:idea_title]
     if params[:post] && params[:post][:from_feed]
       if [Post::POST_TYPE_PROBLEM].include?(@type)
         @subject_id = Post::GENERAL_AREA
@@ -90,7 +90,13 @@ class PostsController < ApplicationController
         @problem_id = Post::GENERAL_PROBLEM
       end
     end
-    @post = Post.new(post_type: @type)
+
+    post_service = PostsService.new(@subject_title, @problem_title, @idea_title, @type, params[:subject_id], params[:problem_id], params[:post_id])
+    new_post = post_service.new_post
+    @post = new_post[:post]
+    @subject_id = new_post[:subject_id]
+    @problem_id = new_post[:problem_id]
+    @post_id = new_post[:post_id]
     @private_users = @post.private_users << current_user
     @curated_users = @post.curated_users << current_user
   end
@@ -215,6 +221,9 @@ class PostsController < ApplicationController
       @idea = params[:idea]
       @location_tags = params[:location_tags]
       @resource_tags = params[:resource_tags]
+      @subject_input_field = params[:subject_input_field]
+      @problem_input_field = params[:problem_input_field]
+      @idea_input_field = params[:idea_input_field]
       @users = Kaminari.paginate_array([]).page(params[:users]).per 10
     end
   end
