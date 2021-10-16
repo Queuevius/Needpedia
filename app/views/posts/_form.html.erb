@@ -8,8 +8,11 @@
   <div class="form-group">
     <%= form.text_field :title, autofocus: true, class: 'form-control', placeholder: "Title" %>
   </div>
-
-  <% if !@post.persisted? && @type != Post::POST_TYPE_SOCIAL_MEDIA %>
+  <% if !@post.persisted? && @type == Post::POST_TYPE_LAYER %>
+    <%= form.hidden_field :post_type, value: Post::POST_TYPE_LAYER %>
+  <% elsif !@post.persisted? && (@type == Post::POST_TYPE_SOCIAL_MEDIA || @type == Post::POST_TYPE_HAVE || @type == Post::POST_TYPE_WANT) %>
+    <%= form.hidden_field :post_type, value: @type %>
+  <% elsif !@post.persisted? %>
     <div class="form-group">
       <%= form.select :post_type, Post::CORE_POST_TYPES.map { |r| [r.titleize, r] } , {include_blank: false},  { class: "form-control"} %>
     </div>
@@ -21,8 +24,6 @@
     <div class="form-group">
       <%= form.select :problem_id, Post.where(post_type: Post::POST_TYPE_PROBLEM).map { |r| [r.title, r.id] } , {include_blank: "Select Subject"}, {  class: 'form-control hide', required: true } %>
     </div>
-  <% elsif !@post.persisted? && @type == Post::POST_TYPE_SOCIAL_MEDIA %>
-    <%= form.hidden_field :post_type, value: Post::POST_TYPE_SOCIAL_MEDIA %>
   <% end %>
   <div class="form-group">
 
@@ -73,14 +74,14 @@
       <% end %>
     </div>
   <% end %>
-
-  <div class="form-group">
-    <%= form.text_field :tag_list, class: 'form-control', placeholder: "Tags (separated by commas)" %>
-  </div>
-
-  <div class="form-group" id="resource_tags">
-    <%= form.text_field :resource_tag_list, class: 'form-control', placeholder: "Resource Tags (separated by commas)" %>
-  </div>
+  <% unless [Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(@post.post_type) %>
+    <div class="form-group">
+      <%= form.text_field :tag_list, class: 'form-control', placeholder: "Tags (separated by commas)" %>
+    </div>
+    <div class="form-group" id="resource_tags">
+      <%= form.text_field :resource_tag_list, class: 'form-control', placeholder: "Resource Tags (separated by commas)" %>
+    </div>
+  <% end %>
 
   <div id="private-users-section">
     <% if @post.post_type == Post::POST_TYPE_SUBJECT %>
@@ -216,10 +217,10 @@
             },
             success: function (data) {
 
-                if (data.post_token_type == 'note') {
+                if (data.post_token_type === 'note') {
                     var noteHTML = '<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('note.png', width: "20") %>';
                     editor.invoke('editor.pasteHTML', noteHTML);
-                } else if (data.post_token_type == 'debate') {
+                } else if (data.post_token_type === 'debate') {
                     var debateHTML = '<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('debate.png', width: "20") %>';
                     editor.invoke('editor.pasteHTML', debateHTML);
                 } else {

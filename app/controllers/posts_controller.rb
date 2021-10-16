@@ -3,7 +3,7 @@ class PostsController < ApplicationController
   before_action :set_post, only: [:show, :edit, :update, :destroy]
   before_action :set_type, only: [:index, :new, :problems, :proposals, :ideas, :layers]
   before_action :set_area, only: [:proposals, :problems, :ideas, :layers, :track_post]
-  before_action :set_user, only: :new
+  before_action :set_user, only: [:new, :have, :want]
   after_action :send_update_email, only: [:update]
 
   # GET /posts
@@ -53,6 +53,24 @@ class PostsController < ApplicationController
     @posts = Post.layer_posts
   end
 
+  def have
+    posts = @user.posts.where(post_type: Post::POST_TYPE_HAVE).order('created_at desc')
+    @posts = Kaminari.paginate_array(posts).page(params[:page]).per 10
+    respond_to do |format|
+      format.html
+      format.js
+    end
+  end
+
+  def want
+    posts = @user.posts.where(post_type: Post::POST_TYPE_WANT).order('created_at desc')
+    @posts = Kaminari.paginate_array(posts).page(params[:page]).per 10
+    respond_to do |format|
+      format.html
+      format.js
+    end
+  end
+
   # GET /posts/1
   # GET /posts/1.json
   def show
@@ -70,7 +88,6 @@ class PostsController < ApplicationController
         @subject_id = Post::GENERAL_AREA
       elsif @type == Post::POST_TYPE_IDEA
         @problem_id = Post::GENERAL_PROBLEM
-      else
       end
     end
     @post = Post.new(post_type: @type)
@@ -228,9 +245,10 @@ class PostsController < ApplicationController
   def set_user
     if params[:uuid].present?
       @posted_to = User.find_by(uuid: params[:uuid])
+      @user = @posted_to
       @uuid = params[:uuid]
     else
-      @posted_to = current_user
+      @user = current_user
     end
   end
 

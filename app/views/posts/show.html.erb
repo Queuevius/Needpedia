@@ -40,7 +40,7 @@
                       <%= link_to 'Back', :back, class: 'btn btn-primary' %>
                     </div>
 
-                    <% if @post.post_type != Post::POST_TYPE_SOCIAL_MEDIA %>
+                    <% if ![Post::POST_TYPE_SOCIAL_MEDIA, Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(@post.post_type) %>
                       <div class="col-sm-9 text-right mb-2">
 
                         <div class="dropdown ml-1 float-right">
@@ -80,11 +80,11 @@
                         <% end %>
 
                         <% if current_user.present? %>
-                          <% if @post.editing_disabled? || @post.user_id != current_user.id %>
+                          <% if @post.editing_disabled? %>
                             <button type="button" class="btn btn-primary disabled" data-toggle="tooltip" data-placement="top" title="Editing disabled by Admins">
                               Edit
                             </button>
-                          <% elsif !@post.curated? %>
+                          <% elsif (!@post.curated? && @post.user_id == current_user.id) || (!@post.curated? && !@post.private && Post::CORE_POST_TYPES.include?(@post.post_type)) %>
                             <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
                               Edit
                             <% end %>
@@ -96,7 +96,7 @@
                         <% end %>
                       </div>
                     <% else %>
-                      <% if !@post.editing_disabled? || @post.user_id == current_user.id %>
+                      <% if !@post.editing_disabled? && @post.user_id == current_user.id %>
                         <div class="col-sm-9 text-right mb-2">
                           <%= link_to edit_post_path(@post), class: 'btn btn-primary' do %>
                             Edit
@@ -241,8 +241,9 @@
                           </div>
                         </div>
                       </div>
-
-                      <p>Tags: <%= raw @post.tag_list.map { |t| link_to "##{t}", tag_path(t) }.join(', ') %></p>
+                      <% unless [Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(@post.post_type) %>
+                        <p>Tags: <%= raw @post.tag_list.map { |t| link_to "##{t}", tag_path(t) }.join(', ') %></p>
+                      <% end %>
                       <% if @post.post_type == Post::POST_TYPE_IDEA %>
                         <p>Resource Tags: <%= raw @post.resource_tag_list.map { |t| link_to "##{t}", tag_path(t) }.join(', ') %></p>
                       <% end  %>

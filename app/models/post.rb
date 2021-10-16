@@ -11,13 +11,17 @@ class Post < ApplicationRecord
   POST_TYPE_IDEA = 'idea'.freeze
   POST_TYPE_LAYER = 'layer'.freeze
   POST_TYPE_SOCIAL_MEDIA = 'social_media'.freeze
-  POST_TYPE_WIKI_POSTS_ONLY = 'Wiki Posts Only'.freeze
+  POST_TYPE_WIKI_POSTS_ONLY = 'All Wiki Posts'.freeze
+  POST_TYPE_HAVE = 'have'.freeze
+  POST_TYPE_WANT = 'want'.freeze
   POST_TYPES = [
     POST_TYPE_SUBJECT,
     POST_TYPE_PROBLEM,
     POST_TYPE_IDEA,
     POST_TYPE_LAYER,
-    POST_TYPE_SOCIAL_MEDIA
+    POST_TYPE_SOCIAL_MEDIA,
+    POST_TYPE_HAVE,
+    POST_TYPE_WANT
   ].freeze
 
   CORE_POST_TYPES = [
@@ -26,7 +30,7 @@ class Post < ApplicationRecord
     POST_TYPE_IDEA
   ].freeze
 
-  TYPES_FOR_SEARCH = [POST_TYPE_WIKI_POSTS_ONLY] + POST_TYPES
+  TYPES_FOR_SEARCH = [POST_TYPE_WIKI_POSTS_ONLY] + POST_TYPES + ['All']
 
   GENERAL_AREA = ENV['GENERAL_AREA_ID']
   GENERAL_PROBLEM = ENV['GENERAL_PROBLEM_ID']
@@ -81,6 +85,9 @@ class Post < ApplicationRecord
   scope :idea_posts, -> { where(post_type: POST_TYPE_IDEA, disabled: false) }
   scope :layer_posts, -> { where(post_type: POST_TYPE_LAYER, disabled: false) }
 
+  ################################ Callbacks ########################
+  after_create :send_notification_to_posted_to_user, if: -> { posted_to_id.present? }
+  after_create :send_notification_on_layer_create, if: -> { post_type == Post::POST_TYPE_LAYER && post_id.present? && parent_post.tracking_enabled? }
   ############################### Methods ################################
   def parent_post_id
     subject_id
@@ -93,5 +100,17 @@ class Post < ApplicationRecord
 
   def type_of?(type)
     post_type == type
+  end
+
+  def send_notification_to_posted_to_user
+    Notification.post(from: user, notifiable: user, to: posted_to, action: Notification::NOTIFICATION_TYPE_POST_CREATED, post_id: id)
+  end
+
+  def send_notification_on_layer_create
+    Notification.post(from: user, notifiable: user, to: parent_post.user, action: Notification::NOTIFICATION_TYPE_LAYER_CREATED, post_id: id)
+  end
+
+  def tracking_enabled?
+    UserPost.where(user_id: user_id, post_id: id).exists?
   end
 end

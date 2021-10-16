@@ -48,10 +48,10 @@ class PostSearchService
     if location_tags.present?
       posts = Post.tagged_with(location_tags, on: :tags).where(id: posts.pluck(:id))
     end
-
-    if post_type == Post::POST_TYPE_WIKI_POSTS_ONLY
+    
+    if post_type == Post::POST_TYPE_WIKI_POSTS_ONLY || post_type == ''
       posts = posts.where(post_type: Post::CORE_POST_TYPES)
-    elsif post_type == ''
+    elsif post_type == 'All'
       posts
     else
       posts = posts.where(post_type: post_type)

@@ -6,6 +6,7 @@ class Notification < ApplicationRecord
   NOTIFICATION_TYPE_FRIEND_REQUEST = 'friend_request'.freeze
   NOTIFICATION_TYPE_REQUEST_ACCEPTED = 'request_accept'.freeze
   NOTIFICATION_TYPE_REQUEST_REJECTED = 'request_rejected'.freeze
+  NOTIFICATION_TYPE_POST_CREATED = 'post_created'.freeze
   NOTIFICATION_TYPE_POST_UPDATED = 'post_updated'.freeze
   NOTIFICATION_TYPE_ADMIN_NOTIFICATION = 'admin_notification'.freeze
   NOTIFICATION_TYPE_POST_USER_ADDED = 'user_added'.freeze
@@ -15,6 +16,13 @@ class Notification < ApplicationRecord
   NOTIFICATION_TYPE_COMMENT_DELETED = 'comment_deleted'.freeze
   NOTIFICATION_TYPE_COMMENT_CREATED = 'comment_created'.freeze
   NOTIFICATION_TYPE_COMMENT_REPLIED = 'comment_replied'.freeze
+  NOTIFICATION_TYPE_QUESTION_ANSWERED = 'question_answered'.freeze
+  NOTIFICATION_TYPE_ARGUMENT_DEBATE = 'argument_debate'.freeze
+  NOTIFICATION_TYPE_UPVOTED_ARGUMENT = 'upvoted_argument'.freeze
+  NOTIFICATION_TYPE_UPVOTED_QUESTION_ANSWER = 'upvoted_answer'.freeze
+  NOTIFICATION_TYPE_DOWNVOTED_ARGUMENT = 'downvote_argument'.freeze
+  NOTIFICATION_TYPE_DOWNVOTED_QUESTION_ANSWER = 'downvote_answer'.freeze
+  NOTIFICATION_TYPE_LAYER_CREATED = 'layer_created'.freeze
 
   ################################ relationships ############################
   belongs_to :recipient, class_name: "User"

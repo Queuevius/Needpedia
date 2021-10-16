@@ -1,0 +1,24 @@
+<div class="row justify-content-center">
+  <div class="col-md-9 col-lg-9 col-xl-9 col-sm-12">
+    <div id="content" class="p-4">
+      <div class="col-sm-6 text-right mb-2 offset-6">
+        <% unless params[:uuid].present? %>
+          <%= link_to new_post_path(post_type: Post::POST_TYPE_WANT), class: 'btn btn-primary' do %>
+            Add New Post
+          <% end %>
+        <% end %>
+      </div>
+      <div class="col-md-12">
+        <%= render 'posts/list', posts: @posts, type: nil %>
+      </div>
+      <% if @posts.blank? %>
+        <div class="col-md-12 text-center">
+          <h5 class="text-warning">Not posted yet</h5>
+        </div>
+      <% end %>
+    </div>
+    <div id="infinite-scrolling" class="justify-content-center">
+      <%= paginate @posts, param_name: :page %>
+    </div>
+  </div>
+</div>
