@@ -1,8 +1,8 @@
 class PostsController < ApplicationController
   before_action :authenticate_user!, only: [:new, :update, :create, :edit]
   before_action :set_post, only: [:show, :edit, :update, :destroy]
-  before_action :set_type, only: [:index, :new, :problems, :proposals, :ideas, :layers]
-  before_action :set_area, only: [:proposals, :problems, :ideas, :layers, :track_post]
+  before_action :set_type, only: [:index, :new, :problems, :ideas, :layers]
+  before_action :set_area, only: [:problems, :ideas, :layers, :track_post]
   before_action :set_user, only: [:new, :have, :want]
   after_action :send_update_email, only: [:update]
 
@@ -21,16 +21,16 @@ class PostsController < ApplicationController
     post_type = 'problem'
     sorted_by = 'Highest-Rated'
     access_type = 'Public'
-    q = { title_cont: @post.title, user_first_name_cont: '' }
-    redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type)
+    q = { user_first_name_cont: '' }
+    redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type, subject_id: @post.id, subject: @post.title)
   end
 
   def ideas
     post_type = 'idea'
     sorted_by = 'Highest-Rated'
     access_type = 'Public'
-    q = { title_cont: '', user_first_name_cont: '' }
-    redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type)
+    q = { user_first_name_cont: '' }
+    redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type, problem_id: @post.id, problem: @post.title, subject: @post.parent_subject.title)
   end
 
   def layers
@@ -91,6 +91,8 @@ class PostsController < ApplicationController
       end
     end
 
+    # Todo - for now the tag functionality is disabled, I am leaving this code
+    # for a while but should be eventually removed if it was'nt required anymore.
     post_service = PostsService.new(@subject_title, @problem_title, @idea_title, @type, params[:subject_id], params[:problem_id], params[:post_id])
     new_post = post_service.new_post
     @post = new_post[:post]
@@ -221,9 +223,6 @@ class PostsController < ApplicationController
       @idea = params[:idea]
       @location_tags = params[:location_tags]
       @resource_tags = params[:resource_tags]
-      @subject_input_field = params[:subject_input_field]
-      @problem_input_field = params[:problem_input_field]
-      @idea_input_field = params[:idea_input_field]
       @users = Kaminari.paginate_array([]).page(params[:users]).per 10
     end
   end
