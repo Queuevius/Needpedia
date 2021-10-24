@@ -14,18 +14,22 @@ class PostsService
   def new_post
     result = {}
 
-    if idea_title.present?
+    if idea_title.present? && problem_title.present? && subject_title.present?
       subject_post = search_post(subject_title, Post::POST_TYPE_SUBJECT).last
       problem_post = search_post(problem_title, Post::POST_TYPE_PROBLEM).last
       result[:subject_id] = subject_post&.id
       result[:problem_id] = problem_post&.id
       result[:post] = Post.new(post_type: Post::POST_TYPE_IDEA, title: idea_title, subject_id: subject_post&.id, problem_id: problem_post&.id)
-    elsif problem_title.present?
+    elsif problem_title.present? && subject_title.present? && idea_title.blank?
       subject_post = search_post(subject_title, Post::POST_TYPE_SUBJECT).last
       result[:subject_id] = subject_post&.id
       result[:post] = Post.new(post_type: Post::POST_TYPE_PROBLEM, title: problem_title, subject_id: subject_post&.id)
-    elsif subject_title.present?
-      result[:post] = Post.new(post_type: Post::POST_TYPE_PROBLEM, title: subject_title)
+    elsif subject_title.present? && problem_title.blank? && idea_title.blank?
+      result[:post] = Post.new(post_type: Post::POST_TYPE_SUBJECT, title: subject_title)
+    elsif subject_title.blank? && problem_title.present? && idea_title.blank?
+      result[:subject_id] = nil
+      result[:problem_id] = nil
+      result[:post] = Post.new(post_type: Post::POST_TYPE_PROBLEM, title: problem_title)
     else
       result[:post] = Post.new(post_type: post_type)
       result[:subject_id] = subject_id

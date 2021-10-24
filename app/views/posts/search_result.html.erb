@@ -107,7 +107,7 @@
                         <button class="btn btn-sm btn-secondary mb-3" type="button" data-toggle="collapse" data-target="#collapseAdvanceFilters" aria-expanded="false" aria-controls="collapseExample">
                           Advance Filters <i class="fa fa-sliders" aria-hidden="true"></i>
                         </button>
-                        <div class="collapse" id="collapseAdvanceFilters">
+                        <div class="collapse <%= 'show' if @open_advance_filters %>" id="collapseAdvanceFilters">
                           <div class="row no-gutters align-items-center">
                             <div class="col-6">
                               <div class="form-group row">
@@ -284,6 +284,17 @@
       $('#access_type').parent('div').parent('div').toggle('hidden');
   }
 
+  setUpNewButton();
+  $(document).on("input", "#subject, #problem, #idea", function () {
+      setUpNewButton();
+  });
+
+  function setUpNewButton() {
+      var subject_field = $('#subject');
+      var problem_field = $('#problem');
+      var idea_field = $('#idea');
+      $('#new_button').attr('href', `/posts/new?subject_title=${subject_field.val()}&problem_title=${problem_field.val()}&idea_title=${idea_field.val()}`);
+  }
   <%# just removing tag functionality, keeping the commented code for awhile in case its required again  %>
   // $('#post_type').change(function (e) {
   //     $(`#${e.target.value}-tag-section`).removeClass('hidden');
