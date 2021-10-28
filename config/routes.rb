@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   get 'how_tos/index'
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :admin do
+    resources :settings
     resources :preformatted_messages
     resources :how_tos
     resources :answers

@@ -1,4 +1,5 @@
 class PostsController < ApplicationController
+  before_action :check_account_status, only: [:update, :create]
   before_action :authenticate_user!, only: [:new, :update, :create, :edit]
   before_action :set_post, only: [:show, :edit, :update, :destroy]
   before_action :set_type, only: [:index, :new, :problems, :proposals, :ideas, :layers]
@@ -331,5 +332,9 @@ class PostsController < ApplicationController
 
       UserMailer.send_tracking_email(actor: current_user, receiver: user, post: @post).deliver
     end
+  end
+
+  def check_account_status
+    redirect_to root_path, alert: "Can't perform this action right now sorry for inconvenience." and return if Setting.posts_freezed
   end
 end

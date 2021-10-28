@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_03_202021) do
+ActiveRecord::Schema.define(version: 2021_10_27_102612) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -290,6 +290,13 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_services_on_user_id"
+  end
+
+  create_table "settings", force: :cascade do |t|
+    t.boolean "freeze_accounts_activity", default: false
+    t.boolean "freeze_posts_activity", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "shares", force: :cascade do |t|
