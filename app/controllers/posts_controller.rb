@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_action :check_account_status, only: [:update, :create]
+  before_action :check_account_status, only: [:update, :create, :edit, :new]
   before_action :authenticate_user!, only: [:new, :update, :create, :edit]
   before_action :set_post, only: [:show, :edit, :update, :destroy]
   before_action :set_type, only: [:index, :new, :problems, :proposals, :ideas, :layers]
