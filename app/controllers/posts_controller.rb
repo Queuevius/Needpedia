@@ -335,6 +335,6 @@ class PostsController < ApplicationController
   end
 
   def check_account_status
-    redirect_to root_path, alert: "Can't perform this action right now sorry for inconvenience." and return if Setting.posts_freezed
+    redirect_to root_path, alert: "Can't perform this action right now sorry for the inconvenience." and return if Setting.posts_freezed
   end
 end

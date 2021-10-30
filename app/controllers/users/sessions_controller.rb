@@ -8,7 +8,7 @@ class Users::SessionsController < Devise::SessionsController
       redirect_to root_path
     elsif user && !user.admin && Setting.accounts_freezed
       sign_out user
-      redirect_to root_path, alert: "Can't perform this action right now sorry for inconvenience."
+      redirect_to root_path, alert: "Can't perform this action right now sorry for the inconvenience."
     else
       super
     end

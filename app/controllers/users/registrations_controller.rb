@@ -33,6 +33,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def check_account_status
-    redirect_to root_path, alert: "Can't perform this action right now sorry for inconvenience." and return if Setting.accounts_freezed
+    redirect_to root_path, alert: "Can't perform this action right now sorry for the inconvenience." and return if Setting.accounts_freezed
   end
 end
