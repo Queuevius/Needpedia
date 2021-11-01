@@ -9,11 +9,34 @@ class PostSearchService
     @location_tags = params[:location_tags]
     @resource_tags = params[:resource_tags]
     @post_type = params[:post_type] || ''
+    @subject_id = params[:subject_id]
+    @problem_id = params[:problem_id]
   end
 
-  attr_accessor :ransack_fields, :access_type, :sorted_by, :post_type, :subject, :problem, :idea, :resource_tags, :location_tags
+  attr_accessor :ransack_fields, :access_type, :sorted_by, :post_type, :subject,
+                :problem, :idea, :resource_tags, :location_tags,
+                :subject_id, :problem_id
 
   def filter
+    if subject_id.present? || problem_id.present?
+
+      if subject_id.present?
+        post = Post.find(subject_id)
+        posts = post.child_posts.where(post_type: post_type)
+        posts = posts_with_access(access_type, posts)
+        posts = sort_posts(sorted_by, posts)
+        return posts
+      end
+
+      if problem_id.present?
+        problem = Post.find(problem_id)
+        posts = problem.ideas.where(post_type: post_type)
+        posts = posts_with_access(access_type, posts)
+        posts = sort_posts(sorted_by, posts)
+        return posts
+      end
+    end
+
     if subject.present?
       ransack_fields[:title_cont] = subject
       ransack_fields[:post_type_eq] = Post::POST_TYPE_SUBJECT
@@ -48,7 +71,7 @@ class PostSearchService
     if location_tags.present?
       posts = Post.tagged_with(location_tags, on: :tags).where(id: posts.pluck(:id))
     end
-    
+
     if post_type == Post::POST_TYPE_WIKI_POSTS_ONLY || post_type == ''
       posts = posts.where(post_type: Post::CORE_POST_TYPES)
     elsif post_type == 'All'
