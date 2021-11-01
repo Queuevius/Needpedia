@@ -10,7 +10,7 @@ class UserDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     email: Field::String,
-    password: Field::String.with_options(searchable: false),
+    password: Field::Password,
     encrypted_password: Field::String,
     remember_created_at: Field::DateTime,
     confirmed_at: Field::DateTime,
@@ -18,6 +18,7 @@ class UserDashboard < Administrate::BaseDashboard
     last_name: Field::String,
     announcements_last_read_at: Field::DateTime,
     admin: Field::Boolean,
+    master_admin: Field::Boolean,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
     disabled: Field::Boolean,
@@ -47,6 +48,7 @@ class UserDashboard < Administrate::BaseDashboard
   first_name
   last_name
   admin
+  master_admin
   disabled
   confirmed_at
   created_at
@@ -64,6 +66,7 @@ class UserDashboard < Administrate::BaseDashboard
   disabled
   confirmed_at
   admin
+  master_admin
   password
   ].freeze
 
