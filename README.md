@@ -76,7 +76,7 @@ https://github.com/Queuevius/Needpedia2/blob/master/Devops%20Documentation
 -Milestone documentation: https://docs.google.com/document/d/1sJj9VaFUGM9F9WQn9_7jqYQ8N5KRNm0GX6TW5f0n4gc/edit?usp=sharing
 
 
-Docker Setup Steps:
+**Docker Setup Steps:**
 1. Follow this link to install docker https://docs.docker.com/engine/install/ubuntu/
 2. Follow this link to install docker compose https://docs.docker.com/compose/install/
 3. Stop your local running postgresql service by command `sudo service postgresql stop`
@@ -84,6 +84,13 @@ Docker Setup Steps:
 5. After successfully build run command `sudo docker-compose up`
  You project will be running on `localhost:3000`
 
-Local Mails:
+**Local Mails:**
 
 All emails from the system can be checked locally on `http://localhost:3000/letter_opener`
+
+**Contributing to Needpedia**
+- Fork the repo
+- create a branch in your fork
+- commit your code in branch
+- Submit a PR in the main repo
+- Your code would be reviewed by then would be deployed on staging server for testing, and if everything was fine it should be deployed on production server
