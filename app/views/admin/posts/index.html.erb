@@ -41,6 +41,9 @@ It renders the `_table` partial to display details about the resources.
   <% end %>
 
   <div>
+    <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Type private:, public:, curated: or all: in search field to get filtered posts.">
+      Info
+    </button>
     <%= link_to(
       t(
         "administrate.actions.new_resource",
@@ -49,8 +52,6 @@ It renders the `_table` partial to display details about the resources.
       [:new, namespace, page.resource_path],
       class: "button",
     ) if valid_action?(:new) && show_action?(:new, new_resource) %>
-
-    <%= link_to('Private Posts', private_posts_admin_posts_path, class: "button pl-2") %>
   </div>
 </header>
 

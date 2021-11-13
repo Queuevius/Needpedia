@@ -7,6 +7,13 @@
       <div class="ui-block shadow-lg rounded">
         <div class="ui-block-content">
           <% if @post_token.present? %>
+            <div class="col-md-12">
+              <div class="row mb-2">
+                <div class="col-sm-6">
+                  <%= link_to 'Back', post_path(@post_token.post_id), class: 'btn btn-primary float-left padding-top-10' %>
+                </div>
+              </div>
+            </div>
             <div class="row">
               <div class="col-sm-12 text-left mb-2 text-center pb-3 border-bottome">
                 <%= @post_token.content %>

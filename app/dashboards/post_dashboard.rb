@@ -98,7 +98,12 @@ class PostDashboard < Administrate::BaseDashboard
   #   COLLECTION_FILTERS = {
   #     open: ->(resources) { resources.where(open: true) }
   #   }.freeze
-  COLLECTION_FILTERS = {}.freeze
+  COLLECTION_FILTERS = {
+    private: ->(resources) { resources.where(private: true) },
+    curated: ->(resources) { resources.where(curated: true) },
+    public: ->(resources) { resources.where(private: false) },
+    all: -> (resources) { resources }
+  }.freeze
 
   # Overwrite this method to customize how posts are displayed
   # across all pages of the admin dashboard.

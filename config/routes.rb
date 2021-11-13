@@ -65,6 +65,7 @@ Rails.application.routes.draw do
 
     root to: "users#index"
   end
+  get '/nuclear_note', to: 'nuclear_note#index'
   get '/privacy', to: 'home#privacy'
   get '/time_bank', to: 'home#time_bank'
   get '/terms', to: 'home#terms'

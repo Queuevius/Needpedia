@@ -11,6 +11,8 @@ class SettingDashboard < Administrate::BaseDashboard
     id: Field::Number,
     freeze_accounts_activity: Field::Boolean,
     freeze_posts_activity: Field::Boolean,
+    active_nuclear_note: Field::Boolean,
+    nuclear_note: Field::Text,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
   }.freeze
@@ -33,6 +35,8 @@ class SettingDashboard < Administrate::BaseDashboard
   id
   freeze_accounts_activity
   freeze_posts_activity
+  active_nuclear_note
+  nuclear_note
   created_at
   updated_at
   ].freeze
@@ -43,6 +47,8 @@ class SettingDashboard < Administrate::BaseDashboard
   FORM_ATTRIBUTES = %i[
   freeze_accounts_activity
   freeze_posts_activity
+  active_nuclear_note
+  nuclear_note
   ].freeze
 
   # COLLECTION_FILTERS

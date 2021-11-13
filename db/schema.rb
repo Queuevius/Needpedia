@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_30_100737) do
+ActiveRecord::Schema.define(version: 2021_11_12_095029) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -297,6 +297,8 @@ ActiveRecord::Schema.define(version: 2021_10_30_100737) do
     t.boolean "freeze_posts_activity", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "active_nuclear_note", default: false
+    t.text "nuclear_note"
   end
 
   create_table "shares", force: :cascade do |t|
