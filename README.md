@@ -94,3 +94,7 @@ All emails from the system can be checked locally on `http://localhost:3000/lett
 - commit your code in branch
 - Submit a PR in the main repo
 - Your code would be reviewed by then would be deployed on staging server for testing, and if everything was fine it should be deployed on production server
+
+<Admin notes: 
+-Use admin accounts whenever possible (they're the most up to date). 
+-To see private, public, or moderated posts, use a colon (IE: "private:", "public:", or "moderated:")
