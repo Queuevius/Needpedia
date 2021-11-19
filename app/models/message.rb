@@ -1,10 +1,10 @@
 class Message < ApplicationRecord
-  after_create :send_email
   belongs_to :user
   belongs_to :receiver, class_name: 'User', foreign_key: :receiver_id
   belongs_to :conversation
 
   scope :unread, -> { where(read_at: nil) }
+  after_create :send_email, unless: -> { self.receiver.blocked_users&.pluck(:block_user_id)&.include?(user_id) }
 
   def send_email
     return if user.daily_notifications? || !user.message_notifications? || user.all_notifications?

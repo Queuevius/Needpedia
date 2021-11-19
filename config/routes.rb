@@ -94,6 +94,8 @@ Rails.application.routes.draw do
   patch '/change_rating', to: 'ratings#change_rating'
   get 'connections' => 'profile#my_connections'
   get 'friend_request' => 'profile#friend_request'
+  post 'block_user' => 'profile#block_user'
+  delete 'unblock_user' => 'profile#unblock_user'
   delete 'un_friend/:uuid' => 'profile#un_friend', as: 'un_friend'
   get 'tags/:tag' => 'posts#index', as: :tag
   authenticate :user, lambda {|u| u.admin? || u.master_admin? } do

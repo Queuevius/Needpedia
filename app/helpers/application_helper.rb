@@ -23,12 +23,14 @@ module ApplicationHelper
   end
 
   def unread_messages(user)
-    count = user&.conversations.joins(:messages).where(messages: { read_at: nil }).where.not(messages: { user_id: user.id }).count
+    blocked_user_ids = user.blocked_users.pluck(:block_user_id)
+    count = user&.conversations.joins(:messages).where(messages: { read_at: nil }).where.not(messages: { user_id: blocked_user_ids.push(user.id) }).count
     'unread-notificatios' if count&.positive?
   end
 
   def unread_msg_in_navbar(conversation, user)
-    count = conversation.messages.where(read_at: nil).where.not(user_id: user.id).count
+    blocked_user_ids = user.blocked_users.pluck(:block_user_id)
+    count = conversation.messages.where(read_at: nil).where.not(user_id: blocked_user_ids.push(user.id)).count
     'unread-notificatios' if count&.positive?
   end
 

@@ -14,7 +14,8 @@
         <div class="modal-body">
           <div class="chat-container">
             <ul class="chat-box chatContainerScroll scroll_wantedd" style="background: #f4f5fb;">
-              <% conversation.messages.order('created_at ASC').each do |msg| %>
+              <% blocked_user_ids = current_user.blocked_users.pluck(:block_user_id) %>
+              <% conversation.messages.where.not(user_id: blocked_user_ids).order('created_at ASC').each do |msg| %>
                 <%= render 'message', message: msg %>
               <% end %>
             </ul>

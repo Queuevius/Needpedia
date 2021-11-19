@@ -10,7 +10,8 @@ class MessagesController < ApplicationController
       reciever_html = ApplicationController.render partial: 'conversations/left_message', locals: {  message: @message, current_user: current_user }
       reciever_conversation = ApplicationController.render partial: 'conversations/conversation', locals: { conversation: @message.conversation, user: reciever, current_user: current_user }
       sender_conversation = ApplicationController.render partial: 'conversations/conversation', locals: { conversation: @message.conversation, user: current_user, current_user: reciever }
-      ActionCable.server.broadcast('conversation_channel', sender_html: sender_html, reciever_html: reciever_html, reciever_conversation: reciever_conversation, sender_conversation: sender_conversation, reciever_id: reciever.id, path: message_read_path, sender_id: current_user.id)
+      blocked_user_ids = reciever.blocked_users.pluck(:block_user_id)
+      ActionCable.server.broadcast('conversation_channel', sender_html: sender_html, reciever_html: reciever_html, reciever_conversation: reciever_conversation, sender_conversation: sender_conversation, reciever_id: reciever.id, path: message_read_path, sender_id: current_user.id, sender_blocked: blocked_user_ids.include?(current_user.id))
       format.js
     end
   end
