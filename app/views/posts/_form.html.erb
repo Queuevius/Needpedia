@@ -80,6 +80,8 @@
     <% end %>
   </div>
 
+  <%= render 'geo_maxing_form_section', form: form, post: @post %>
+
   <% if @post.images.present? %>
     <div class="col-lg-12 col-md-12 ml-auto mr-auto">
       <% @post.images.each do |image| %>

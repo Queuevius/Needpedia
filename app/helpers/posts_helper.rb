@@ -47,4 +47,8 @@ module PostsHelper
 
     ratings&.pluck(:user_id)&.include?(current_user.id) && ratings&.where(user_id: current_user.id)&.last&.rating == rating ? 'text-primary' : 'text-dark'
   end
+
+  def post_content_for_map(post)
+    post&.content&.to_plain_text&.squish&.delete('\\"')
+  end
 end

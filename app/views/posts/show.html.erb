@@ -94,6 +94,10 @@
                             <% end %>
                           <% end %>
                         <% end %>
+
+                        <% if @post.geo_maxing? %>
+                          <%= link_to 'Map', post_map_path(@post), class: 'btn btn-primary' %>
+                        <% end %>
                       </div>
                     <% else %>
                       <% if !@post.editing_disabled? && @post.user_id == current_user.id %>
