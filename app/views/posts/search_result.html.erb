@@ -104,62 +104,57 @@
 <!--                    </div>-->
                     <div class="row">
                       <div class="col-md-12">
-                        <button class="btn btn-sm btn-secondary mb-3" type="button" data-toggle="collapse" data-target="#collapseAdvanceFilters" aria-expanded="false" aria-controls="collapseExample">
-                          Advance Filters <i class="fa fa-sliders" aria-hidden="true"></i>
-                        </button>
-                        <div class="collapse <%= 'show' if @open_advance_filters %>" id="collapseAdvanceFilters">
-                          <div class="row no-gutters align-items-center">
-                            <div class="col-6">
-                              <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Access Type</label>
-                                <div class="col-sm-8">
-                                  <%= select_tag 'access_type', options_for_select(%w[Public All Curated], @access_type), include_blank: false , class: "form form-group form-control" %>
-                                </div>
+                        <div class="row no-gutters align-items-center">
+                          <div class="col-6">
+                            <div class="form-group row">
+                              <label for="inputPassword" class="col-sm-3 col-form-label">Access Type</label>
+                              <div class="col-sm-8">
+                                <%= select_tag 'access_type', options_for_select(%w[Public All Curated], @access_type), include_blank: false , class: "form form-group form-control" %>
                               </div>
                             </div>
+                          </div>
 
-                            <div class="col-6">
-                              <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Subject</label>
-                                <div class="col-sm-8">
-                                  <%= text_field_tag 'subject', @subject, class: 'form-control' %>
-                                </div>
+                          <div class="col-6">
+                            <div class="form-group row">
+                              <label for="inputPassword" class="col-sm-3 col-form-label">Subject</label>
+                              <div class="col-sm-8">
+                                <%= text_field_tag 'subject', @subject, class: 'form-control' %>
                               </div>
                             </div>
+                          </div>
 
-                            <div class="col-6">
-                              <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Resource Tags</label>
-                                <div class="col-sm-8">
-                                  <%= text_field_tag 'resource_tags', @resource_tags, class: 'form-control' %>
-                                </div>
+                          <div class="col-6">
+                            <div class="form-group row">
+                              <label for="inputPassword" class="col-sm-3 col-form-label">Problem</label>
+                              <div class="col-sm-8">
+                                <%= text_field_tag 'problem', @problem, class: 'form-control' %>
                               </div>
                             </div>
+                          </div>
 
-                            <div class="col-6">
-                              <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Problem</label>
-                                <div class="col-sm-8">
-                                  <%= text_field_tag 'problem', @problem, class: 'form-control' %>
-                                </div>
+                          <div class="col-6">
+                            <div class="form-group row">
+                              <label for="inputPassword" class="col-sm-3 col-form-label">Idea</label>
+                              <div class="col-sm-8">
+                                <%= text_field_tag 'idea', @idea, class: 'form-control' %>
                               </div>
                             </div>
+                          </div>
 
-                            <div class="col-6">
-                              <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Location Tags</label>
-                                <div class="col-sm-8">
-                                  <%= text_field_tag 'location_tags', @location_tags, class: 'form-control' %>
-                                </div>
+                          <div class="col-6">
+                            <div class="form-group row">
+                              <label for="inputPassword" class="col-sm-3 col-form-label">Location Tags</label>
+                              <div class="col-sm-8">
+                                <%= text_field_tag 'location_tags', @location_tags, class: 'form-control' %>
                               </div>
                             </div>
+                          </div>
 
-                            <div class="col-6">
-                              <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Idea</label>
-                                <div class="col-sm-8">
-                                  <%= text_field_tag 'idea', @idea, class: 'form-control' %>
-                                </div>
+                          <div class="col-6">
+                            <div class="form-group row">
+                              <label for="inputPassword" class="col-sm-3 col-form-label">Resource Tags</label>
+                              <div class="col-sm-8">
+                                <%= text_field_tag 'resource_tags', @resource_tags, class: 'form-control' %>
                               </div>
                             </div>
                           </div>

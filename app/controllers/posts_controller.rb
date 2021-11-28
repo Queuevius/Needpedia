@@ -224,7 +224,6 @@ class PostsController < ApplicationController
       @location_tags = params[:location_tags]
       @resource_tags = params[:resource_tags]
       @users = Kaminari.paginate_array([]).page(params[:users]).per 10
-      @open_advance_filters = @access_type.present? || @resource_tags.present? || @location_tags.present? || @problem.present? || @subject.present? || @idea.present? ? true : false
     end
   end
 
