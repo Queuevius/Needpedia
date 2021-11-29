@@ -2,7 +2,8 @@
   <% if allowed_to_see?(@post, current_user) %>
     <div class="row">
       <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
-        <h4 class="alert alert-warning">You are not allowed to see this post</h4>
+        <h4 class="alert alert-warning">Sorry but this post is private, would you like to request access?</h4>
+        <%= render "profile/small_friends_list", friends: @post.private_users %>
       </div>
     </div>
   <% else %>
