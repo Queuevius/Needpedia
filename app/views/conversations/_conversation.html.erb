@@ -3,7 +3,7 @@
   <div class="row pl-0 ml-0 text-left">
     <div class="col-2 img-section">
       <% if user&.profile_image&.attached? %>
-        <%= image_tag user.profile_image, class: 'img-responsive navbar-image' %>
+        <%= image_tag Rails.application.routes.url_helpers.rails_blob_path(user.profile_image, only_path: true), class: 'img-responsive navbar-image' %>
       <% else %>
         <%= image_tag "profile.png", class: 'img-responsive navbar-image' %>
       <% end %>
