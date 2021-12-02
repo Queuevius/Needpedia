@@ -248,6 +248,15 @@ class PostsController < ApplicationController
     @post = Post.new
   end
 
+  def map
+    @post = Post.find(params[:post_id])
+    @geo_maxing_posts = Post.geo_maxing_posts
+  end
+
+  def geo_maxing_posts
+    @geo_maxing_posts = Post.geo_maxing_posts
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
@@ -327,7 +336,7 @@ class PostsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def post_params
-    params.require(:post).permit(:title, :content, :user_id, :post_type, :subject_id, :problem_id, :private, :curated, :post_id, :posted_to_id, :tag_list, :resource_tag_list, images: [])
+    params.require(:post).permit(:title, :content, :user_id, :post_type, :subject_id, :problem_id, :private, :curated, :post_id, :posted_to_id, :tag_list, :resource_tag_list, :geo_maxing, :lat, :long, images: [])
   end
 
   def create_activity(post, event)

@@ -77,6 +77,10 @@ body > .alert {
   cursor: pointer;
 }
 
+.hidden {
+  display: none;
+}
+
 @media (max-width: 760px) {
   //
   .search-result-img {

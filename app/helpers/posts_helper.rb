@@ -1,6 +1,6 @@
 module PostsHelper
   def allowed_to_see?(post, current_user)
-    return false unless current_user
+    return true unless current_user
 
     post.private? && !post.private_users.include?(current_user)
     case post.post_type
@@ -46,5 +46,9 @@ module PostsHelper
     return 'text-dark' if ratings.blank? || current_user.blank? || rating.blank?
 
     ratings&.pluck(:user_id)&.include?(current_user.id) && ratings&.where(user_id: current_user.id)&.last&.rating == rating ? 'text-primary' : 'text-dark'
+  end
+
+  def post_content_for_map(post)
+    post&.content&.to_plain_text&.squish&.delete('\\"')
   end
 end
