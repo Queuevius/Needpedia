@@ -1,19 +1,24 @@
 module PostsHelper
   def allowed_to_see?(post, current_user)
-    return true unless current_user
 
-    post.private? && !post.private_users.include?(current_user)
-    case post.post_type
-    when Post::POST_TYPE_SUBJECT
+    if current_user.present? && check_if_private?(post)
       post.private? && !post.private_users.include?(current_user)
-    when Post::POST_TYPE_PROBLEM
-      post.parent_subject&.private? && !post.parent_subject&.private_users&.include?(current_user)
-    when post.post_type == Post::POST_TYPE_IDEA
-      post.problem&.parent_subject&.private? && !post.problem&.parent_subject&.private_users&.include?(current_user)
-    when Post::POST_TYPE_LAYER
-      post.parent_post&.private? && !post.parent_post&.private_users&.include?(current_user)
+      case post.post_type
+      when Post::POST_TYPE_SUBJECT
+        post.private? && !post.private_users.include?(current_user)
+      when Post::POST_TYPE_PROBLEM
+        post.parent_subject&.private? && !post.parent_subject&.private_users&.include?(current_user)
+      when post.post_type == Post::POST_TYPE_IDEA
+        post.problem&.parent_subject&.private? && !post.problem&.parent_subject&.private_users&.include?(current_user)
+      when Post::POST_TYPE_LAYER
+        post.parent_post&.private? && !post.parent_post&.private_users&.include?(current_user)
+      else
+        false
+      end
+    elsif current_user.blank? && check_if_private?(post)
+      return true
     else
-      false
+      return false
     end
   end
 
