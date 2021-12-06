@@ -2,8 +2,8 @@ class PostsController < ApplicationController
   before_action :check_account_status, only: [:update, :create, :edit, :new]
   before_action :authenticate_user!, only: [:new, :update, :create, :edit]
   before_action :set_post, only: [:show, :edit, :update, :destroy]
-  before_action :set_type, only: [:index, :new, :problems, :proposals, :ideas, :layers]
-  before_action :set_area, only: [:proposals, :problems, :ideas, :layers, :track_post]
+  before_action :set_type, only: [:index, :new, :problems, :ideas, :layers]
+  before_action :set_area, only: [:problems, :ideas, :layers, :track_post]
   before_action :set_user, only: [:new, :have, :want]
   after_action :send_update_email, only: [:update]
 
@@ -22,16 +22,16 @@ class PostsController < ApplicationController
     post_type = 'problem'
     sorted_by = 'Highest-Rated'
     access_type = 'Public'
-    q = { title_cont: '', user_first_name_cont: '' }
-    redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type)
+    q = { user_first_name_cont: '' }
+    redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type, subject_id: @post.id, subject: @post.title)
   end
 
   def ideas
     post_type = 'idea'
     sorted_by = 'Highest-Rated'
     access_type = 'Public'
-    q = { title_cont: '', user_first_name_cont: '' }
-    redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type)
+    q = { user_first_name_cont: '' }
+    redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type, problem_id: @post.id, problem: @post.title, subject: @post.parent_subject.title)
   end
 
   def layers
@@ -81,9 +81,9 @@ class PostsController < ApplicationController
 
   # GET /posts/new
   def new
-    @subject_id = params[:subject_id]
-    @problem_id = params[:problem_id]
-    @post_id = params[:post_id]
+    @subject_title = params[:subject_title]
+    @problem_title = params[:problem_title]
+    @idea_title = params[:idea_title]
     if params[:post] && params[:post][:from_feed]
       if [Post::POST_TYPE_PROBLEM].include?(@type)
         @subject_id = Post::GENERAL_AREA
@@ -91,7 +91,15 @@ class PostsController < ApplicationController
         @problem_id = Post::GENERAL_PROBLEM
       end
     end
-    @post = Post.new(post_type: @type)
+
+    # Todo - for now the tag functionality is disabled, I am leaving this code
+    # for a while but should be eventually removed if it was'nt required anymore.
+    post_service = PostsService.new(@subject_title, @problem_title, @idea_title, @type, params[:subject_id], params[:problem_id], params[:post_id])
+    new_post = post_service.new_post
+    @post = new_post[:post]
+    @subject_id = new_post[:subject_id]
+    @problem_id = new_post[:problem_id]
+    @post_id = new_post[:post_id]
     @private_users = @post.private_users << current_user
     @curated_users = @post.curated_users << current_user
   end
@@ -217,6 +225,7 @@ class PostsController < ApplicationController
       @location_tags = params[:location_tags]
       @resource_tags = params[:resource_tags]
       @users = Kaminari.paginate_array([]).page(params[:users]).per 10
+      @open_advance_filters = @access_type.present? || @resource_tags.present? || @location_tags.present? || @problem.present? || @subject.present? || @idea.present? ? true : false
     end
   end
 
@@ -238,6 +247,15 @@ class PostsController < ApplicationController
 
   def modal
     @post = Post.new
+  end
+
+  def map
+    @post = Post.find(params[:post_id])
+    @geo_maxing_posts = Post.geo_maxing_posts
+  end
+
+  def geo_maxing_posts
+    @geo_maxing_posts = Post.geo_maxing_posts
   end
 
   private
@@ -319,7 +337,7 @@ class PostsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def post_params
-    params.require(:post).permit(:title, :content, :user_id, :post_type, :subject_id, :problem_id, :private, :curated, :post_id, :posted_to_id, :tag_list, :resource_tag_list, images: [])
+    params.require(:post).permit(:title, :content, :user_id, :post_type, :subject_id, :problem_id, :private, :curated, :post_id, :posted_to_id, :tag_list, :resource_tag_list, :geo_maxing, :lat, :long, images: [])
   end
 
   def create_activity(post, event)

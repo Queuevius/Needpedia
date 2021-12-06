@@ -1,0 +1,71 @@
+<div class="row">
+  <div class="col-md-12 col-lg-12 col-xl-12 col-sm-12">
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <label class="form-check-label pr-2 pt-1">
+          Is this an idea for improving an area, (AKA geomaxxing)?
+        </label>
+        <div class="input-group-text private-checkbox">
+          <%= form.check_box :geo_maxing, onchange: 'toggleMapSection()' %>
+          <%= form.hidden_field :lat, id: 'post_lat' %>
+          <%= form.hidden_field :long, id: 'post_long' %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="mapSection" class="hidden pb-4">
+  <div class="row">
+    <div class="col-md-12 col-lg-12 col-xl-12 col-sm-12">
+      <div id="map"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #map {
+    height: 400px;
+    width: 100%;
+  }
+</style>
+<script>
+    <% if post.persisted? && post.geo_maxing && post.lat.present? && post.long.present? %>
+      toggleMapSection();
+    <% end %>
+
+    function toggleMapSection() {
+        $('#mapSection').toggleClass('hidden');
+        <% if post.persisted? && post.geo_maxing && post.lat.present? && post.long.present? %>
+          var coordinates = [32.239491, -83.141719]
+          var mymap = L.map('map').setView(coordinates, 13);
+          var marker = L.marker([<%= post.lat %>, <%= post.long %>]).addTo(mymap);
+          marker.bindPopup("<b><%= truncate(post.title, length: 30) %></b><br><%= post.content.present? ? truncate(post.content.to_plain_text, length: 100).to_s : 'Body missing' %>").openPopup();
+        <% else %>
+          var coordinates = [32.239491, -83.141719];
+          var mymap = L.map('map').setView(coordinates, 5);
+        <% end %>
+
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+            maxZoom: 18,
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+            'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            id: 'mapbox/streets-v11',
+            tileSize: 512,
+            zoomOffset: -1
+        }).addTo(mymap);
+
+        function onMapClick(e) {
+            $(".leaflet-marker-icon").remove();
+            $(".leaflet-popup").remove();
+            $(".leaflet-pane.leaflet-shadow-pane").remove();
+            $('#post_lat').val(e.latlng.lat);
+            $('#post_long').val(e.latlng.lng);
+            L.marker([e.latlng.lat, e.latlng.lng]).addTo(mymap)
+        }
+
+        mymap.on('click', onMapClick);
+    }
+
+    // georgia coordinates = [32.1656, -82.9001]
+</script>

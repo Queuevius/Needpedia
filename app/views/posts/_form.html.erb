@@ -14,15 +14,30 @@
     <%= form.hidden_field :post_type, value: @type %>
   <% elsif !@post.persisted? %>
     <div class="form-group">
-      <%= form.select :post_type, Post::CORE_POST_TYPES.map { |r| [r.titleize, r] } , {include_blank: false},  { class: "form-control"} %>
+      <div class="row">
+        <div class="col-2 pt-2">This problem is about: </div>
+        <div class="col-6">
+          <%= form.select :post_type, Post::CORE_POST_TYPES.map { |r| [r.titleize, r] } , {include_blank: false},  { class: "form-control"} %>
+        </div>
+      </div>
     </div>
 
     <div class="form-group">
-      <%= form.select :subject_id, Post.where(post_type: Post::POST_TYPE_SUBJECT).map { |r| [r.title, r.id] } , {include_blank: "Select Subject"}, {  class: 'form-control', required: true } %>
+      <div class="row">
+        <div class="col-2 pt-2">For a 'Subject' post: </div>
+        <div class="col-6">
+          <%= form.select :subject_id, Post.where(post_type: Post::POST_TYPE_SUBJECT).map { |r| [r.title, r.id] } , {include_blank: "Select Subject"}, {  class: 'form-control', required: true } %>
+        </div>
+      </div>
     </div>
 
     <div class="form-group">
-      <%= form.select :problem_id, Post.where(post_type: Post::POST_TYPE_PROBLEM).map { |r| [r.title, r.id] } , {include_blank: "Select Subject"}, {  class: 'form-control hide', required: true } %>
+      <div class="row">
+        <div class="col-2 pt-2">For a 'Problem' post: </div>
+        <div class="col-6">
+          <%= form.select :problem_id, Post.where(post_type: Post::POST_TYPE_PROBLEM).map { |r| [r.title, r.id] } , {include_blank: "Select Subject"}, {  class: 'form-control hide', required: true } %>
+        </div>
+      </div>
     </div>
   <% end %>
   <div class="form-group">
@@ -44,7 +59,7 @@
               <%= form.check_box :private, onchange: 'togglePrivateSection()' %>
             </div>
             <label class="form-check-label pl-2 pt-1">
-              Make this area private?
+              Make this subject private?
             </label>
           </div>
         </div>
@@ -57,13 +72,15 @@
               <%= form.check_box :curated, onchange: 'toggleCuratedSection()' %>
             </div>
             <label class="form-check-label pl-2 pt-1">
-              Make this area curated?
+              Make this subject curated?
             </label>
           </div>
         </div>
       </div>
     <% end %>
   </div>
+
+  <%= render 'geo_maxing_form_section', form: form, post: @post %>
 
   <% if @post.images.present? %>
     <div class="col-lg-12 col-md-12 ml-auto mr-auto">
@@ -266,26 +283,35 @@
     });
 
   <% else %>
-    $('#resource_tags').hide();
-    initSelect2('#post_subject_id', true, 'Select Subject');
-    initSelect2('#post_problem_id', true, 'Select Problem');
-  $('#summernote').summernote({
-      height: 150,
-      disableDragAndDrop: true,
-      toolbar: [
-          // [groupName, [list of button]]
-          ['style', ['bold', 'italic', 'underline', 'link']],
-          ['font', ['strikethrough', 'fontsize']],
-          ['para', ['ul', 'ol', 'paragraph']],
-          ['misc', ['undo', 'redo']]
-      ],
-      popover: {
-          image: [
-              ['remove', ['removeMedia']]
-          ],
-          link: []
-      }
-  });
+    <% if @post.post_type == Post::POST_TYPE_IDEA %>
+      $('#resource_tags').show();
+      initSelect2('#post_subject_id', false, 'Select Subject');
+      initSelect2('#post_problem_id', false, 'Select Problem');
+    <% elsif @post.post_type == Post::POST_TYPE_PROBLEM %>
+      initSelect2('#post_subject_id', false, 'Select Subject');
+      initSelect2('#post_problem_id', true, 'Select Problem');
+    <% else %>
+      $('#resource_tags').hide();
+      initSelect2('#post_subject_id', true, 'Select Subject');
+      initSelect2('#post_problem_id', true, 'Select Problem');
+    <% end %>
+    $('#summernote').summernote({
+        height: 150,
+        disableDragAndDrop: true,
+        toolbar: [
+            // [groupName, [list of button]]
+            ['style', ['bold', 'italic', 'underline', 'link']],
+            ['font', ['strikethrough', 'fontsize']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['misc', ['undo', 'redo']]
+        ],
+        popover: {
+            image: [
+                ['remove', ['removeMedia']]
+            ],
+            link: []
+        }
+    });
   <% end %>
 
     $('#post_post_type').change(function(e) {

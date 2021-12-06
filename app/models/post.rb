@@ -74,6 +74,8 @@ class Post < ApplicationRecord
   validates :post_type, presence: true, inclusion: { in: POST_TYPES }
   validates :subject_id, presence: true, if: proc { |s| s.post_type == POST_TYPE_PROBLEM }
   validates :problem_id, presence: true, if: proc { |s| s.post_type == POST_TYPE_IDEA }
+  validate :lat_is_present
+  validate :long_is_present
   # validates :post_id, presence: true, if: proc { |s| s.post_type == POST_TYPE_LAYER }
 
   ############################### Scopes ################################
@@ -84,6 +86,7 @@ class Post < ApplicationRecord
   scope :problem_posts, -> { where(post_type: POST_TYPE_PROBLEM, disabled: false) }
   scope :idea_posts, -> { where(post_type: POST_TYPE_IDEA, disabled: false) }
   scope :layer_posts, -> { where(post_type: POST_TYPE_LAYER, disabled: false) }
+  scope :geo_maxing_posts, -> { where(geo_maxing: true) }
 
   ################################ Callbacks ########################
   after_create :send_notification_to_posted_to_user, if: -> { posted_to_id.present? }
@@ -112,5 +115,13 @@ class Post < ApplicationRecord
 
   def tracking_enabled?
     UserPost.where(user_id: user_id, post_id: id).exists?
+  end
+
+  def lat_is_present
+    errors.add(:base, 'Latitude cant be blank') if lat.blank? && geo_maxing
+  end
+
+  def long_is_present
+    errors.add(:base, 'Longitude cant be blank, please select a location on map for GeoMaxing post') if long.blank? && geo_maxing
   end
 end

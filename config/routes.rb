@@ -123,6 +123,7 @@ Rails.application.routes.draw do
     get 'layers'
     get 'problems'
     get 'ideas'
+    get 'map'
     delete 'remove_private_user'
     delete 'remove_curated_user'
     patch 'track_post'
@@ -136,6 +137,7 @@ Rails.application.routes.draw do
       get 'all_ideas'
       get 'have'
       get 'want'
+      get 'geo_maxing_posts'
     end
   end
 

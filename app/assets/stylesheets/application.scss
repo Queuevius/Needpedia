@@ -77,10 +77,25 @@ body > .alert {
   cursor: pointer;
 }
 
+.hidden {
+  display: none;
+}
+
 @media (max-width: 760px) {
   //
   .search-result-img {
     width: 100%;
     height: 100%;
   }
+}
+.badge {
+  .close {
+    margin-left: .25rem;
+    color: inherit;
+    font-size: 100%;
+    text-shadow: 0 1px 0 rgba(#000, .5);
+  }
+}
+.hidden {
+  display: none;
 }

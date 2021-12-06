@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_18_173019) do
+ActiveRecord::Schema.define(version: 2021_11_24_180123) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -251,6 +251,9 @@ ActiveRecord::Schema.define(version: 2021_11_18_173019) do
     t.boolean "layering_disabled", default: false
     t.boolean "curated", default: false
     t.integer "posted_to_id"
+    t.decimal "lat"
+    t.decimal "long"
+    t.boolean "geo_maxing", default: false
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
