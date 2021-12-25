@@ -23,6 +23,12 @@ That said, the tools we're making for activists and scientists can also be used 
  You project will be running on `localhost:3000` (as a URL)<br><br>
 
 
+If you have issues getting it to load updates locally, try:<br>
+1. docker system prune<br>
+or<br>
+2. docker-compose up --build<br><br>
+
+
 <b>Setting up locally without Docker:</b><br>
 
 Before starting, it is important you have the desired environment, you'll need to install
