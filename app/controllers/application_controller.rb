@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
-
+  before_action :check_nuclear_note
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :masquerade_user!
   before_action :set_ransack, :conversations
@@ -19,5 +19,9 @@ class ApplicationController < ActionController::Base
 
   def conversations
     @conversations = current_user&.conversations.includes(:messages, :users).order('messages.created_at DESC') if current_user
+  end
+
+  def check_nuclear_note
+    redirect_to nuclear_note_path if Setting.nuclear_note_active?
   end
 end

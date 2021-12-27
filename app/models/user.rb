@@ -62,6 +62,8 @@ class User < ApplicationRecord
 
   has_many :answers, dependent: :destroy
 
+  has_many :blocked_users, dependent: :destroy
+
   def credit_hours
     active_gigs_amount = posted_gigs.active_progress.sum(:amount)
     sum = (received_transactions&.sum(:amount) - transferred_transactions&.sum(:amount) - active_gigs_amount).round(1)

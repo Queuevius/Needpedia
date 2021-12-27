@@ -92,6 +92,14 @@ ActiveRecord::Schema.define(version: 2021_11_24_180123) do
     t.index ["user_id"], name: "index_answers_on_user_id"
   end
 
+  create_table "blocked_users", force: :cascade do |t|
+    t.bigint "user_id"
+    t.integer "block_user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_blocked_users_on_user_id"
+  end
+
   create_table "comments", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "commentable_id"
@@ -295,6 +303,15 @@ ActiveRecord::Schema.define(version: 2021_11_24_180123) do
     t.index ["user_id"], name: "index_services_on_user_id"
   end
 
+  create_table "settings", force: :cascade do |t|
+    t.boolean "freeze_accounts_activity", default: false
+    t.boolean "freeze_posts_activity", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.boolean "active_nuclear_note", default: false
+    t.text "nuclear_note"
+  end
+
   create_table "shares", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "shareable_id"
@@ -436,6 +453,7 @@ ActiveRecord::Schema.define(version: 2021_11_24_180123) do
     t.datetime "daily_notification_time"
     t.boolean "all_notifications", default: false
     t.datetime "daily_report_sent_at"
+    t.boolean "master_admin", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

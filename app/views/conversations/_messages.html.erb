@@ -5,7 +5,8 @@
   <div class="chat-container">
     <ul class="chat-box chatContainerScroll <%= 'scroll_wanted' if conversation.messages.count > 5  %>">
       <li></li>
-      <% conversation.messages.order('created_at ASC').each do |msg| %>
+      <% blocked_user_ids = current_user.blocked_users.pluck(:block_user_id) %>
+      <% conversation.messages.where.not(user_id: blocked_user_ids).order('created_at ASC').each do |msg| %>
         <%= render 'message', message: msg %>
       <% end %>
     </ul>

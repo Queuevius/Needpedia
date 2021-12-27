@@ -32,6 +32,7 @@ It renders the `_table` partial to display details about the resources.
     <%= content_for(:title) %>
   </h1>
 
+
   <% if show_search_bar %>
     <%= render(
       "search",
@@ -40,10 +41,10 @@ It renders the `_table` partial to display details about the resources.
     ) %>
   <% end %>
 
+  <%= form_with(url: bulk_delete_admin_users_path, method: :delete, local: true) do |f| %>
   <div>
-    <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Type private:, public:, curated: or all: in search field to get filtered posts.">
-      Info
-    </button>
+    <%= link_to('New Comers', unconfirmed_users_admin_users_path, class: "button pl-2") %>
+    <%= f.submit "Bulk Delete", class: 'button' %>
     <%= link_to(
       t(
         "administrate.actions.new_resource",
@@ -67,3 +68,4 @@ It renders the `_table` partial to display details about the resources.
 
   <%= paginate resources %>
 </section>
+<% end %>

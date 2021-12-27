@@ -49,6 +49,7 @@ to display a collection of resources in an HTML table.
           valid_action?(:destroy, collection_presenter.resource_name)].count(true).times do %>
         <th scope="col"></th>
       <% end %>
+      <th scope="col"></th>
     </tr>
   </thead>
 
@@ -57,24 +58,17 @@ to display a collection of resources in an HTML table.
       <tr class="js-table-row"
           tabindex="0"
           <% if valid_action? :show, collection_presenter.resource_name %>
-            <%= %(role=link data-url=#{polymorphic_path([namespace, resource])}) %>
+            <%#= %(role=link data-url=#{polymorphic_path([namespace, resource])}) %>
           <% end %>
           >
         <% collection_presenter.attributes_for(resource).each do |attribute| %>
           <td class="cell-data cell-data--<%= attribute.html_class %>">
             <% if show_action? :show, resource -%>
-              <% if attribute.attribute == :title %>
-                <a href="<%= post_path(resource.id) -%>"
-                   >
-                  <%= resource.title %>
-                </a>
-              <% else %>
-                <a href="<%= polymorphic_path([namespace, resource]) -%>"
-                   class="action-show"
-                   >
-                  <%= render_field attribute %>
-                </a>
-              <% end %>
+              <a href="<%= polymorphic_path([namespace, resource]) -%>"
+                 class="action-show"
+                 >
+                <%= render_field attribute %>
+              </a>
             <% end -%>
           </td>
         <% end %>
@@ -96,6 +90,8 @@ to display a collection of resources in an HTML table.
             data: { confirm: t("administrate.actions.confirm") }
           ) if show_action? :destroy, resource %></td>
         <% end %>
+        <td><%= check_box_tag "user_ids[]", resource.id, false, class: 'selectable' %></td>
+
       </tr>
     <% end %>
   </tbody>

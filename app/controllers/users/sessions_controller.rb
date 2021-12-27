@@ -6,6 +6,9 @@ class Users::SessionsController < Devise::SessionsController
     if user && user&.disabled
       flash[:alert] = 'Your Account has been terminated.'
       redirect_to root_path
+    elsif user && !user.admin && Setting.accounts_freezed
+      sign_out user
+      redirect_to root_path, alert: "Can't perform this action right now sorry for the inconvenience."
     else
       super
     end

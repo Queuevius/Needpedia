@@ -70,6 +70,9 @@
           <% end  %>
         <% end %>
         <div id="nav-account-dropdown" class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar-dropdown">
+          <% if current_user.master_admin? %>
+            <%= link_to "Master Admin Area", master_admin_root_path, class: "dropdown-item" %>
+          <% end %>
           <% if current_user.admin? %>
             <%= link_to "Admin Area", admin_root_path, class: "dropdown-item" %>
           <% end %>

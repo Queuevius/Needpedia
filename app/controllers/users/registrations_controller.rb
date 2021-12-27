@@ -1,5 +1,6 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   # prepend_before_action :check_captcha, only: [:create] # Change this to be any actions you want to protect.
+  before_action :check_account_status, only: [:new, :create]
   prepend_after_action :save_questionnaire_data, only: [:create]
 
   def update
@@ -29,5 +30,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
     questionnaire.questions.each do |q|
       q.answers.create(body: params["answer_#{q.id}"], user_id: resource.id)
     end
+  end
+
+  def check_account_status
+    redirect_to root_path, alert: "Can't perform this action right now sorry for the inconvenience." and return if Setting.accounts_freezed
   end
 end

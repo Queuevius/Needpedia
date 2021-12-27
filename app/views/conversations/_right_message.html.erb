@@ -3,7 +3,7 @@
   <div class="chat-text"><%= message.body %></div>
   <div class="img-section pl-3">
     <% if message&.user&.profile_image&.attached? %>
-      <%= image_tag message.user.profile_image, class: 'img-responsive', style: 'width: 55px; height: 55px' %>
+      <%= image_tag Rails.application.routes.url_helpers.rails_blob_path(message&.user&.profile_image, only_path: true), class: 'img-responsive', style: 'width: 55px; height: 55px' %>
     <% else %>
       <%= image_tag "profile.png", class: 'img-responsive', style: 'width: 55px; height: 55px' %>
     <% end %>

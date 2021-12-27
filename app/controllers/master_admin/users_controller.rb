@@ -1,5 +1,5 @@
-module Admin
-  class UsersController < Admin::ApplicationController
+module MasterAdmin
+  class UsersController < MasterAdmin::ApplicationController
 
     def update
       params[:user].delete(:password) if params[:user][:password].blank?
