@@ -6,7 +6,7 @@ set :default_stage, "production"
 lock "~> 3.14.1"
 
 set :application, "needpedia"
-set :repo_url, "git@github.com:Queuevius/Needpedia2.git"
+set :repo_url, "git@github.com:murtazazarkhwan/Needpedia.git"
 
 set :deploy_to, "/home/deploy/#{fetch :application}"
 
