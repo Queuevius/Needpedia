@@ -41,10 +41,10 @@ server '3.140.250.134', user: 'deploy', roles: %w{app db web}
 #
 # Global options
 # --------------
- set :ssh_options, {
-   keys: %w(/home/clicktechlabs/.ssh/needpedia-staging.pem),
-   forward_agent: false
- }
+#  set :ssh_options, {
+#    keys: %w(/home/clicktechlabs/.ssh/needpedia-staging.pem),
+#    forward_agent: false
+#  }
 #
 # The server-based syntax can be used to override options:
 # ------------------------------------

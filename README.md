@@ -101,6 +101,12 @@ All emails from the system can be checked locally on `http://localhost:3000/lett
 - Submit a PR in the main repo
 - Your code would be reviewed by then would be deployed on staging server for testing, and if everything was fine it should be deployed on production server
 
+**See your code on staging server**
+- Submit a PR to the the `staging` branch of this repo
+- Request a review from one of the collaborator
+- Your code would be reviewed and if everything looks fine, should be approved
+- when the code is merged into the staging branch, the code would be automatically deploy on the staging server
+
 <Admin notes: 
 -Use admin accounts whenever possible (they're the most up to date). 
 -To see private, public, or moderated posts, use a colon (IE: "private:", "public:", or "moderated:")
