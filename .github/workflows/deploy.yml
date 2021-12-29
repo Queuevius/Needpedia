@@ -3,7 +3,7 @@ name: Deploy To Server
 on:
   # Deploy on merge to main
   push:
-    branches: [ master ]
+    branches: [ staging ]
 #  # Manually deploy branch
 #  workflow_dispatch:
 #    branches: [ main ]
@@ -35,7 +35,7 @@ jobs:
           ruby-version: 2.6.3
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
-      - name: Deploy to production
+      - name: Deploy to Staging
         run: |
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/github-actions
