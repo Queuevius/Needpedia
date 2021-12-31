@@ -109,9 +109,8 @@ All emails from the system can be checked locally on `http://localhost:3000/lett
 
 
 
-**Contribution flow charts**
 <img width="808" alt="NP-contribution-flow" src="https://user-images.githubusercontent.com/63797576/147818892-778d9337-8aea-40a7-8d5b-6fd5b0964539.png">
-
+**Contribution flow charts**
 
 
 <Admin notes: 
