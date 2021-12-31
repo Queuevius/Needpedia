@@ -107,8 +107,11 @@ All emails from the system can be checked locally on `http://localhost:3000/lett
 - Your code would be reviewed and if everything looks fine, should be approved
 - when the code is merged into the staging branch, the code would be automatically deploy on the staging server
 
+
+
 **Contribution flow charts**
 <img width="808" alt="NP-contribution-flow" src="https://user-images.githubusercontent.com/63797576/147818892-778d9337-8aea-40a7-8d5b-6fd5b0964539.png">
+
 
 
 <Admin notes: 
