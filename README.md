@@ -1,15 +1,13 @@
 <b>Note from founder to dev community:</b><br>
 Needpedia's goal is to create a community of devs who use it's "Layer System" and other tools to collaborate directly with users, to optimize Needpedia, and to optimize the world. It can be used to work on anything from random volunteer organizations halfway accross the world, to exposing all known problems with giant evil corporations in your own backyard. Which is why it needs to be an Open Source community instead of a business.</b><br> 
 
-Needpedia's dev community is the backbone of this entire operation, so if there is <i>Anything<i/> I or others can do to support you, or that we can add to this project to make it work better, I wanna know about it.<br><br> 
+Needpedia's dev community is the backbone of this entire operation, so if there is _Anything_ I or others can do to support you, or that we can add to this project to make it work better, I wanna know about it.<br><br> 
 
 Speaking of which, Github's made a free AI development assistant called co-pilot, feel free to check that out here:<br> 
 https://copilot.github.com/ <br><br>
 
       -Anthony Brasher<br>
        Anthonydunn97202@gmail.co<br><br>
-
-
 
 
 
@@ -109,8 +107,10 @@ All emails from the system can be checked locally on `http://localhost:3000/lett
 
 
 
-<img width="808" alt="NP-contribution-flow" src="https://user-images.githubusercontent.com/63797576/147818892-778d9337-8aea-40a7-8d5b-6fd5b0964539.png">
 **Contribution flow charts**
+
+<img width="808" alt="NP-contribution-flow" src="https://user-images.githubusercontent.com/63797576/147818892-778d9337-8aea-40a7-8d5b-6fd5b0964539.png"><br>
+
 
 
 <Admin notes: 
