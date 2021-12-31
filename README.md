@@ -107,6 +107,9 @@ All emails from the system can be checked locally on `http://localhost:3000/lett
 - Your code would be reviewed and if everything looks fine, should be approved
 - when the code is merged into the staging branch, the code would be automatically deploy on the staging server
 
+**Contribution flow charts**
+![This is an image](/assets/images/NP-contribution-flow.svg)
+
 <Admin notes: 
 -Use admin accounts whenever possible (they're the most up to date). 
 -To see private, public, or moderated posts, use a colon (IE: "private:", "public:", or "moderated:")
