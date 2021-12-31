@@ -108,7 +108,7 @@ All emails from the system can be checked locally on `http://localhost:3000/lett
 - when the code is merged into the staging branch, the code would be automatically deploy on the staging server
 
 **Contribution flow charts**
-![This is an image](/assets/images/NP-contribution-flow.svg)
+![NP contribution flow chart](/assets/images/NP-contribution-flow.png)
 
 <Admin notes: 
 -Use admin accounts whenever possible (they're the most up to date). 
