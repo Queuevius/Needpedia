@@ -36,6 +36,7 @@ Rails.application.routes.draw do
     end
     resources :announcements
     resources :notifications
+    resources :feedbacks
     # resources :services
 
     root to: "users#index"
@@ -62,6 +63,7 @@ Rails.application.routes.draw do
       end
     end
     resources :notifications
+    resources :feedbacks
 
     root to: "users#index"
   end
@@ -199,6 +201,8 @@ Rails.application.routes.draw do
   resources :messages do
     patch 'read'
   end
+
+  resources :feedbacks, only: [:new, :create]
 
   # resources :profiles do
   #   member do
