@@ -76,6 +76,8 @@ class PostSearchService
       posts = posts.where(post_type: Post::CORE_POST_TYPES)
     elsif post_type == 'All'
       posts
+    elsif post_type == Post::POST_TYPE_IDEA && subject.present?
+      posts = posts.collect(&:child_posts).flatten.uniq.collect(&:ideas).uniq.flatten
     else
       posts = posts.where(post_type: post_type)
     end

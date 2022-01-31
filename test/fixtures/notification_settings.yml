@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  post_id: 1
+  edit_post: false
+  expert_layer: false
+  related_wiki_post: false
+
+two:
+  user: two
+  post_id: 1
+  edit_post: false
+  expert_layer: false
+  related_wiki_post: false

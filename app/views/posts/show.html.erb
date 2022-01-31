@@ -270,13 +270,17 @@
     <% end %>
   <% end %>
 </div>
+<% if user_signed_in? %>
+  <%= render "tracking_notifications_modal" %>
+<% end %>
 <script>
     $('#checkbox-btn').click(function(){
         const checkboxValue = $("#tracking").prop("checked");
-        trackRequest();
         if (checkboxValue == true) {
+            $('#tracking-post-modal').modal();
             $("#tracking").prop("checked", false);
         } else {
+            trackRequest();
             $("#tracking").prop("checked", true);
         }
     });

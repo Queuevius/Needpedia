@@ -68,6 +68,7 @@ class Post < ApplicationRecord
   has_many :curated_users, through: :user_curated_posts, source: :user, dependent: :destroy
 
   has_many :notifications, dependent: :destroy
+  has_many :notification_settings, dependent: :destroy
 
   ############################### Validations ###########################
   validates :title, presence: true
@@ -89,6 +90,7 @@ class Post < ApplicationRecord
   scope :geo_maxing_posts, -> { where(geo_maxing: true) }
 
   ################################ Callbacks ########################
+  after_create :send_notification, if: -> { post_type == Post::POST_TYPE_LAYER || post_type.in?(CORE_POST_TYPES) }
   after_create :send_notification_to_posted_to_user, if: -> { posted_to_id.present? }
   after_create :send_notification_on_layer_create, if: -> { post_type == Post::POST_TYPE_LAYER && post_id.present? && parent_post.tracking_enabled? }
   ############################### Methods ################################
@@ -111,6 +113,11 @@ class Post < ApplicationRecord
 
   def send_notification_on_layer_create
     Notification.post(from: user, notifiable: user, to: parent_post.user, action: Notification::NOTIFICATION_TYPE_LAYER_CREATED, post_id: id)
+  end
+
+  def send_notification
+    service = NotificationService.new(self, user)
+    service.send
   end
 
   def tracking_enabled?
