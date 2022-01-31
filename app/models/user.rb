@@ -63,6 +63,7 @@ class User < ApplicationRecord
   has_many :answers, dependent: :destroy
 
   has_many :blocked_users, dependent: :destroy
+  has_many :notification_settings, dependent: :destroy
 
   has_many :feedbacks, dependent: :destroy
 

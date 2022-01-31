@@ -145,6 +145,7 @@ class PostsController < ApplicationController
         # @post.clean_froala_link
         Notification.post(from: current_user, notifiable: current_user, to: @post.users, action: Notification::NOTIFICATION_TYPE_POST_UPDATED, post_id: @post.id)
         create_activity(@post, 'post.update')
+        offsite_notification(@post)
         format.html { redirect_to @post, notice: 'Post was successfully updated.' }
         format.json { render :show, status: :ok, location: @post }
       else
@@ -233,11 +234,17 @@ class PostsController < ApplicationController
     begin
       tracking_post = current_user.tracking_posts.where(post_id: @post.id)
       if tracking_post.present?
+        settings = NotificationSetting.where(user_id: current_user.id, post_id: @post.id)
         tracking_post.destroy_all
-        # flash[:notice] = 'You have DeActivated Tracking for this Post.'
+        settings.destroy_all if settings.present?
+        flash[:notice] = 'You have DeActivated Tracking for this Post.'
       else
         UserPost.create!(user_id: current_user.id, post_id: @post.id, post_type: @post.post_type)
-        # flash[:notice] = 'You have activated Tracking for this Post.'
+        edit_post = params[:edit_post]
+        expert_layer = params[:expert_layer]
+        related_wiki_post = params[:related_wiki_post]
+        NotificationSetting.create(user_id: current_user.id, post_id: @post.id, edit_post: edit_post, expert_layer: expert_layer, related_wiki_post: related_wiki_post)
+        flash[:notice] = 'You have activated Tracking for this Post.'
       end
     rescue StandardError => e
       flash[:alert] = "An Error occurred: #{e}"
@@ -342,6 +349,19 @@ class PostsController < ApplicationController
 
   def create_activity(post, event)
     ActivityService.new(object: post, event: event, owner: current_user).call
+  end
+
+  def offsite_notification(post)
+    settings = post.notification_settings.where(edit_post: true)
+    return unless settings.present?
+
+    settings.collect(&:user).each do |user|
+      if post.post_type.in?(Post::CORE_POST_TYPES)
+        UserMailer.send_tracking_email(actor: current_user, receiver: user, post: @post).deliver
+      elsif post.post_type == Post::POST_TYPE_LAYER
+        UserMailer.layer_added_or_updated_email(event_message: 'A Post has been edited', receiver: user, post: @post).deliver
+      end
+    end
   end
 
   def send_update_email

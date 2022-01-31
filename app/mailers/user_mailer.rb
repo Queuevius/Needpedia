@@ -14,6 +14,22 @@ class UserMailer < ApplicationMailer
     mail(to: @receiver.email, subject: 'Notification')
   end
 
+  def wiki_post_added_email(actor:, receiver:, post:)
+    @actor = actor
+    @receiver = receiver
+    @post = post
+    @url = "#{WEB_DOMAIN}/posts/#{@post.id}"
+    mail(to: @receiver.email, subject: 'Notification')
+  end
+
+  def layer_added_or_updated_email(event_message:, receiver:, post:)
+    @event_message = event_message
+    @receiver = receiver
+    @post = post
+    @url = "#{WEB_DOMAIN}/posts/#{@post.id}"
+    mail(to: @receiver.email, subject: 'Notification')
+  end
+
   def send_daily_email(receiver, posts, messages)
     return if posts.blank? && messages.blank?
 

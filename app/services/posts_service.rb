@@ -43,6 +43,6 @@ class PostsService
     ransack_fields = { title_cont: title, post_type: post_type }
     q = Post.ransack(ransack_fields)
 
-    q.result(distinct: true)
+    q.result(distinct: true).where(post_type: post_type)
   end
 end
