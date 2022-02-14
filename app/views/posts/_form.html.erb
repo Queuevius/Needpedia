@@ -79,7 +79,7 @@
       </div>
     <% end %>
   </div>
-  <% unless [Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(@post.post_type) %>
+  <% unless [Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT, Post::POST_TYPE_LAYER].include?(@post.post_type) %>
     <%= render 'geo_maxing_form_section', form: form, post: @post %>
   <% end %>
 
