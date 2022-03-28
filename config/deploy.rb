@@ -8,6 +8,7 @@ lock "~> 3.14.1"
 set :application, "needpedia"
 set :repo_url, "git@github.com:Queuevius/Needpedia.git"
 
+# Todo - configure the repo name dynamically
 # uncomment this line if deploying to production
 # set :deploy_to, "/home/deploy/needpedia_production"
 
