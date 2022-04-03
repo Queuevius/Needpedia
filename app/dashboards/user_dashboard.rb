@@ -19,6 +19,7 @@ class UserDashboard < Administrate::BaseDashboard
     announcements_last_read_at: Field::DateTime,
     admin: Field::Boolean,
     master_admin: Field::Boolean,
+    approved: Field::Boolean,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
     disabled: Field::Boolean,
@@ -38,6 +39,7 @@ class UserDashboard < Administrate::BaseDashboard
   profile_image
   email
   disabled
+  approved
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -49,6 +51,7 @@ class UserDashboard < Administrate::BaseDashboard
   last_name
   admin
   master_admin
+  approved
   disabled
   confirmed_at
   created_at
@@ -68,6 +71,7 @@ class UserDashboard < Administrate::BaseDashboard
   admin
   master_admin
   password
+  approved
   ].freeze
 
   # COLLECTION_FILTERS

@@ -35,7 +35,7 @@ module Admin
 
     def scoped_resource
       if params[:unconfirmed] == 'true'
-        resource_class.where(confirmed_at: nil)
+        resource_class.where(confirmed_at: nil, approved: false)
       else
         resource_class
       end

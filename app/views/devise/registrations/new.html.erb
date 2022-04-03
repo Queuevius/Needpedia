@@ -15,23 +15,13 @@
             <%= f.email_field :email, autofocus: false, class: 'form-control', placeholder: "Email Address" %>
           </div>
 
-          <% if questionnaire&.active? %>
-            <div class="form-group">
-              <%= f.hidden_field :password, value: 'testUser1!' %>
-            </div>
+          <div class="form-group">
+            <%= f.password_field :password, autocomplete: "off", class: 'form-control', placeholder: 'Password' %>
+          </div>
 
-            <div class="form-group">
-              <%= f.hidden_field :password_confirmation,  value: 'testUser1!' %>
-            </div>
-          <% else %>
-            <div class="form-group">
-              <%= f.password_field :password, autocomplete: "off", class: 'form-control', placeholder: 'Password' %>
-            </div>
-
-            <div class="form-group">
-              <%= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control', placeholder: 'Confirm Password' %>
-            </div>
-          <% end %>
+          <div class="form-group">
+            <%= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control', placeholder: 'Confirm Password' %>
+          </div>
 
           <div class="form-group">
             <%= recaptcha_tags %>
