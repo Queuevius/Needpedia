@@ -24,7 +24,8 @@ class UserDashboard < Administrate::BaseDashboard
     updated_at: Field::DateTime,
     disabled: Field::Boolean,
     profile_image: Field::ActiveStorage,
-    questionnaires: Field::HasMany
+    questionnaires: Field::HasMany,
+    answers: Field::HasMany
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -39,6 +40,7 @@ class UserDashboard < Administrate::BaseDashboard
   profile_image
   email
   disabled
+  answers
   approved
   ].freeze
 
@@ -54,6 +56,7 @@ class UserDashboard < Administrate::BaseDashboard
   approved
   disabled
   confirmed_at
+  answers
   created_at
   updated_at
   profile_image

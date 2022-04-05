@@ -8,7 +8,6 @@ Rails.application.routes.draw do
     resources :settings
     resources :preformatted_messages
     resources :how_tos
-    resources :answers
     resources :questions
     resources :questionnaires
     resources :faqs
@@ -22,6 +21,9 @@ Rails.application.routes.draw do
     # resources :likes
     resources :comments
     resources :gigs
+    resources :answers do
+      get 'approve_user'
+    end
     resources :posts do
       collection do
         get 'private_posts'
