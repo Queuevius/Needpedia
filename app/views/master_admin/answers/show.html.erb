@@ -33,7 +33,7 @@ as well as a link to its edit page.
     <% if page.resource.user.approved %>
       <button type="button" class="button" disabled>Approve User</button>
     <% else %>
-      <%= link_to "Approve User", master_admin_answer_approve_user_path(page.resource), class: "button" %>
+      <%= link_to "Approve User", master_admin_answer_approve_user_path(page.resource, redirect_to: "answer_page"), class: "button" %>
     <% end %>
   </div>
 </header>
