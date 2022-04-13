@@ -22,7 +22,7 @@
             <div class="col-12">
               <div class="row">
                 <b>
-                  <span id="rating_title-<%= post.id %>" class="search-result-rating text-dark" data-toggle="modal" data-target="#rating_modal-<%= post.id %>"><%= post&.ratings&.pluck(:rating)&.sum || 0 %></span>
+                  <span id="rating_title-<%= post.id %>" class="search-result-rating text-dark" data-toggle="modal" data-target="#rating_modal-<%= post.id %>"><%= post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %></span>
                 </b>
                 <div class="col-11">
                   <%= link_to post_path(post.id), class: 'text-decoration-none' do %>

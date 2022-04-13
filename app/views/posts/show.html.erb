@@ -198,16 +198,7 @@
                                 <span><%= @post.flags.count %></span>
                               </div>
                               <div class="col-md-1">
-                                <% if @post.likes.pluck(:user_id).include?(current_user.id) %>
-                                  <%= link_to like_path(id: @post.id), class: 'btn btn-primary', title: 'Un-Like this post', remote: true, :method => :delete do %>
-                                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>
-                                  <% end %>
-                                <% else %>
-                                  <%= link_to like_path(likeable_id: @post.id, user_id: current_user.id, likeable_type: 'Post'), title: 'Like this post', class: 'btn btn-secondary', remote: true, :method => :patch do %>
-                                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>
-                                  <% end %>
-                                <% end %>
-                                <span><%= @post.likes.count %></span>
+                                <div id="rating_title-<%= @post.id %>" class="search-result-rating btn btn-secondary" data-toggle="modal" data-target="#rating_modal-<%= @post.id %>"><%= @post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %></div>
                               </div>
                               <div class="col-md-1">
                                 <% if @post.shares.pluck(:user_id).include?(current_user.id) %>
@@ -270,6 +261,23 @@
     <% end %>
   <% end %>
 </div>
+<div class="modal fade" id="rating_modal-<%= @post.id %>" tabindex="-1" role="dialog" aria-labelledby="rating_modal-<%= @post.id %>" aria-hidden="true">
+
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Rate <%= @post.title %></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body p-2" id="body-<%= @post.id %>">
+
+        <%= render 'rating_modal', post: @post %>
+      </div>
+    </div>
+  </div>
+</div>
 <% if user_signed_in? %>
   <%= render "tracking_notifications_modal" %>
 <% end %>
@@ -303,4 +311,19 @@
         });
 
     }
+
+    <% Rating::RATINGS.each do |rating| %>
+    var element = $('.rating-count-<%= @post.id %>-<%= rating %>');
+    element.click(function() {
+        $.ajax({
+            url: "<%= change_rating_path %>",
+            type: "PATCH",
+            data: {
+                rateable_id: '<%= @post.id %>',
+                rateable_type: 'Post',
+                rating: '<%= rating %>'
+            }
+        });
+    })
+    <% end %>
 </script>

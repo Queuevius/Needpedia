@@ -52,6 +52,9 @@ Rails.application.routes.draw do
     resources :flags
     resources :comments
     resources :gigs
+    resources :answers do
+      get 'approve_user'
+    end
     resources :posts do
       collection do
         get 'private_posts'
