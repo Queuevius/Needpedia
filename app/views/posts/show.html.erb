@@ -311,19 +311,4 @@
         });
 
     }
-
-    <% Rating::RATINGS.each do |rating| %>
-    var element = $('.rating-count-<%= @post.id %>-<%= rating %>');
-    element.click(function() {
-        $.ajax({
-            url: "<%= change_rating_path %>",
-            type: "PATCH",
-            data: {
-                rateable_id: '<%= @post.id %>',
-                rateable_type: 'Post',
-                rating: '<%= rating %>'
-            }
-        });
-    })
-    <% end %>
 </script>
