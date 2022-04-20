@@ -6,7 +6,7 @@ $("#rating_modal-<%= @post&.id %>").modal('hide');
 <% if @post.ratings.present? %>
   <% Rating::RATINGS.each do |rating| %>
     $(".rating-count-<%= @post.id %>-<%= rating %>").text('<%= rating_count(@post.ratings, rating) %>');
-    <% if @rating.rating == rating %>
+    <% if @rating&.rating == rating %>
       $(".rating-count-<%= @post.id %>-<%= rating %>").removeClass('text-dark').addClass('text-primary')
     <% else %>
       $(".rating-count-<%= @post.id %>-<%= rating %>").removeClass('text-primary').addClass('text-dark')
