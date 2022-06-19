@@ -64,11 +64,19 @@ to display a collection of resources in an HTML table.
         <% collection_presenter.attributes_for(resource).each do |attribute| %>
           <td class="cell-data cell-data--<%= attribute.html_class %>">
             <% if show_action? :show, resource -%>
-              <a href="<%= polymorphic_path([namespace, resource]) -%>"
-                 class="action-show"
-                 >
-                <%= render_field attribute %>
-              </a>
+              <% if params[:unconfirmed].present? && resource.answers.present? && attribute.name == "answers" %>
+                <a href="<%= admin_answer_path(resource.answers.last) -%>"
+                   class="action-show" title="<%= resource.answers.last.body %>"
+                >
+                  <%= render_field attribute %>
+                </a>
+              <% else %>
+                <a href="<%= polymorphic_path([namespace, resource]) -%>"
+                   class="action-show"
+                >
+                  <%= render_field attribute %>
+                </a>
+              <% end %>
             <% end -%>
           </td>
         <% end %>
@@ -90,6 +98,15 @@ to display a collection of resources in an HTML table.
             data: { confirm: t("administrate.actions.confirm") }
           ) if show_action? :destroy, resource %></td>
         <% end %>
+        <td>
+          <% if params[:unconfirmed].present? && resource.answers.present? %>
+            <% if resource.approved %>
+              <button type="button" class="action-edit" disabled>Approve User</button>
+            <% else %>
+              <%= link_to "Approve User", admin_answer_approve_user_path(resource.answers.last, redirect_to: "users_page"), class: "action-edit" %>
+            <% end %>
+          <% end %>
+        </td>
         <td><%= check_box_tag "user_ids[]", resource.id, false, class: 'selectable' %></td>
 
       </tr>

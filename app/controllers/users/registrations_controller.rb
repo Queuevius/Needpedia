@@ -11,6 +11,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
     super
   end
+
   private
 
   def check_captcha
@@ -34,5 +35,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def check_account_status
     redirect_to root_path, alert: "Can't perform this action right now sorry for the inconvenience." and return if Setting.accounts_freezed
+  end
+
+  def build_resource(hash = {})
+    self.resource = resource_class.new_with_session(hash, session)
+    questionnaire = Questionnaire.first
+
+    # Jumpstart: Skip email confirmation on registration.
+    #   Require confirmation when user changes their email only
+    resource.skip_confirmation_notification! if questionnaire&.active?
   end
 end

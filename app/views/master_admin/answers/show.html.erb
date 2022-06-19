@@ -16,7 +16,7 @@ as well as a link to its edit page.
 [1]: http://www.rubydoc.info/gems/administrate/Administrate/Page/Show
 %>
 
-<% content_for(:title) { t("administrate.actions.show_resource", {name: page.page_title}) } %>
+<% content_for(:title) { t("administrate.actions.show_resource", name: page.page_title) } %>
 
 <header class="main-content__header" role="banner">
   <h1 class="main-content__page-title">
@@ -24,19 +24,17 @@ as well as a link to its edit page.
   </h1>
 
   <div>
-    <% if page.resource.confirmed_at.present? %>
-      <button type="button" class="button" disabled>Send confirmation</button>
-      <%#= link_to "Login As User", masquerade_path(page.resource), class: "button" %>
-    <% else %>
-      <%= link_to "Send confirmation", send_confirmation_link_admin_users_path(id: page.resource.id), class: "button" %>
-    <% end %>
-    <%= link_to "Profile", feed_path(uuid: page.resource.uuid), class: "button", target: '_blank' %>
-
     <%= link_to(
-      "#{t("administrate.actions.edit")} #{page.page_title}",
+      t("administrate.actions.edit_resource", name: page.page_title),
       [:edit, namespace, page.resource],
       class: "button",
-    ) if valid_action? :edit %>
+    ) if valid_action?(:edit) && show_action?(:edit, page.resource) %>
+
+    <% if page.resource.user.approved %>
+      <button type="button" class="button" disabled>Approve User</button>
+    <% else %>
+      <%= link_to "Approve User", master_admin_answer_approve_user_path(page.resource, redirect_to: "answer_page"), class: "button" %>
+    <% end %>
   </div>
 </header>
 
@@ -51,7 +49,7 @@ as well as a link to its edit page.
       </dt>
 
       <dd class="attribute-data attribute-data--<%=attribute.html_class%>"
-          ><%= render_field attribute %></dd>
+          ><%= render_field attribute, page: page %></dd>
     <% end %>
   </dl>
 </section>

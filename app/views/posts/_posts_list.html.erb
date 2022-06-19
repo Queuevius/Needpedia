@@ -21,9 +21,9 @@
           <div class="row">
             <div class="col-12">
               <div class="row">
-                <b>
-                  <span id="rating_title-<%= post.id %>" class="search-result-rating text-dark" data-toggle="modal" data-target="#rating_modal-<%= post.id %>"><%= post&.ratings&.pluck(:rating)&.sum || 0 %></span>
-                </b>
+                <div class="btn btn-link p-0 m-0 font-weight-bold">
+                  <span id="rating_title-<%= post.id %>" class="search-result-rating text-dark" data-toggle="modal" data-target="#rating_modal-<%= post.id %>"><%= post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %></span>
+                </div>
                 <div class="col-11">
                   <%= link_to post_path(post.id), class: 'text-decoration-none' do %>
                     <div class="row">
@@ -74,20 +74,6 @@
                 return $("#popover-content-<%= post.id %>").html();
             }
         });
-        <% Rating::RATINGS.each do |rating| %>
-          var element = $('.rating-count-<%= post.id %>-<%= rating %>');
-          element.click(function() {
-              $.ajax({
-                  url: "<%= change_rating_path %>",
-                  type: "PATCH",
-                  data: {
-                      rateable_id: '<%= post.id %>',
-                      rateable_type: 'Post',
-                      rating: '<%= rating %>'
-                  }
-              });
-          })
-        <% end %>
     </script>
   <% end %>
 </div>

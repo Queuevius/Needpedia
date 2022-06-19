@@ -1,5 +1,5 @@
-module MasterAdmin
-  class AnswersController < MasterAdmin::ApplicationController
+module Admin
+  class AnswersController < Admin::ApplicationController
     def approve_user
       answer = Answer.find(params[:answer_id])
       user = answer.user
@@ -11,10 +11,10 @@ module MasterAdmin
         user.send_confirmation_instructions.deliver
         flash[:notice] = 'Confirmation link has been sent on user email'
       end
-      redirect_to redirect_to_page == "answer_page" ? master_admin_answer_path(answer) : unconfirmed_users_master_admin_users_path
+      redirect_to redirect_to_page == "answer_page" ? admin_answer_path(answer) : unconfirmed_users_admin_users_path
     rescue StandardError => e
       flash[:alert] = e.message
-      redirect_to master_admin_users_path
+      redirect_to admin_users_path
     end
   end
 end

@@ -7,7 +7,7 @@
 # server "example.com", user: "deploy", roles: %w{app web}, other_property: :other_value
 # server "db.example.com", user: "deploy", roles: %w{db}
 
-server '3.142.239.169', user: 'deploy', roles: %w{app db web}
+server '18.223.241.10', user: 'deploy', roles: %w{app db web}
 
 # role-based syntax
 # ==================
@@ -43,7 +43,7 @@ server '3.142.239.169', user: 'deploy', roles: %w{app db web}
 # --------------
  set :ssh_options, {
    keys: %w(/Users/murtazakhan/.ssh/needpedia-master-key-pair.pem),
-   forward_agent: false,
+   forward_agent: true,
  }
 #
 # The server-based syntax can be used to override options:

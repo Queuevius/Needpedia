@@ -10,7 +10,6 @@ https://copilot.github.com/ <br><br>
        Anthonydunn97202@gmail.co<br><br>
 
 
-
 <b>Setting up locally with Docker (Recommended):</b><br>
 1. Follow this link to install docker https://docs.docker.com/engine/install/ubuntu/
    (Devs running Ubuntu Hirsute can instead use the terminal command `sudo snap install docker`)

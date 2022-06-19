@@ -12,7 +12,7 @@ module MasterAdmin
 
       users = User.where(id: user_ids)
       users.destroy_all
-      redirect_to admin_users_path
+      redirect_to master_admin_users_path
     end
 
     def send_confirmation_link
@@ -23,19 +23,19 @@ module MasterAdmin
         user.send_confirmation_instructions.deliver
         flash[:notice] = 'Confirmation link has been sent on user email'
       end
-      redirect_to admin_user_path(user)
+      redirect_to master_admin_user_path(user)
     rescue StandardError => e
       flash[:alert] = e.message
-      redirect_to admin_user_path(user)
+      redirect_to master_admin_user_path(user)
     end
 
     def unconfirmed_users
-      redirect_to admin_users_path(unconfirmed: true)
+      redirect_to master_admin_users_path(unconfirmed: true)
     end
 
     def scoped_resource
       if params[:unconfirmed] == 'true'
-        resource_class.where(confirmed_at: nil)
+        resource_class.where(confirmed_at: nil, approved: false)
       else
         resource_class
       end

@@ -22,9 +22,8 @@ class AnswerDashboard < Administrate::BaseDashboard
   # By default, it's limited to four items to reduce clutter on index pages.
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
-  user
-  question
   id
+  user
   body
   ].freeze
 
@@ -64,6 +63,6 @@ class AnswerDashboard < Administrate::BaseDashboard
   # across all pages of the admin dashboard.
   #
   def display_resource(answer)
-    answer.body
+    answer.body.present? ? answer.body.truncate(15) : "Answer-#{answer.id}"
   end
 end

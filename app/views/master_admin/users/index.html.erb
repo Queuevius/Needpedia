@@ -43,7 +43,7 @@ It renders the `_table` partial to display details about the resources.
 
   <%= form_with(url: bulk_delete_admin_users_path, method: :delete, local: true) do |f| %>
   <div>
-    <%= link_to('New Comers', unconfirmed_users_admin_users_path, class: "button pl-2") %>
+    <%= link_to('New Comers', unconfirmed_users_master_admin_users_path, class: "button pl-2") %>
     <%= f.submit "Bulk Delete", class: 'button' %>
     <%= link_to(
       t(

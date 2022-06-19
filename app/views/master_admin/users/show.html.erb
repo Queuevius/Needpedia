@@ -26,10 +26,10 @@ as well as a link to its edit page.
   <div>
     <% if page.resource.confirmed_at.present? %>
       <button type="button" class="button" disabled>Send confirmation</button>
+      <%= link_to "Login As User", masquerade_path(page.resource), class: "button" %>
     <% else %>
       <%= link_to "Send confirmation", send_confirmation_link_admin_users_path(id: page.resource.id), class: "button" %>
     <% end %>
-    <%= link_to "Login As User", masquerade_path(page.resource), class: "button" %>
     <%= link_to "Profile", feed_path(uuid: page.resource.uuid), class: "button", target: '_blank' %>
 
     <%= link_to(

@@ -1,14 +1,31 @@
 <div class="row">
   <% Rating::RATINGS.each do |rating| %>
-    <div class="col-2">
-      <b><%= rating %>:</b>
+    <div class="col">
+      <b><%= rating == 6 ? 'Lol' : rating %>:</b>
     </div>
   <% end %>
 </div>
-<div class="row">
+<div class="row pt-4">
   <% Rating::RATINGS.each do |rating| %>
-    <div class="col-2">
-      <span class="pl-0 ml-0 btn btn-link rating-count-<%= post.id %>-<%= rating %> <%= rating_color(post.ratings, current_user, rating) %>"><%= rating_count(post.ratings, rating) %></span>
+    <div class="col">
+      <b class="btn-link rating-count-<%= post.id %>-<%= rating %> <%= rating_color(post.ratings, current_user, rating) %>"><%= rating_count(post.ratings, rating) %></b>
     </div>
   <% end %>
 </div>
+
+<script>
+    <% Rating::RATINGS.each do |rating| %>
+      var element = $('.rating-count-<%= post.id %>-<%= rating %>');
+      element.click(function() {
+          $.ajax({
+              url: "<%= change_rating_path %>",
+              type: "PATCH",
+              data: {
+                  rateable_id: '<%= post.id %>',
+                  rateable_type: 'Post',
+                  rating: '<%= rating %>'
+              }
+          });
+      })
+    <% end %>
+</script>

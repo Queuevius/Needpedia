@@ -33,6 +33,11 @@
         </div>
         <div class="col-md-12 mb-2">
           <div class="row">
+            <div class="col-auto">
+              <h4 id="rating_title-<%= @post.id %>" class="search-result-rating" data-toggle="modal" data-target="#rating_modal-<%= @post.id %>"><%= @post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %></h4>
+            </div>
+          </div>
+          <div class="row">
             <div class="col-lg-12 col-md-12 ml-auto mr-auto">
               <div class="ui-block shadow-lg rounded">
                 <div class="ui-block-content">
@@ -198,18 +203,6 @@
                                 <span><%= @post.flags.count %></span>
                               </div>
                               <div class="col-md-1">
-                                <% if @post.likes.pluck(:user_id).include?(current_user.id) %>
-                                  <%= link_to like_path(id: @post.id), class: 'btn btn-primary', title: 'Un-Like this post', remote: true, :method => :delete do %>
-                                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>
-                                  <% end %>
-                                <% else %>
-                                  <%= link_to like_path(likeable_id: @post.id, user_id: current_user.id, likeable_type: 'Post'), title: 'Like this post', class: 'btn btn-secondary', remote: true, :method => :patch do %>
-                                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>
-                                  <% end %>
-                                <% end %>
-                                <span><%= @post.likes.count %></span>
-                              </div>
-                              <div class="col-md-1">
                                 <% if @post.shares.pluck(:user_id).include?(current_user.id) %>
                                   <div class="btn btn-primary" title="Already Shared by me">
                                     <i class="fa fa-share" aria-hidden="true"></i>
@@ -271,6 +264,23 @@
   <% end %>
 </div>
 <% if user_signed_in? %>
+  <div class="modal fade" id="rating_modal-<%= @post.id %>" tabindex="-1" role="dialog" aria-labelledby="rating_modal-<%= @post.id %>" aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Rate <%= @post.title %></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body p-2" id="body-<%= @post.id %>">
+
+          <%= render 'rating_modal', post: @post %>
+        </div>
+      </div>
+    </div>
+  </div>
   <%= render "tracking_notifications_modal" %>
 <% end %>
 <script>
