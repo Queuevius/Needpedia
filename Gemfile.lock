@@ -158,7 +158,6 @@ GEM
       regexp_parser (~> 1.5)
       xpath (~> 3.2)
     childprocess (3.0.0)
-    chronic (0.10.2)
     coderay (1.1.2)
     concurrent-ruby (1.1.6)
     connection_pool (2.2.2)
@@ -444,8 +443,6 @@ GEM
     websocket-driver (0.7.1)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.4)
-    whenever (1.0.0)
-      chronic (>= 0.6.3)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.3.0)
@@ -510,7 +507,6 @@ DEPENDENCIES
   web-console (>= 3.3.0)
   webdrivers
   webpacker (~> 4.0)
-  whenever
 
 RUBY VERSION
    ruby 2.6.3p62
