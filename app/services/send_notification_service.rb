@@ -1,7 +1,7 @@
 class SendNotificationService
   def perform
     p "starting sending email at #{Time.now}"
-    users = User.includes(posts: [:likes, :comments, :shares, :flage, :ratings]).where(daily_notifications: true, daily_notification_time: Time.now.utc..Time.now.utc + 10.minutes)
+    users = User.includes(posts: [:likes, :comments, :shares, :flages, :ratings]).where(daily_notifications: true, daily_notification_time: Time.now.utc..Time.now.utc + 10.minutes)
     users.each do |user|
       p "processing user #{user&.name}"
       if already_send?(user)
