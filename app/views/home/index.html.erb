@@ -1,12 +1,12 @@
 <% if current_user.nil? && @messages_for_guests.present? %>
-  <%= render 'home/admin_notification_list', notifications: @messages_for_guests, color: 'primary' %>
+  <%= render 'home/admin_notification_list', notifications: @messages_for_guests, color: 'light' %>
 <% end %>
 <% if current_user && current_user.last_login_at.blank? && @messages_for_new_comers.present? %>
-  <%= render 'home/admin_notification_list', notifications: @messages_for_new_comers, color: 'success' %>
+  <%= render 'home/admin_notification_list', notifications: @messages_for_new_comers, color: 'light' %>
 <% end %>
 
 <% if @messages_for_all.present? %>
-  <%= render 'home/admin_notification_list', notifications: @messages_for_all, color: 'dark' %>
+  <%= render 'home/admin_notification_list', notifications: @messages_for_all, color: 'light' %>
 <% end %>
 <%= render 'search'  %>
 <div class="container mb-5">
