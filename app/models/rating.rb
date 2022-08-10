@@ -5,4 +5,16 @@ class Rating < ApplicationRecord
 
   belongs_to :user
   belongs_to :rateable, polymorphic: true
+
+  after_create :send_email
+
+  def send_email
+    post = rateable
+    users = post.users
+    users.each do |u|
+      next if u.daily_notifications? || !u.track_notifications?
+
+      UserMailer.send_tracking_email(actor: user, receiver: u, post: post).deliver_now
+    end
+  end
 end

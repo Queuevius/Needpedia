@@ -16,6 +16,7 @@ class Comment < ApplicationRecord
   after_create :send_notification_to_users_on_reply, if: -> { !parent_id.nil? && user_id }
   after_update :send_notification_to_repliers_on_edit, if: -> { parent_id.nil? && active? && replies.active.present? }
   after_update :send_notification_to_repliers_on_delete, if: -> { parent_id.nil? && deleted? && replies.active.present? }
+  after_create :send_email
 
   def send_notification_to_users_on_comment
     Notification.post(from: user, notifiable: user, to: commentable.user, action: Notification::NOTIFICATION_TYPE_COMMENT_CREATED, post_id: commentable_type == 'Post' ? commentable_id : nil)
@@ -33,5 +34,15 @@ class Comment < ApplicationRecord
 
   def send_notification_to_repliers_on_delete
     Notification.post(from: user, notifiable: user, to: User.where(id: replies.active.where.not(user_id: user_id).pluck(:user_id)), action: Notification::NOTIFICATION_TYPE_COMMENT_DELETED, post_id: commentable_type == 'Post' ? commentable_id : nil)
+  end
+
+  def send_email
+    post = commentable
+    users = post.users
+    users.each do |u|
+      next if u.daily_notifications? || !u.track_notifications?
+
+      UserMailer.send_tracking_email(actor: user, receiver: u, post: post).deliver_now
+    end
   end
 end
