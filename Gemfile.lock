@@ -158,7 +158,6 @@ GEM
       regexp_parser (~> 1.5)
       xpath (~> 3.2)
     childprocess (3.0.0)
-    chronic (0.10.2)
     coderay (1.1.2)
     concurrent-ruby (1.1.6)
     connection_pool (2.2.2)
@@ -181,6 +180,8 @@ GEM
       dotenv (= 2.7.6)
       railties (>= 3.2)
     erubi (1.9.0)
+    et-orbi (1.2.7)
+      tzinfo
     execjs (2.7.0)
     faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
@@ -192,6 +193,9 @@ GEM
       sassc (>= 1.11)
     friendly_id (5.3.0)
       activerecord (>= 4.0.0)
+    fugit (1.5.3)
+      et-orbi (~> 1, >= 1.2.7)
+      raabro (~> 1.4)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     hashie (4.1.0)
@@ -310,6 +314,7 @@ GEM
     public_suffix (4.0.4)
     puma (4.3.3)
       nio4r (~> 2.0)
+    raabro (1.4.0)
     rack (2.2.2)
     rack-protection (2.0.8.1)
       rack
@@ -387,6 +392,9 @@ GEM
       rack (~> 2.0)
       rack-protection (>= 2.0.0)
       redis (>= 4.1.0)
+    sidekiq-cron (1.6.0)
+      fugit (~> 1)
+      sidekiq (>= 4.2.1)
     sitemap_generator (6.1.0)
       builder (~> 3.0)
     spring (2.1.0)
@@ -435,8 +443,6 @@ GEM
     websocket-driver (0.7.1)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.4)
-    whenever (1.0.0)
-      chronic (>= 0.6.3)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.3.0)
@@ -491,6 +497,7 @@ DEPENDENCIES
   sass-rails (>= 6)
   selenium-webdriver
   sidekiq (~> 6.0, >= 6.0.3)
+  sidekiq-cron
   sitemap_generator (~> 6.0, >= 6.0.1)
   spring
   spring-watcher-listen (~> 2.0.0)
@@ -500,7 +507,6 @@ DEPENDENCIES
   web-console (>= 3.3.0)
   webdrivers
   webpacker (~> 4.0)
-  whenever
 
 RUBY VERSION
    ruby 2.6.3p62
