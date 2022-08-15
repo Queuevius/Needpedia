@@ -8,7 +8,7 @@ class AdminNotificationDashboard < Administrate::BaseDashboard
   # which determines how the attribute is displayed
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
-    message: Field::RichText,
+    message: SummernoteField,
     id: Field::Number,
     audience: Field::SelectBasic.with_options(choices: AdminNotification::TYPES, include_blank: 'Select Audience'),
     created_at: Field::DateTime,
