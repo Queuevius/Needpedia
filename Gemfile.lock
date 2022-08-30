@@ -414,6 +414,8 @@ GEM
     thor (1.0.1)
     thread_safe (0.3.6)
     tilt (2.0.10)
+    trix-rails (2.4.0)
+      rails (> 4.1)
     turbolinks (5.2.1)
       turbolinks-source (~> 5.2)
     turbolinks-source (5.2.0)
@@ -501,6 +503,7 @@ DEPENDENCIES
   sitemap_generator (~> 6.0, >= 6.0.1)
   spring
   spring-watcher-listen (~> 2.0.0)
+  trix-rails
   turbolinks (~> 5)
   tzinfo-data
   valid_email2

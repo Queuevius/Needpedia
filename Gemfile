@@ -92,3 +92,4 @@ gem 'administrate-field-select', '~> 2.0', require: 'administrate/field/select_b
 gem 'administrate-field-active_storage'
 gem 'recaptcha'
 gem 'sidekiq-cron'
+gem 'trix-rails', require: 'trix'
