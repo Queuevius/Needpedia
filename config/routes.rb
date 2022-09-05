@@ -46,6 +46,8 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
+
+    resources :email_templates
     resources :post_tokens
     resources :token_ans_debates
     resources :connections
