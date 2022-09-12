@@ -8,7 +8,7 @@ class EmailTemplateDashboard < Administrate::BaseDashboard
   # which determines how the attribute is displayed
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
-    message: Field::RichText,
+    message: SummernoteField,
     id: Field::Number,
     name: Field::String,
     created_at: Field::DateTime,
