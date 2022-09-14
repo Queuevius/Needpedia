@@ -78,11 +78,13 @@ module ApplicationHelper
     post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
   end
 
-  def liquid_template(name, email)
-    message = EmailTemplate.where(name: name).last.message
+  def liquid_template(name, arguments: {})
+    email_template = EmailTemplate.where(name: name).last
+    return '' unless email_template.present?
+
+    message = email_template.message
     template = Liquid::Template.parse(message) # Parses and compiles the template
-    user = User.find_by_email(email)
-    template.render!('user_name' => user.name, 'date_time' => user.created_at.to_date)
+    template.render!(arguments.deep_stringify_keys)
   rescue Liquid::Error
     text.to_s
   end
