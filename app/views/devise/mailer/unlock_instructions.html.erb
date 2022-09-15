@@ -1,2 +1,2 @@
-<%= ApplicationController.helpers.liquid_template("unlock_instructions", arguments: {user: {email: @resource.email}}).html_safe %>
+<%= ApplicationController.helpers.liquid_template("unlock_instructions", arguments: {user: {name: @resource.name}}).html_safe %>
 <p><%= link_to 'Unlock my account', unlock_url(@resource, unlock_token: @token) %></p>

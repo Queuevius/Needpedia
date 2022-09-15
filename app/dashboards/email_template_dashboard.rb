@@ -21,7 +21,6 @@ class EmailTemplateDashboard < Administrate::BaseDashboard
   # By default, it's limited to four items to reduce clutter on index pages.
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
-  message
   id
   name
   created_at
@@ -60,7 +59,7 @@ class EmailTemplateDashboard < Administrate::BaseDashboard
   # Overwrite this method to customize how email templates are displayed
   # across all pages of the admin dashboard.
   #
-  # def display_resource(email_template)
-  #   "EmailTemplate ##{email_template.id}"
-  # end
+  def display_resource(email_template)
+    email_template.name
+  end
 end
