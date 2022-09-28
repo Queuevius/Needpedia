@@ -4,7 +4,7 @@ class User < ApplicationRecord
   devise :masqueradable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :confirmable
 
 
-  after_create :add_default_credit, :create_admin_notifications
+  after_create :add_default_credit, :create_admin_notifications, :make_friend_with_mascot
   before_destroy :delete_notifications
   # before_create :skip_confirmation_notification!
 
@@ -85,6 +85,16 @@ class User < ApplicationRecord
     notifications.each do |notification|
       Notification.post(from: admin, notifiable: admin, to: self, action: Notification::NOTIFICATION_TYPE_ADMIN_NOTIFICATION, admin_notification_id: notification.id)
     end
+  end
+
+  def make_friend_with_mascot
+    return if mascot.blank?
+
+    Connection.create(user_id: id, friend_id: mascot.id)
+  end
+
+  def mascot
+    User.find_by(email: 'mascotaccount@needpedia.com')
   end
 
   def connection_status(current_user)
