@@ -1,55 +1,83 @@
-<div class="row">
-  <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12"><%= render 'shared/sidebar' %></div>
-  <div class="col-md-9 col-lg-9 col-xl-9 col-sm-12">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="container mb-3">
-            <div class="row justify-content-center">
-              <div class="col-12 col-md-10 col-lg-8">
-                <%= search_form_for @f, url: wall_path, method: :get do |f| %>
-                  <div class="row no-gutters align-items-center">
-                    <div class="col">
-                      <%= f.text_field :title_or_content_body_or_tags_name_cont, class: 'form-control form-control-lg', placeholder: "Search" %>
-                    </div>
-                    <div class="col-auto">
-                      <button class="ml-2 btn btn-lg btn-secondary search-button" type="submit">Go</button>
-                    </div>
-                  </div>
-                <% end %>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div id="content" class="p-4">
-      <div class="row">
-        <div class="col-sm-6 text-right mb-2 offset-6">
-          <%= link_to new_post_path(post_type: Post::POST_TYPE_SOCIAL_MEDIA, uuid: params[:uuid]), class: 'btn btn-primary' do %>
-            Add New Post
-          <% end %>
-        </div>
-        <div class="col-md-12">
-          <%= render 'posts/list', posts: @posted_posts, type: nil %>
-        </div>
-        <div class="col-md-12">
+<!-- Tabs navs -->
+<ul class="nav nav-tabs border-0 nav-fill mb-3" id="ex1" role="tablist">
+  <li class="nav-item" role="presentation">
+    <%= link_to "Feed", feed_path(uuid: params[:uuid]), class: "nav-link h4 font-weight-bold border-dark  border-top-0 border-left-0 border-right-0 pb-3 border-dark", id: "ex2-tab-1", data: { mdb_toggle: "tab" }  %>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a
+      class="nav-link active border-bottom-0 border-right-0 border-dark"
+      id="ex2-tab-2"
+      data-mdb-toggle="tab"
+      href="#ex2-tabs-1"
+      role="tab"
+      aria-controls="ex2-tabs-2"
+      aria-selected="false"
+    ><h4 class="font-weight-bold">Wall</h4>
+    </a>
+  </li>
+</ul>
+<!-- Tabs navs -->
+
+<!-- Tabs content -->
+<div class="tab-content" id="ex2-content">
+  <div
+    class="tab-pane fade show active"
+    id="ex2-tabs-1"
+    role="tabpanel"
+    aria-labelledby="ex2-tab-1"
+  >
+    <div class="row">
+      <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12"><%= render 'shared/sidebar' %></div>
+      <div class="col-md-9 col-lg-9 col-xl-9 col-sm-12">
+        <div class="container">
           <div class="row">
-            <div class="col-md-3"></div>
-            <div class="col-md-8">
-              <div id="infinite-scrolling" class="justify-content-center">
-                <%= paginate @posted_posts, param_name: :page %>
+            <div class="col-md-12">
+              <div class="container mb-3">
+                <div class="row justify-content-center">
+                  <div class="col-12 col-md-10 col-lg-8">
+                    <%= search_form_for @f, url: wall_path, method: :get do |f| %>
+                      <div class="row no-gutters align-items-center">
+                        <div class="col">
+                          <%= f.text_field :title_or_content_body_or_tags_name_cont, class: 'form-control form-control-lg', placeholder: "Search" %>
+                        </div>
+                        <div class="col-auto">
+                          <button class="ml-2 btn btn-lg btn-secondary search-button" type="submit">Go</button>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <% if @posted_posts.blank? %>
-          <div class="col-md-12 text-center">
-            <h5 class="text-warning">Not posted yet</h5>
+        <div id="content" class="p-4">
+          <div class="row">
+            <div class="col-sm-6 text-right mb-2 offset-6">
+              <%= link_to new_post_path(post_type: Post::POST_TYPE_SOCIAL_MEDIA, uuid: params[:uuid]), class: 'btn btn-primary' do %>
+                Add New Post
+              <% end %>
+            </div>
+            <div class="col-md-12">
+              <%= render 'posts/list', posts: @posted_posts, type: nil %>
+            </div>
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-8">
+                  <div id="infinite-scrolling" class="justify-content-center">
+                    <%= paginate @posted_posts, param_name: :page %>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% if @posted_posts.blank? %>
+              <div class="col-md-12 text-center">
+                <h5 class="text-warning">Not posted yet</h5>
+              </div>
+            <% end %>
           </div>
-        <% end %>
-      </div>
-      <!-- <div class="dropdown-divider"></div>
+          <!-- <div class="dropdown-divider"></div>
       <div class="row">
         <div class="col-md-12 text-center">
           <h2>Liked by <%= current_user&.name %></h2>
@@ -106,6 +134,8 @@
         <% end %>
       </div>
       <div class="dropdown-divider"></div> -->
+        </div>
+      </div>
     </div>
   </div>
 </div>
