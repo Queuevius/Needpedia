@@ -5,7 +5,7 @@ class RelatedContentsController < ApplicationController
     if @related_content.save!
       redirect_to @post, notice: 'Content was successfully created.'
     else
-      flash[:alert] = @objective.errors.full_messages.join(',')
+      redirect_to @post, alert: @objective.errors.full_messages.join(',')
     end
   end
 

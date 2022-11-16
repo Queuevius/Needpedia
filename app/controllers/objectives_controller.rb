@@ -6,7 +6,7 @@ class ObjectivesController < ApplicationController
     if @objective.save!
       redirect_to @post, notice: 'Objective was successfully created.'
     else
-      flash[:alert] = @objective.errors.full_messages.join(',')
+      redirect_to @post, alert: @objective.errors.full_messages.join(',')
     end
   end
 
