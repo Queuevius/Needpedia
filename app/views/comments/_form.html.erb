@@ -1,8 +1,16 @@
 <%= form_with(model: comment, local: false) do |form| %>
 
   <%= form.hidden_field :user_id, value: current_user.id %>
-  <%= form.hidden_field :commentable_id, value: post.id %>
-  <%= form.hidden_field :commentable_type, value: 'Post' %>
+  <% if params[:objective_id].present? %>
+    <%= form.hidden_field :commentable_id, value: params[:objective_id] %>
+    <%= form.hidden_field :commentable_type, value: 'Objective' %>
+  <% elsif params[:related_content_id].present? %>
+    <%= form.hidden_field :commentable_id, value: params[:related_content_id] %>
+    <%= form.hidden_field :commentable_type, value: 'RelatedContent' %>
+  <% else %>
+    <%= form.hidden_field :commentable_id, value: post.id %>
+    <%= form.hidden_field :commentable_type, value: 'Post' %>
+  <% end %>
 
   <div class="row">
     <div class="col-md-10">

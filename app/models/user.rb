@@ -29,6 +29,8 @@ class User < ApplicationRecord
   has_many :gigs, through: :user_gigs, dependent: :destroy
 
   has_many :comments, dependent: :destroy
+  has_many :objectives, dependent: :destroy
+  has_many :related_contents, dependent: :destroy
 
   has_many :flags, dependent: :destroy
 

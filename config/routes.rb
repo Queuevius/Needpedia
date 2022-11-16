@@ -107,7 +107,7 @@ Rails.application.routes.draw do
   delete 'unblock_user' => 'profile#unblock_user'
   delete 'un_friend/:uuid' => 'profile#un_friend', as: 'un_friend'
   get 'tags/:tag' => 'posts#index', as: :tag
-  authenticate :user, lambda {|u| u.admin? || u.master_admin? } do
+  authenticate :user, lambda {|u| u.admin? || u.master_admin?} do
     mount Sidekiq::Web => '/sidekiq'
   end
 
@@ -129,6 +129,18 @@ Rails.application.routes.draw do
       delete 'remove_comment'
       patch :inappropriate
     end
+    resources :objectives do
+      resources :comments do
+        delete 'remove_comment'
+        patch :inappropriate
+      end
+    end
+    resources :related_contents do
+      resources :comments do
+        delete 'remove_comment'
+        patch :inappropriate
+      end
+    end
     get 'layers'
     get 'problems'
     get 'ideas'
@@ -149,7 +161,18 @@ Rails.application.routes.draw do
       get 'geo_maxing_posts'
     end
   end
-
+  resources :objectives do
+    resources :comments do
+      delete 'remove_comment'
+      patch :inappropriate
+    end
+  end
+  resources :related_contents do
+    resources :comments do
+      delete 'remove_comment'
+      patch :inappropriate
+    end
+  end
   resources :comments
   resources :activities, only: [:index]
 
@@ -157,7 +180,7 @@ Rails.application.routes.draw do
     collection do
       get 'reason_modal'
     end
-    end
+  end
 
   resources :post_tokens do
     collection do

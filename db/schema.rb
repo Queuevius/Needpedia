@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_09_23_052527) do
+ActiveRecord::Schema.define(version: 2022_11_07_072104) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "hstore"
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
 
@@ -275,6 +276,15 @@ ActiveRecord::Schema.define(version: 2022_09_23_052527) do
     t.integer "admin_notification_id"
   end
 
+  create_table "objectives", force: :cascade do |t|
+    t.bigint "post_id"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["post_id"], name: "index_objectives_on_post_id"
+    t.index ["user_id"], name: "index_objectives_on_user_id"
+  end
+
   create_table "post_tokens", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "post_id", null: false
@@ -337,6 +347,15 @@ ActiveRecord::Schema.define(version: 2022_09_23_052527) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_ratings_on_user_id"
+  end
+
+  create_table "related_contents", force: :cascade do |t|
+    t.bigint "post_id"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["post_id"], name: "index_related_contents_on_post_id"
+    t.index ["user_id"], name: "index_related_contents_on_user_id"
   end
 
   create_table "services", force: :cascade do |t|
@@ -521,11 +540,13 @@ ActiveRecord::Schema.define(version: 2022_09_23_052527) do
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "users"
   add_foreign_key "notification_settings", "users"
+  add_foreign_key "objectives", "users"
   add_foreign_key "post_tokens", "posts"
   add_foreign_key "post_tokens", "users"
   add_foreign_key "posts", "users"
   add_foreign_key "questions", "questionnaires"
   add_foreign_key "ratings", "users"
+  add_foreign_key "related_contents", "users"
   add_foreign_key "services", "users"
   add_foreign_key "shares", "users"
   add_foreign_key "taggings", "tags"

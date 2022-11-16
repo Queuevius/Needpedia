@@ -1,4 +1,3 @@
-
 <% if @comment.parent_id.present? %>
   document.querySelector("#reply-form-<%= @comment.id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { comment: @comment, post: @post })) %>")
   $("#reply-body-<%= @comment.id %>").hide();

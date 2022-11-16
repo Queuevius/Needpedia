@@ -1,0 +1,33 @@
+<%= form_with(model: [@post, @post.related_contents.build], local: true) do |form| %>
+
+  <%= form.hidden_field :user_id, value: current_user.id %>
+
+  <div class="form-group">
+    <%= form.text_area :content, autofocus: true, rows: 20, class: 'form-control', placeholder: "Body", id: 'summernote' %>
+  </div>
+  <div class="form-group ml-2">
+    <%= form.submit class: 'btn btn-primary' %>
+  </div>
+<% end %>
+
+<script>
+    $('#summernote').summernote({
+        height: 150,
+        disableDragAndDrop: true,
+        toolbar: [
+            // [groupName, [list of button]]
+            ['style', ['bold', 'italic', 'underline', 'link']],
+            ['font', ['strikethrough', 'fontsize']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['tokens', ['note', 'question', 'debate']],
+            ['misc', ['undo', 'redo']]
+        ],
+        popover: {
+            image: [
+                ['remove', ['removeMedia']]
+            ],
+            link: []
+        },
+
+    });
+</script>

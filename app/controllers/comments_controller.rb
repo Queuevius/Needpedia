@@ -5,24 +5,56 @@ class CommentsController < ApplicationController
 
   def index
     @post = Post.find(params[:post_id])
-    @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
+    if @post.present?
+      @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
+    elsif params[:objective_id].present?
+      @objective = Objactive.find(params[:objective_id])
+      @comments = @objective.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
+    else
+      @related_content = RelatedContent.find(params[:related_content_id])
+      @comments = @related_content.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
+    end
   end
 
   def new
-    @post = Post.find(params[:post_id])
-    @comment = @post.comments.new(parent_id: params[:parent_id])
+    if params[:post_id].present?
+      @post = Post.find(params[:post_id])
+      @comment = @post.comments.new(parent_id: params[:parent_id])
+    elsif params[:objective_id].present?
+      @objective = Objective.find(params[:objective_id])
+      @comment = @objective.comments.new(parent_id: params[:parent_id])
+    else
+      @related_content = RelatedContent.find(params[:related_content_id])
+      @comment = @related_content.comments.new(parent_id: params[:parent_id])
+    end
   end
 
   def edit
-    @post = Post.find(params[:post_id])
-    @comment = @post.comments.find(params[:id])
+    if params[:post_id].present?
+      @post = Post.find(params[:post_id])
+      @comment = @post.comments.find(params[:id])
+    elsif params[:objective_id].present?
+      @objective = Objactive.find(params[:objective_id])
+      @comment = @objective.comments.find(params[:id])
+    elsif params[:related_content_id].present?
+      @related_content = @related_content = RelatedContent.find(params[:related_content_id])
+      @comment = @related_content.comments.find(params[:id])
+    end
   end
 
   # POST /comments
   # POST /comments.json
   def create
     @comment = Comment.new(comment_params)
-    @post = Post.find(@comment.commentable_id)
+    if comment_params[:commentable_type] == "RelatedContent"
+      @related_content = RelatedContent.find(@comment.commentable_id)
+      @post = @related_content.post
+    elsif comment_params[:commentable_type] == "Objective"
+      @objective = Objective.find(@comment.commentable_id)
+      @post = @objective.post
+    else
+      @post = Post.find(@comment.commentable_id)
+    end
 
     respond_to do |format|
       if @comment.save
@@ -30,12 +62,12 @@ class CommentsController < ApplicationController
           create_activity(@comment.commentable, 'post.commented_on')
         end
         format.js
-        format.html { redirect_to post_path(@post), notice: 'Comment was successfully created.' }
-        format.json { render :show, status: :created, location: @comment }
+        format.html {redirect_to post_path(@post), notice: 'Comment was successfully created.'}
+        format.json {render :show, status: :created, location: @comment}
       else
         flash[:alert] = @comment.errors.full_messages.join(',')
-        format.html { redirect_to post_path(@post) }
-        format.json { render json: @comment.errors, status: :unprocessable_entity }
+        format.html {redirect_to post_path(@post)}
+        format.json {render json: @comment.errors, status: :unprocessable_entity}
       end
     end
   end
@@ -46,19 +78,27 @@ class CommentsController < ApplicationController
 
     respond_to do |format|
       if @comment.update(comment_params)
-        format.html { redirect_to post_path(@post), notice: 'Comment was successfully updated.' }
-        format.json { render :edit, status: :created, location: @comment }
+        format.html {redirect_to post_path(@post), notice: 'Comment was successfully updated.'}
+        format.json {render :edit, status: :created, location: @comment}
       else
         flash[:alert] = @comment.errors.full_messages.join(',')
-        format.html { redirect_to post_path(@post) }
-        format.json { render json: @comment.errors, status: :unprocessable_entity }
+        format.html {redirect_to post_path(@post)}
+        format.json {render json: @comment.errors, status: :unprocessable_entity}
       end
     end
   end
 
   def remove_comment
     if @comment.deleted!
-      redirect_to post_path(@post), notice: 'Comment successfully deleted.'
+      if params[:post_id].present?
+        redirect_to post_path(@post), notice: 'Comment successfully deleted.'
+      elsif params[:objective_id].present?
+        @objective = Objective.find(params[:objective_id])
+        redirect_to post_path(@objective.post), notice: 'Comment successfully deleted.'
+      else
+        @related_content = RelatedContent.find(params[:related_content_id])
+        redirect_to post_path(@related_content.post), notice: 'Comment successfully deleted.'
+      end
     else
       flash[:alert] = @comment.errors.full_messages.join(',')
       redirect_to post_path(@post)
@@ -78,13 +118,18 @@ class CommentsController < ApplicationController
   private
 
   def find_comment
-    @post = Post.find(params[:post_id])
-    @comment = @post.comments.active.find(params[:comment_id])
+    if params[:post_id].present?
+      @post = Post.find(params[:post_id])
+      @comment = @post.comments.active.find(params[:comment_id])
+    else
+      @objective = Objective.find(params[:objective_id])
+      @comment = @objective.comments.active.find(params[:comment_id])
+    end
   end
 
   # Only allow a list of trusted parameters through.
   def comment_params
-    params.require(:comment).permit(:body, :commentable_id, :commentable_type, :user_id, :parent_id)
+    params.require(:comment).permit(:body, :commentable_id, :commentable_type, :user_id, :parent_id, :objective_id, :related_content_id)
   end
 
   def create_activity(post, event)
