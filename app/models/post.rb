@@ -4,8 +4,6 @@ class Post < ApplicationRecord
   has_one :content, class_name: 'ActionText::RichText', as: :record
   acts_as_taggable_on :tags, :resource_tags
   has_many_attached :images
-  has_many :objectives
-  has_many :related_contents
   # after_save :clean_froala_link
   ################################ Constants ############################
   POST_TYPE_SUBJECT = 'subject'.freeze
@@ -71,6 +69,9 @@ class Post < ApplicationRecord
 
   has_many :notifications, dependent: :destroy
   has_many :notification_settings, dependent: :destroy
+
+  has_many :objectives
+  has_many :related_contents
 
   ############################### Validations ###########################
   validates :title, presence: true

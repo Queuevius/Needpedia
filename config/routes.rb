@@ -161,18 +161,6 @@ Rails.application.routes.draw do
       get 'geo_maxing_posts'
     end
   end
-  resources :objectives do
-    resources :comments do
-      delete 'remove_comment'
-      patch :inappropriate
-    end
-  end
-  resources :related_contents do
-    resources :comments do
-      delete 'remove_comment'
-      patch :inappropriate
-    end
-  end
   resources :comments
   resources :activities, only: [:index]
 

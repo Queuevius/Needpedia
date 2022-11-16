@@ -8,6 +8,7 @@ class RelatedContentsController < ApplicationController
       flash[:alert] = @objective.errors.full_messages.join(',')
     end
   end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.

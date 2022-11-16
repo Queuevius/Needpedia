@@ -73,7 +73,6 @@
                   <div class="row">
                     <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-5">
                       <span>
-                        <% if @post.type_of?(Post::POST_TYPE_IDEA) %>
                           <h5 id="rating_title-<%= @post.id %>" class="search-result-rating" data-toggle="modal" data-target="#rating_modal-<%= @post.id %>">
                             <i class="fa fa-sort" aria-hidden="true"></i>
                             <%= @post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %>
@@ -83,80 +82,76 @@
                           <h5 class="ml-5">Idea Post</h5>
                            <h1 class="m-2"><%= @post.title.titleize %></h1>
                           <h5 class="text-primary m-2"><%= link_to truncate(@post&.problem&.parent_subject&.title, length: 30).titleize, post_path(@post.problem.parent_subject).titleize, title: @post&.problem&.parent_subject&.title.titleize %>
-                          -
-                          <%= link_to truncate(@post&.problem&.title, length: 30).titleize, post_path(@post&.problem), title: @post.problem.title %>
-                          -
-                          <%= link_to truncate(@post&.title, length: 30).titleize, post_path(@post), title: @post.title %>
+                            -
+                            <%= link_to truncate(@post&.problem&.title, length: 30).titleize, post_path(@post&.problem), title: @post.problem.title %>
+                            -
+                            <%= link_to truncate(@post&.title, length: 30).titleize, post_path(@post), title: @post.title %>
                             </h5>
-                          <% if @post.images.present? %>
-                            <div class="row mx-auto my-auto">
-                              <div id="recipeCarousel" class="carousel slide w-100" data-ride="carousel">
-                                <div class="carousel-inner w-100" role="listbox">
-                                  <% if @post.images.count > 4 %>
-                                    <% @post.images.each_with_index do |photo, n| %>
-                                      <% if n == 0 %>
-                                        <div class="carousel-item active ">
-                                        <%= image_tag photo, class: "d-block col-md-3 img-fluid" %>
-                                      </div>
-                                      <% else %>
-                                        <div class="carousel-item">
-                                        <%= image_tag photo, class: "d-block col-md-3 img-fluid" %>
-                                      </div>
-                                      <% end %>
-                                    <% end %>
-                                  <% else %>
-                                    <div class="row">
-                                    <% @post.images.each do |photo| %>
-                                        <div class="col-md-3">
-                                         <%= image_tag photo, class: "img-fluid style-photo" %>
-                                        </div>
-                                    <% end %>
+                        <% if @post.images.present? %>
+                          <div class="row mx-auto my-auto">
+                            <div id="recipeCarousel" class="carousel slide w-100" data-ride="carousel">
+                              <div class="carousel-inner w-100" role="listbox">
+                                <% if @post.images.count > 4 %>
+                                  <% @post.images.each_with_index do |photo, n| %>
+                                    <% if n == 0 %>
+                                      <div class="carousel-item active ">
+                                      <%= image_tag photo, class: "d-block col-md-3 img-fluid" %>
                                     </div>
+                                    <% else %>
+                                      <div class="carousel-item">
+                                      <%= image_tag photo, class: "d-block col-md-3 img-fluid" %>
+                                    </div>
+                                    <% end %>
                                   <% end %>
-                                </div>
-                                <div>
-                                  <% if @post.images.count > 4 %>
-                                    <a class="carousel-control-prev mr-1" href="#recipeCarousel" data-slide="prev">
-                                      <i class="fa fa-angle-left"></i>
-                                    </a>
-                                    <a class="carousel-control-next" href="#recipeCarousel" data-slide="next">
-                                      <i class="fa fa-angle-right"></i>
-                                    </a>
-                                  <% else %>
-                                    <a class="carousel-control-prev mr-1">
-                                      <i class="fa fa-angle-left"></i>
-                                    </a>
-                                    <a class="carousel-control-next">
-                                      <i class="fa fa-angle-right"></i>
-                                    </a>
+                                <% else %>
+                                  <div class="row">
+                                  <% @post.images.each do |photo| %>
+                                      <div class="col-md-3">
+                                       <%= image_tag photo, class: "img-fluid style-photo" %>
+                                      </div>
                                   <% end %>
-                                </div>
+                                  </div>
+                                <% end %>
+                              </div>
+                              <div>
+                                <% if @post.images.count > 4 %>
+                                  <a class="carousel-control-prev mr-1" href="#recipeCarousel" data-slide="prev">
+                                    <i class="fa fa-angle-left"></i>
+                                  </a>
+                                  <a class="carousel-control-next" href="#recipeCarousel" data-slide="next">
+                                    <i class="fa fa-angle-right"></i>
+                                  </a>
+                                <% else %>
+                                  <a class="carousel-control-prev mr-1">
+                                    <i class="fa fa-angle-left"></i>
+                                  </a>
+                                  <a class="carousel-control-next">
+                                    <i class="fa fa-angle-right"></i>
+                                  </a>
+                                <% end %>
                               </div>
                             </div>
-                          <% end %>
+                          </div>
                         <% end %>
                       </span>
                       <table class="table table-bordered">
                         <thead>
                         <tr>
-                          <th scope="col"><%= link_to edit_post_path(@post), class: "bg-white" do %>
+                          <th scope="col">
+                            <%= link_to edit_post_path(@post), class: "bg-white" do %>
                               <div class=" p-0">
-                                <div class="note-btn-group btn-group note-tokens">
-                                  <button type="button" class="note-btn btn btn-light btn-sm">
-                                    <img class="img-responsive" width="20" src="/assets/note-6a2c641dd2f2f509b2e1786305ce22621af061fc5ade256fac39467924e048b5.png">
-                                  </button>
-                                  <button type="button" class="note-btn btn btn-light btn-sm">
-                                    <img class="img-responsive" width="20" src="/assets/question-ba285726402629683ea86668f660c5dd68ef468dd3b11573c4e633acb8ec09c9.png">
-                                  </button>
-                                  <button type="button" class="note-btn btn btn-light btn-sm">
-                                    <img class="img-responsive" width="20" src="/assets/debate-f6722081b35b9858ab27495dc7a1f23e1ea6d3e6f2aa097c4c2a31dd5e3cd40c.png">
-                                  </button>
-                                </div>
-                                <div class="note-btn-group btn-group note-misc">
-                                  <button type="button" class="note-btn btn btn-light btn-sm">
-                                    <i class="note-icon-undo"></i></button>
-                                  <button type="button" class="note-btn btn btn-light btn-sm">
-                                    <i class="note-icon-redo"></i></button>
+                                <div class="note-btn-group btn-group note-tokens ">
+                                  <div class="row m-0">
+                                    <div class="col float-left p-0"><%= image_tag "note.png", class: "note-btn btn btn-light btn-sm img-responsive btn-sm", style: "width:9%;" %>
+                                      <%= image_tag "question.png", class: "note-btn btn btn-light btn-sm img-responsive ", style: "width:9%;" %>
+
+                                      <%= image_tag "debate.png", class: "note-btn btn btn-light btn-sm img-responsive ", style: "width:9%;" %>
+                                      <button type="button" class="note-btn btn btn-light btn-sm ml-3">
+                                        <i class="note-icon-undo"></i></button>
+                                      <button type="button" class="note-btn btn btn-light btn-sm">
+                                        <i class="note-icon-redo"></i></button>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             <% end %></th>
@@ -271,56 +266,54 @@
           <%= render('objectives/form') %>
         </div>
         <div class="container">
-          <% if @post.objectives.present? %>
+          <% if @objectives.present? %>
             <h5 class="text-center mt-3 mb-3">Objectives</h5>
             <div class="row comments_container_<%= @post.id %> border-0">
-              <% @post.objectives.each do |objective| %>
-                <% if objective.id.present? %>
-                  <div class="col-md-4">
-                    <div class="card mb-5 border-top">
-                      <div class="card-body">
-                        <%= objective.user.name %><br>
+              <% @objectives.each do |objective| %>
+                <div class="col-md-4">
+                  <div class="card mb-5 border-top">
+                    <div class="card-body">
+                      <%= objective.user.name %><br>
 
-                        <i class="fa fa-calendar"></i> <%= time_ago_in_words(objective.created_at) %> ago
-                      </div>
-                      <div class="card-header bg-white">
-                        <% if objective.content.body.to_s.length > 120 %>
-                          <%= objective.content.body.to_plain_text.html_safe.truncate(120) %><br>
-                          <%= link_to ' See more', '', class: "see-more-#{objective.id} fas fa-caret-right mt-3" %>
-                          <script>
-                              $('.see-more-<%= objective.id %>').on('click', function (e) {
-                                  e.preventDefault();
-                                  $(this).parent().html('<%= escape_javascript objective.content %>')
-                              })
-                          </script>
-                        <% else %>
-                          <%= objective.content %>
-                        <% end %>
-                      </div>
+                      <i class="fa fa-calendar"></i> <%= time_ago_in_words(objective.created_at) %> ago
                     </div>
-                    <!-- Form for objective comments-->
-                    <!--                      <div>-->
-                    <%#= form_with(model: [@post, objective.comments.build], local: true) do |form| %>
-                    <%#= form.hidden_field :user_id, value: current_user.id %>
-                    <%#= form.hidden_field :commentable_id, value: objective.id %>
-                    <%#= form.hidden_field :commentable_type, value: 'Objective' %>
-                    <!--                          <div class="row">-->
-                    <!--                            <div class="col-md-10">-->
-                    <!--                              <div class="form-group">-->
-                    <%#= form.text_area :body, class: 'form-control', placeholder: 'Add Comment' %>
-                    <!--                              </div>-->
-                    <!--                            </div>-->
-                    <!--                            <div class="col-md-2">-->
-                    <!--                              <div class="float-left form-group">-->
-                    <%#= form.submit 'Submit', class: 'btn btn-primary float-right' %>
-                    <!--                              </div>-->
-                    <!--                            </div>-->
-                    <!--                          </div>-->
-                    <%# end %>
-                    <!--                      </div>-->
+                    <div class="card-header bg-white">
+                      <% if objective.content.body.to_s.length > 120 %>
+                        <%= objective.content.body.to_plain_text.html_safe.truncate(120) %><br>
+                        <%= link_to ' See more', '', class: "see-more-#{objective.id} fas fa-caret-right mt-3" %>
+                        <script>
+                            $('.see-more-<%= objective.id %>').on('click', function (e) {
+                                e.preventDefault();
+                                $(this).parent().html('<%= escape_javascript objective.content %>')
+                            })
+                        </script>
+                      <% else %>
+                        <%= objective.content %>
+                      <% end %>
+                    </div>
                   </div>
-                  <!--                  End of  form for objective comments         -->
-                <% end %>
+                  <!-- Form for objective comments-->
+                  <!--                      <div>-->
+                  <%#= form_with(model: [@post, objective.comments.build], local: true) do |form| %>
+                  <%#= form.hidden_field :user_id, value: current_user.id %>
+                  <%#= form.hidden_field :commentable_id, value: objective.id %>
+                  <%#= form.hidden_field :commentable_type, value: 'Objective' %>
+                  <!--                          <div class="row">-->
+                  <!--                            <div class="col-md-10">-->
+                  <!--                              <div class="form-group">-->
+                  <%#= form.text_area :body, class: 'form-control', placeholder: 'Add Comment' %>
+                  <!--                              </div>-->
+                  <!--                            </div>-->
+                  <!--                            <div class="col-md-2">-->
+                  <!--                              <div class="float-left form-group">-->
+                  <%#= form.submit 'Submit', class: 'btn btn-primary float-right' %>
+                  <!--                              </div>-->
+                  <!--                            </div>-->
+                  <!--                          </div>-->
+                  <%# end %>
+                  <!--                      </div>-->
+                </div>
+                <!--                  End of  form for objective comments         -->
                 <!--                    All  comments of objective                  -->
                 <%# if objective.comments.present? %>
                 <!--                    <div class="row comments_container">-->
@@ -462,58 +455,56 @@
           <%= render('related_contents/form') %>
         </div>
         <div class="container">
-          <% if @post.related_contents.present? %>
+          <% if @related_contents.present? %>
             <h5 class="text-center mt-3 mb-3">Related Contents</h5>
             <div class="row comments_container_<%= @post.id %> border-0">
-              <% @post.related_contents.each do |content| %>
-                <% if content.id.present? %>
-                  <div class="col-md-4">
-                    <div class="card mb-5 border-top">
-                      <div class="card-body">
-                        <%= content.user.name %><br>
+              <% @related_contents.each do |content| %>
+                <div class="col-md-4">
+                  <div class="card mb-5 border-top">
+                    <div class="card-body">
+                      <%= content.user.name %><br>
 
-                        <i class="fa fa-calendar"></i> <%= time_ago_in_words(content.created_at) %> ago
-                      </div>
-                      <div class="card-header">
-                        <% if content.content.body.to_s.length > 120 %>
-                          <%= content.content.body.to_plain_text.html_safe.truncate(120) %><br>
-                          <%= link_to ' See more', '', class: "see-more-#{content.id} fas fa-caret-right mt-3" %>
-                          <script>
-                              $('.see-more-<%= content.id %>').on('click', function (e) {
-                                  e.preventDefault()
-                                  $(this).parent().html('<%= escape_javascript content.content %>')
-                              })
-                          </script>
-                        <% else %>
-                          <%= content.content %>
-                        <% end %>
-                      </div>
+                      <i class="fa fa-calendar"></i> <%= time_ago_in_words(content.created_at) %> ago
+                    </div>
+                    <div class="card-header">
+                      <% if content.content.body.to_s.length > 120 %>
+                        <%= content.content.body.to_plain_text.html_safe.truncate(120) %><br>
+                        <%= link_to ' See more', '', class: "see-more-#{content.id} fas fa-caret-right mt-3" %>
+                        <script>
+                            $('.see-more-<%= content.id %>').on('click', function (e) {
+                                e.preventDefault()
+                                $(this).parent().html('<%= escape_javascript content.content %>')
+                            })
+                        </script>
+                      <% else %>
+                        <%= content.content %>
+                      <% end %>
                     </div>
                   </div>
-                  <!--                        comment form for related content-->
-                  <!--                  <div>-->
-                  <!--                    <div class="mr-sm-5">-->
-                  <%#= form_with(model: [@post, content.comments.build], local: true) do |form| %>
-                  <%#= form.hidden_field :user_id, value: current_user.id %>
-                  <%#= form.hidden_field :commentable_id, value: content.id %>
-                  <%#= form.hidden_field :commentable_type, value: 'RelatedContent' %>
-                  <!--                        <div class="row">-->
-                  <!--                          <div class="col-md-10">-->
-                  <!--                            <div class="form-group">-->
-                  <%#= form.text_area :body, class: 'form-control', placeholder: 'Add Comment' %>
-                  <!--                            </div>-->
-                  <!--                          </div>-->
-                  <!--                          <div class="col-md-2">-->
-                  <!--                            <div class="float-left form-group">-->
-                  <%#= form.submit 'Submit', class: 'btn btn-primary float-right' %>
-                  <!--                            </div>-->
-                  <!--                          </div>-->
-                  <!--                        </div>-->
-                  <%# end %>
-                  <!--                    </div>-->
-                  <!--                  </div>-->
-                  <!--               end comment form for related content-->
-                <% end %>
+                </div>
+                <!--                        comment form for related content-->
+                <!--                  <div>-->
+                <!--                    <div class="mr-sm-5">-->
+                <%#= form_with(model: [@post, content.comments.build], local: true) do |form| %>
+                <%#= form.hidden_field :user_id, value: current_user.id %>
+                <%#= form.hidden_field :commentable_id, value: content.id %>
+                <%#= form.hidden_field :commentable_type, value: 'RelatedContent' %>
+                <!--                        <div class="row">-->
+                <!--                          <div class="col-md-10">-->
+                <!--                            <div class="form-group">-->
+                <%#= form.text_area :body, class: 'form-control', placeholder: 'Add Comment' %>
+                <!--                            </div>-->
+                <!--                          </div>-->
+                <!--                          <div class="col-md-2">-->
+                <!--                            <div class="float-left form-group">-->
+                <%#= form.submit 'Submit', class: 'btn btn-primary float-right' %>
+                <!--                            </div>-->
+                <!--                          </div>-->
+                <!--                        </div>-->
+                <%# end %>
+                <!--                    </div>-->
+                <!--                  </div>-->
+                <!--               end comment form for related content-->
                 <!--                <div class="row comments_container">-->
                 <%# content.comments.each do |comment| %>
                 <%# unless comment.parent_id.present? || !comment.persisted? %>
@@ -724,7 +715,6 @@
   .carousel-item img {
     height: 11em;
   }
-
 
   .carousel {
     margin: 30px auto 60px;

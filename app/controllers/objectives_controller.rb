@@ -3,15 +3,11 @@ class ObjectivesController < ApplicationController
   def create
     @post = Post.find(params[:post_id])
     @objective = @post.objectives.create(objective_params)
-    # respond_to do |format|
-      if @objective.save!
-        # format.js
-         redirect_to @post, notice: 'Objective was successfully created.'
-        create_activity(@post, 'post.commented_on')
-      else
-        flash[:alert] = @objective.errors.full_messages.join(',')
-      end
-    # end
+    if @objective.save!
+      redirect_to @post, notice: 'Objective was successfully created.'
+    else
+      flash[:alert] = @objective.errors.full_messages.join(',')
+    end
   end
 
   private

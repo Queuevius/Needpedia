@@ -22,7 +22,7 @@ class PostsController < ApplicationController
     post_type = 'problem'
     sorted_by = 'Highest-Rated'
     access_type = 'Public'
-    q = { user_first_name_cont: '' }
+    q = {user_first_name_cont: ''}
     redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type, subject_id: @post.id, subject: @post.title)
   end
 
@@ -30,7 +30,7 @@ class PostsController < ApplicationController
     post_type = 'idea'
     sorted_by = 'Highest-Rated'
     access_type = 'Public'
-    q = { user_first_name_cont: '' }
+    q = {user_first_name_cont: ''}
     redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type, problem_id: @post.id, problem: @post.title, subject: @post.parent_subject.title)
   end
 
@@ -78,6 +78,7 @@ class PostsController < ApplicationController
     @comment = Comment.new(parent_id: params[:parent_id])
     @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('comments.created_at DESC')
     @objectives = @post.objectives
+    @related_contents = @post.related_contents
   end
 
   # GET /posts/new
@@ -126,12 +127,12 @@ class PostsController < ApplicationController
         create_private_users
         create_curated_users
         create_activity(@post, 'post.create')
-        format.html { redirect_to @post, notice: 'Post was successfully created.' }
-        format.json { render :show, status: :created, location: @post }
+        format.html {redirect_to @post, notice: 'Post was successfully created.'}
+        format.json {render :show, status: :created, location: @post}
       else
         flash[:alert] = @post.errors.full_messages.join(',')
-        format.html { render :new }
-        format.json { render json: @post.errors, status: :unprocessable_entity }
+        format.html {render :new}
+        format.json {render json: @post.errors, status: :unprocessable_entity}
       end
     end
   end
@@ -147,12 +148,12 @@ class PostsController < ApplicationController
         Notification.post(from: current_user, notifiable: current_user, to: @post.users, action: Notification::NOTIFICATION_TYPE_POST_UPDATED, post_id: @post.id)
         create_activity(@post, 'post.update')
         offsite_notification(@post)
-        format.html { redirect_to @post, notice: 'Post was successfully updated.' }
-        format.json { render :show, status: :ok, location: @post }
+        format.html {redirect_to @post, notice: 'Post was successfully updated.'}
+        format.json {render :show, status: :ok, location: @post}
       else
         flash[:alert] = @post.errors.full_messages.join(',')
-        format.html { render :edit }
-        format.json { render json: @post.errors, status: :unprocessable_entity }
+        format.html {render :edit}
+        format.json {render json: @post.errors, status: :unprocessable_entity}
       end
     end
   end
@@ -162,8 +163,8 @@ class PostsController < ApplicationController
   def destroy
     @post.destroy
     respond_to do |format|
-      format.html { redirect_to wall_path, notice: 'Post was successfully destroyed.' }
-      format.json { head :no_content }
+      format.html {redirect_to wall_path, notice: 'Post was successfully destroyed.'}
+      format.json {head :no_content}
     end
   end
 
@@ -171,7 +172,7 @@ class PostsController < ApplicationController
     @activity = PublicActivity::Activity.find(params[:id])
     @activity.destroy
     respond_to do |format|
-      format.html { redirect_to feed_path, notice: 'Post was successfully destroyed.' }
+      format.html {redirect_to feed_path, notice: 'Post was successfully destroyed.'}
     end
   end
 
@@ -280,7 +281,7 @@ class PostsController < ApplicationController
   end
 
   def set_post
-    @post = Post.find_by_id(params[:id])
+    @post = Post.includes(:related_contents, :objectives).find_by_id(params[:id])
   end
 
   def create_private_users

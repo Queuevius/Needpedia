@@ -11,16 +11,12 @@ class Comment < ApplicationRecord
   validates_presence_of :body
 
   enum status: %i[active deleted]
-  unless self.parent == Object
-    unless self.commentable_type == post
-      after_create :send_notification_to_users_on_comment, if: -> {parent_id.nil? && user_id != commentable.user_id}
-      after_create :send_notification_to_users_on_reply, if: -> {!parent_id.nil? && user_id}
-      after_update :send_notification_to_repliers_on_edit, if: -> {parent_id.nil? && active? && replies.active.present?}
-      after_update :send_notification_to_repliers_on_delete, if: -> {parent_id.nil? && deleted? && replies.active.present?}
 
-      after_create :send_email
-    end
-  end
+  after_create :send_notification_to_users_on_comment, if: -> {parent_id.nil? && user_id != commentable.user_id}
+  after_create :send_notification_to_users_on_reply, if: -> {!parent_id.nil? && user_id}
+  after_update :send_notification_to_repliers_on_edit, if: -> {parent_id.nil? && active? && replies.active.present?}
+  after_update :send_notification_to_repliers_on_delete, if: -> {parent_id.nil? && deleted? && replies.active.present?}
+  after_create :send_email
 
   def send_notification_to_users_on_comment
     Notification.post(from: user, notifiable: user, to: commentable.user, action: Notification::NOTIFICATION_TYPE_COMMENT_CREATED, post_id: commentable_type == 'Post' ? commentable_id : nil)

@@ -1,2 +1,0 @@
-$(".comments_container_<%= @comment.commentable.id %>").prepend("<%= j(render(partial: '/comments/list', locals: { comments: [@comment], post: @comment.commentable })) %>")
-$('#comment_body').val('');

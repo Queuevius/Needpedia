@@ -5,41 +5,17 @@ class CommentsController < ApplicationController
 
   def index
     @post = Post.find(params[:post_id])
-    if @post.present?
-      @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
-    elsif params[:objective_id].present?
-      @objective = Objactive.find(params[:objective_id])
-      @comments = @objective.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
-    else
-      @related_content = RelatedContent.find(params[:related_content_id])
-      @comments = @related_content.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
-    end
+    @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
   end
 
   def new
-    if params[:post_id].present?
-      @post = Post.find(params[:post_id])
-      @comment = @post.comments.new(parent_id: params[:parent_id])
-    elsif params[:objective_id].present?
-      @objective = Objective.find(params[:objective_id])
-      @comment = @objective.comments.new(parent_id: params[:parent_id])
-    else
-      @related_content = RelatedContent.find(params[:related_content_id])
-      @comment = @related_content.comments.new(parent_id: params[:parent_id])
-    end
+    @post = Post.find(params[:post_id])
+    @comment = @post.comments.new(parent_id: params[:parent_id])
   end
 
   def edit
-    if params[:post_id].present?
-      @post = Post.find(params[:post_id])
-      @comment = @post.comments.find(params[:id])
-    elsif params[:objective_id].present?
-      @objective = Objactive.find(params[:objective_id])
-      @comment = @objective.comments.find(params[:id])
-    elsif params[:related_content_id].present?
-      @related_content = @related_content = RelatedContent.find(params[:related_content_id])
-      @comment = @related_content.comments.find(params[:id])
-    end
+    @post = Post.find(params[:post_id])
+    @comment = @post.comments.find(params[:id])
   end
 
   # POST /comments
