@@ -137,8 +137,28 @@
                       <table class="table table-bordered">
                         <thead>
                         <tr>
-                          <th scope="col">
-                            <%= link_to edit_post_path(@post), class: "bg-white" do %>
+                          <% if @post.user == current_user %>
+                            <th scope="col">
+                              <%= link_to edit_post_path(@post), class: "bg-white" do %>
+                                <div class=" p-0">
+                                  <div class="note-btn-group btn-group note-tokens ">
+                                    <div class="row m-0">
+                                      <div class="col float-left p-0"><%= image_tag "note.png", class: "note-btn btn btn-light btn-sm img-responsive btn-sm", style: "width:9%;" %>
+                                        <%= image_tag "question.png", class: "note-btn btn btn-light btn-sm img-responsive ", style: "width:9%;" %>
+
+                                        <%= image_tag "debate.png", class: "note-btn btn btn-light btn-sm img-responsive ", style: "width:9%;" %>
+                                        <button type="button" class="note-btn btn btn-light btn-sm ml-3">
+                                          <i class="note-icon-undo"></i></button>
+                                        <button type="button" class="note-btn btn btn-light btn-sm">
+                                          <i class="note-icon-redo"></i></button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              <% end %>
+                            </th>
+                          <% else %>
+                            <th scope="col">
                               <div class=" p-0">
                                 <div class="note-btn-group btn-group note-tokens ">
                                   <div class="row m-0">
@@ -154,7 +174,8 @@
                                   </div>
                                 </div>
                               </div>
-                            <% end %></th>
+                            </th>
+                          <% end %>
                         </tr>
                         </thead>
                         <tbody>
