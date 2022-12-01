@@ -73,20 +73,18 @@
                   <div class="row">
                     <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-5">
                       <span>
-                          <h5 id="rating_title-<%= @post.id %>" class="search-result-rating" data-toggle="modal" data-target="#rating_modal-<%= @post.id %>">
-                            <i class="fa fa-sort" aria-hidden="true"></i>
-                            <%= @post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %>
-                            Points -
-                            <%= @post.ratings.average(@post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0) %>
-                            Point Avrage</h5>
-                          <h5 class="ml-5">Idea Post</h5>
-                           <h1 class="m-2"><%= @post.title.titleize %></h1>
-                          <h5 class="text-primary m-2"><%= link_to truncate(@post&.problem&.parent_subject&.title, length: 30).titleize, post_path(@post.problem.parent_subject).titleize, title: @post&.problem&.parent_subject&.title.titleize %>
-                            -
-                            <%= link_to truncate(@post&.problem&.title, length: 30).titleize, post_path(@post&.problem), title: @post.problem.title %>
-                            -
-                            <%= link_to truncate(@post&.title, length: 30).titleize, post_path(@post), title: @post.title %>
-                            </h5>
+                        <h5 id="rating_title-<%= @post.id %>" class="search-result-rating" data-toggle="modal" data-target="#rating_modal-<%= @post.id %>">
+                          <i class="fa fa-sort" aria-hidden="true"></i>
+                          <%= @post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %> <%= rating(@post) %>
+                        </h5>
+                        <h5 class="ml-5">Idea Post</h5>
+                        <h1 class="m-2"><%= @post.title.titleize %></h1>
+                        <h5 class="text-primary m-2"><%= link_to truncate(@post&.problem&.parent_subject&.title, length: 30).titleize, post_path(@post.problem.parent_subject).titleize, title: @post&.problem&.parent_subject&.title.titleize %>
+                          -
+                          <%= link_to truncate(@post&.problem&.title, length: 30).titleize, post_path(@post&.problem), title: @post.problem.title %>
+                          -
+                          <%= link_to truncate(@post&.title, length: 30).titleize, post_path(@post), title: @post.title %>
+                        </h5>
                         <% if @post.images.present? %>
                           <div class="row mx-auto my-auto">
                             <div id="recipeCarousel" class="carousel slide w-100" data-ride="carousel">
@@ -95,21 +93,21 @@
                                   <% @post.images.each_with_index do |photo, n| %>
                                     <% if n == 0 %>
                                       <div class="carousel-item active ">
-                                      <%= image_tag photo, class: "d-block col-md-3 img-fluid" %>
-                                    </div>
+                                        <%= image_tag photo, class: "d-block col-md-3 img-fluid style_image" %>
+                                      </div>
                                     <% else %>
                                       <div class="carousel-item">
-                                      <%= image_tag photo, class: "d-block col-md-3 img-fluid" %>
-                                    </div>
+                                        <%= image_tag photo, class: "d-block col-md-3 img-fluid style_image" %>
+                                      </div>
                                     <% end %>
                                   <% end %>
                                 <% else %>
                                   <div class="row">
-                                  <% @post.images.each do |photo| %>
+                                    <% @post.images.each do |photo| %>
                                       <div class="col-md-3">
-                                       <%= image_tag photo, class: "img-fluid style-photo" %>
+                                        <%= image_tag photo, class: "img-fluid style-photo style_image" %>
                                       </div>
-                                  <% end %>
+                                    <% end %>
                                   </div>
                                 <% end %>
                               </div>
@@ -167,9 +165,11 @@
 
                                       <%= image_tag "debate.png", class: "note-btn btn btn-light btn-sm img-responsive ", style: "width:9%;" %>
                                       <button type="button" class="note-btn btn btn-light btn-sm ml-3">
-                                        <i class="note-icon-undo"></i></button>
+                                        <i class="note-icon-undo"></i>
+                                      </button>
                                       <button type="button" class="note-btn btn btn-light btn-sm">
-                                        <i class="note-icon-redo"></i></button>
+                                        <i class="note-icon-redo"></i>
+                                      </button>
                                     </div>
                                   </div>
                                 </div>
@@ -283,127 +283,13 @@
 
     <div id="collapseOne" class="collapse bg-white" aria-labelledby="headingOne" data-parent="#accordion">
       <div class="card-body border-top">
-        <div class="container">
-          <%= render('objectives/form') %>
-        </div>
-        <div class="container">
+        <div>
+          <div class="mr-sm-5">
+            <%= render 'objectives/form', post: @post, objective: @objective %>
+          </div>
           <% if @objectives.present? %>
-            <h5 class="text-center mt-3 mb-3">Objectives</h5>
-            <div class="row comments_container_<%= @post.id %> border-0">
-              <% @objectives.each do |objective| %>
-                <div class="col-md-4">
-                  <div class="card mb-5 border-top">
-                    <div class="card-body">
-                      <%= objective.user.name %><br>
-
-                      <i class="fa fa-calendar"></i> <%= time_ago_in_words(objective.created_at) %> ago
-                    </div>
-                    <div class="card-header bg-white">
-                      <% if objective.content.body.to_s.length > 120 %>
-                        <%= objective.content.body.to_plain_text.html_safe.truncate(120) %><br>
-                        <%= link_to ' See more', '', class: "see-more-#{objective.id} fas fa-caret-right mt-3" %>
-                        <script>
-                            $('.see-more-<%= objective.id %>').on('click', function (e) {
-                                e.preventDefault();
-                                $(this).parent().html('<%= escape_javascript objective.content %>')
-                            })
-                        </script>
-                      <% else %>
-                        <%= objective.content %>
-                      <% end %>
-                    </div>
-                  </div>
-                  <!-- Form for objective comments-->
-                  <!--                      <div>-->
-                  <%#= form_with(model: [@post, objective.comments.build], local: true) do |form| %>
-                  <%#= form.hidden_field :user_id, value: current_user.id %>
-                  <%#= form.hidden_field :commentable_id, value: objective.id %>
-                  <%#= form.hidden_field :commentable_type, value: 'Objective' %>
-                  <!--                          <div class="row">-->
-                  <!--                            <div class="col-md-10">-->
-                  <!--                              <div class="form-group">-->
-                  <%#= form.text_area :body, class: 'form-control', placeholder: 'Add Comment' %>
-                  <!--                              </div>-->
-                  <!--                            </div>-->
-                  <!--                            <div class="col-md-2">-->
-                  <!--                              <div class="float-left form-group">-->
-                  <%#= form.submit 'Submit', class: 'btn btn-primary float-right' %>
-                  <!--                              </div>-->
-                  <!--                            </div>-->
-                  <!--                          </div>-->
-                  <%# end %>
-                  <!--                      </div>-->
-                </div>
-                <!--                  End of  form for objective comments         -->
-                <!--                    All  comments of objective                  -->
-                <%# if objective.comments.present? %>
-                <!--                    <div class="row comments_container">-->
-                <%# objective.comments.each do |comment| %>
-                <%# unless comment.parent_id.present? || !comment.persisted? %>
-                <%# unless comment.user.nil? %>
-                <!--                            <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 border">-->
-                <!--                              <div class="media">-->
-                <!--                                <div class="media-body">-->
-                <!--                                  <h5 class="media-heading"><%#= comment.user.name %></h5>-->
-                <%# if comment.deleted? %>
-                <!--                                    <div class="card bg-light">-->
-                <!--                                      <div class="card-body font-italic text-secondary font-weight-bold">-->
-                <!--                                        <i class="fas fa-ban"></i>-->
-                <!--                                        Message deleted-->
-                <!--                                      </div>-->
-                <!--                                    </div>-->
-                <%# else %>
-                <!--                                    <div id="comment-form-<%#= comment.id %>"></div>-->
-                <!--                                    <p id="comment-body-<%#= comment.id %>"><%#= comment.body %></p>-->
-                <!--                                    <ul class="list-unstyled list-inline media-detail pull-left">-->
-                <!--                                      <li>-->
-                <!--                                        <i class="fa fa-calendar"></i> <%#= time_ago_in_words(comment.created_at) %>-->
-                <!--                                        ago-->
-                <!--                                      </li>-->
-                <%# if comment.created_at != comment.updated_at %>
-                <!--                                        <li class="mt-2">-->
-                <!--                                          <span class='font-italic mt-2 text-secondary'>Edited: <%#= comment.created_at.strftime('%d-%m-%Y') %></span>-->
-                <!--                                        </li>-->
-                <%# end %>
-                <%# if current_user %>
-                <!--                                        <li class="mt-2">-->
-                <%# if comment.user_id == current_user.id %>
-                <%#= link_to 'Edit', edit_objective_comment_path(objective, comment.id), remote: true, class: 'mr-1' %>
-                <%#= link_to 'Delete', objective_comment_remove_comment_path(objective.id, comment.id), method: :delete, class: 'mr-1' %>
-                <%#= link_to 'Reply', new_objective_comment_path(objective, parent_id: comment.id), remote: true, class: 'mr-1' %>
-                <%# else %>
-                <%#= link_to 'Reply', new_objective_comment_path(objective, parent_id: comment.id), remote: true, class: 'mr-1' %>
-                <%# if comment.flags.pluck(:user_id).include?(current_user.id) %>
-                <%#= link_to flag_path(id: post.id, flagable_id: comment.id, flagable_type: 'Comment'), class: 'btn btn-primary', title: 'Un-Flag this comment', remote: true, :method => :delete do %>
-                <!--                                                <i class="fa fa-flag" aria-hidden="true"></i>-->
-                <%# end %>
-                <%# else %>
-                <%#= link_to reason_modal_flags_path(flagable_id: comment.id, flagable_type: 'Comment'), title: 'Flag this comment', class: 'btn btn-secondary', remote: true do %>
-                <!--                                                <i class="fa fa-flag-checkered" aria-hidden="true"></i>-->
-                <%# end %>
-                <%# end %>
-                <!--                                            <span><%#= comment.flags.count %></span>-->
-                <%# end %>
-                <!--                                        </li>-->
-                <%# end %>
-                <!--                                    </ul>-->
-                <%# end %>
-                <!--                                  <div class="reply_container_<%#= comment.id %>">-->
-                <%# if comment.replies.any? %>
-                <%#= render partial: 'comments/reply', locals: {replies: comment.replies, objective: objective} %>
-                <%# end %>
-                <!--                                  </div>-->
-                <!--                                  <div id="reply-form-<%#= comment.id %>"></div>-->
-                <!--                                </div>-->
-                <!--                              </div>-->
-                <!--                            </div>-->
-                <%# end %>
-                <%# end %>
-                <%# end %>
-                <!--                    </div>-->
-                <%# end %>
-                <!--                    End of  comments of objective-->
-              <% end %>
+            <div class="row objectives_container_<%= @post.id %>">
+              <%= render 'objectives/list', {post: @post, objectives: @objectives} %>
             </div>
           <% end %>
         </div>
@@ -421,11 +307,25 @@
         </h5>
       </div>
     </button>
-
     <div id="collapseTwo" class="collapse bg-white" aria-labelledby="headingTwo" data-parent="#accordion">
       <div class="card-body border-top">
-        <h5>Resource
-          Tags: <%= raw @post.resource_tag_list.map {|t| link_to "##{t}", tag_path(t)}.join(', ') %></h5>
+        <h5 class="mb-3">Resource
+          Tags: <%= raw @post.resource_tag_list.map {|t| link_to "##{t}", tag_path(t)}.join(', ') %>
+          <button class="btn btn-primary float-right" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Edit</button>
+        </h5>
+        <div class="collapse" id="collapseExample">
+          <div class="card card-body">
+            <%= form_with(model: @post, local: true) do |form| %>
+              <p class="text-center">Edit Resource Tags (separated by commas)</p>
+              <%= form.text_field :resource_tag_list, class: 'form-control', placeholder: "Resource Tags (separated by commas)" %>
+              <br>
+              <div class="form-group">
+                <%= form.submit "Update", class: 'btn btn-primary' %>
+                <%= link_to "Cancel", :back, class: "btn btn-link" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -441,21 +341,13 @@
     </button>
     <div id="collapseThree" class="collapse bg-white" aria-labelledby="headingThree" data-parent="#accordion">
       <div class="card-body border-top">
-        <div class="row">
-          <% @post.comments.collect(&:user).uniq.each do |u| %>
-            <div class="card md-4">
-              <div class="aos-init">
-                <div class="card-img">
-                  <% if u.profile_image.attached? %>
-                    <%= image_tag u.profile_image, class: 'img-responsive profile-picture' %>
-                  <% else %>
-                    <%= image_tag "profile.png", class: 'img-responsive', style: 'width: 160px; height: 160px' %>
-                  <% end %>
-                </div>
-                <div class="mb-5">
-                  <%= render 'profile/friend_card_details', friend: u %>
-                </div>
-              </div>
+        <div>
+          <div class="mr-sm-5">
+            <%= render 'interested_users/form', interested_user: @interested_user, post: @post %>
+          </div>
+          <% if @objectives.present? %>
+            <div class="row interested_users_container_<%= @post.id %>">
+              <%= render 'interested_users/list', {post: @post, interested_users: @interested_users} %>
             </div>
           <% end %>
         </div>
@@ -472,124 +364,13 @@
     </button>
     <div id="collapsefour" class="collapse bg-white" aria-labelledby="headingfour" data-parent="#accordion">
       <div class="card-body border-top">
-        <div class="container">
-          <%= render('related_contents/form') %>
-        </div>
-        <div class="container">
+        <div>
+          <div class="mr-sm-5">
+            <%= render 'related_contents/form', related_content: @related_content, post: @post %>
+          </div>
           <% if @related_contents.present? %>
-            <h5 class="text-center mt-3 mb-3">Related Contents</h5>
-            <div class="row comments_container_<%= @post.id %> border-0">
-              <% @related_contents.each do |content| %>
-                <div class="col-md-4">
-                  <div class="card mb-5 border-top">
-                    <div class="card-body">
-                      <%= content.user.name %><br>
-
-                      <i class="fa fa-calendar"></i> <%= time_ago_in_words(content.created_at) %> ago
-                    </div>
-                    <div class="card-header">
-                      <% if content.content.body.to_s.length > 120 %>
-                        <%= content.content.body.to_plain_text.html_safe.truncate(120) %><br>
-                        <%= link_to ' See more', '', class: "see-more-#{content.id} fas fa-caret-right mt-3" %>
-                        <script>
-                            $('.see-more-<%= content.id %>').on('click', function (e) {
-                                e.preventDefault()
-                                $(this).parent().html('<%= escape_javascript content.content %>')
-                            })
-                        </script>
-                      <% else %>
-                        <%= content.content %>
-                      <% end %>
-                    </div>
-                  </div>
-                </div>
-                <!--                        comment form for related content-->
-                <!--                  <div>-->
-                <!--                    <div class="mr-sm-5">-->
-                <%#= form_with(model: [@post, content.comments.build], local: true) do |form| %>
-                <%#= form.hidden_field :user_id, value: current_user.id %>
-                <%#= form.hidden_field :commentable_id, value: content.id %>
-                <%#= form.hidden_field :commentable_type, value: 'RelatedContent' %>
-                <!--                        <div class="row">-->
-                <!--                          <div class="col-md-10">-->
-                <!--                            <div class="form-group">-->
-                <%#= form.text_area :body, class: 'form-control', placeholder: 'Add Comment' %>
-                <!--                            </div>-->
-                <!--                          </div>-->
-                <!--                          <div class="col-md-2">-->
-                <!--                            <div class="float-left form-group">-->
-                <%#= form.submit 'Submit', class: 'btn btn-primary float-right' %>
-                <!--                            </div>-->
-                <!--                          </div>-->
-                <!--                        </div>-->
-                <%# end %>
-                <!--                    </div>-->
-                <!--                  </div>-->
-                <!--               end comment form for related content-->
-                <!--                <div class="row comments_container">-->
-                <%# content.comments.each do |comment| %>
-                <%# unless comment.parent_id.present? || !comment.persisted? %>
-                <%# unless comment.user.nil? %>
-                <!--                        <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 border">-->
-                <!--                          <div class="media">-->
-                <!--                            <div class="media-body">-->
-                <!--                              <h5 class="media-heading"><%#= comment.user.name %></h5>-->
-                <%# if comment.deleted? %>
-                <!--                                <div class="card bg-light">-->
-                <!--                                  <div class="card-body font-italic text-secondary font-weight-bold">-->
-                <!--                                    <i class="fas fa-ban"></i>-->
-                <!--                                    Message deleted-->
-                <!--                                  </div>-->
-                <!--                                </div>-->
-                <%# else %>
-                <!--                                <div id="comment-form-<%#= comment.id %>"></div>-->
-                <!--                                <p id="comment-body-<%#= comment.id %>"><%#= comment.body %></p>-->
-                <!--                                <ul class="list-unstyled list-inline media-detail pull-left">-->
-                <!--                                  <li><i class="fa fa-calendar"></i> <%#= time_ago_in_words(comment.created_at) %>-->
-                <!--                                    ago-->
-                <!--                                  </li>-->
-                <%# if comment.created_at != comment.updated_at %>
-                <!--                                    <li class="mt-2">-->
-                <!--                                      <span class='font-italic mt-2 text-secondary'>Edited: <%#= comment.created_at.strftime('%d-%m-%Y') %></span>-->
-                <!--                                    </li>-->
-                <%# end %>
-                <%# if current_user %>
-                <!--                                    <li>-->
-                <%# if comment.user_id == current_user.id %>
-                <%#= link_to 'Edit', edit_related_content_comment_path(content, comment.id), remote: true, class: 'mr-1' %>
-                <%#= link_to 'Delete', related_content_comment_remove_comment_path(content.id, comment.id), method: :delete, class: 'mr-1' %>
-                <%#= link_to 'Reply', new_related_content_comment_path(content, parent_id: comment.id), remote: true, class: 'mr-1' %>
-                <%# else %>
-                <%#= link_to 'Reply', new_related_content_comment_path(content, parent_id: comment.id), remote: true, class: 'mr-1' %>
-                <%# if comment.flags.pluck(:user_id).include?(current_user.id) %>
-                <%#= link_to flag_path(id: post.id, flagable_id: comment.id, flagable_type: 'Comment'), class: 'btn btn-primary', title: 'Un-Flag this comment', remote: true, :method => :delete do %>
-                <!--                                            <i class="fa fa-flag" aria-hidden="true"></i>-->
-                <%# end %>
-                <%# else %>
-                <%#= link_to reason_modal_flags_path(flagable_id: comment.id, flagable_type: 'Comment'), title: 'Flag this comment', class: 'btn btn-secondary', remote: true do %>
-                <!--                                            <i class="fa fa-flag-checkered" aria-hidden="true"></i>-->
-                <%# end %>
-                <%# end %>
-                <!--                                        <span><%#= comment.flags.count %></span>-->
-                <%# end %>
-                <!--                                    </li>-->
-                <%# end %>
-                <!--                                </ul>-->
-                <%# end %>
-                <!--                              <div class="reply_container_<%#= comment.id %>">-->
-                <%# if comment.replies.any? %>
-                <%#= render partial: 'comments/reply', locals: {replies: comment.replies, content: content} %>
-                <%# end %>
-                <!--                              </div>-->
-                <!--                              <div id="reply-form-<%#= comment.id %>"></div>-->
-                <!--                            </div>-->
-                <!--                          </div>-->
-                <!--                        </div>-->
-                <%# end %>
-                <%# end %>
-                <%# end %>
-                <!--                </div>-->
-              <% end %>
+            <div class="row related_contents_container_<%= @post.id %>">
+              <%= render 'related_contents/list', {post: @post, related_contents: @related_contents} %>
             </div>
           <% end %>
         </div>
@@ -780,3 +561,21 @@
     border-radius: 0;
   }
 </style>
+
+<script type="text/javascript" charset="utf-8">
+
+    $('img.style_image').addClass('img-enlargable').click(function () {
+        var src = $(this).attr('src');
+        $('<div class="container">').css({
+            background: ' url(' + src + ') no-repeat center',
+            backgroundSize: 'contain',
+            width: '100%', height: '80%',
+            position: 'fixed',
+            zIndex: '10000',
+            top: '10%', left: '15%',
+            cursor: 'zoom-out'
+        }).click(function () {
+            $(this).remove();
+        }).appendTo('body');
+    });
+</script>

@@ -72,6 +72,7 @@ class Post < ApplicationRecord
 
   has_many :objectives
   has_many :related_contents
+  has_many :interested_users
 
   ############################### Validations ###########################
   validates :title, presence: true

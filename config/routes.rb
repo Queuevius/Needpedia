@@ -2,6 +2,7 @@ require 'sidekiq/web'
 require 'sidekiq/cron/web'
 
 Rails.application.routes.draw do
+  resources :interested_users
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
   get 'how_tos/index'
   post '/rate' => 'rater#create', :as => 'rate'
@@ -130,16 +131,13 @@ Rails.application.routes.draw do
       patch :inappropriate
     end
     resources :objectives do
-      resources :comments do
-        delete 'remove_comment'
-        patch :inappropriate
-      end
+      delete 'remove_objective'
     end
     resources :related_contents do
-      resources :comments do
-        delete 'remove_comment'
-        patch :inappropriate
-      end
+      delete 'remove_content'
+    end
+    resources :interested_users do
+      delete 'remove_interested_user'
     end
     get 'layers'
     get 'problems'
@@ -160,8 +158,11 @@ Rails.application.routes.draw do
       get 'want'
       get 'geo_maxing_posts'
     end
+    delete 'delete_image_attachment'
   end
   resources :comments
+  resources :related_contents
+  resources :objectives
   resources :activities, only: [:index]
 
   resources :flags do

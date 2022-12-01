@@ -1,5 +1,5 @@
 $("#body-<%= @post.id %>").replaceWith('<div class="p-2"><%= j render "posts/rating_modal", post: @post&.reload %></div>');
-$('#rating_title-<%= @post.id %>').text('<%= @post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %>');
+$('#rating_title-<%= @post.id %>').text('<%= @post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %> <%= rating(@post)  %>');
 <!--$(".rating-count-<%= @post.id %>-<%= @rating&.rating %>").text('<%= rating_count(@post.ratings, @rating&.rating) %>');-->
 $("#rating_modal-<%= @post&.id %>").modal('hide');
 

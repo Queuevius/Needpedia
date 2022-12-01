@@ -77,8 +77,12 @@ class PostsController < ApplicationController
   def show
     @comment = Comment.new(parent_id: params[:parent_id])
     @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('comments.created_at DESC')
-    @objectives = @post.objectives
-    @related_contents = @post.related_contents
+    @objectives = @post.objectives.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('objectives.created_at DESC')
+    @related_contents = @post.related_contents.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('related_contents.created_at DESC')
+    @interested_users = @post.interested_users.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('interested_users.created_at DESC')
+    @interested_user = InterestedUser.new(parent_id: params[:parent_id])
+    @related_content = RelatedContent.new(parent_id: params[:parent_id])
+    @objective = Objective.new(parent_id: params[:parent_id])
   end
 
   # GET /posts/new
@@ -119,6 +123,7 @@ class PostsController < ApplicationController
 
     respond_to do |format|
       if @post.save
+        @post.images.attach(params[:post][:images]) if params[:post][:images].present?
         # @post.clean_froala_link
         UserPrivatePost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_SUBJECT
         UserCuratedPost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_SUBJECT
@@ -142,6 +147,9 @@ class PostsController < ApplicationController
   def update
     respond_to do |format|
       if @post.update(post_params)
+        if params[:post][:images].present?
+          @post.images.attach(params[:post][:images]) unless @post.images == params[:post][:images]
+        end
         create_private_users
         create_curated_users
         # @post.clean_froala_link
@@ -267,6 +275,12 @@ class PostsController < ApplicationController
     @geo_maxing_posts = Post.geo_maxing_posts
   end
 
+  def delete_image_attachment
+    @post_image = ActiveStorage::Attachment.find(params[:post_id])
+    @post_image.purge
+    redirect_back(fallback_location: request.referer)
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
@@ -346,7 +360,7 @@ class PostsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def post_params
-    params.require(:post).permit(:title, :content, :user_id, :post_type, :subject_id, :problem_id, :private, :curated, :post_id, :posted_to_id, :tag_list, :resource_tag_list, :geo_maxing, :lat, :long, images: [])
+    params.require(:post).permit(:title, :content, :user_id, :post_type, :subject_id, :problem_id, :private, :curated, :post_id, :posted_to_id, :tag_list, :resource_tag_list, :geo_maxing, :lat, :long)
   end
 
   def create_activity(post, event)

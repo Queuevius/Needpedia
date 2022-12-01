@@ -22,15 +22,7 @@ class CommentsController < ApplicationController
   # POST /comments.json
   def create
     @comment = Comment.new(comment_params)
-    if comment_params[:commentable_type] == "RelatedContent"
-      @related_content = RelatedContent.find(@comment.commentable_id)
-      @post = @related_content.post
-    elsif comment_params[:commentable_type] == "Objective"
-      @objective = Objective.find(@comment.commentable_id)
-      @post = @objective.post
-    else
-      @post = Post.find(@comment.commentable_id)
-    end
+    @post = Post.find(@comment.commentable_id)
 
     respond_to do |format|
       if @comment.save
@@ -66,15 +58,7 @@ class CommentsController < ApplicationController
 
   def remove_comment
     if @comment.deleted!
-      if params[:post_id].present?
-        redirect_to post_path(@post), notice: 'Comment successfully deleted.'
-      elsif params[:objective_id].present?
-        @objective = Objective.find(params[:objective_id])
-        redirect_to post_path(@objective.post), notice: 'Comment successfully deleted.'
-      else
-        @related_content = RelatedContent.find(params[:related_content_id])
-        redirect_to post_path(@related_content.post), notice: 'Comment successfully deleted.'
-      end
+      redirect_to post_path(@post), notice: 'Comment successfully deleted.'
     else
       flash[:alert] = @comment.errors.full_messages.join(',')
       redirect_to post_path(@post)
@@ -94,18 +78,13 @@ class CommentsController < ApplicationController
   private
 
   def find_comment
-    if params[:post_id].present?
-      @post = Post.find(params[:post_id])
-      @comment = @post.comments.active.find(params[:comment_id])
-    else
-      @objective = Objective.find(params[:objective_id])
-      @comment = @objective.comments.active.find(params[:comment_id])
-    end
+    @post = Post.find(params[:post_id])
+    @comment = @post.comments.active.find(params[:comment_id])
   end
 
   # Only allow a list of trusted parameters through.
   def comment_params
-    params.require(:comment).permit(:body, :commentable_id, :commentable_type, :user_id, :parent_id, :objective_id, :related_content_id)
+    params.require(:comment).permit(:body, :commentable_id, :commentable_type, :user_id, :parent_id)
   end
 
   def create_activity(post, event)

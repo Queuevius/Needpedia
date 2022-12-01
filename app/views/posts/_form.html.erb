@@ -86,8 +86,11 @@
   <% if @post.images.present? %>
     <div class="col-lg-12 col-md-12 ml-auto mr-auto">
       <% @post.images.each do |image| %>
-        <div class="col-md-3">
-          <%= image_tag(image, :class => "img-responsive", width: "250") %>
+        <div class="card bg-white" style="width: 18rem;">
+          <%= link_to post_delete_image_attachment_path(image.id), method: :delete, data: {confirm: 'Are you sure to remove this image?'} do %>
+            <h5 class="float-right text-danger bg-white" data-toggle="tooltip" data-placement="right" title="Remove Image"><i class="fa fa-window-close" aria-hidden="true"></i></h5>
+          <% end %>
+          <%= image_tag(image, :class => "img-responsive card-img-top") %>
         </div>
       <% end %>
     </div>
@@ -262,14 +265,15 @@
 
     $('#summernote').summernote({
         height: 150,
-        disableDragAndDrop: false,
+        disableDragAndDrop: true,
         toolbar: [
             // [groupName, [list of button]]
             ['style', ['bold', 'italic', 'underline', 'link']],
             ['font', ['strikethrough', 'fontsize']],
             ['para', ['ul', 'ol', 'paragraph']],
             ['tokens', ['note', 'question', 'debate']],
-            ['misc', ['undo', 'redo']]
+            ['misc', ['undo', 'redo']],
+            ['insert', ['picture']]
         ],
         popover: {
             image: [

@@ -1,0 +1,7 @@
+<% if @related_content.parent_id.present? %>
+  $(".reply_container_<%= @related_content.parent_id %>").append("<%= j(render(partial: '/related_contents/replies', locals: { replies: [@related_content], post: @related_content })) %>")
+  $('.reply_body').val('');
+<% else %>
+  $(".related_contents_container_<%= @post.id %>").prepend("<%= j(render(partial: 'related_contents/list', locals: { related_contents: [@related_content], post: @post })) %>")
+  $('#comment_body').val('');
+<% end %>

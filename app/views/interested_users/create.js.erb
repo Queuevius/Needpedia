@@ -1,0 +1,7 @@
+<% if @interested_user.parent_id.present? %>
+  $(".reply_container_<%= @interested_user.parent_id %>").append("<%= j(render(partial: '/interested_users/replies', locals: { replies: [@interested_user], post: @interested_user.post })) %>")
+  $('.reply_body').val('');
+<% else %>
+  $(".interested_users_container_<%= @post.id %>").prepend("<%= j(render(partial: 'interested_users/list', locals: { interested_users: [@interested_user], post: @interested_user.post })) %>")
+  $('#comment_body').val('');
+<% end %>

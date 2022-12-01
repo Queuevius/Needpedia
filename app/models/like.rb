@@ -16,6 +16,8 @@ class Like < ApplicationRecord
   end
 
   def send_email
+    return unless likeable.class.name == "Post"
+
     post = likeable
     users = post.users
     users.each do |u|
