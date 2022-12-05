@@ -3,5 +3,5 @@
   $('.reply_body').val('');
 <% else %>
   $(".interested_users_container_<%= @post.id %>").prepend("<%= j(render(partial: 'interested_users/list', locals: { interested_users: [@interested_user], post: @interested_user.post })) %>")
-  $('#comment_body').val('');
+  $('#interested_user_content').val('');
 <% end %>

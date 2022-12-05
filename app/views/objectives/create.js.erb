@@ -3,5 +3,5 @@
   $('.reply_body').val('');
 <% else %>
   $(".objectives_container_<%= @post.id %>").prepend("<%= j(render(partial: 'objectives/list', locals: { objectives: [@objective], post: @post })) %>")
-  $('#comment_body').val('');
+  $('#objective_body').val('');
 <% end %>

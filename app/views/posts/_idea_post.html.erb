@@ -182,15 +182,25 @@
                         <tr>
                           <th scope="row">
                             <div>
-                              <% if @post.content.body.to_s.length > 500 %>
-                                <%= @post.content.body.to_plain_text.html_safe.truncate(5000) %><br>
+                              <% if @post.content.body.to_plain_text.squish.length > 580 %>
+                                <div class="text-truncate-container">
+                                  <%= @post.content %>
+                                </div>
                                 <%= link_to ' See more', '', class: "read-more-#{@post.id} fas fa-caret-right  mt-3" %>
-                              <% else %>
-                                <%= @post.content %>
-                              <% end %>
-                              <div>
                                 <%= 'No details provided' if @post.content.blank? %>
-                              </div>
+                                <style>
+                                  .text-truncate-container {
+                                    -webkit-line-clamp: 4;
+                                    display: -webkit-box;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                  }
+                                </style>
+                              <% else %>
+                                <div>
+                                  <%= @post.content %>
+                                </div>
+                              <% end %>
                             </div>
                           </th>
                         </tr>
@@ -206,7 +216,8 @@
                         <% end %>
                       </div>
                       <div class="mt-5">
-                        <strong>Tags: <% if @post.tag_list.present? %><%= raw @post.tag_list.map {|t| link_to "##{t}", tag_path(t)}.join(', ') %>
+                        <strong>Tags:
+                          <% if @post.tag_list.present? %><%= raw @post.tag_list.map {|t| link_to "##{t}", tag_path(t)}.join(', ') %>
                           <% end %></strong>
                       </div>
                     </div>
@@ -287,11 +298,9 @@
           <div class="mr-sm-5">
             <%= render 'objectives/form', post: @post, objective: @objective %>
           </div>
-          <% if @objectives.present? %>
-            <div class="row objectives_container_<%= @post.id %>">
-              <%= render 'objectives/list', {post: @post, objectives: @objectives} %>
-            </div>
-          <% end %>
+          <div class="row objectives_container_<%= @post.id %>">
+            <%= render 'objectives/list', {post: @post, objectives: @objectives} %>
+          </div>
         </div>
       </div>
     </div>
@@ -345,11 +354,9 @@
           <div class="mr-sm-5">
             <%= render 'interested_users/form', interested_user: @interested_user, post: @post %>
           </div>
-          <% if @objectives.present? %>
-            <div class="row interested_users_container_<%= @post.id %>">
-              <%= render 'interested_users/list', {post: @post, interested_users: @interested_users} %>
-            </div>
-          <% end %>
+          <div class="row interested_users_container_<%= @post.id %>">
+            <%= render 'interested_users/list', {post: @post, interested_users: @interested_users} %>
+          </div>
         </div>
       </div>
     </div>
@@ -368,11 +375,9 @@
           <div class="mr-sm-5">
             <%= render 'related_contents/form', related_content: @related_content, post: @post %>
           </div>
-          <% if @related_contents.present? %>
-            <div class="row related_contents_container_<%= @post.id %>">
-              <%= render 'related_contents/list', {post: @post, related_contents: @related_contents} %>
-            </div>
-          <% end %>
+          <div class="row related_contents_container_<%= @post.id %>">
+            <%= render 'related_contents/list', {post: @post, related_contents: @related_contents} %>
+          </div>
         </div>
       </div>
     </div>
