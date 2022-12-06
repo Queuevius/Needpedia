@@ -57,7 +57,7 @@ class CommentsController < ApplicationController
   end
 
   def remove_comment
-    if @comment.deleted!
+    if @comment.destroy
       redirect_to post_path(@post), notice: 'Comment successfully deleted.'
     else
       flash[:alert] = @comment.errors.full_messages.join(',')
