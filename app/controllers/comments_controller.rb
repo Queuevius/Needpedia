@@ -30,12 +30,12 @@ class CommentsController < ApplicationController
           create_activity(@comment.commentable, 'post.commented_on')
         end
         format.js
-        format.html { redirect_to post_path(@post), notice: 'Comment was successfully created.' }
-        format.json { render :show, status: :created, location: @comment }
+        format.html {redirect_to post_path(@post), notice: 'Comment was successfully created.'}
+        format.json {render :show, status: :created, location: @comment}
       else
         flash[:alert] = @comment.errors.full_messages.join(',')
-        format.html { redirect_to post_path(@post) }
-        format.json { render json: @comment.errors, status: :unprocessable_entity }
+        format.html {redirect_to post_path(@post)}
+        format.json {render json: @comment.errors, status: :unprocessable_entity}
       end
     end
   end
@@ -46,18 +46,18 @@ class CommentsController < ApplicationController
 
     respond_to do |format|
       if @comment.update(comment_params)
-        format.html { redirect_to post_path(@post), notice: 'Comment was successfully updated.' }
-        format.json { render :edit, status: :created, location: @comment }
+        format.html {redirect_to post_path(@post), notice: 'Comment was successfully updated.'}
+        format.json {render :edit, status: :created, location: @comment}
       else
         flash[:alert] = @comment.errors.full_messages.join(',')
-        format.html { redirect_to post_path(@post) }
-        format.json { render json: @comment.errors, status: :unprocessable_entity }
+        format.html {redirect_to post_path(@post)}
+        format.json {render json: @comment.errors, status: :unprocessable_entity}
       end
     end
   end
 
   def remove_comment
-    if @comment.deleted!
+    if @comment.destroy
       redirect_to post_path(@post), notice: 'Comment successfully deleted.'
     else
       flash[:alert] = @comment.errors.full_messages.join(',')

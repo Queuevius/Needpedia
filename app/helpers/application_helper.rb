@@ -88,4 +88,8 @@ module ApplicationHelper
   rescue Liquid::Error
     text.to_s
   end
+
+  def rating(post)
+    "Points - #{post.ratings.count == 0 ? "0" : post&.ratings.where.not(rating: 6).average(:rating).round(1)} Point Average"
+  end
 end

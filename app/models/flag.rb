@@ -16,6 +16,8 @@ class Flag < ApplicationRecord
   end
 
   def send_email
+    return unless flagable.class.name == "Post"
+
     post = flagable
     users = post.users
     users.each do |u|

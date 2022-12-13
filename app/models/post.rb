@@ -70,6 +70,10 @@ class Post < ApplicationRecord
   has_many :notifications, dependent: :destroy
   has_many :notification_settings, dependent: :destroy
 
+  has_many :objectives
+  has_many :related_contents
+  has_many :interested_users
+
   ############################### Validations ###########################
   validates :title, presence: true
   validates :post_type, presence: true, inclusion: { in: POST_TYPES }

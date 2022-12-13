@@ -13,12 +13,12 @@ class LikesController < ApplicationController
         if @like.likeable_type == 'Post'
           create_activity(@like.likeable, 'post.like')
         end
-        format.html { redirect_to post_path(@post), notice: "You liked #{@post.title}." }
-        format.json { render :show, status: :created, location: @like }
+        format.html {redirect_to post_path(@post), notice: "You liked #{@post.title}."}
+        format.json {render :show, status: :created, location: @like}
       else
         flash[:alert] = @like.errors.full_messages.join(',')
-        format.html { redirect_to post_path(@post) }
-        format.json { render json: @like.errors, status: :unprocessable_entity }
+        format.html {redirect_to post_path(@post)}
+        format.json {render json: @like.errors, status: :unprocessable_entity}
       end
     end
   end
@@ -32,12 +32,12 @@ class LikesController < ApplicationController
         if @like.likeable_type == 'Post'
           create_activity(@like.likeable, 'post.like')
         end
-        format.html { redirect_to post_path(@post), notice: "You liked #{@post.title}." }
-        format.json { render :show, status: :created, location: @like }
+        format.html {redirect_to post_path(@post), notice: "You liked #{@post.title}."}
+        format.json {render :show, status: :created, location: @like}
       else
         flash[:alert] = @like.errors.full_messages.join(',')
-        format.html { redirect_to post_path(@post) }
-        format.json { render json: @like.errors, status: :unprocessable_entity }
+        format.html {redirect_to post_path(@post)}
+        format.json {render json: @like.errors, status: :unprocessable_entity}
       end
     end
   end
@@ -48,18 +48,22 @@ class LikesController < ApplicationController
     post_token_id = params[:post_token_id]
     @debate = TokenAnsDebate.find(@like.likeable_id)
     url = "/post_tokens/#{post_token_type}?id=#{post_token_id}"
-    if voted?(@like.likeable)
-      redirect_to url, alert: 'You have already voted.'
+    if up_voted?(@like.likeable)
+      redirect_to url, alert: 'You have already up-voted.'
       return
+    end
+    if down_voted?(@like.likeable)
+      @flag = @debate.flags.where(user_id: current_user.id).last
+      @flag.destroy!
     end
     respond_to do |format|
       if @like.save
-        format.html { redirect_to url, notice: 'You added an Up vote.'}
-        format.json { render :show, status: :created, location: @like }
+        format.html {redirect_to url, notice: 'You added an up-vote.'}
+        format.json {render :show, status: :created, location: @like}
       else
         flash[:alert] = @like.errors.full_messages.join(',')
-        format.html { redirect_to url, notice: 'Something went wrong while adding an Up vote.'}
-        format.json { render json: @like.errors, status: :unprocessable_entity }
+        format.html {redirect_to url, notice: 'Something went wrong while adding an up-vote.'}
+        format.json {render json: @like.errors, status: :unprocessable_entity}
       end
     end
   end
@@ -70,18 +74,22 @@ class LikesController < ApplicationController
     post_token_id = params[:post_token_id]
     @debate = TokenAnsDebate.find(@flag.flagable_id)
     url = "/post_tokens/#{post_token_type}?id=#{post_token_id}"
-    if voted?(@flag.flagable)
-      redirect_to url, alert: 'You have already voted.'
+    if down_voted?(@flag.flagable)
+      redirect_to url, alert: 'You have already down-voted.'
       return
+    end
+    if up_voted?(@flag.flagable)
+      @like = @debate.likes.where(user_id: current_user.id).last
+      @like.destroy!
     end
     respond_to do |format|
       if @flag.save
-        format.html { redirect_to url, notice: 'You added a Down vote.'}
-        format.json { render :show, status: :created, location: @flag }
+        format.html {redirect_to url, notice: 'You added a down-vote.'}
+        format.json {render :show, status: :created, location: @flag}
       else
         flash[:alert] = @flag.errors.full_messages.join(',')
-        format.html { redirect_to url, notice: 'Something went wrong while adding a Down vote.'}
-        format.json { render json: @flag.errors, status: :unprocessable_entity }
+        format.html {redirect_to url, notice: 'Something went wrong while adding a Down vote.'}
+        format.json {render json: @flag.errors, status: :unprocessable_entity}
       end
     end
   end
@@ -111,12 +119,17 @@ class LikesController < ApplicationController
   def like_params
     params.permit(:likeable_id, :likeable_type, :user_id)
   end
+
   def flag_params
     params.permit(:flagable_id, :flagable_type, :user_id)
   end
 
-  def voted?(argument)
-    argument.likes.pluck(:user_id).include?(current_user.id) || argument.flags.pluck(:user_id).include?(current_user.id)
+  def up_voted?(argument)
+    argument.likes.pluck(:user_id).include?(current_user.id)
+  end
+
+  def down_voted?(argument)
+    argument.flags.pluck(:user_id).include?(current_user.id)
   end
 
   def create_activity(post, event)

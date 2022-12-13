@@ -1,0 +1,7 @@
+<% if @objective.parent_id.present? %>
+  document.querySelector("#reply-form-<%= @objective.id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { objective: @objective, post: @post })) %>")
+  $("#reply-body-<%= @objective.id %>").hide();
+<% else %>
+  document.querySelector("#comment-form-<%= @objective.id %>").innerHTML = ("<%= j(render(partial: 'form', locals: { objective: @objective, post: @post })) %>")
+  $("#comment-body-<%= @objective.id %>").hide();
+<% end %>

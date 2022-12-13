@@ -1,0 +1,25 @@
+<% replies.each do |reply| %>
+  <div class="border-top">
+    <div class="media ml-5">
+      <div class="media-body"><h5 class="media-heading"><%= reply.user.name %></h5>
+        <div id="reply-form-<%= reply.id %>"></div>
+        <p id="reply-body-<%= reply.id %>"><%= reply.body %></p>
+        <ul class="ist-unstyled list-inline media-detail pull-left">
+          <li class="mt-2">
+            <i class="fa fa-calendar"></i> <%= time_ago_in_words(reply.created_at) %> ago
+          </li>
+          <% if current_user %>
+            <li class="mt-2">
+              <% if reply.user_id == current_user.id %>
+                <% unless @post.nil? %>
+                  <%= link_to 'Edit', edit_post_related_content_path(@post, reply.id), remote: true, class: 'mr-1' %>
+                  <%= link_to 'Delete', post_related_content_remove_content_path(@post.id, reply.id), method: :delete %>
+                <% end %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+<% end %>

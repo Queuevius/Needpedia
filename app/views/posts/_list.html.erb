@@ -25,7 +25,7 @@
     <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1">
       <div class="ui-block shadow-lg rounded">
         <div class="ui-block-content">
-            <div class="row">
+          <div class="row">
             <div class="col-8 text-decoration-none">
               <%= link_to post_path(post), class: 'text-decoration-none' do %>
                 <div class="row">
@@ -54,14 +54,14 @@
                 <% end %>
               <% end %>
               <% if post&.user == current_user %>
-                <%= link_to post_path(post), class: 'btn btn-default', method: :delete, data: { confirm: 'All comments and other activity related to this post will be deleted' } do %>
+                <%= link_to post_path(post), class: 'btn btn-default', method: :delete, data: {confirm: 'All comments and other activity related to this post will be deleted'} do %>
                   <i class="fa fa-trash-alt" style="font-size: 18px" title="Delete this post"></i>
                 <% end %>
               <% end %>
             </div>
             <div class="col-md-12">
               <% if post.tag_list.present? %>
-                <p>Tags: <%= raw post.tag_list.map { |t| link_to "##{t}", tag_path(t) }.join(', ') %></p>
+                <p>Tags: <%= raw post.tag_list.map {|t| link_to "##{t}", tag_path(t)}.join(', ') %></p>
               <% end %>
 
               <p><%= post.content %></p>
@@ -69,7 +69,7 @@
             <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-3 justify-content-center">
               <div class="row">
                 <% if post.images.present? %>
-                  <% post.images.each do |image|  %>
+                  <% post.images.each do |image| %>
                     <div class="col-md-6">
                       <%= image_tag(image, class: 'img-fluid') %>
                     </div>
@@ -79,7 +79,7 @@
             </div>
             <div class="col-md-2 mb-2">
               <% if !post.editing_disabled? && post.user_id == current_user.id && [Post::POST_TYPE_SOCIAL_MEDIA, Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(post.post_type) %>
-                  <%= link_to 'Edit', edit_post_path(post), class: 'mr-1' %>
+                <%= link_to 'Edit', edit_post_path(post), class: 'mr-1' %>
               <% end %>
               <% if post.flags.pluck(:user_id).include?(current_user.id) %>
                 <%= link_to flag_path(id: post.id, flagable_id: post.id, flagable_type: 'Post'), class: 'btn btn-primary', title: 'Un-Flag this post', remote: true, :method => :delete do %>
@@ -98,7 +98,7 @@
               </div>
             </div>
             <div class="col-md-12 row comments_container_<%= post.id %> pl-4">
-              <% post_comments = post_comments(post)%>
+              <% post_comments = post_comments(post) %>
               <%= render 'comments/list', post: post, comments: post_comments %>
             </div>
             <% if !post_comments.last_page? && post_comments.present? %>

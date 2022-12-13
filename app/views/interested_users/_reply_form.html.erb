@@ -1,0 +1,15 @@
+<div class="card reply_form_<%= interested_user.id %>">
+  <div class="card-body">
+    <%= form_with(model: [post, interested_user], local: false) do |f| %>
+      <%= f.hidden_field :user_id, value: current_user.id %>
+      <%= f.hidden_field :parent_id %>
+      <%= f.hidden_field :post_id, value: post.id %>
+      <div class="form-group">
+        <%= f.label 'Reply' %>
+        <%= f.text_area :content, class: 'form-control reply_body' %>
+      </div>
+      <%= f.submit 'Submit', class: 'btn btn-primary' %>
+      <button type="button" name="button" class='btn btn-secondary' onclick="this.closest('.card').remove();">Cancel</button>
+    <% end %>
+  </div>
+</div>

@@ -22,7 +22,7 @@ class PostsController < ApplicationController
     post_type = 'problem'
     sorted_by = 'Highest-Rated'
     access_type = 'Public'
-    q = { user_first_name_cont: '' }
+    q = {user_first_name_cont: ''}
     redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type, subject_id: @post.id, subject: @post.title)
   end
 
@@ -30,7 +30,7 @@ class PostsController < ApplicationController
     post_type = 'idea'
     sorted_by = 'Highest-Rated'
     access_type = 'Public'
-    q = { user_first_name_cont: '' }
+    q = {user_first_name_cont: ''}
     redirect_to search_result_posts_path(q: q, post_type: post_type, sorted_by: sorted_by, access_type: access_type, problem_id: @post.id, problem: @post.title, subject: @post.parent_subject.title)
   end
 
@@ -77,6 +77,12 @@ class PostsController < ApplicationController
   def show
     @comment = Comment.new(parent_id: params[:parent_id])
     @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('comments.created_at DESC')
+    @objectives = @post.objectives.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('objectives.created_at DESC')
+    @related_contents = @post.related_contents.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('related_contents.created_at DESC')
+    @interested_users = @post.interested_users.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('interested_users.created_at DESC')
+    @interested_user = InterestedUser.new(parent_id: params[:parent_id])
+    @related_content = RelatedContent.new(parent_id: params[:parent_id])
+    @objective = Objective.new(parent_id: params[:parent_id])
   end
 
   # GET /posts/new
@@ -117,6 +123,7 @@ class PostsController < ApplicationController
 
     respond_to do |format|
       if @post.save
+        @post.images.attach(params[:post][:images]) if params[:post][:images].present?
         # @post.clean_froala_link
         UserPrivatePost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_SUBJECT
         UserCuratedPost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_SUBJECT
@@ -125,12 +132,12 @@ class PostsController < ApplicationController
         create_private_users
         create_curated_users
         create_activity(@post, 'post.create')
-        format.html { redirect_to @post, notice: 'Post was successfully created.' }
-        format.json { render :show, status: :created, location: @post }
+        format.html {redirect_to @post, notice: 'Post was successfully created.'}
+        format.json {render :show, status: :created, location: @post}
       else
         flash[:alert] = @post.errors.full_messages.join(',')
-        format.html { render :new }
-        format.json { render json: @post.errors, status: :unprocessable_entity }
+        format.html {render :new}
+        format.json {render json: @post.errors, status: :unprocessable_entity}
       end
     end
   end
@@ -140,18 +147,21 @@ class PostsController < ApplicationController
   def update
     respond_to do |format|
       if @post.update(post_params)
+        if params[:post][:images].present?
+          @post.images.attach(params[:post][:images]) unless @post.images == params[:post][:images]
+        end
         create_private_users
         create_curated_users
         # @post.clean_froala_link
         Notification.post(from: current_user, notifiable: current_user, to: @post.users, action: Notification::NOTIFICATION_TYPE_POST_UPDATED, post_id: @post.id)
         create_activity(@post, 'post.update')
         offsite_notification(@post)
-        format.html { redirect_to @post, notice: 'Post was successfully updated.' }
-        format.json { render :show, status: :ok, location: @post }
+        format.html {redirect_to @post, notice: 'Post was successfully updated.'}
+        format.json {render :show, status: :ok, location: @post}
       else
         flash[:alert] = @post.errors.full_messages.join(',')
-        format.html { render :edit }
-        format.json { render json: @post.errors, status: :unprocessable_entity }
+        format.html {render :edit}
+        format.json {render json: @post.errors, status: :unprocessable_entity}
       end
     end
   end
@@ -161,8 +171,8 @@ class PostsController < ApplicationController
   def destroy
     @post.destroy
     respond_to do |format|
-      format.html { redirect_to wall_path, notice: 'Post was successfully destroyed.' }
-      format.json { head :no_content }
+      format.html {redirect_to wall_path, notice: 'Post was successfully destroyed.'}
+      format.json {head :no_content}
     end
   end
 
@@ -170,7 +180,7 @@ class PostsController < ApplicationController
     @activity = PublicActivity::Activity.find(params[:id])
     @activity.destroy
     respond_to do |format|
-      format.html { redirect_to feed_path, notice: 'Post was successfully destroyed.' }
+      format.html {redirect_to feed_path, notice: 'Post was successfully destroyed.'}
     end
   end
 
@@ -265,6 +275,12 @@ class PostsController < ApplicationController
     @geo_maxing_posts = Post.geo_maxing_posts
   end
 
+  def delete_image_attachment
+    @post_image = ActiveStorage::Attachment.find(params[:post_id])
+    @post_image.purge
+    redirect_back(fallback_location: request.referer)
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
@@ -279,7 +295,7 @@ class PostsController < ApplicationController
   end
 
   def set_post
-    @post = Post.find_by_id(params[:id])
+    @post = Post.includes(:related_contents, :objectives).find_by_id(params[:id])
   end
 
   def create_private_users
@@ -344,7 +360,7 @@ class PostsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def post_params
-    params.require(:post).permit(:title, :content, :user_id, :post_type, :subject_id, :problem_id, :private, :curated, :post_id, :posted_to_id, :tag_list, :resource_tag_list, :geo_maxing, :lat, :long, images: [])
+    params.require(:post).permit(:title, :content, :user_id, :post_type, :subject_id, :problem_id, :private, :curated, :post_id, :posted_to_id, :tag_list, :resource_tag_list, :geo_maxing, :lat, :long)
   end
 
   def create_activity(post, event)
