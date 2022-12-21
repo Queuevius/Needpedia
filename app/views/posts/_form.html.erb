@@ -300,19 +300,23 @@
     });
 
   <% else %>
-    initSelect2('#post_subject_id', false, 'Select Subject');
-    initSelect2('#post_problem_id', false, 'Select Subject');
     <% if @post.post_type == Post::POST_TYPE_IDEA %>
       $('#resource_tags').show();
       $('#subject').show();
       $('#problem').show();
+      initSelect2('#post_subject_id', false, 'Select Subject');
+      initSelect2('#post_problem_id', false, 'Select Problem');
     <% elsif @post.post_type == Post::POST_TYPE_PROBLEM %>
       $('#subject').show();
       $('#problem').hide();
+      initSelect2('#post_subject_id', false, 'Select Subject');
+      initSelect2('#post_problem_id', true, 'Select Problem');
     <% else %>
       $('#resource_tags').hide();
       $('#subject').hide();
       $('#problem').hide();
+      initSelect2('#post_subject_id', true, 'Select Subject');
+      initSelect2('#post_problem_id', true, 'Select Problem');
     <% end %>
     $('#summernote').summernote({
         height: 150,
@@ -338,15 +342,21 @@
             $('#subject').show();
             $('#problem').hide();
             $('#resource_tags').hide();
+            initSelect2('#post_subject_id', false, 'Select Subject');
+            initSelect2('#post_problem_id', true, 'Select Problem');
         } else if (e.target.value == 'idea') {
             $('#subject').show();
             $('#problem').show();
             $('#summernote').summernote('code', '<b><%= PreformattedMessage.where(for_post_type: 'idea')&.last&.body %></b><br><br>');
             $('#resource_tags').show();
+            initSelect2('#post_subject_id', false, 'Select Subject');
+            initSelect2('#post_problem_id', false, 'Select Problem');
         } else {
             $('#subject').hide();
             $('#problem').hide();
             $('#resource_tags').hide();
+            initSelect2('#post_subject_id', true, 'Select Subject');
+            initSelect2('#post_problem_id', true, 'Select Problem');
         }
     });
 
