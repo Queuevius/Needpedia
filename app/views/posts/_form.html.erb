@@ -49,7 +49,7 @@
         <%= form.file_field :images, multiple: true, accept: 'image/jpeg, image/png' %>
       </div>
     </div>
-    <% if @post.post_type.in?(Post::CORE_POST_TYPES + ['All']) && !@post.persisted? %>
+    <% if @post.post_type.in?(Post::CORE_POST_TYPES + [Post::POST_TYPE_WIKI_POSTS_ONLY] + ['All']) && !@post.persisted? %>
       <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12">
         <div class="input-group mb-3">
           <div class="input-group-prepend">
