@@ -31,7 +31,13 @@ class PostsService
         result[:post] = Post.new(post_type: Post::POST_TYPE_PROBLEM, title: problem_title, subject_id: subject_post&.id)
       end
     elsif subject_title.present? && problem_title.blank? && idea_title.blank?
-      result[:post] = Post.new(post_type: Post::POST_TYPE_SUBJECT, title: subject_title)
+      if post_type == "problem"
+        subject_post = search_post(subject_title, Post::POST_TYPE_SUBJECT).last
+        result[:subject_id] = subject_post&.id
+        result[:post] = Post.new(post_type: Post::POST_TYPE_PROBLEM, title: problem_title, subject_id: subject_post&.id)
+      else
+        result[:post] = Post.new(post_type: Post::POST_TYPE_SUBJECT, title: subject_title)
+      end
     elsif subject_title.blank? && problem_title.present? && idea_title.blank?
       result[:subject_id] = nil
       result[:problem_id] = nil
