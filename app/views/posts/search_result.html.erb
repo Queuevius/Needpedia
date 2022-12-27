@@ -113,7 +113,7 @@
                               <div class="form-group row">
                                 <label for="inputPassword" class="col-sm-3 col-form-label">Access Type</label>
                                 <div class="col-sm-8">
-                                  <%= select_tag 'access_type', options_for_select(%w[Public All Curated], @access_type), include_blank: false , class: "form form-group form-control" %>
+                                  <%= select_tag 'access_type', options_for_select(%w[Public All Curated], @access_type), include_blank: false, class: "form form-group form-control" %>
                                 </div>
                               </div>
                             </div>
@@ -285,15 +285,16 @@
   }
 
   setUpNewButton();
-  $(document).on("input", "#subject, #problem, #idea", function () {
+  $(document).on("input", "#subject, #problem, #idea, #post_type", function () {
       setUpNewButton();
   });
 
   function setUpNewButton() {
+      var post_type = $('#post_type').val();
       var subject_field = $('#subject');
       var problem_field = $('#problem');
       var idea_field = $('#idea');
-      $('#new_button').attr('href', `/posts/new?subject_title=${subject_field.val()}&problem_title=${problem_field.val()}&idea_title=${idea_field.val()}`);
+      $('#new_button').attr('href', `/posts/new?subject_title=${subject_field.val()}&problem_title=${problem_field.val()}&idea_title=${idea_field.val()}&post_type=${post_type}`);
   }
   <%# just removing tag functionality, keeping the commented code for awhile in case its required again  %>
   // $('#post_type').change(function (e) {

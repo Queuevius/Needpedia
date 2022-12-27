@@ -79,7 +79,7 @@
                         </h5>
                         <h5 class="ml-5">Idea Post</h5>
                         <h1 class="m-2"><%= @post.title.titleize %></h1>
-                        <h5 class="text-primary m-2"><%= link_to truncate(@post&.problem&.parent_subject&.title, length: 30).titleize, post_path(@post.problem.parent_subject).titleize, title: @post&.problem&.parent_subject&.title.titleize %>
+                        <h5 class="text-primary m-2"><%= link_to truncate(@post&.problem&.parent_subject&.title, length: 30).titleize, post_path(@post.problem.parent_subject), title: @post&.problem&.parent_subject&.title.titleize %>
                           -
                           <%= link_to truncate(@post&.problem&.title, length: 30).titleize, post_path(@post&.problem), title: @post.problem.title %>
                           -
