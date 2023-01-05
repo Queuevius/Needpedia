@@ -31,3 +31,26 @@
 
 @import "utilities/text-color";
 @import "utilities/action_text";
+
+.alert {
+  padding: 15px;
+  margin: 20px;
+  margin-bottom: 7px;
+  padding-bottom: 10px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.alert-info {
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+  color: #31708f;
+}
+
+.alert-info hr {
+  border-top-color: #a6e1ec;
+}
+
+.text-center {
+  text-align: center !important;
+}

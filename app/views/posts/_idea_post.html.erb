@@ -49,7 +49,27 @@
                             <% end %>
                           <% end %>
                         <% end %>
-
+                        <div class="dropdown ml-1 float-right">
+                          <% if @post.layering_disabled? %>
+                            <button type="button" class="btn btn-secondary dropdown-toggle disabled" data-toggle="tooltip" data-placement="top" title="Adding Layers disabled by Admins">
+                              Layers
+                            </button>
+                          <% else %>
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              Layers
+                            </button>
+                          <% end %>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <% if @post.post_type == Post::POST_TYPE_LAYER %>
+                              <%= link_to 'Default Layer', post_path(@post.parent_post), class: "dropdown-item #{post_type_color(@post.parent_post.post_type)}" %>
+                            <% end %>
+                            <%= link_to 'Add Layer', new_post_path(post_type: Post::POST_TYPE_LAYER, post_id: @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.id : @post.id), class: "dropdown-item" %>
+                            <% layers = @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.layers : @post.layers %>
+                            <% layers.each do |layer| %>
+                              <%= link_to layer.title, post_path(layer), class: 'dropdown-item' %>
+                            <% end %>
+                          </div>
+                        </div>
                         <% if @post.geo_maxing? %>
                           <%= link_to 'Map', post_map_path(@post), class: 'btn btn-primary' %>
                         <% end %>
@@ -79,12 +99,14 @@
                         </h5>
                         <h5 class="ml-5">Idea Post</h5>
                         <h1 class="m-2"><%= @post.title.titleize %></h1>
-                        <h5 class="text-primary m-2"><%= link_to truncate(@post&.problem&.parent_subject&.title, length: 30).titleize, post_path(@post.problem.parent_subject), title: @post&.problem&.parent_subject&.title.titleize %>
-                          -
-                          <%= link_to truncate(@post&.problem&.title, length: 30).titleize, post_path(@post&.problem), title: @post.problem.title %>
-                          -
-                          <%= link_to truncate(@post&.title, length: 30).titleize, post_path(@post), title: @post.title %>
-                        </h5>
+                        <% unless @post.post_type == Post::POST_TYPE_QUICK_SHARE %>
+                          <h5 class="text-primary m-2"><%= link_to truncate(@post&.problem&.parent_subject&.title, length: 30).titleize, post_path(@post.problem.parent_subject), title: @post&.problem&.parent_subject&.title.titleize %>
+                            -
+                            <%= link_to truncate(@post&.problem&.title, length: 30).titleize, post_path(@post&.problem), title: @post.problem.title %>
+                            -
+                            <%= link_to truncate(@post&.title, length: 30).titleize, post_path(@post), title: @post.title %>
+                          </h5>
+                        <% end %>
                         <% if @post.images.present? %>
                           <div class="row mx-auto my-auto">
                             <div id="recipeCarousel" class="carousel slide w-100" data-ride="carousel">

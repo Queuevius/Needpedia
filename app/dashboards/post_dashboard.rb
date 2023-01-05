@@ -99,10 +99,11 @@ class PostDashboard < Administrate::BaseDashboard
   #     open: ->(resources) { resources.where(open: true) }
   #   }.freeze
   COLLECTION_FILTERS = {
-    private: ->(resources) { resources.where(private: true) },
-    curated: ->(resources) { resources.where(curated: true) },
-    public: ->(resources) { resources.where(private: false) },
-    all: -> (resources) { resources }
+    private: ->(resources) {resources.where(private: true)},
+    curated: ->(resources) {resources.where(curated: true)},
+    public: ->(resources) {resources.where(private: false)},
+    all: -> (resources) {resources},
+    quick_share: ->(resources) {resources.where(post_type: Post::POST_TYPE_QUICK_SHARE)}
   }.freeze
 
   # Overwrite this method to customize how posts are displayed

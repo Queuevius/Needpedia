@@ -29,7 +29,34 @@
         </div>
       </div>
     </div>
-
+    <div class="col-md-12">
+      <div class="container-sm">
+        <div class="ui-block shadow-lg rounded">
+          <div class="ui-block-content pt-2 pb-2">
+            <div class="row bg-white">
+              <div class="col-md col-sm-12 p-0">
+                <% if @archive_post.present? %>
+                  <%= link_to new_post_path do %>
+                    <%= image_tag @archive_post.avatar, class: "img-thumbnail border-0 pl-0" %>
+                  <% end %>
+                <% else %>
+                  <%= link_to "Archive Post", new_post_path, class: "btn btn-outline-dark" %>
+                <% end %>
+              </div>
+              <div class="col-md col-sm-12 p-0">
+                <% if @quick_post.present? %>
+                  <%= link_to new_post_path(post_type: Post::POST_TYPE_QUICK_SHARE) do %>
+                    <%= image_tag @quick_post.avatar, class: "img-thumbnail border-0 pl-0" %>
+                  <% end %>
+                <% else %>
+                  <%= link_to "Quick Post", new_post_path(post_type: Post::POST_TYPE_QUICK_SHARE), class: "btn btn-outline-dark" %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="col-md-12 pt-3 pb-5">
       <div class="container">
         <h3 class="title-normal mb-3 text-dark text-center">How to Section</h3>

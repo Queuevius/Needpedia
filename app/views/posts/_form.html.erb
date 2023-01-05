@@ -443,5 +443,7 @@
   $('.card-header').click(function () {
       $(this).find('i').toggleClass('fas fa-caret-right fas fa-caret-down');
   });
-
+  <% if @post.post_type == Post::POST_TYPE_QUICK_SHARE %>
+    $('#resource_tags').show();
+  <% end %>
 </script>
