@@ -9,7 +9,7 @@ class HomeController < ApplicationController
     @home_video_link = @home_video_link.present? ? 'https://www.youtube.com/embed/' + @home_video_link.link.split('?v=')[1] : 'https://www.youtube.com/embed/ac3c5nIkrsc?start=5'
     @how_tos = HowTo.all
     @quick_post = ButtonImage.where(name: "Quick post", page_name: "Home").last
-    @archive_post = ButtonImage.where(name: "Archve post", page_name: "Home").last
+    @archive_post = ButtonImage.where(name: "Archive post", page_name: "Home").last
   end
 
   def terms

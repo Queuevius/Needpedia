@@ -35,21 +35,21 @@
           <div class="ui-block-content pt-2 pb-2">
             <div class="row bg-white">
               <div class="col-md col-sm-12 p-0">
-                <% if @archive_post.present? %>
-                  <%= link_to new_post_path do %>
+                <%= link_to new_post_path do %>
+                  <% if @archive_post.present? && @archive_post.avatar.present? %>
                     <%= image_tag @archive_post.avatar, class: "img-thumbnail border-0 pl-0" %>
+                  <% else %>
+                    <%= image_tag "archive_post_new_button.png", class: "img-thumbnail border-0 pl-0" %>
                   <% end %>
-                <% else %>
-                  <%= link_to "Archive Post", new_post_path, class: "btn btn-outline-dark" %>
                 <% end %>
               </div>
               <div class="col-md col-sm-12 p-0">
-                <% if @quick_post.present? %>
-                  <%= link_to new_post_path(post_type: Post::POST_TYPE_QUICK_SHARE) do %>
+                <%= link_to new_post_path(post_type: Post::POST_TYPE_QUICK_SHARE) do %>
+                  <% if @quick_post.present? && @quick_post.avatar.present? %>
                     <%= image_tag @quick_post.avatar, class: "img-thumbnail border-0 pl-0" %>
+                  <% else %>
+                    <%= image_tag "quick_share_post_new_button.png", class: "img-thumbnail border-0 pl-0" %>
                   <% end %>
-                <% else %>
-                  <%= link_to "Quick Post", new_post_path(post_type: Post::POST_TYPE_QUICK_SHARE), class: "btn btn-outline-dark" %>
                 <% end %>
               </div>
             </div>
