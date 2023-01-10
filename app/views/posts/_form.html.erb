@@ -52,7 +52,7 @@
     <% if @post.post_type.in?(Post::CORE_POST_TYPES + [Post::POST_TYPE_WIKI_POSTS_ONLY] + ['All']) && !@post.persisted? %>
       <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12">
         <div class="input-group mb-3">
-          <div class="input-group-prepend">
+          <div class="input-group-prepend" id="private">
             <div class="input-group-text private-checkbox">
               <%= form.check_box :private, onchange: 'togglePrivateSection()' %>
             </div>
@@ -65,7 +65,7 @@
 
       <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12">
         <div class="input-group mb-3">
-          <div class="input-group-prepend">
+          <div class="input-group-prepend" id="curated">
             <div class="input-group-text private-checkbox">
               <%= form.check_box :curated, onchange: 'toggleCuratedSection()' %>
             </div>
@@ -77,12 +77,13 @@
       </div>
     <% end %>
   </div>
-  <% unless [Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT, Post::POST_TYPE_LAYER].include?(@post.post_type) %>
-    <% if !@post.persisted? %>
-      <%= render 'geo_maxing_form_section', form: form, post: @post %>
+  <div id="geo_maxing">
+    <% unless [Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT, Post::POST_TYPE_LAYER].include?(@post.post_type) %>
+      <% if !@post.persisted? %>
+        <%= render 'geo_maxing_form_section', form: form, post: @post %>
+      <% end %>
     <% end %>
-  <% end %>
-
+  </div>
   <% if @post.images.present? %>
     <div class="col-lg-12 col-md-12 ml-auto mr-auto">
       <% @post.images.each do |image| %>
@@ -339,19 +340,45 @@
 
     $('#post_post_type').change(function(e) {
         if (e.target.value == 'problem') {
+            $('#geo_maxing').hide();
+            $('#private').show();
+            $('#curated').show();
             $('#subject').show();
             $('#problem').hide();
             $('#resource_tags').hide();
             initSelect2('#post_subject_id', false, 'Select Subject');
             initSelect2('#post_problem_id', true, 'Select Problem');
         } else if (e.target.value == 'idea') {
+            $('#geo_maxing').hide();
+            $('#private').show();
+            $('#curated').show();
             $('#subject').show();
             $('#problem').show();
             $('#summernote').summernote('code', '<b><%= PreformattedMessage.where(for_post_type: 'idea')&.last&.body %></b><br><br>');
             $('#resource_tags').show();
             initSelect2('#post_subject_id', false, 'Select Subject');
             initSelect2('#post_problem_id', false, 'Select Problem');
+        } else if (e.target.value == 'quick_share') {
+            $('#geo_maxing').hide();
+            $('#private').hide();
+            $('#curated').hide();
+            $('#subject').hide();
+            $('#problem').hide();
+            $('#resource_tags').show();
+            initSelect2('#post_subject_id', true, 'Select Subject');
+            initSelect2('#post_problem_id', true, 'Select Problem');
+        } else if (e.target.value == 'subject'){
+            $('#geo_maxing').show();
+            $('#curated').show();
+            $('#private').show();
+            $('#subject').hide();
+            $('#problem').hide();
+            $('#resource_tags').hide();
+            initSelect2('#post_subject_id', true, 'Select Subject');
+            initSelect2('#post_problem_id', true, 'Select Problem');
         } else {
+            $('#curated').show();
+            $('#private').show();
             $('#subject').hide();
             $('#problem').hide();
             $('#resource_tags').hide();
