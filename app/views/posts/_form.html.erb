@@ -472,5 +472,8 @@
   });
   <% if @post.post_type == Post::POST_TYPE_QUICK_SHARE %>
     $('#resource_tags').show();
+    $('#geo_maxing').hide();
+    $('#private').hide();
+    $('#curated').hide();
   <% end %>
 </script>
