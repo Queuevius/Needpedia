@@ -476,4 +476,7 @@
     $('#private').hide();
     $('#curated').hide();
   <% end %>
+  <% if @post.post_type == Post::POST_TYPE_SOCIAL_MEDIA %>
+    $('#geo_maxing').hide();
+  <% end %>
 </script>
