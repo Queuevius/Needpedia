@@ -1,4 +1,4 @@
-<% if @post.post_type == Post::POST_TYPE_IDEA %>
+<% if @post.post_type.in? Post::IDEA_POST_TYPES %>
   <%= render('idea_post') %>
 <% else %>
   <div class="container mb-5">

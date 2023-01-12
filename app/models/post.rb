@@ -14,6 +14,7 @@ class Post < ApplicationRecord
   POST_TYPE_WIKI_POSTS_ONLY = 'All Wiki Posts'.freeze
   POST_TYPE_HAVE = 'have'.freeze
   POST_TYPE_WANT = 'want'.freeze
+  POST_TYPE_QUICK_SHARE = 'quick_share'.freeze
   POST_TYPES = [
     POST_TYPE_SUBJECT,
     POST_TYPE_PROBLEM,
@@ -21,13 +22,20 @@ class Post < ApplicationRecord
     POST_TYPE_LAYER,
     POST_TYPE_SOCIAL_MEDIA,
     POST_TYPE_HAVE,
-    POST_TYPE_WANT
+    POST_TYPE_WANT,
+    POST_TYPE_QUICK_SHARE
   ].freeze
 
   CORE_POST_TYPES = [
     POST_TYPE_SUBJECT,
     POST_TYPE_PROBLEM,
-    POST_TYPE_IDEA
+    POST_TYPE_IDEA,
+    POST_TYPE_QUICK_SHARE
+  ].freeze
+
+  IDEA_POST_TYPES = [
+    POST_TYPE_IDEA,
+    POST_TYPE_QUICK_SHARE
   ].freeze
 
   TYPES_FOR_SEARCH = [POST_TYPE_WIKI_POSTS_ONLY] + POST_TYPES + ['All']

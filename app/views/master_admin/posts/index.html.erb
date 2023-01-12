@@ -23,6 +23,9 @@ It renders the `_table` partial to display details about the resources.
 [1]: http://www.rubydoc.info/gems/administrate/Administrate/Page/Collection
 %>
 
+<div class="alert alert-info text-center" role="alert">
+  <p>Type quick_share:, private:, public:, curated: or all: in search field to get filtered posts.</p>
+</div>
 <% content_for(:title) do %>
   <%= display_resource_name(page.resource_name) %>
 <% end %>
@@ -41,9 +44,6 @@ It renders the `_table` partial to display details about the resources.
   <% end %>
 
   <div>
-    <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Type private:, public:, curated: or all: in search field to get filtered posts.">
-      Info
-    </button>
     <%= link_to(
       t(
         "administrate.actions.new_resource",
