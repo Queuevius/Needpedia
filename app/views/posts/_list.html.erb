@@ -54,7 +54,7 @@
                 <% end %>
               <% end %>
               <% if post&.user == current_user %>
-                <%= link_to post_path(post), class: 'btn btn-default', method: :delete, data: {confirm: 'All comments and other activity related to this post will be deleted'} do %>
+                <%= link_to post_path(post, redirect_to: "/wall"), class: 'btn btn-default', method: :delete, data: {confirm: 'All comments and other activity related to this post will be deleted'} do %>
                   <i class="fa fa-trash-alt" style="font-size: 18px" title="Delete this post"></i>
                 <% end %>
               <% end %>

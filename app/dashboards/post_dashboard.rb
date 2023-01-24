@@ -8,6 +8,8 @@ class PostDashboard < Administrate::BaseDashboard
   # which determines how the attribute is displayed
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
+    deletions: Field::HasMany,
+    restore_at: Field::DateTime,
     content: Field::RichText,
     user: Field::BelongsTo,
     parent_subject: Field::BelongsTo.with_options(class_name: "Post", forign_key: 'subject_id'),
@@ -38,13 +40,14 @@ class PostDashboard < Administrate::BaseDashboard
   # By default, it's limited to four items to reduce clutter on index pages.
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
-  post_type
-  title
-  private
-  user
-  disabled
-  editing_disabled
-  layering_disabled
+    post_type
+    title
+    deletions
+    private
+    user
+    disabled
+    editing_disabled
+    layering_disabled
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -70,7 +73,9 @@ class PostDashboard < Administrate::BaseDashboard
   problem_id
   created_at
   updated_at
+  restore_at
   post_id
+  deletions
   ].freeze
 
   # FORM_ATTRIBUTES

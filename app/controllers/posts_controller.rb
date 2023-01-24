@@ -75,6 +75,11 @@ class PostsController < ApplicationController
   # GET /posts/1
   # GET /posts/1.json
   def show
+    unless @post.present?
+      redirect_to root_path, notice: 'Post you are accessing in not available'
+      return
+    end
+
     @comment = Comment.new(parent_id: params[:parent_id])
     @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('comments.created_at DESC')
     @objectives = @post.objectives.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('objectives.created_at DESC')
@@ -169,9 +174,9 @@ class PostsController < ApplicationController
   # DELETE /posts/1
   # DELETE /posts/1.json
   def destroy
-    @post.destroy
+    DeletePostService.new(@post.id, current_user.id).delete_post
     respond_to do |format|
-      format.html {redirect_to wall_path, notice: 'Post was successfully destroyed.'}
+      format.html {redirect_to params[:redirect_to], notice: 'Post was successfully destroyed.'}
       format.json {head :no_content}
     end
   end

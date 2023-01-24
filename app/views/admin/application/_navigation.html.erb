@@ -14,11 +14,11 @@ as defined by the routes in the `admin/` namespace
     class: "navigation__link"
   ) %>
 
-  <% Administrate::Namespace.new(namespace).resources.each do |resource| %>
+  <% Administrate::Namespace.new(namespace).resources_with_index_route.each do |resource| %>
     <%= link_to(
-       resource.resource == 'feedbacks' ? 'User Feedbacks' : display_resource_name(resource),
-      [namespace, resource_index_route_key(resource)],
-      class: "navigation__link navigation__link--#{nav_link_state(resource)}"
-    ) %>
+            display_resource_name(resource),
+            resource_index_route(resource),
+            class: "navigation__link navigation__link--#{nav_link_state(resource)}"
+        ) if accessible_action?(model_from_resource(resource), :index) %>
   <% end %>
 </nav>
