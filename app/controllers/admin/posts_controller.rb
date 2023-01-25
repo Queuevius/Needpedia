@@ -40,7 +40,7 @@ module Admin
       posts_arr << post.child_posts.problem_posts
       posts_arr << post.child_posts.idea_posts
       posts_arr << post.child_posts.idea_posts.collect(&:layers)
-      posts_arr = posts_arr.flatten
+      posts_arr = posts.flatten
       posts_arr.each do |p|
         p.update(deleted_at: nil, restore_at: Time.now)
       end

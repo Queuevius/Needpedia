@@ -24,7 +24,7 @@ class DeletePostService
     posts << post.child_posts.problem_posts
     posts << post.child_posts.idea_posts
     posts << post.child_posts.idea_posts.collect(&:layers)
-    posts = posts_arr.flatten
+    posts = posts.flatten
     posts.each do |p|
       p.update(deleted_at: Time.now)
       Deletion.create!(user_id: user.id, deletable_id: p.id, deletable_type: 'Post', reason: "Complete Post deletion including child posts and layers, post_id: #{post.id} by user: #{user.name}")
