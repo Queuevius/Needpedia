@@ -1,5 +1,4 @@
 <%= form_with(model: post, local: true) do |form| %>
-
   <% if !@post.persisted? %>
     <%= form.hidden_field :user_id, value: current_user.id %>
     <%= form.hidden_field :post_id, value: @post_id %>
@@ -506,9 +505,21 @@
     $('#geo_maxing').hide();
   <% end %>
   <% if @post.post_type == Post::POST_TYPE_GEOMAXING %>
+    $("#geo_maxing_checkbox").prop("checked", true);
+    $('#resource_tags').hide();
+    $('#mapSection').hide();
     $('#geo_maxing').show();
     $('#private').hide();
     $('#curated').hide();
     toggleMapSection();
+  <% end %>
+  <% if @post.post_type == Post::POST_TYPE_PROBLEM  %>
+    $("#geo_maxing_checkbox").prop("checked", false);
+    $('#geo_maxing').hide();
+    $('#private').show();
+    $('#curated').show();
+    $('#subject').show();
+    $('#problem').hide();
+    $('#resource_tags').hide();
   <% end %>
 </script>

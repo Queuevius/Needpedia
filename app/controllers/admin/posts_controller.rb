@@ -11,10 +11,16 @@ module Admin
     def restore_deleted_posts
       Post.unscoped do
         post = Post.find(params[:id])
-        handle_restore_subject_post if post.post_type == Post::POST_TYPE_SUBJECT
-        handle_restore_problem_post if post.post_type == Post::POST_TYPE_PROBLEM
-        handle_restore_idea_post if post.post_type == Post::POST_TYPE_IDEA
-        handle_restore_layer_post if post.post_type == Post::POST_TYPE_LAYER
+        case post.post_type
+        when Post::POST_TYPE_SUBJECT
+          handle_restore_subject_post
+        when Post::POST_TYPE_PROBLEM
+          handle_restore_problem_post
+        when Post::POST_TYPE_IDEA
+          handle_restore_idea_post
+        else
+          handle_restore_simple_post
+        end
       end
       redirect_to admin_posts_path
     end
@@ -34,14 +40,14 @@ module Admin
 
     def handle_restore_subject_post
       post = Post.find(params[:id])
-      posts_arr = []
-      posts_arr << post
-      posts_arr << post.layers
-      posts_arr << post.child_posts.problem_posts
-      posts_arr << post.child_posts.idea_posts
-      posts_arr << post.child_posts.idea_posts.collect(&:layers)
-      posts_arr = posts.flatten
-      posts_arr.each do |p|
+      posts = []
+      posts << post
+      posts << post.layers
+      posts << post.child_posts.problem_posts
+      posts << post.child_posts.idea_posts
+      posts << post.child_posts.idea_posts.collect(&:layers)
+      posts = posts.flatten
+      posts.each do |p|
         p.update(deleted_at: nil, restore_at: Time.now)
       end
     end
@@ -50,6 +56,7 @@ module Admin
       post = Post.find(params[:id])
       posts = []
       posts << post
+      posts << post.layers
       posts << post.ideas
       posts << post.ideas.collect(&:layers)
       posts = posts.flatten
@@ -69,7 +76,7 @@ module Admin
       end
     end
 
-    def handle_restore_layer_post
+    def handle_restore_simple_post
       post = Post.find(params[:id])
       posts = []
       posts << post
