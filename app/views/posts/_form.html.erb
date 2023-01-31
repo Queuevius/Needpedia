@@ -1,5 +1,4 @@
 <%= form_with(model: post, local: true) do |form| %>
-
   <% if !@post.persisted? %>
     <%= form.hidden_field :user_id, value: current_user.id %>
     <%= form.hidden_field :post_id, value: @post_id %>
@@ -144,6 +143,14 @@
     <%= form.submit class: 'btn btn-primary' %>
 
     <%= link_to "Cancel", :back, class: "btn btn-link" %>
+
+    <% if @post.persisted? %>
+      <% if @post&.user == current_user %>
+        <%= link_to post_path(@post, redirect_to: "/posts/search_result?q%5Btitle_cont%5D="), class: 'btn btn-default', method: :delete, data: {confirm: 'All comments and other activity related to this post will be deleted'} do %>
+          <i class="fa fa-trash-alt" style="font-size: 18px" title="Delete this post"></i>
+        <% end %>
+      <% end %>
+    <% end %>
   </div>
 <% end %>
 
@@ -340,6 +347,7 @@
 
     $('#post_post_type').change(function(e) {
         if (e.target.value == 'problem') {
+            $("#geo_maxing_checkbox").prop("checked", false);
             $('#geo_maxing').hide();
             $('#private').show();
             $('#curated').show();
@@ -349,6 +357,7 @@
             initSelect2('#post_subject_id', false, 'Select Subject');
             initSelect2('#post_problem_id', true, 'Select Problem');
         } else if (e.target.value == 'idea') {
+            $("#geo_maxing_checkbox").prop("checked", false);
             $('#geo_maxing').hide();
             $('#private').show();
             $('#curated').show();
@@ -359,6 +368,7 @@
             initSelect2('#post_subject_id', false, 'Select Subject');
             initSelect2('#post_problem_id', false, 'Select Problem');
         } else if (e.target.value == 'quick_share') {
+            $("#geo_maxing_checkbox").prop("checked", false);
             $('#geo_maxing').hide();
             $('#private').hide();
             $('#curated').hide();
@@ -368,6 +378,7 @@
             initSelect2('#post_subject_id', true, 'Select Subject');
             initSelect2('#post_problem_id', true, 'Select Problem');
         } else if (e.target.value == 'subject'){
+            $("#geo_maxing_checkbox").prop("checked", false);
             $('#geo_maxing').show();
             $('#curated').show();
             $('#private').show();
@@ -376,7 +387,21 @@
             $('#resource_tags').hide();
             initSelect2('#post_subject_id', true, 'Select Subject');
             initSelect2('#post_problem_id', true, 'Select Problem');
+            toggleMapSection();
+        } else if (e.target.value == 'geomaxing'){
+            $("#geo_maxing_checkbox").prop("checked", true);
+            $('#mapSection').hide();
+            $('#geo_maxing').show();
+            $('#curated').hide();
+            $('#private').hide();
+            $('#subject').hide();
+            $('#problem').hide();
+            $('#resource_tags').hide();
+            initSelect2('#post_subject_id', true, 'Select Subject');
+            initSelect2('#post_problem_id', true, 'Select Problem');
+            toggleMapSection();
         } else {
+            $("#geo_maxing_checkbox").prop("checked", false);
             $('#curated').show();
             $('#private').show();
             $('#subject').hide();
@@ -478,5 +503,23 @@
   <% end %>
   <% if @post.post_type == Post::POST_TYPE_SOCIAL_MEDIA %>
     $('#geo_maxing').hide();
+  <% end %>
+  <% if @post.post_type == Post::POST_TYPE_GEOMAXING %>
+    $("#geo_maxing_checkbox").prop("checked", true);
+    $('#resource_tags').hide();
+    $('#mapSection').hide();
+    $('#geo_maxing').show();
+    $('#private').hide();
+    $('#curated').hide();
+    toggleMapSection();
+  <% end %>
+  <% if @post.post_type == Post::POST_TYPE_PROBLEM  %>
+    $("#geo_maxing_checkbox").prop("checked", false);
+    $('#geo_maxing').hide();
+    $('#private').show();
+    $('#curated').show();
+    $('#subject').show();
+    $('#problem').hide();
+    $('#resource_tags').hide();
   <% end %>
 </script>

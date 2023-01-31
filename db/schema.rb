@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_03_062950) do
+ActiveRecord::Schema.define(version: 2023_01_24_064655) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -107,6 +107,16 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "cancellations", force: :cascade do |t|
+    t.string "reason"
+    t.bigint "post_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["post_id"], name: "index_cancellations_on_post_id"
+    t.index ["user_id"], name: "index_cancellations_on_user_id"
+  end
+
   create_table "comments", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "commentable_id"
@@ -117,6 +127,8 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
     t.integer "parent_id"
     t.integer "status", default: 0
     t.boolean "inappropriate", default: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_comments_on_deleted_at"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
@@ -142,6 +154,16 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
   create_table "conversations", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "deletions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "deletable_id"
+    t.string "deletable_type"
+    t.string "reason"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_deletions_on_user_id"
   end
 
   create_table "email_templates", force: :cascade do |t|
@@ -198,6 +220,8 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
     t.string "reason"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_flags_on_deleted_at"
     t.index ["user_id"], name: "index_flags_on_user_id"
   end
 
@@ -245,6 +269,8 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
     t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_interested_users_on_deleted_at"
     t.index ["post_id"], name: "index_interested_users_on_post_id"
     t.index ["user_id"], name: "index_interested_users_on_user_id"
   end
@@ -255,6 +281,8 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
     t.string "likeable_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_likes_on_deleted_at"
     t.index ["user_id"], name: "index_likes_on_user_id"
   end
 
@@ -292,6 +320,8 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "post_id"
     t.integer "admin_notification_id"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_notifications_on_deleted_at"
   end
 
   create_table "objectives", force: :cascade do |t|
@@ -301,6 +331,8 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "parent_id"
     t.string "body"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_objectives_on_deleted_at"
     t.index ["post_id"], name: "index_objectives_on_post_id"
     t.index ["user_id"], name: "index_objectives_on_user_id"
   end
@@ -312,6 +344,8 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
     t.string "post_token_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_post_tokens_on_deleted_at"
     t.index ["post_id"], name: "index_post_tokens_on_post_id"
     t.index ["user_id"], name: "index_post_tokens_on_user_id"
   end
@@ -334,6 +368,8 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
     t.decimal "lat"
     t.decimal "long"
     t.boolean "geo_maxing", default: false
+    t.datetime "deleted_at"
+    t.datetime "restore_at"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
@@ -366,6 +402,8 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
     t.string "rateable_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_ratings_on_deleted_at"
     t.index ["user_id"], name: "index_ratings_on_user_id"
   end
 
@@ -376,6 +414,8 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "parent_id"
     t.string "body"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_related_contents_on_deleted_at"
     t.index ["post_id"], name: "index_related_contents_on_post_id"
     t.index ["user_id"], name: "index_related_contents_on_user_id"
   end
@@ -409,6 +449,8 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
     t.string "shareable_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_shares_on_deleted_at"
     t.index ["user_id"], name: "index_shares_on_user_id"
   end
 
@@ -546,7 +588,9 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
     t.datetime "daily_report_sent_at"
     t.boolean "master_admin", default: false
     t.boolean "approved", default: false
+    t.datetime "deleted_at"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -554,7 +598,10 @@ ActiveRecord::Schema.define(version: 2023_01_03_062950) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "answers", "questions"
   add_foreign_key "answers", "users"
+  add_foreign_key "cancellations", "posts"
+  add_foreign_key "cancellations", "users"
   add_foreign_key "comments", "users"
+  add_foreign_key "deletions", "users"
   add_foreign_key "feedback_question_options", "feedback_questions"
   add_foreign_key "flags", "users"
   add_foreign_key "gigs", "users"

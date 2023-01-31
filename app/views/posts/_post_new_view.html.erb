@@ -25,37 +25,52 @@
             <div class="col-lg-12 col-md-12 ml-auto mr-auto">
               <div class="ui-block shadow-lg rounded">
                 <div class="ui-block-content">
-                  <div class="row">
-                    <div class="col-sm-3 text-left mb-2">
-                      <%= link_to 'Back', :back, class: 'btn btn-primary' %>
+                  <div class="d-flex">
+                    <div class="mr-auto">
+                      <% case @post.post_type %>
+                      <% when Post::POST_TYPE_LAYER %>
+                        <%= link_to 'Back', post_path(id: @post.post_id), class: 'btn btn-primary mb-3 btn-sm mt-1' %>
+                      <% when Post::POST_TYPE_IDEA %>
+                        <%= link_to 'Back', post_ideas_path(post_id: @post.problem_id, post_type: Post::POST_TYPE_IDEA), class: 'btn btn-primary mb-3 btn-sm mt-1' %>
+                      <% when Post::POST_TYPE_SUBJECT, Post::POST_TYPE_QUICK_SHARE, Post::POST_TYPE_GEOMAXING %>
+                        <%= link_to 'Back', search_result_posts_path(q: {post_type: ''}, post_type: @post.post_type), class: 'btn btn-primary mb-3 btn-sm mt-1' %>
+                      <% end %>
+                      <%#= link_to 'Back', :back, class: 'btn btn-primary mb-3 btn-sm mt-1' %>
                     </div>
-
-                    <% if ![Post::POST_TYPE_SOCIAL_MEDIA, Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(@post.post_type) %>
-                      <div class="col-sm-9 text-right mb-2">
+                    <div>
+                      <% if ![Post::POST_TYPE_SOCIAL_MEDIA, Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(@post.post_type) %>
+                        <% if @post.post_type == Post::POST_TYPE_SUBJECT %>
+                          <%= link_to post_problems_path(post_id: @post.id, post_type: Post::POST_TYPE_PROBLEM) do %>
+                            <%= image_tag('problem-r.png', width: "21%", title: 'Problems', class: "rounded mb-3") %>
+                          <% end %>
+                        <% end %>
                         <% if current_user.present? %>
                           <% if @post.editing_disabled? %>
-                            <button type="button" class="btn btn-primary disabled" data-toggle="tooltip" data-placement="top" title="Editing disabled by Admins">
+                            <button type="button" class="btn btn-primary disabled btn-sm mt-1" data-toggle="tooltip" data-placement="top" title="Editing disabled by Admins">
                               Edit
                             </button>
                           <% elsif (!@post.curated? && @post.user_id == current_user.id) || (!@post.curated? && !@post.
 
                               private && Post::CORE_POST_TYPES.include?(@post.post_type)) %>
-                            <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
+                            <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary mb-3 btn-sm mt-1 mr-1' do %>
                               Edit
                             <% end %>
                           <% elsif @post.curated? && @post&.curated_users&.include?(current_user) %>
-                            <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
+                            <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary mb-3 btn-sm mt-1 mr-1' do %>
                               Edit
                             <% end %>
                           <% end %>
                         <% end %>
-                        <div class="dropdown ml-1 float-right">
+                        <% if @post.geo_maxing? %>
+                          <%= link_to 'Map', post_map_path(@post), class: 'btn btn-primary mb-3 btn-sm' %>
+                        <% end %>
+                        <div class="dropdown mt-1 float-right">
                           <% if @post.layering_disabled? %>
-                            <button type="button" class="btn btn-secondary dropdown-toggle disabled" data-toggle="tooltip" data-placement="top" title="Adding Layers disabled by Admins">
+                            <button type="button" class="btn btn-secondary dropdown-toggle disabled btn-sm" data-toggle="tooltip" data-placement="top" title="Adding Layers disabled by Admins">
                               Layers
                             </button>
                           <% else %>
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                               Layers
                             </button>
                           <% end %>
@@ -70,19 +85,16 @@
                             <% end %>
                           </div>
                         </div>
-                        <% if @post.geo_maxing? %>
-                          <%= link_to 'Map', post_map_path(@post), class: 'btn btn-primary' %>
+                      <% else %>
+                        <% if !@post.editing_disabled? && @post.user_id == current_user.id %>
+                          <div class="col-sm-9 text-right mb-2">
+                            <%= link_to edit_post_path(@post), class: 'btn btn-primary' do %>
+                              Edit
+                            <% end %>
+                          </div>
                         <% end %>
-                      </div>
-                    <% else %>
-                      <% if !@post.editing_disabled? && @post.user_id == current_user.id %>
-                        <div class="col-sm-9 text-right mb-2">
-                          <%= link_to edit_post_path(@post), class: 'btn btn-primary' do %>
-                            Edit
-                          <% end %>
-                        </div>
                       <% end %>
-                    <% end %>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -99,7 +111,7 @@
                         </h5>
                         <h5 class="ml-5">Idea Post</h5>
                         <h1 class="m-2"><%= @post.title.titleize %></h1>
-                        <% unless @post.post_type == Post::POST_TYPE_QUICK_SHARE %>
+                        <% if @post.post_type == Post::POST_TYPE_IDEA %>
                           <h5 class="text-primary m-2"><%= link_to truncate(@post&.problem&.parent_subject&.title, length: 30).titleize, post_path(@post.problem.parent_subject), title: @post&.problem&.parent_subject&.title.titleize %>
                             -
                             <%= link_to truncate(@post&.problem&.title, length: 30).titleize, post_path(@post&.problem), title: @post.problem.title %>
@@ -243,43 +255,44 @@
                           <% end %></strong>
                       </div>
                     </div>
-                    <div class="col-1.5 ml-3"><strong>Track Post: </strong>
-                      <div class="btn btn-secondary" id="checkbox-btn">
-                        <%= check_box_tag "tracking", current_user.tracking_posts.pluck(:post_id).include?(@post.id), current_user.tracking_posts.pluck(:post_id).include?(@post.id), remote: true, method: :patch, class: "", title: 'Track this post' %>
-                      </div>
-                    </div>
-                    <div class="col-2"><strong>Report post: </strong>
-                      <% if @post.flags.pluck(:user_id).include?(current_user.id) %>
-                        <%= link_to flag_path(flagable_id: @post.id, flagable_type: 'Post'), class: 'btn btn-primary', title: 'Un-Flag this post', remote: true, :method => :delete do %>
-                          <i class="fa fa-flag" aria-hidden="true"></i>
-                        <% end %>
-                      <% else %>
-                        <%= link_to reason_modal_flags_path(flagable_id: @post.id, flagable_type: 'Post'), title: 'Flag this post', class: 'btn btn-secondary', remote: true do %>
-                          <i class="fa fa-flag-checkered" aria-hidden="true"></i>
-                        <% end %>
-                      <% end %>
-                      <span><%= @post.flags.count %></span>
-                    </div>
-                    <% if current_user %>
-                      <div class="col-4">
-                        <% if @post.shares.pluck(:user_id).include?(current_user.id) %>
-                          <div class="btn btn-primary" title="Already Shared by me">
-                            <i class="fa fa-share" aria-hidden="true"></i>
-                          </div>
-                        <% else %>
-                          <strong>Share: </strong>
-                          <%= link_to shares_path(shareable_id: @post.id, user_id: current_user.id, shareable_type: 'Post'), title: 'Share this post', class: 'btn btn-secondary', remote: true, method: :post do %>
-                            <i class="fa fa-share" aria-hidden="true"></i>
-                          <% end %>
-                        <% end %>
-                        <span><%= @post.shares.count %></span>
-                      </div>
-                    <% end %>
-                    <div class="col-md-12 border-top border-comments mt-1">
+                    <div class="col-md-12 border-top border-comments">
                       <div class="row mt-3">
                         <div class="col-md-12 mb-2">
                           <div class="row">
-                            <% unless current_user %>
+                            <% if current_user %>
+                              <strong class="mt-2">Report post: </strong>
+                              <div class="col-md-1">
+                                <% if @post.flags.pluck(:user_id).include?(current_user.id) %>
+                                  <%= link_to flag_path(flagable_id: @post.id, flagable_type: 'Post'), class: 'btn btn-primary', title: 'Un-Flag this post', remote: true, :method => :delete do %>
+                                    <i class="fa fa-flag" aria-hidden="true"></i>
+                                  <% end %>
+                                <% else %>
+                                  <%= link_to reason_modal_flags_path(flagable_id: @post.id, flagable_type: 'Post'), title: 'Flag this post', class: 'btn btn-secondary', remote: true do %>
+                                    <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                                  <% end %>
+                                <% end %>
+                                <span><%= @post.flags.count %></span>
+                              </div>
+                              <strong class="mt-2">Share: </strong>
+                              <div class="col-md-1">
+                                <% if @post.shares.pluck(:user_id).include?(current_user.id) %>
+                                  <div class="btn btn-primary" title="Already Shared by me">
+                                    <i class="fa fa-share" aria-hidden="true"></i>
+                                  </div>
+                                <% else %>
+                                  <%= link_to shares_path(shareable_id: @post.id, user_id: current_user.id, shareable_type: 'Post'), title: 'Share this post', class: 'btn btn-secondary', remote: true, method: :post do %>
+                                    <i class="fa fa-share" aria-hidden="true"></i>
+                                  <% end %>
+                                <% end %>
+                                <span class="mb-1"><%= @post.shares.count %></span>
+                              </div>
+                              <strong class="m-2 mr-0">Track Post: </strong>
+                              <div class="col-md-1">
+                                <div class="btn btn-secondary" id="checkbox-btn">
+                                  <%= check_box_tag "tracking", current_user.tracking_posts.pluck(:post_id).include?(@post.id), current_user.tracking_posts.pluck(:post_id).include?(@post.id), remote: true, method: :patch, class: "", title: 'Track this post' %>
+                                </div>
+                              </div>
+                            <% else %>
                               <div class="col-md-1">
                                 <span><%= @post.flags.count %></span> flags
                               </div>
@@ -318,7 +331,9 @@
       <div class="card-body border-top">
         <div>
           <div class="mr-sm-5">
-            <%= render 'objectives/form', post: @post, objective: @objective %>
+            <% if current_user.present? %>
+              <%= render 'objectives/form', post: @post, objective: @objective %>
+            <% end %>
           </div>
           <div class="row objectives_container_<%= @post.id %>">
             <%= render 'objectives/list', {post: @post, objectives: @objectives} %>
@@ -342,7 +357,9 @@
       <div class="card-body border-top">
         <h5 class="mb-3">Resource
           Tags: <%= raw @post.resource_tag_list.map {|t| link_to "##{t}", tag_path(t)}.join(', ') %>
-          <button class="btn btn-primary float-right" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Edit</button>
+          <% if current_user.present? %>
+            <button class="btn btn-primary float-right" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Edit</button>
+          <% end %>
         </h5>
         <div class="collapse" id="collapseExample">
           <div class="card card-body">
@@ -374,7 +391,9 @@
       <div class="card-body border-top">
         <div>
           <div class="mr-sm-5">
-            <%= render 'interested_users/form', interested_user: @interested_user, post: @post %>
+            <% if current_user.present? %>
+              <%= render 'interested_users/form', interested_user: @interested_user, post: @post %>
+            <% end %>
           </div>
           <div class="row interested_users_container_<%= @post.id %>">
             <%= render 'interested_users/list', {post: @post, interested_users: @interested_users} %>
@@ -395,7 +414,9 @@
       <div class="card-body border-top">
         <div>
           <div class="mr-sm-5">
-            <%= render 'related_contents/form', related_content: @related_content, post: @post %>
+            <% if current_user.present? %>
+              <%= render 'related_contents/form', related_content: @related_content, post: @post %>
+            <% end %>
           </div>
           <div class="row related_contents_container_<%= @post.id %>">
             <%= render 'related_contents/list', {post: @post, related_contents: @related_contents} %>
@@ -420,7 +441,9 @@
       <div class="card-body border-top">
         <div>
           <div class="mr-sm-5">
-            <%= render 'comments/form', comment: @comment, post: @post %>
+            <% if current_user.present? %>
+              <%= render 'comments/form', comment: @comment, post: @post %>
+            <% end %>
           </div>
           <div class="row comments_container_<%= @post.id %>">
             <%= render 'comments/list', {post: @post, comments: @comments} %>

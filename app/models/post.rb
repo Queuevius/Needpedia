@@ -6,6 +6,7 @@ class Post < ApplicationRecord
   has_many_attached :images
   # after_save :clean_froala_link
   ################################ Constants ############################
+  POST_TYPE_GEOMAXING = 'geomaxing'.freeze
   POST_TYPE_SUBJECT = 'subject'.freeze
   POST_TYPE_PROBLEM = 'problem'.freeze
   POST_TYPE_IDEA = 'idea'.freeze
@@ -16,6 +17,7 @@ class Post < ApplicationRecord
   POST_TYPE_WANT = 'want'.freeze
   POST_TYPE_QUICK_SHARE = 'quick_share'.freeze
   POST_TYPES = [
+    POST_TYPE_GEOMAXING,
     POST_TYPE_SUBJECT,
     POST_TYPE_PROBLEM,
     POST_TYPE_IDEA,
@@ -30,10 +32,12 @@ class Post < ApplicationRecord
     POST_TYPE_SUBJECT,
     POST_TYPE_PROBLEM,
     POST_TYPE_IDEA,
-    POST_TYPE_QUICK_SHARE
+    POST_TYPE_QUICK_SHARE,
+    POST_TYPE_GEOMAXING
   ].freeze
 
   IDEA_POST_TYPES = [
+    POST_TYPE_SUBJECT,
     POST_TYPE_IDEA,
     POST_TYPE_QUICK_SHARE
   ].freeze
@@ -78,9 +82,10 @@ class Post < ApplicationRecord
   has_many :notifications, dependent: :destroy
   has_many :notification_settings, dependent: :destroy
 
-  has_many :objectives
-  has_many :related_contents
-  has_many :interested_users
+  has_many :objectives, dependent: :destroy
+  has_many :related_contents, dependent: :destroy
+  has_many :interested_users, dependent: :destroy
+  has_many :deletions, as: :deletable, dependent: :destroy
 
   ############################### Validations ###########################
   validates :title, presence: true
@@ -94,6 +99,7 @@ class Post < ApplicationRecord
   ############################### Scopes ################################
 
   # default_scope { where(disabled: false) }
+  default_scope { where(deleted_at: nil) }
   scope :posts_feed, -> { where(disabled: false).where.not('post_type IN (?)', [POST_TYPE_IDEA, POST_TYPE_LAYER]) }
   scope :area_posts, -> { where(post_type: POST_TYPE_SUBJECT, disabled: false) }
   scope :problem_posts, -> { where(post_type: POST_TYPE_PROBLEM, disabled: false) }

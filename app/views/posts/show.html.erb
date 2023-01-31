@@ -1,5 +1,5 @@
 <% if @post.post_type.in? Post::IDEA_POST_TYPES %>
-  <%= render('idea_post') %>
+  <%= render('post_new_view') %>
 <% else %>
   <div class="container mb-5">
     <% if allowed_to_see?(@post, current_user) %>
@@ -44,21 +44,59 @@
               <div class="col-lg-12 col-md-12 ml-auto mr-auto">
                 <div class="ui-block shadow-lg rounded">
                   <div class="ui-block-content">
-                    <div class="row">
-                      <div class="col-sm-3 text-left mb-2">
-                        <%= link_to 'Back', :back, class: 'btn btn-primary' %>
+                    <div class="d-flex">
+                      <div class="mr-auto">
+                        <% post_type = @post.post_type %>
+                        <% case post_type %>
+                        <% when Post::POST_TYPE_LAYER %>
+                          <%= link_to 'Back', post_path(id: @post.post_id), class: 'btn btn-primary btn-sm mt-1' %>
+                        <% when Post::POST_TYPE_PROBLEM %>
+                          <%= link_to 'back', post_problems_path(post_id: @post.subject_id, post_type: Post::POST_TYPE_PROBLEM), class: 'btn btn-primary btn-sm mt-1' %>
+                        <% else %>
+                          <%= link_to 'Back', search_result_posts_path(q: {post_type: ''}, post_type: @post.post_type), class: 'btn btn-primary mb-3 btn-sm mt-1' %>
+                        <% end %>
+                        <%#= link_to 'Back', :back, class: 'btn btn-primary btn-sm mt-1' %>
                       </div>
+                      <div>
+                        <% if ![Post::POST_TYPE_SOCIAL_MEDIA, Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(@post.post_type) %>
+                          <%#= link_to all_areas_posts_path(), class: 'btn btn-default' do %>
+                          <%#= image_tag('area_icon.svg', height: "50%", width: "40%", title: 'See All Area posts') %>
+                          <%# end %>
+                          <%#= link_to 'Problems', all_problems_posts_path(), class: 'btn btn-danger' %>
+                          <% if @post.post_type == Post::POST_TYPE_PROBLEM %>
+                            <%= link_to post_ideas_path(post_id: @post.id, post_type: Post::POST_TYPE_IDEA), class: 'btn btn-default p-0' do %>
+                              <%= image_tag('idea_icon.svg', height: "50%", width: "40%", title: 'Ideas', class: "rounded") %>
+                            <% end %>
+                          <% end %>
 
-                      <% if ![Post::POST_TYPE_SOCIAL_MEDIA, Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(@post.post_type) %>
-                        <div class="col-sm-9 text-right mb-2">
+                          <% if current_user.present? %>
+                            <% if @post.editing_disabled? %>
+                              <button type="button" class="btn btn-primary btn-sm disabled mr-1 mt-1" data-toggle="tooltip" data-placement="top" title="Editing disabled by Admins">
+                                Edit
+                              </button>
+                            <% elsif (!@post.curated? && @post.user_id == current_user.id) || (!@post.curated? && !@post.
 
-                          <div class="dropdown ml-1 float-right">
+                                private && Post::CORE_POST_TYPES.include?(@post.post_type)) %>
+                              <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary btn-sm mr-1 mt-1' do %>
+                                Edit
+                              <% end %>
+                            <% elsif @post.curated? && @post&.curated_users&.include?(current_user) %>
+                              <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary btn-sm mr-1 mt-1' do %>
+                                Edit
+                              <% end %>
+                            <% end %>
+                          <% end %>
+
+                          <% if @post.geo_maxing? %>
+                            <%= link_to 'Map', post_map_path(@post), class: 'btn btn-primary btn-sm mr-1 mt-1' %>
+                          <% end %>
+                          <div class="dropdown float-right">
                             <% if @post.layering_disabled? %>
-                              <button type="button" class="btn btn-secondary dropdown-toggle disabled" data-toggle="tooltip" data-placement="top" title="Adding Layers disabled by Admins">
+                              <button type="button" class="btn btn-secondary btn-sm mt-1 dropdown-toggle disabled" data-toggle="tooltip" data-placement="top" title="Adding Layers disabled by Admins">
                                 Layers
                               </button>
                             <% else %>
-                              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <button class="btn btn-secondary btn-sm mt-1 dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Layers
                               </button>
                             <% end %>
@@ -73,52 +111,16 @@
                               <% end %>
                             </div>
                           </div>
-                          <%#= link_to all_areas_posts_path(), class: 'btn btn-default' do %>
-                          <%#= image_tag('area_icon.svg', height: "50%", width: "40%", title: 'See All Area posts') %>
-                          <%# end %>
-                          <%#= link_to 'Problems', all_problems_posts_path(), class: 'btn btn-danger' %>
-                          <% if @post.post_type == Post::POST_TYPE_SUBJECT %>
-                            <%= link_to post_problems_path(post_id: @post.id, post_type: Post::POST_TYPE_PROBLEM), class: 'btn btn-default' do %>
-                              <%= image_tag('problem_icon.svg', height: "50%", width: "40%", title: 'Problems') %>
-                            <% end %>
-                          <% end %>
-                          <% if @post.post_type == Post::POST_TYPE_PROBLEM %>
-                            <%= link_to post_ideas_path(post_id: @post.id, post_type: Post::POST_TYPE_IDEA), class: 'btn btn-default' do %>
-                              <%= image_tag('idea_icon.svg', height: "50%", width: "40%", title: 'Ideas') %>
-                            <% end %>
-                          <% end %>
-
-                          <% if current_user.present? %>
-                            <% if @post.editing_disabled? %>
-                              <button type="button" class="btn btn-primary disabled" data-toggle="tooltip" data-placement="top" title="Editing disabled by Admins">
-                                Edit
-                              </button>
-                            <% elsif (!@post.curated? && @post.user_id == current_user.id) || (!@post.curated? && !@post.
-
-                            private && Post::CORE_POST_TYPES.include?(@post.post_type)) %>
-                              <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
+                        <% else %>
+                          <% if !@post.editing_disabled? && @post.user_id == current_user.id %>
+                            <div class="col-sm-9 text-right mb-2">
+                              <%= link_to edit_post_path(@post), class: 'btn btn-primary' do %>
                                 Edit
                               <% end %>
-                            <% elsif @post.curated? && @post&.curated_users&.include?(current_user) %>
-                              <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
-                                Edit
-                              <% end %>
-                            <% end %>
+                            </div>
                           <% end %>
-
-                          <% if @post.geo_maxing? %>
-                            <%= link_to 'Map', post_map_path(@post), class: 'btn btn-primary' %>
-                          <% end %>
-                        </div>
-                      <% else %>
-                        <% if !@post.editing_disabled? && @post.user_id == current_user.id %>
-                          <div class="col-sm-9 text-right mb-2">
-                            <%= link_to edit_post_path(@post), class: 'btn btn-primary' do %>
-                              Edit
-                            <% end %>
-                          </div>
                         <% end %>
-                      <% end %>
+                      </div>
                     </div>
                   </div>
                 </div>

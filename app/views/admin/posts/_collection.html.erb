@@ -53,50 +53,45 @@ to display a collection of resources in an HTML table.
   </thead>
 
   <tbody>
-    <% resources.each do |resource| %>
-      <tr class="js-table-row"
-          tabindex="0"
-          <% if valid_action? :show, collection_presenter.resource_name %>
-            <%= %(role=link data-url=#{polymorphic_path([namespace, resource])}) %>
-          <% end %>
-          >
-        <% collection_presenter.attributes_for(resource).each do |attribute| %>
-          <td class="cell-data cell-data--<%= attribute.html_class %>">
-            <% if show_action? :show, resource -%>
-              <% if attribute.attribute == :title %>
-                <a href="<%= post_path(resource.id) -%>"
-                   >
-                  <%= resource.title %>
-                </a>
-              <% else %>
-                <a href="<%= polymorphic_path([namespace, resource]) -%>"
-                   class="action-show"
-                   >
-                  <%= render_field attribute %>
-                </a>
-              <% end %>
-            <% end -%>
-          </td>
+  <% resources.each do |resource| %>
+    <tr class="js-table-row"
+        <% if accessible_action?(resource, :show) %>
+        <%= %(tabindex=0 role=link data-url=#{polymorphic_path([namespace, resource])}) %>
         <% end %>
-
-        <% if valid_action? :edit, collection_presenter.resource_name %>
-          <td><%= link_to(
-            t("administrate.actions.edit"),
-            [:edit, namespace, resource],
-            class: "action-edit",
-          ) if show_action? :edit, resource%></td>
-        <% end %>
-
-        <% if valid_action? :destroy, collection_presenter.resource_name %>
-          <td><%= link_to(
-            t("administrate.actions.destroy"),
-            [namespace, resource],
-            class: "text-color-red",
-            method: :delete,
-            data: { confirm: t("administrate.actions.confirm") }
-          ) if show_action? :destroy, resource %></td>
-        <% end %>
-      </tr>
-    <% end %>
+        >
+      <% collection_presenter.attributes_for(resource).each do |attribute| %>
+        <td class="cell-data cell-data--<%= attribute.html_class %>">
+          <% if accessible_action?(resource, :show) -%>
+            <% if params[:deleted_at] == 'true' %>
+              <a href="<%= polymorphic_path([namespace, resource], deleted_at: true) -%>"
+                 class="action-show"
+              >
+                <%= render_field attribute %>
+              </a>
+            <% else %>
+              <a href="<%= polymorphic_path([namespace, resource]) -%>"
+                 class="action-show"
+              >
+                <%= render_field attribute %>
+              </a>
+            <% end %>
+          <% else %>
+            <%= render_field attribute %>
+          <% end -%>
+        </td>
+      <% end %>
+      <% unless params[:deleted_at] == 'true' %>
+        <%= render(
+                "collection_item_actions",
+                collection_presenter: collection_presenter,
+                collection_field_name: collection_field_name,
+                page: page,
+                namespace: namespace,
+                resource: resource,
+                table_title: "page-title"
+            ) %>
+      <% end %>
+    </tr>
+  <% end %>
   </tbody>
 </table>

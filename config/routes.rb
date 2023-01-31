@@ -41,6 +41,7 @@ Rails.application.routes.draw do
     resources :announcements
     resources :notifications
     resources :feedbacks
+    resources :deletions
     # resources :services
 
     root to: "users#index"
@@ -62,6 +63,8 @@ Rails.application.routes.draw do
     resources :posts do
       collection do
         get 'private_posts'
+        get 'deleted_posts'
+        get 'restore_deleted_posts'
       end
     end
     resources :users do
@@ -73,6 +76,7 @@ Rails.application.routes.draw do
     end
     resources :notifications
     resources :feedbacks
+    resources :deletions
 
     root to: "users#index"
   end

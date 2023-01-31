@@ -1,12 +1,12 @@
 <div class="row">
   <div class="col-md-12 col-lg-12 col-xl-12 col-sm-12">
     <div class="input-group mb-3">
-      <div class="input-group-prepend">
+      <div class="input-group-prepend hidden">
         <label class="form-check-label pr-2 pt-1">
           Is this an idea for transforming a physical space?
         </label>
         <div class="input-group-text private-checkbox">
-          <%= form.check_box :geo_maxing, onchange: 'toggleMapSection()' %>
+          <%= form.check_box :geo_maxing, onchange: 'toggleMapSection()', id:"geo_maxing_checkbox" %>
           <%= form.hidden_field :lat, id: 'post_lat' %>
           <%= form.hidden_field :long, id: 'post_long' %>
         </div>
@@ -35,6 +35,12 @@
     <% end %>
 
     function toggleMapSection() {
+        const checkBox = $('#geo_maxing_checkbox');
+        if(checkBox.prop("checked")) {
+            $('#mapSection').show();
+        } else {
+            $('#mapSection').hide();
+        }
         $('#mapSection').toggleClass('hidden');
         <% if post.persisted? && post.geo_maxing && post.lat.present? && post.long.present? %>
           var coordinates = [32.239491, -83.141719]
