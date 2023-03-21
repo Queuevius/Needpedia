@@ -9,7 +9,7 @@
   <ul class="list-inline mx-auto justify-content-center">
     <li>
       <%= link_to root_path do %>
-        <span><i class="fa fa-home" style="font-size: x-large" aria-hidden="true"></i></span>
+        <i class="fa fa-home" style="font-size: x-large" aria-hidden="true"></i>
       <% end %>
     </li>
     <% if user_signed_in? %>
@@ -39,9 +39,9 @@
         </div>
       </li>
 
-      <li class="map-icon">
+      <li class="nav-item">
         <%= link_to geo_maxing_posts_posts_path do %>
-          <%= image_tag('map-small.png', height: "60%", width: "60%") %>
+          <%= image_tag('map-small.png', height: "100%", width: "auto") %>
         <% end %>
       </li>
 
@@ -72,11 +72,11 @@
         </div>
       </li>
     <% else %>
-      <li class="nav-item"><%= link_to "Sign Up", new_user_registration_path, class: 'mt-2' %></li>
-      <li class="nav-item"><%= link_to "Login", new_user_session_path, class: 'mt-2' %></li>
-      <li class="map-icon">
+      <li class="nav-item"><%= link_to "Sign Up", new_user_registration_path %></li>
+      <li class="nav-item"><%= link_to "Login", new_user_session_path %></li>
+      <li class="nav-item">
         <%= link_to geo_maxing_posts_posts_path do %>
-          <%= image_tag('map-small.png', height: "60%", width: "60%") %>
+          <%= image_tag('map-small.png', height: "100%", width: "auto") %>
         <% end %>
       </li>
     <% end %>
@@ -90,3 +90,15 @@
       minimumInputLength: 2
   })
 </script>
+<style>
+  #navbar-container>ul {
+      display: flex;
+      align-items: center;
+  }
+  #navbar-container>ul>li>a {
+      box-sizing: content-box !important;
+      height: 25px !important;
+      display: flex;
+      align-items: center;
+  }
+</style>
