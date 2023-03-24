@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_31_110002) do
+ActiveRecord::Schema.define(version: 2023_03_16_062007) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -152,6 +152,14 @@ ActiveRecord::Schema.define(version: 2023_01_31_110002) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_deletions_on_user_id"
+  end
+
+  create_table "devices", force: :cascade do |t|
+    t.string "registration_id"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_devices_on_user_id"
   end
 
   create_table "email_templates", force: :cascade do |t|
@@ -571,6 +579,7 @@ ActiveRecord::Schema.define(version: 2023_01_31_110002) do
   add_foreign_key "answers", "users"
   add_foreign_key "comments", "users"
   add_foreign_key "deletions", "users"
+  add_foreign_key "devices", "users"
   add_foreign_key "feedback_question_options", "feedback_questions"
   add_foreign_key "flags", "users"
   add_foreign_key "gigs", "users"

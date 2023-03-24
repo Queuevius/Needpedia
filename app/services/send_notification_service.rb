@@ -33,6 +33,8 @@ class SendNotificationService
       p 'sending email'
       if posts.present? || messages.present?
         UserMailer.send_daily_email(user, posts, messages).deliver
+        push_notification = PushNotificationService.new(user, posts.count, messages.count)
+        push_notification.send_push_notification
       end
       p 'updating user'
       user.update(daily_report_sent_at: Time.now.utc)
