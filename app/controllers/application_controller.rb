@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  protect_from_forgery with: :exception
+  protect_from_forgery unless: -> { request.format.json? }
   before_action :check_nuclear_note
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :masquerade_user!

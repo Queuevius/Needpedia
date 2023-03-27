@@ -2,6 +2,12 @@ require 'sidekiq/web'
 require 'sidekiq/cron/web'
 
 Rails.application.routes.draw do
+  namespace :api, defaults: {format: 'json'} do
+    namespace :v1 do
+      match '/auth/sign_in', to: 'auth#options_request', via: [:options]
+      mount_devise_token_auth_for 'User', at: 'auth'
+    end
+  end
   resources :interested_users
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
   get 'how_tos/index'
