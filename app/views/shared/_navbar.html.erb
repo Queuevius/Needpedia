@@ -75,7 +75,7 @@
       <li class="nav-item"><%= link_to "Sign Up", new_user_registration_path %></li>
       <li class="nav-item"><%= link_to "Login", new_user_session_path %></li>
       <li class="nav-item">
-        <%= link_to geo_maxing_posts_posts_path do %>
+        <%= link_to geo_maxing_posts_posts_path, id:"map-small-link" do %>
           <%= image_tag('map-small.png', height: "100%", width: "auto") %>
         <% end %>
       </li>
@@ -100,5 +100,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
+  }
+
+  #map-small-link {
+      padding-top: 10px !important;
+      padding-bottom: 10px !important;
   }
 </style>
