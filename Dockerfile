@@ -21,6 +21,8 @@ RUN gem install mimemagic -v '0.3.10' --source 'https://rubygems.org/'
 RUN gem install bundler -v 2.4.4
 RUN gem install rails -v 6.0.4
 RUN bundle install
+RUN rails db:create
+RUN rails db:migrate
 
 COPY . ./
 RUN chmod +x /workspace/bin/rails
