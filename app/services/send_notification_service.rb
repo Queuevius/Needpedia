@@ -4,10 +4,10 @@ class SendNotificationService
     users = User.includes(posts: [:likes, :comments, :shares, :flages, :ratings]).where(daily_notifications: true, daily_notification_time: Time.now.utc..Time.now.utc + 10.minutes)
     users.each do |user|
       p "processing user #{user&.name}"
-      if already_send?(user)
-        p "skipping user as daily notification already sent #{user&.name}"
-        next
-      end
+      # if already_send?(user)
+      #   p "skipping user as daily notification already sent #{user&.name}"
+      #   next
+      # end
 
       posts = []
       if user&.track_notifications? || user&.all_notifications?
@@ -36,8 +36,8 @@ class SendNotificationService
         push_notification = PushNotificationService.new(user, posts.count, messages.count)
         push_notification.send_push_notification
       end
-      p 'updating user'
-      user.update(daily_report_sent_at: Time.now.utc)
+      # p 'updating user'
+      # user.update(daily_report_sent_at: Time.now.utc)
     end
     p "finished sending email at #{Time.now}"
   end
