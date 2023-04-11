@@ -1,0 +1,49 @@
+<% if @user_tutorial.present? && @user_tutorial.viewed == false %>
+  <div class="modal fade show " id="tutorialModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content text-xl">
+        <div class="modal-header p-0 border-bottom-0 mt-2 mr-2 mb-0">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body mt-0 pt-0 " style="font-size: 1.75em;">
+          <p><%= @user_tutorial.content.html_safe %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+      $(document).ready(function () {
+          $('#tutorialModal').modal('show');
+          $('.modal-backdrop').removeClass('modal-backdrop');
+          $('#tutorialModal').on('shown.bs.modal', function () {
+              var $modal = $(this);
+              var modalHeight = $modal.find('.modal-dialog').height();
+              var windowHeight = $(window).height();
+              if (modalHeight < windowHeight) {
+                  var marginTop = (windowHeight - modalHeight) / 2;
+                  $modal.find('.modal-dialog').css({
+                      'display': 'flex',
+                      'align-items': 'center',
+                      'margin-top': marginTop + 'px'
+                  });
+              }
+          });
+          $('#tutorialModal').on('hide.bs.modal', function () {
+              $.ajax({
+                  url: '/user_tutorials/update_viewed',
+                  type: 'POST',
+                  data: {id: <%= @user_tutorial.id %>},
+                  success: function (response) {
+                      // Handle success response
+                  },
+                  error: function (xhr, status, error) {
+                      // Handle error response
+                  }
+              });
+          });
+      });
+  </script>
+<% end %>
