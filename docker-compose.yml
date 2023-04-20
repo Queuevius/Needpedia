@@ -4,7 +4,7 @@ services:
   my-redis:
     image: redis:latest
     ports:
-      - "6379:6379"
+      - "6380:6379"
   need_pedia:
     build:
       context: .
