@@ -1,10 +1,10 @@
 <b>Note from founder to dev community:</b><br>
-Needpedia's goal is to create a community of devs who use it's "Layer System" and other tools to collaborate directly with users, to optimize Needpedia, and to optimize the world. It can be used to work on anything from random volunteer organizations halfway accross the world, to exposing all known problems with giant evil corporations in your own backyard. Which is why it needs to be an Open Source community instead of a business.</b><br> 
+Needpedia's goal is to create a community of devs who use it's "Layer System" and other tools to collaborate directly with users, to optimize Needpedia, and use Needpedia to optimize just about anything they want to in the world. It can be used to work on anything from humanitarian projects in distant nations, to exposing corporate corruption in your own backyard. Which is why it needs to be an Open Source community instead of a business.</b><br> 
 
-Needpedia's dev community is the backbone of this entire operation, so if there is _Anything_ I or others can do to support you, or that we can add to this project to make it work better, I wanna know about it.<br><br> 
+Needpedia's dev community is the backbone of this entire operation, so if there is _Anything_ I or others can do to support you, or that we can add to this project to make it work better, I wanna know about it.<br><br> As might the community. So feel free to post problems about Needpdia on Needpedia, (and only there, as listing problems anywhere else creates a barrier for our users to see what we're doing and our goal is to operate with absolute transparency and accessibility). That said we've loaded our discord space with all kinds of resources for volunteer devs and others so if you haven't already, please take a minite to check that out here: https://discord.gg/nnvAFQSDaF
 
 Speaking of which, Github's made a free AI development assistant called co-pilot, feel free to check that out here:<br> 
-https://copilot.github.com/ <br><br>
+https://copilot.github.com/ At Needpedia our goal is to accomplish the most that we can for people in need so we embrace AI; because we see how it can be used to enable ourselves, and those in need, to accomplish more.<br><br>
 
       -Anthony Brasher<br>
        Anthonydunn97202@gmail.co<br><br>
