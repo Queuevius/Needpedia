@@ -26,6 +26,20 @@
   }
 }
 
+.btn-close {
+  height: 1.3rem;
+  width: 1.3rem;
+  background-image: url( asset_path("x.svg") );
+  background-size: 100% 100%;
+}
+
+.div-alert {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
 // Masquerade alert shouldn't have a bottom margin
 body > .alert {
   margin-bottom: 0;
