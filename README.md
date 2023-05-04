@@ -1,6 +1,7 @@
 Always remember, it is devs like you that are the reason Needpedia doesn't have to sell out to corporate sponsors. You are the reason our entire community will always be free to speak critically of any corporation or government they wish, you are the backbone of this community. And if there is anything we can do to support you or improve our environment, we want to know about it. <br><br>
 
-Below we have a flowchart for volunteer devs, in addition to a large number of other resources available on our Discord space here:
+Below we have a flowchart for volunteer devs.<br>
+We also have a growing number of other resources available on our Discord space here:
 https://discord.gg/B7VNVQmHwG<br><br>
 
 Startup and troubleshooting instructions are posted to Discord. In a nutshell we use docker to run locally and test PRs, just be sure to get approval for milestones from me at Anthonydunn97202@gmail.com before beginning work on things. <br><br><br>
