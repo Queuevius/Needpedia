@@ -1,0 +1,121 @@
+<section>
+  <div class="container">
+    <%= form_tag "", method: :get, class: "form-inline mb-4", id: "search-form" do %>
+      <div class="form-group mr-2">
+        <%= label_tag :start_date, "From:", class: "form-label" %>
+        <%= text_field_tag :start_date, params[:start_date], class: "form-control", placeholder: "Select start date", type: "date" %>
+      </div>
+      <div class="form-group mr-2">
+        <%= label_tag :end_date, "To:", class: "form-label" %>
+        <%= text_field_tag :end_date, params[:end_date], class: "form-control", placeholder: "Select end date", type: "date" %>
+      </div>
+      <div class="form-group mr-2">
+        <%= label_tag :per, "Items per page:", class: "form-label" %>
+        <%= select_tag :per, options_for_select([10, 20, 50, 100], params[:per].to_i), class: "form-control form-select" %>
+      </div>
+      <%= submit_tag "Search", class: "btn btn-primary mr-2" %>
+      <%= button_tag "Clear Search", type: "button", class: "btn btn-secondary", id: "clear-search-btn" %>
+    <% end %>
+
+    <% per_value = params[:per].present? ? params[:per].to_i : 5 %>
+    <% if params[:start_date].present? && params[:end_date].present? %>
+      <% start_date = Date.parse(params[:start_date]) %>
+      <% end_date = Date.parse(params[:end_date]) %>
+      <% @activities = @activities.where(created_at: start_date.beginning_of_day..end_date.end_of_day).page(params[:page]).per(per_value) %>
+    <% else %>
+      <% @activities = @activities.page(params[:page]).per(per_value) %>
+    <% end %>
+    <div class="activity-container">
+      <% @activities.each do |activity| %>
+        <div class="card">
+          <div class="tab-content admin-tab-content pt-30">
+            <div role="tabpanel" class="tab-pane active show" id="t1">
+              <ul class="activity-list list-unstyled">
+                <li class="clearfix">
+                  <div class="float-left">
+                    <%= link_to wall_path(uuid: activity.owner.uuid) do %>
+                      <% if activity.owner.profile_image.present? %>
+                        <%= image_tag activity.owner.profile_image, class: "img-fluid rounded-circle" %>
+                      <% else %>
+                        <%= image_tag "profile.png", class: "img-fluid rounded-circle" %>
+                      <% end %>
+                    <% end %>
+                  </div>
+                  <div class="act-content">
+                    <div class="font-400">
+                      <% if activity.trackable.present? %>
+                        <%= render partial: "public_activity/message/#{activity.trackable_type.downcase}", locals: { activity: activity } %>
+                      <% else %>
+                        <strong><%= activity&.owner&.name || 'A user' %></strong> <%= t("public_activity.messages.#{activity.key}") %> <strong><%= activity.trackable_type %></strong>
+                        <% unless t("public_activity.messages.#{activity.key}") == "removed a" %>
+                          which does not exist anymore.
+                        <% end %>
+                      <% end %>
+
+                    </div>
+                    <span class="text-small"><%= activity.created_at.strftime('%B %d, %Y %H:%M') %></span>
+                    <div>
+                      <% if activity.ip.present? %>
+                       <strong>User iP:</strong> <%= activity.ip %>
+                      <% end %>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      <div class="pagination" id="pagination-container">
+        <%= paginate @activities %>
+      </div>
+
+    </div>
+  </div>
+</section>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const paginationContainer = document.getElementById('pagination-container');
+        const activitiesPerPage = 5; // Set the default per value
+
+        function generatePagination(totalPages, currentPage) {
+            paginationContainer.innerHTML = '';
+
+            for (let page = 1; page <= totalPages; page++) {
+                const pageLink = document.createElement('a');
+                pageLink.href = `?page=${page}`;
+                pageLink.textContent = page;
+
+                if (page === currentPage) {
+                    pageLink.classList.add('active');
+                }
+
+                pageLink.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const clickedPage = new URLSearchParams(event.target.search).get('page');
+                    if (clickedPage !== currentPage.toString()) {
+                        console.log('Clicked page:', clickedPage);
+                        // Perform your logic for handling the clicked page here
+                    }
+                });
+
+                paginationContainer.appendChild(pageLink);
+            }
+        }
+
+        generatePagination(totalPages, currentPage);
+
+    });
+    var clearSearchBtn = document.getElementById('clear-search-btn');
+    var dateInputs = document.querySelectorAll('input[type="date"]');
+
+    clearSearchBtn.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        dateInputs.forEach(function (input) {
+            input.value = ''; // Clear the value of each date input field
+        });
+
+        document.getElementById('search-form').submit(); // Submit the form
+    });
+</script>

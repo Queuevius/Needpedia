@@ -44,6 +44,7 @@ class GigsController < ApplicationController
       if @gig.save
         format.html { redirect_to gigs_url, notice: 'Gig was successfully created.' }
         format.json { render :show, status: :created, location: @gig }
+        create_activity(@gig, 'gig.create')
       else
         flash[:alert] = @gig.errors.full_messages.join(',')
         format.html { render :new }
@@ -66,6 +67,7 @@ class GigsController < ApplicationController
         end
         format.html { redirect_to gigs_url, notice: 'Gig was successfully updated.' }
         format.json { render :show, status: :ok, location: @gig }
+        create_activity(@gig, 'gig.update')
       else
         flash[:alert] = @gig.errors.full_messages.join(',')
         format.html { render :edit }
@@ -79,6 +81,7 @@ class GigsController < ApplicationController
   def destroy
     begin
       @gig = Gig.find(params[:id])
+      create_activity(@gig, 'gig.destroy')
       @gig.destroy
     rescue StandardError => e
       flash[:alert] = "An Error occurred: #{e}"
@@ -140,5 +143,9 @@ class GigsController < ApplicationController
   # Only allow a list of trusted parameters through.
   def gig_params
     params.require(:gig).permit(:title, :area_tag, :user_id, :body, :amount, images: [])
+  end
+
+  def create_activity(gig, event)
+    ActivityService.new(object: gig, event: event, owner: current_user, ip: request.remote_ip).call
   end
 end

@@ -40,5 +40,10 @@ module Admin
         resource_class
       end
     end
+
+    def user_history
+      @user = User.find(params[:id])
+      @activities = PublicActivity::Activity.where(owner: @user).order(created_at: :desc)
+    end
   end
 end

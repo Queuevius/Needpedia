@@ -1,0 +1,1 @@
+<strong><%= activity&.owner&.name || 'A user' %></strong> <%=  t("public_activity.messages.#{activity.key}") %> <strong><%= link_to activity.trackable.receiver.name, wall_path(uuid: activity.trackable.receiver.uuid) %></strong>.

@@ -1,0 +1,1 @@
+<strong><%= activity&.owner&.name || 'A user' %> </strong> <%= t("public_activity.messages.#{activity.key}") %> <%= activity.trackable_type %> <strong> <%= link_to activity.trackable.title, activity.trackable %></strong>.

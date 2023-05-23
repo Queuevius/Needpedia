@@ -1,5 +1,5 @@
 class Comment < ApplicationRecord
-
+  include PublicActivity::Model
   ################################ Relationships ########################
   # belongs_to :parent_post, class_name: 'Post', foreign_key: :post_id, optional: true
   # belongs_to :user, optional: true
