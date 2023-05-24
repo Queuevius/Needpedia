@@ -1,6 +1,8 @@
 class ConversationsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_conversation, :read_message, only: [:show]
+  before_action :set_tutorial, except: [:create, :users, :back]
+
   def index
     @f = User.ransack(params[:q])
     @conversations = current_user.conversations.includes(:messages, :users).order('messages.created_at DESC')
@@ -53,5 +55,11 @@ class ConversationsController < ApplicationController
   def read_message
     messages = @conversation&.messages&.unread&.where.not(user_id: current_user&.id)
     messages.update_all read_at: Time.now if messages.present?
+  end
+
+  def set_tutorial
+    @url = "#{params[:controller]}"
+    @url += "/#{params[:action]}" if params[:action] != "index"
+    @user_tutorial = current_user.user_tutorials.where(link: @url).last if current_user.present?
   end
 end

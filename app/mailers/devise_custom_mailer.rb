@@ -6,6 +6,7 @@ class DeviseCustomMailer < Devise::Mailer
   # Note that Devise passes a Devise::Mailer object to your proc, hence the parameter throwaway (*).
 
   def confirmation_instructions(record, token, opts = {})
+    @user = record
     email_template = EmailTemplate.find_by(name: 'confirmation_instructions')
     mail = super
     mail.subject = email_template.present? ? email_template.subject : 'Confirmation instructions'

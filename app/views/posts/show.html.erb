@@ -112,12 +112,14 @@
                             </div>
                           </div>
                         <% else %>
-                          <% if !@post.editing_disabled? && @post.user_id == current_user.id %>
-                            <div class="col-sm-9 text-right mb-2">
-                              <%= link_to edit_post_path(@post), class: 'btn btn-primary' do %>
-                                Edit
-                              <% end %>
-                            </div>
+                          <% if current_user.present? %>
+                            <% if !@post.editing_disabled? && @post.user_id == current_user.id %>
+                              <div class="col-sm-9 text-right mb-2">
+                                <%= link_to edit_post_path(@post), class: 'btn btn-primary' do %>
+                                  Edit
+                                <% end %>
+                              </div>
+                            <% end %>
                           <% end %>
                         <% end %>
                       </div>
