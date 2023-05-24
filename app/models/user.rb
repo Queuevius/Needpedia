@@ -70,6 +70,7 @@ class User < ApplicationRecord
 
   has_many :feedbacks, dependent: :destroy
   has_many :deletions, dependent: :destroy
+  has_many :devices, dependent: :destroy
 
   has_many :user_tutorials, dependent: :destroy
 

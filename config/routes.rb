@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       match '/auth/sign_in', to: 'auth#options_request', via: [:options]
       mount_devise_token_auth_for 'User', at: 'auth'
+      match '/register_device', to: 'device_registration#register_device', via: [:post]
     end
   end
   resources :interested_users

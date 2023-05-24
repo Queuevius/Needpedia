@@ -25,7 +25,11 @@ class UserDashboard < Administrate::BaseDashboard
     disabled: Field::Boolean,
     profile_image: Field::ActiveStorage,
     questionnaires: Field::HasMany,
-    answers: Field::HasMany
+    answers: Field::HasMany,
+    daily_notification_time: Field::Time,
+    track_notifications: Field::Boolean,
+    daily_report_sent_at: Field::DateTime,
+    daily_notifications: Field::Boolean
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -60,6 +64,10 @@ class UserDashboard < Administrate::BaseDashboard
   created_at
   updated_at
   profile_image
+  daily_notification_time
+  track_notifications
+  daily_report_sent_at
+  daily_notifications
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -75,6 +83,9 @@ class UserDashboard < Administrate::BaseDashboard
   master_admin
   password
   approved
+  track_notifications
+  daily_report_sent_at
+  daily_notifications
   ].freeze
 
   # COLLECTION_FILTERS
