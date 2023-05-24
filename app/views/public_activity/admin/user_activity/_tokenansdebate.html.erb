@@ -1,0 +1,1 @@
+<strong><%= activity&.owner&.name || 'A user' %></strong> <%= t("public_activity.admin.user_activity.#{activity.key}").humanize.downcase %> <strong><%= link_to "Token", debate_post_tokens_path(id: activity.trackable.post_token.id) %></strong>

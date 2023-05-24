@@ -1,0 +1,1 @@
+<strong><%= activity&.owner&.name || 'A user' %></strong> <%= t("public_activity.admin.user_activity.#{activity.key}").humanize.downcase %> <%= activity.trackable.post_type.humanize.downcase %> post <strong><%= link_to activity.trackable.title, activity.trackable %></strong>.

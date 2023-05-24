@@ -16,15 +16,6 @@
       <%= submit_tag "Search", class: "btn btn-primary mr-2" %>
       <%= button_tag "Clear Search", type: "button", class: "btn btn-secondary", id: "clear-search-btn" %>
     <% end %>
-
-    <% per_value = params[:per].present? ? params[:per].to_i : 5 %>
-    <% if params[:start_date].present? && params[:end_date].present? %>
-      <% start_date = Date.parse(params[:start_date]) %>
-      <% end_date = Date.parse(params[:end_date]) %>
-      <% @activities = @activities.where(created_at: start_date.beginning_of_day..end_date.end_of_day).page(params[:page]).per(per_value) %>
-    <% else %>
-      <% @activities = @activities.page(params[:page]).per(per_value) %>
-    <% end %>
     <div class="activity-container">
       <% @activities.each do |activity| %>
         <div class="card">
@@ -44,7 +35,7 @@
                   <div class="act-content">
                     <div class="font-400">
                       <% if activity.trackable.present? %>
-                        <%= render partial: "public_activity/message/#{activity.trackable_type.downcase}", locals: { activity: activity } %>
+                        <%= render partial: "public_activity/admin/user_activity/#{activity.trackable_type.downcase}", locals: { activity: activity } %>
                       <% else %>
                         <strong><%= activity&.owner&.name || 'A user' %></strong> <%= t("public_activity.messages.#{activity.key}") %> <strong><%= activity.trackable_type %></strong>
                         <% unless t("public_activity.messages.#{activity.key}") == "removed a" %>
