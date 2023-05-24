@@ -107,7 +107,7 @@
                       <span>
                         <h5 id="rating_title-<%= @post.id %>" class="search-result-rating" data-toggle="modal" data-target="#rating_modal-<%= @post.id %>">
                           <i class="fa fa-sort" aria-hidden="true"></i>
-                          <%= @post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %> <%= rating(@post) %>
+                          <%= @post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %> <%= rating(@post, params[:action]) %>
                         </h5>
                         <h5 class="ml-5">Idea Post</h5>
                         <h1 class="m-2"><%= @post.title.titleize %></h1>

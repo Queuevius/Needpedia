@@ -1,0 +1,51 @@
+<div class="row">
+  <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12"><%= render 'shared/sidebar' %></div>
+  <div class="col-md-9 col-lg-9 col-xl-9 col-sm-12">
+
+    <!-- Page Content  -->
+    <div id="content" class="pl-2">
+
+      <div class="row">
+        <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+          <div class="ui-block shadow-lg rounded">
+            <div class="ui-block-content">
+              <div class="container">
+                <div id="about_location">
+                  <div class="row mb-2">
+                    <div class="col-lg-6 col-md-6 text-left">
+                      <h5 class="pl-0">Tutorials:</h5>
+                    </div>
+                  </div>
+                  <% @user_tutorials.each do |tutorial| %>
+                    <div class="accordion border-top" id="accordionExample<%= tutorial.id %>">
+                      <div class="card">
+                        <div class="card-header" id="heading<%= tutorial.id %>">
+                          <h2 class="mb-0">
+                            <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse<%= tutorial.id %>" aria-expanded="true" aria-controls="collapse<%= tutorial.id %>">
+                              <h3><%= tutorial.link %> <i class="fas fa-caret-right" style="float: right;"></i>:</h3>
+                            </button>
+                          </h2>
+                        </div>
+
+                        <div id="collapse<%= tutorial.id %>" class="collapse border-top" aria-labelledby="heading<%= tutorial.id %>" data-parent="#accordionExample<%= tutorial.id %>">
+                          <div class="card-body bg-white">
+                            <%= tutorial.content.html_safe %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript" charset="utf-8">
+    $('.card-header').click(function () {
+        $(this).find('i').toggleClass('fas fa-caret-right fas fa-caret-down');
+    });
+</script>

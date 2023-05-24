@@ -86,6 +86,9 @@
       <li>
         <%= link_to 'Settings', edit_user_registration_path, data: {turbolinks: false} %>
       </li>
+      <li>
+        <%= link_to "Tutorials", user_tutorials_path(uuid: @uuid) %>
+      </li>
 
       <% if current_user == @user %>
         <li>

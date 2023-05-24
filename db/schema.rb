@@ -10,10 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_16_062007) do
+ActiveRecord::Schema.define(version: 2023_03_31_093801) do
 
   # These are extensions that must be enabled in order to support this database
-  enable_extension "hstore"
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
 
@@ -482,6 +481,14 @@ ActiveRecord::Schema.define(version: 2023_03_16_062007) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "tutorials", force: :cascade do |t|
+    t.string "link"
+    t.text "content"
+    t.boolean "show"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "user_conversations", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "conversation_id", null: false
@@ -535,6 +542,16 @@ ActiveRecord::Schema.define(version: 2023_03_16_062007) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["questionnaire_id"], name: "index_user_questionnaires_on_questionnaire_id"
     t.index ["user_id"], name: "index_user_questionnaires_on_user_id"
+  end
+
+  create_table "user_tutorials", force: :cascade do |t|
+    t.string "link"
+    t.text "content"
+    t.boolean "viewed", default: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_user_tutorials_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -613,4 +630,5 @@ ActiveRecord::Schema.define(version: 2023_03_16_062007) do
   add_foreign_key "user_private_posts", "users"
   add_foreign_key "user_questionnaires", "questionnaires"
   add_foreign_key "user_questionnaires", "users"
+  add_foreign_key "user_tutorials", "users"
 end

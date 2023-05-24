@@ -6,6 +6,7 @@ class PostsController < ApplicationController
   before_action :set_area, only: [:problems, :ideas, :layers, :track_post]
   before_action :set_user, only: [:new, :have, :want]
   after_action :send_update_email, only: [:update]
+  before_action :set_tutorial, except: [:update, :create, :destroy, :delete_image_attachment, :destroy_activity, :modal, :remove_curated_user, :track_post]
 
   # GET /posts
   # GET /posts.json
@@ -137,8 +138,12 @@ class PostsController < ApplicationController
         create_private_users
         create_curated_users
         create_activity(@post, 'post.create')
-        format.html {redirect_to @post, notice: 'Post was successfully created.'}
-        format.json {render :show, status: :created, location: @post}
+        if @post.post_type == Post::POST_TYPE_SOCIAL_MEDIA
+          format.html {redirect_to wall_path(uuid: params[:post][:uuid], anchor: "post-#{@post.id}"), notice: "Post was successfully saved."}
+        else
+          format.html {redirect_to @post, notice: 'Post was successfully created.'}
+          format.json {render :show, status: :created, location: @post}
+        end
       else
         flash[:alert] = @post.errors.full_messages.join(',')
         format.html {render :new}
@@ -161,8 +166,12 @@ class PostsController < ApplicationController
         Notification.post(from: current_user, notifiable: current_user, to: @post.users, action: Notification::NOTIFICATION_TYPE_POST_UPDATED, post_id: @post.id)
         create_activity(@post, 'post.update')
         offsite_notification(@post)
-        format.html {redirect_to @post, notice: 'Post was successfully updated.'}
-        format.json {render :show, status: :ok, location: @post}
+        if @post.post_type == Post::POST_TYPE_SOCIAL_MEDIA
+          format.html {redirect_to wall_path(uuid: params[:post][:uuid], anchor: "post-#{@post.id}"), notice: "Post was successfully updated."}
+        else
+          format.html {redirect_to @post, notice: 'Post was successfully updated.'}
+          format.json {render :show, status: :ok, location: @post}
+        end
       else
         flash[:alert] = @post.errors.full_messages.join(',')
         format.html {render :edit}
@@ -221,27 +230,30 @@ class PostsController < ApplicationController
 
   def search_result
     @keywords = params[:q]
-    @active_tab = 'posts'
-    if @keywords[:first_name_or_last_name_or_full_name_cont].present?
-      @active_tab = 'people'
-      query_service = UserSearchService.new(params)
-      users = query_service.filter
-      @users = Kaminari.paginate_array(users).page(params[:users]).per 10
-      @posts = Kaminari.paginate_array([]).page(params[:posts]).per 10
+    post_query_service = PostSearchService.new(params)
+    posts = post_query_service.filter
+    @posts = Kaminari.paginate_array(posts).page(params[:posts]).per(10)
+    @access_type = params[:access_type]
+    @post_type = params[:post_type]
+    @sorted_by = params[:sorted_by]
+    @subject = params[:subject]
+    @problem = params[:problem]
+    @idea = params[:idea]
+    @location_tags = params[:location_tags]
+    @resource_tags = params[:resource_tags]
+    @users = Kaminari.paginate_array([]).page(params[:users]).per(10)
+    if @access_type.present? || @resource_tags.present? || @location_tags.present? || @problem.present? || @subject.present? || @idea.present? || @post_type.present?
+      @open_advance_filters = true
+      @active_tab = 'posts'
     else
-      query_service = PostSearchService.new(params)
-      posts = query_service.filter
-      @posts = Kaminari.paginate_array(posts).page(params[:posts]).per 10
-      @access_type = params[:access_type]
-      @post_type = params[:post_type]
-      @sorted_by = params[:sorted_by]
-      @subject = params[:subject]
-      @problem = params[:problem]
-      @idea = params[:idea]
-      @location_tags = params[:location_tags]
-      @resource_tags = params[:resource_tags]
-      @users = Kaminari.paginate_array([]).page(params[:users]).per 10
-      @open_advance_filters = @access_type.present? || @resource_tags.present? || @location_tags.present? || @problem.present? || @subject.present? || @idea.present? ? true : false
+      user_query_service = UserSearchService.new(params)
+      @users = Kaminari.paginate_array(user_query_service.filter).page(params[:users]).per(10)
+      if @keywords[:first_name_or_last_name_or_full_name_cont].present?
+        @posts = Kaminari.paginate_array([]).page(params[:posts]).per(10)
+      else
+        @posts = Kaminari.paginate_array(post_query_service.filter).page(params[:posts]).per(10)
+      end
+      @active_tab = @users.count >= @posts.count ? 'people' : 'posts'
     end
   end
 
@@ -395,5 +407,11 @@ class PostsController < ApplicationController
 
   def check_account_status
     redirect_to root_path, alert: "Can't perform this action right now sorry for the inconvenience." and return if Setting.posts_freezed
+  end
+
+  def set_tutorial
+    @url = "#{params[:controller]}"
+    @url += "/#{params[:action]}" if params[:action] != "index"
+    @user_tutorial = current_user.user_tutorials.where(link: @url).last if current_user.present?
   end
 end
