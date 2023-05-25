@@ -42,17 +42,17 @@ en:
     admin:
       user_activity:
           post:
-            update: "Updated a"
-            create: "Created a"
-            commented_on: "Commented On a"
+            update: "updated a"
+            create: "created a"
+            commented_on: "commented on a"
             destroy: "removed a"
           gig:
-            update: "Updated a"
-            create: "Created a"
+            update: "updated a"
+            create: "created a"
             destroy: "removed a"
           token:
-            update: "Updated a"
-            create: "Created a"
+            update: "updated a"
+            create: "created a"
             destroy: "removed a"
           message:
             create: "sent the message to"

@@ -65,38 +65,6 @@
   </div>
 </section>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const paginationContainer = document.getElementById('pagination-container');
-        const activitiesPerPage = 5; // Set the default per value
-
-        function generatePagination(totalPages, currentPage) {
-            paginationContainer.innerHTML = '';
-
-            for (let page = 1; page <= totalPages; page++) {
-                const pageLink = document.createElement('a');
-                pageLink.href = `?page=${page}`;
-                pageLink.textContent = page;
-
-                if (page === currentPage) {
-                    pageLink.classList.add('active');
-                }
-
-                pageLink.addEventListener('click', function (event) {
-                    event.preventDefault();
-                    const clickedPage = new URLSearchParams(event.target.search).get('page');
-                    if (clickedPage !== currentPage.toString()) {
-                        console.log('Clicked page:', clickedPage);
-                        // Perform your logic for handling the clicked page here
-                    }
-                });
-
-                paginationContainer.appendChild(pageLink);
-            }
-        }
-
-        generatePagination(totalPages, currentPage);
-
-    });
     var clearSearchBtn = document.getElementById('clear-search-btn');
     var dateInputs = document.querySelectorAll('input[type="date"]');
 

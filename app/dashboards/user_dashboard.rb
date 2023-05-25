@@ -25,11 +25,7 @@ class UserDashboard < Administrate::BaseDashboard
     disabled: Field::Boolean,
     profile_image: Field::ActiveStorage,
     questionnaires: Field::HasMany,
-    answers: Field::HasMany,
-    user_history: Field::String.with_options(
-        label: 'User History',
-        method: :user_history
-    )
+    answers: Field::HasMany
   }.freeze
 
   # COLLECTION_ATTRIBUTES
