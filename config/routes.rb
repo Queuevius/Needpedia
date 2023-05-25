@@ -44,6 +44,7 @@ Rails.application.routes.draw do
         get 'unconfirmed_users'
       end
     end
+    resources :tutorials
     resources :announcements
     resources :notifications
     resources :feedbacks
@@ -89,6 +90,7 @@ Rails.application.routes.draw do
 
     root to: "users#index"
   end
+  get '/user_tutorials', to: 'profile#tutorials'
   get '/nuclear_note', to: 'nuclear_note#index'
   get '/privacy', to: 'home#privacy'
   get '/time_bank', to: 'home#time_bank'
@@ -253,4 +255,5 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", :sessions => "users/sessions", registrations: 'users/registrations'}
   root to: 'home#index'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  post '/user_tutorials/update_viewed', to: 'user_tutorials#update_viewed', as: 'update_viewed'
 end

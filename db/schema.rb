@@ -155,6 +155,14 @@ ActiveRecord::Schema.define(version: 2023_05_16_062640) do
     t.index ["user_id"], name: "index_deletions_on_user_id"
   end
 
+  create_table "devices", force: :cascade do |t|
+    t.string "registration_id"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_devices_on_user_id"
+  end
+
   create_table "email_templates", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
@@ -475,6 +483,14 @@ ActiveRecord::Schema.define(version: 2023_05_16_062640) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "tutorials", force: :cascade do |t|
+    t.string "link"
+    t.text "content"
+    t.boolean "show"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "user_conversations", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "conversation_id", null: false
@@ -530,6 +546,16 @@ ActiveRecord::Schema.define(version: 2023_05_16_062640) do
     t.index ["user_id"], name: "index_user_questionnaires_on_user_id"
   end
 
+  create_table "user_tutorials", force: :cascade do |t|
+    t.string "link"
+    t.text "content"
+    t.boolean "viewed", default: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_user_tutorials_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -572,6 +598,7 @@ ActiveRecord::Schema.define(version: 2023_05_16_062640) do
   add_foreign_key "answers", "users"
   add_foreign_key "comments", "users"
   add_foreign_key "deletions", "users"
+  add_foreign_key "devices", "users"
   add_foreign_key "feedback_question_options", "feedback_questions"
   add_foreign_key "flags", "users"
   add_foreign_key "gigs", "users"
@@ -605,4 +632,5 @@ ActiveRecord::Schema.define(version: 2023_05_16_062640) do
   add_foreign_key "user_private_posts", "users"
   add_foreign_key "user_questionnaires", "questionnaires"
   add_foreign_key "user_questionnaires", "users"
+  add_foreign_key "user_tutorials", "users"
 end

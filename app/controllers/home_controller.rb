@@ -1,5 +1,6 @@
 class HomeController < ApplicationController
   after_action :read_new_comers_message, only: [:index]
+  before_action :set_tutorial
   def index
     # @q = Post.ransack(params[:q])
     @messages_for_guests = AdminNotification.for_guests
@@ -35,5 +36,11 @@ class HomeController < ApplicationController
     return unless current_user.present?
 
     current_user.update(last_login_at: Time.now) if current_user.confirmed_at.present?
+  end
+
+  def set_tutorial
+    @url = "#{params[:controller]}"
+    @url += "/#{params[:action]}" if params[:action] != "index"
+    @user_tutorial = current_user.user_tutorials.where(link: @url).last if current_user.present?
   end
 end

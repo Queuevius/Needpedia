@@ -2,6 +2,7 @@ class PostTokensController < ApplicationController
   before_action :authenticate_user!
   before_action :set_post_token, only: [:update, :destroy]
   skip_before_action :verify_authenticity_token
+  before_action :set_tutorial, except: [:create, :update]
 
   # POST /post_tokens
   # POST /post_tokens.json
@@ -100,5 +101,11 @@ class PostTokensController < ApplicationController
 
   def token_params
     params.require(:post_token).permit(:content)
+  end
+
+  def set_tutorial
+    @url = "#{params[:controller]}"
+    @url += "/#{params[:action]}" if params[:action] != "index"
+    @user_tutorial = current_user.user_tutorials.where(link: @url).last if current_user.present?
   end
 end
