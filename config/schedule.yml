@@ -1,4 +1,4 @@
 send_notifications_job:
-  cron: "*/10 * * * *"
+  cron: "*/1 * * * *"
   class: "SendNotificationsJob"
   queue: default

@@ -89,7 +89,10 @@ module ApplicationHelper
     text.to_s
   end
 
-  def rating(post)
-    "Points - #{post.ratings.count == 0 ? "0" : post&.ratings.where.not(rating: 6).average(:rating).round(1)} Point Average"
+  def rating(post, action)
+    return if action == "list_view"
+
+    ratings = post&.ratings.where.not(rating: 6)
+    "Points - #{ratings.count == 0 ? "0" : ratings.average(:rating).round(1)} Point Average"
   end
 end

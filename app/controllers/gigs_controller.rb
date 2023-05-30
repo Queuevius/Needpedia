@@ -1,5 +1,6 @@
 class GigsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_tutorial, except: [:destroy, :create, :disable]
 
   # GET /gigs
   # GET /gigs.json
@@ -143,6 +144,12 @@ class GigsController < ApplicationController
   # Only allow a list of trusted parameters through.
   def gig_params
     params.require(:gig).permit(:title, :area_tag, :user_id, :body, :amount, images: [])
+  end
+
+  def set_tutorial
+    @url = "#{params[:controller]}"
+    @url += "/#{params[:action]}" if params[:action] != "index"
+    @user_tutorial = current_user.user_tutorials.where(link: @url).last if current_user.present?
   end
 
   def create_activity(gig, event)

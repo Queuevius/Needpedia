@@ -1,7 +1,7 @@
 class SendNotificationService
   def perform
     p "starting sending email at #{Time.now}"
-    users = User.includes(posts: [:likes, :comments, :shares, :flages, :ratings]).where(daily_notifications: true, daily_notification_time: Time.now.utc..Time.now.utc + 10.minutes)
+    users = User.includes(posts: [:likes, :comments, :shares, :flags, :ratings]).where(daily_notifications: true, daily_notification_time: Time.now.utc..Time.now.utc + 5.minutes)
     users.each do |user|
       p "processing user #{user&.name}"
       if already_send?(user)
@@ -23,7 +23,7 @@ class SendNotificationService
         end
         just_updated = Post.where(id: tracking_posts.pluck(:id), updated_at: 24.hours.ago..Time.now.utc)
         posts << just_updated if just_updated.present?
-        posts = posts.uniq.reject(&:blank?)
+        posts = posts.uniq.reject(&:blank?).flatten
       end
 
 
@@ -33,6 +33,8 @@ class SendNotificationService
       p 'sending email'
       if posts.present? || messages.present?
         UserMailer.send_daily_email(user, posts, messages).deliver
+        push_notification = PushNotificationService.new(user, posts.count, messages.count)
+        push_notification.send_push_notification
       end
       p 'updating user'
       user.update(daily_report_sent_at: Time.now.utc)
@@ -41,9 +43,10 @@ class SendNotificationService
   end
 
   private
+
   def already_send?(user)
     return if user.daily_report_sent_at.nil?
 
-    user.daily_report_sent_at.to_i > 15.minutes.ago.to_i
+    user.daily_report_sent_at.to_i > 5.minutes.ago.to_i
   end
 end

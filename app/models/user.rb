@@ -5,7 +5,7 @@ class User < ApplicationRecord
   devise :masqueradable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :confirmable
 
 
-  after_create :add_default_credit, :create_admin_notifications, :make_friend_with_mascot
+  after_create :add_default_credit, :create_admin_notifications, :make_friend_with_mascot, :create_user_tutorials
   before_destroy :delete_notifications
   # before_create :skip_confirmation_notification!
 
@@ -70,6 +70,9 @@ class User < ApplicationRecord
 
   has_many :feedbacks, dependent: :destroy
   has_many :deletions, dependent: :destroy
+  has_many :devices, dependent: :destroy
+
+  has_many :user_tutorials, dependent: :destroy
 
   def credit_hours
     active_gigs_amount = posted_gigs.active_progress.sum(:amount)
@@ -141,5 +144,11 @@ class User < ApplicationRecord
     Arel::Nodes::NamedFunction.new('LOWER',
                                    [Arel::Nodes::NamedFunction.new('concat_ws',
                                                                    [Arel::Nodes::SqlLiteral.new("' '"), parent.table[:first_name], parent.table[:last_name]])])
+  end
+
+  def create_user_tutorials
+    Tutorial.all.each do |tutorial|
+      self.user_tutorials.create(link: tutorial.link, content: tutorial.content)
+    end
   end
 end

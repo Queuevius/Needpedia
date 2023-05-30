@@ -1,7 +1,8 @@
 class ProfileController < ApplicationController
-  before_action :set_user, only: [:wall, :about, :friends, :friend_request, :un_friend, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed, :block_user, :unblock_user]
-  before_action :friend_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed]
-  before_action :connection_requests_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed]
+  before_action :set_user, only: [:wall, :about, :friends, :friend_request, :un_friend, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed, :block_user, :unblock_user, :tutorials]
+  before_action :friend_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed, :tutorials]
+  before_action :connection_requests_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed, :tutorials]
+  before_action :set_tutorial, except: [:update_details, :update_profile_image, :create_pictures]
 
   def wall
     blocked_user_ids = params[:uuid].present? ? [] : current_user.blocked_users.pluck(:block_user_id)
@@ -178,6 +179,10 @@ class ProfileController < ApplicationController
     redirect_to wall_path(uuid: params[:uuid]), notice: 'User unblocked successfully.' if blocked_user && blocked_user.destroy
   end
 
+  def tutorials
+    @user_tutorials = current_user.user_tutorials
+  end
+
   private
 
   # Only allow a list of trusted parameters through.
@@ -202,4 +207,8 @@ class ProfileController < ApplicationController
     @connection_requests_count = ConnectionRequest.where(to: @user.uuid, status: 'pending')
   end
 
+  def set_tutorial
+    @url = "#{params[:action]}"
+    @user_tutorial = current_user.user_tutorials.where(link: @url).last if current_user.present?
+  end
 end
