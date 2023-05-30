@@ -45,15 +45,17 @@ en:
             update: "updated a"
             create: "created a"
             commented_on: "commented on a"
-            destroy: "removed a"
+            destroy: "destroyed a"
+            restore: "restored a"
+            remove: "removed a"
           gig:
             update: "updated a"
             create: "created a"
-            destroy: "removed a"
+            destroy: "destroyed a"
           token:
             update: "updated a"
             create: "created a"
-            destroy: "removed a"
+            destroy: "destroyed a"
           message:
             create: "sent the message to"
-            destroy: "removed a"
+            destroy: "destroyed a"

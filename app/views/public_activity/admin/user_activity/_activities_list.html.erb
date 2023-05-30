@@ -34,11 +34,11 @@
                   </div>
                   <div class="act-content">
                     <div class="font-400">
-                      <% if activity.trackable.present? %>
-                        <%= render partial: "public_activity/admin/user_activity/#{activity.trackable_type.downcase}", locals: { activity: activity } %>
+                      <% if activity.trackable_type == "Post" || activity.trackable.present? %>
+                        <%= render partial: "public_activity/admin/user_activity/#{activity.trackable_type.downcase}", locals: {activity: activity} %>
                       <% else %>
-                        <strong><%= activity&.owner&.name || 'A user' %></strong> <%= t("public_activity.messages.#{activity.key}") %> <strong><%= activity.trackable_type %></strong>
-                        <% unless t("public_activity.messages.#{activity.key}") == "removed a" %>
+                        <strong><%= activity&.owner&.name || 'A user' %></strong> <%= t("public_activity.admin.user_activity.#{activity.key}") %><strong><%= activity.trackable_type %></strong>
+                        <% unless t("public_activity.admin.user_activity.#{activity.key}") == "destory a" %>
                           which does not exist anymore.
                         <% end %>
                       <% end %>

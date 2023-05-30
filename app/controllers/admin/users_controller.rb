@@ -43,16 +43,18 @@ module Admin
 
     def user_history
       @user = User.find(params[:id])
-      activities = PublicActivity::Activity.where(owner: @user).order(created_at: :desc)
+      Post.unscoped do
+        activities = PublicActivity::Activity.where(owner: @user).order(created_at: :desc)
 
-      per_value = params[:per].present? ? params[:per].to_i : 10
+        per_value = params[:per].present? ? params[:per].to_i : 10
 
-      if params[:start_date].present? && params[:end_date].present?
-        start_date = Date.parse(params[:start_date])
-        end_date = Date.parse(params[:end_date])
-        @activities = activities.where(created_at: start_date.beginning_of_day..end_date.end_of_day).page(params[:page]).per(per_value)
-      else
-        @activities = activities.page(params[:page]).per(per_value)
+        if params[:start_date].present? && params[:end_date].present?
+          start_date = Date.parse(params[:start_date])
+          end_date = Date.parse(params[:end_date])
+          @activities = activities.where(created_at: start_date.beginning_of_day..end_date.end_of_day).page(params[:page]).per(per_value)
+        else
+          @activities = activities.page(params[:page]).per(per_value)
+        end
       end
     end
   end

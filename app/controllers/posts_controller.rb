@@ -175,7 +175,7 @@ class PostsController < ApplicationController
   # DELETE /posts/1.json
   def destroy
     DeletePostService.new(@post.id, current_user.id).delete_post
-    create_activity(@post, 'post.destroy')
+    create_activity(@post, 'post.remove')
     respond_to do |format|
       format.html {redirect_to params[:redirect_to], notice: 'Post was successfully destroyed.'}
       format.json {head :no_content}

@@ -1,1 +1,17 @@
-<strong><%= activity&.owner&.name || 'A user' %></strong> <%= t("public_activity.admin.user_activity.#{activity.key}") %> <%= activity.trackable.post_type.humanize.downcase %> post <strong><%= link_to activity.trackable.title, activity.trackable %></strong>.
+<% Post.unscoped do %>
+  <% if activity.trackable.present? %>
+    <strong><%= activity&.owner&.name || 'A user' %></strong> <%= t("public_activity.admin.user_activity.#{activity.key}") %> <%= activity.trackable.post_type.humanize.downcase %> post <strong>
+    <% if activity.trackable.deleted_at.present? && activity.trackable.restore_at.nil? %>
+      <%= link_to activity.trackable.title, url_for([:admin, activity.trackable, deleted_at: true]) %>
+    <% elsif activity.trackable.deleted_at.nil? && activity.trackable.restore_at.nil? %>
+      <%= link_to activity.trackable.title, url_for([:admin, activity.trackable]) %>
+    <% elsif activity.trackable.deleted_at.present? && activity.trackable.restore_at.present? %>
+      <%= link_to activity.trackable.title, url_for([:admin, activity.trackable]) %>
+    <% elsif activity.trackable.deleted_at.nil? && activity.trackable.restore_at.present? %>
+      <%= link_to activity.trackable.title, url_for([:admin, activity.trackable]) %>
+    <% end %>
+    </strong>.
+  <% else %>
+    <strong><%= activity&.owner&.name || 'A user' %><%= "(as admin)" if activity.key == "post.destroy" %></strong> <%= t("public_activity.admin.user_activity.#{activity.key}") %> <strong><%= activity.trackable_type %></strong> which does not exist anymore (permanently destroyed by admin).
+  <% end %>
+<% end %>
