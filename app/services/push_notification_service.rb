@@ -1,5 +1,5 @@
 class PushNotificationService
-  def initialize(user, notifications_count, messages_count)
+  def initialize(user, notifications_count: 0, messages_count: 0)
     @user = user
     @notifications_count = notifications_count
     @messages_count = messages_count

@@ -404,7 +404,7 @@ class PostsController < ApplicationController
       next unless user.track_notifications == Notification::NOTIFICATION_TYPE_INSTANT
 
       UserMailer.send_tracking_email(actor: current_user, receiver: user, post: @post).deliver
-      push_notification = PushNotificationService.new(user, 1, 0)
+      push_notification = PushNotificationService.new(user, notifications_count: 1)
       push_notification.send_push_notification
     end
   end
