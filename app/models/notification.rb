@@ -23,6 +23,9 @@ class Notification < ApplicationRecord
   NOTIFICATION_TYPE_DOWNVOTED_ARGUMENT = 'downvote_argument'.freeze
   NOTIFICATION_TYPE_DOWNVOTED_QUESTION_ANSWER = 'downvote_answer'.freeze
   NOTIFICATION_TYPE_LAYER_CREATED = 'layer_created'.freeze
+  NOTIFICATION_TYPE_NONE  = 'none'.freeze
+  NOTIFICATION_TYPE_DAILY  = 'daily'.freeze
+  NOTIFICATION_TYPE_INSTANT  = 'instant'.freeze
 
   ################################ relationships ############################
   belongs_to :recipient, class_name: "User"
