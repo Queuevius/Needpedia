@@ -15,25 +15,27 @@
         </thead>
         <tbody>
           <tr>
-            <td class="pl-4 text-center"><%= f.radio_button :message_notifications, Notification::NOTIFICATION_TYPE_NONE, class: "form-check-input" %></td>
-            <td class="pl-4 text-center"><%= f.radio_button :message_notifications, Notification::NOTIFICATION_TYPE_DAILY, class: "form-check-input" %></td>
-            <td class="pl-4 text-center"><%= f.radio_button :message_notifications, Notification::NOTIFICATION_TYPE_INSTANT, class: "form-check-input" %></td>
+            <td class="pl-4 text-center"><%= f.radio_button :message_notifications, Notification::NOTIFICATION_TYPE_NONE, class: "form-check-input", id: "messageNotificationsNone" %></td>
+            <td class="pl-4 text-center"><%= f.radio_button :message_notifications, Notification::NOTIFICATION_TYPE_DAILY, class: "form-check-input", id: "messageNotificationsDaily" %></td>
+            <td class="pl-4 text-center"><%= f.radio_button :message_notifications, Notification::NOTIFICATION_TYPE_INSTANT, class: "form-check-input", id: "messageNotificationsInstant" %></td>
             <td>Message Notifications</td>
           </tr>
           <tr>
-            <td class="pl-4 text-center"><%= f.radio_button :track_notifications, Notification::NOTIFICATION_TYPE_NONE, class: "form-check-input" %></td>
-            <td class="pl-4 text-center"><%= f.radio_button :track_notifications, Notification::NOTIFICATION_TYPE_DAILY, class: "form-check-input" %></td>
-            <td class="pl-4 text-center"><%= f.radio_button :track_notifications, Notification::NOTIFICATION_TYPE_INSTANT, class: "form-check-input" %></td>
+            <td class="pl-4 text-center"><%= f.radio_button :track_notifications, Notification::NOTIFICATION_TYPE_NONE, class: "form-check-input", id: "trackNotificationsNone" %></td>
+            <td class="pl-4 text-center"><%= f.radio_button :track_notifications, Notification::NOTIFICATION_TYPE_DAILY, class: "form-check-input", id: "trackNotificationsDaily" %></td>
+            <td class="pl-4 text-center"><%= f.radio_button :track_notifications, Notification::NOTIFICATION_TYPE_INSTANT, class: "form-check-input", id: "trackNotificationsInstant" %></td>
             <td>Post you're tracking</td>
           </tr>
         </tbody>
       </table>
 
-      <div class="form-group">
+      <div class="form-group" id="dailyNotificationTimeField">
         <h5 class="ml-3">
           <div class="row">
             <div class="col-md-4">Daily @</div>
-            <div class="col-md-4"><%= text_field_tag 'daily_notification_time', resource&.daily_notification_time.present? ? resource&.daily_notification_time&.strftime('%l:%M %P') : nil, class: 'timepicker', style: 'width: 140%' %></div>
+            <div class="col-md-4">
+              <%= text_field_tag 'daily_notification_time', resource&.daily_notification_time.present? ? resource&.daily_notification_time&.strftime('%l:%M %P') : nil, class: 'timepicker', style: 'width: 140%' %>
+            </div>
           </div>
         </h5>
       </div>
@@ -121,3 +123,37 @@
     border: 2px solid #0075FF;
   }
 </style>
+<script>
+    // Get references to the radio buttons and the "Daily @" field for message notifications
+    const messageNoneRadio = document.querySelector('#messageNotificationsNone');
+    const messageDailyRadio = document.querySelector('#messageNotificationsDaily');
+    const messageInstantRadio = document.querySelector('#messageNotificationsInstant');
+    const messageNotificationTimeField = document.getElementById('dailyNotificationTimeField');
+
+    // Get references to the radio buttons and the "Daily @" field for track notifications
+    const trackNoneRadio = document.querySelector('#trackNotificationsNone');
+    const trackDailyRadio = document.querySelector('#trackNotificationsDaily');
+    const trackInstantRadio = document.querySelector('#trackNotificationsInstant');
+
+    // Function to show or hide the "Daily @" field for message notifications
+    function toggleMessageNotificationTimeField() {
+        if ((messageDailyRadio.checked && !messageInstantRadio.checked) || (trackDailyRadio.checked && !trackInstantRadio.checked)) {
+            messageNotificationTimeField.style.display = 'block';
+        } else {
+            messageNotificationTimeField.style.display = 'none';
+        }
+    }
+
+    // Initial state on page load
+    toggleMessageNotificationTimeField();
+
+    // Add event listeners to the message notifications radio buttons
+    messageNoneRadio.addEventListener('change', toggleMessageNotificationTimeField);
+    messageDailyRadio.addEventListener('change', toggleMessageNotificationTimeField);
+    messageInstantRadio.addEventListener('change', toggleMessageNotificationTimeField);
+
+    // Add event listeners to the track notifications radio buttons
+    trackNoneRadio.addEventListener('change', toggleMessageNotificationTimeField);
+    trackDailyRadio.addEventListener('change', toggleMessageNotificationTimeField);
+    trackInstantRadio.addEventListener('change', toggleMessageNotificationTimeField);
+</script>
