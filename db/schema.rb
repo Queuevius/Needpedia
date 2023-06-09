@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_31_093801) do
+ActiveRecord::Schema.define(version: 2023_06_06_113854) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "hstore"
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
 
@@ -58,6 +59,7 @@ ActiveRecord::Schema.define(version: 2023_03_31_093801) do
     t.bigint "recipient_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "ip"
     t.index ["owner_id", "owner_type"], name: "index_activities_on_owner_id_and_owner_type"
     t.index ["owner_type", "owner_id"], name: "index_activities_on_owner_type_and_owner_id"
     t.index ["recipient_id", "recipient_type"], name: "index_activities_on_recipient_id_and_recipient_type"
@@ -141,6 +143,16 @@ ActiveRecord::Schema.define(version: 2023_03_31_093801) do
   create_table "conversations", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "deletion_requests", force: :cascade do |t|
+    t.bigint "post_version_id", null: false
+    t.bigint "user_id", null: false
+    t.string "reason"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["post_version_id"], name: "index_deletion_requests_on_post_version_id"
+    t.index ["user_id"], name: "index_deletion_requests_on_user_id"
   end
 
   create_table "deletions", force: :cascade do |t|
@@ -331,6 +343,20 @@ ActiveRecord::Schema.define(version: 2023_03_31_093801) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["post_id"], name: "index_post_tokens_on_post_id"
     t.index ["user_id"], name: "index_post_tokens_on_user_id"
+  end
+
+  create_table "post_versions", force: :cascade do |t|
+    t.bigint "post_id"
+    t.text "content"
+    t.datetime "modification_date"
+    t.bigint "user_id"
+    t.bigint "restored_by_id"
+    t.boolean "active", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["post_id"], name: "index_post_versions_on_post_id"
+    t.index ["restored_by_id"], name: "index_post_versions_on_restored_by_id"
+    t.index ["user_id"], name: "index_post_versions_on_user_id"
   end
 
   create_table "posts", force: :cascade do |t|
@@ -575,9 +601,9 @@ ActiveRecord::Schema.define(version: 2023_03_31_093801) do
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
     t.datetime "last_login_at"
-    t.boolean "message_notifications", default: false
-    t.boolean "track_notifications", default: false
-    t.boolean "daily_notifications", default: false
+    t.string "message_notifications", default: "non"
+    t.string "track_notifications", default: "non"
+    t.string "daily_notifications", default: "non"
     t.datetime "daily_notification_time"
     t.boolean "all_notifications", default: false
     t.datetime "daily_report_sent_at"
@@ -595,6 +621,8 @@ ActiveRecord::Schema.define(version: 2023_03_31_093801) do
   add_foreign_key "answers", "questions"
   add_foreign_key "answers", "users"
   add_foreign_key "comments", "users"
+  add_foreign_key "deletion_requests", "post_versions"
+  add_foreign_key "deletion_requests", "users"
   add_foreign_key "deletions", "users"
   add_foreign_key "devices", "users"
   add_foreign_key "feedback_question_options", "feedback_questions"
@@ -608,6 +636,9 @@ ActiveRecord::Schema.define(version: 2023_03_31_093801) do
   add_foreign_key "objectives", "users"
   add_foreign_key "post_tokens", "posts"
   add_foreign_key "post_tokens", "users"
+  add_foreign_key "post_versions", "posts"
+  add_foreign_key "post_versions", "users"
+  add_foreign_key "post_versions", "users", column: "restored_by_id"
   add_foreign_key "posts", "users"
   add_foreign_key "questions", "questionnaires"
   add_foreign_key "ratings", "users"

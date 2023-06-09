@@ -85,6 +85,8 @@ Rails.application.routes.draw do
     resources :notifications
     resources :feedbacks
     resources :deletions
+    resources :deletion_requests
+    resources :post_versions
 
     root to: "users#index"
   end
@@ -173,6 +175,13 @@ Rails.application.routes.draw do
       get 'geo_maxing_posts'
     end
     delete 'delete_image_attachment'
+    resources :post_versions, only: [] do
+      member do
+        post 'restore', to: 'post_versions#restore'
+        post 'report', to: 'post_versions#report'
+        post 'request_delete', to: 'post_versions#request_delete'
+      end
+    end
   end
   resources :comments
   resources :related_contents

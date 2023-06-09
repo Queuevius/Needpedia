@@ -87,6 +87,8 @@ class Post < ApplicationRecord
   has_many :interested_users, dependent: :destroy
   has_many :deletions, as: :deletable, dependent: :destroy
 
+  has_many :post_versions, dependent: :destroy
+
   ############################### Validations ###########################
   validates :title, presence: true
   validates :post_type, presence: true, inclusion: { in: POST_TYPES }
