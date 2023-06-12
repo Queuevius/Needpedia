@@ -8,6 +8,15 @@ module Admin
       redirect_to admin_posts_path(deleted_at: true)
     end
 
+    def destroy
+      Post.unscoped do
+        post = Post.find(params[:id])
+        create_activity(post, 'post.destroy')
+        post.destroy
+        redirect_to admin_posts_path, notice: 'Post was successfully destroyed.'
+      end
+    end
+
     def restore_deleted_posts
       Post.unscoped do
         post = Post.find(params[:id])
@@ -21,6 +30,7 @@ module Admin
         else
           handle_restore_simple_post
         end
+        create_activity(post, 'post.restore')
       end
       redirect_to admin_posts_path
     end
@@ -84,6 +94,10 @@ module Admin
       posts.each do |p|
         p.update(deleted_at: nil, restore_at: Time.now)
       end
+    end
+
+    def create_activity(post, event)
+      ActivityService.new(object: post, event: event, owner: current_user, ip: request.remote_ip).call
     end
   end
 end

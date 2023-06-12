@@ -32,7 +32,7 @@ class DeletePostService
     posts << post.child_posts.idea_posts.collect(&:layers)
     posts = posts.flatten
     posts.each do |p|
-      p.update(deleted_at: Time.now)
+      p.update(deleted_at: Time.now, restore_at: nil)
       Deletion.create!(user_id: user.id, deletable_id: p.id, deletable_type: 'Post', reason: "Complete Post deletion including child posts and layers, post_id: #{post.id} by user: #{user.name}")
     end
   end
@@ -45,7 +45,7 @@ class DeletePostService
     posts << post.ideas.collect(&:layers)
     posts = posts.flatten
     posts.each do |p|
-      p.update(deleted_at: Time.now)
+      p.update(deleted_at: Time.now, restore_at: nil)
       Deletion.create(user_id: user.id, deletable_id: p.id, deletable_type: 'Post', reason: "Problem Post deletion including idea posts and layers of idea posts, post_id: #{post.id} by user: #{user.name}")
     end
   end
@@ -56,7 +56,7 @@ class DeletePostService
     posts << post.layers
     posts = posts.flatten
     posts.each do |p|
-      p.update(deleted_at: Time.now)
+      p.update(deleted_at: Time.now, restore_at: nil)
       Deletion.create(user_id: user.id, deletable_id: p.id, deletable_type: 'Post', reason: "Idea Post deletion including layers, post_id: #{post.id} by user: #{user.name}")
     end
   end
@@ -66,7 +66,7 @@ class DeletePostService
     posts << post
     posts = posts.flatten
     posts.each do |p|
-      p.update(deleted_at: Time.now)
+      p.update(deleted_at: Time.now, restore_at: nil)
       Deletion.create(user_id: user.id, deletable_id: p.id, deletable_type: 'Post', reason: "Post deletion , post_id: #{post.id} by user: #{user.name}")
     end
   end

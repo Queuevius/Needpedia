@@ -5,6 +5,7 @@ class MessagesController < ApplicationController
       conversation = Conversation.find(message_params[:conversation_id])
       reciever = conversation.users.reject { |x| x == current_user }.last
       @message = Message.create(message_params.merge(receiver_id: reciever.id))
+      create_activity(@message, 'message.create')
       message_read_path = message_read_path(@message.id)
       sender_html = ApplicationController.render partial: 'conversations/right_message', locals: {  message: @message, current_user: current_user }
       reciever_html = ApplicationController.render partial: 'conversations/left_message', locals: {  message: @message, current_user: current_user }
@@ -28,5 +29,9 @@ class MessagesController < ApplicationController
 
   def message_params
     params.require(:message).permit(:user_id, :conversation_id, :body)
+  end
+
+  def create_activity(message, event)
+    ActivityService.new(object: message, event: event, owner: current_user, ip: request.remote_ip).call
   end
 end

@@ -1,4 +1,6 @@
 class Gig < ApplicationRecord
+  include PublicActivity::Model
+  tracked
   has_rich_text :body
   has_many_attached :images
   after_create :activate_gig
