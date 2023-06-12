@@ -1,0 +1,80 @@
+<section>
+  <div class="container">
+    <%= form_tag "", method: :get, class: "form-inline mb-4", id: "search-form" do %>
+      <div class="form-group mr-2">
+        <%= label_tag :start_date, "From:", class: "form-label" %>
+        <%= text_field_tag :start_date, params[:start_date], class: "form-control", placeholder: "Select start date", type: "date" %>
+      </div>
+      <div class="form-group mr-2">
+        <%= label_tag :end_date, "To:", class: "form-label" %>
+        <%= text_field_tag :end_date, params[:end_date], class: "form-control", placeholder: "Select end date", type: "date" %>
+      </div>
+      <div class="form-group mr-2">
+        <%= label_tag :per, "Items per page:", class: "form-label" %>
+        <%= select_tag :per, options_for_select([10, 20, 50, 100], params[:per].to_i), class: "form-control form-select" %>
+      </div>
+      <%= submit_tag "Search", class: "btn btn-primary mr-2" %>
+      <%= button_tag "Clear Search", type: "button", class: "btn btn-secondary", id: "clear-search-btn" %>
+    <% end %>
+    <div class="activity-container">
+      <% @activities.each do |activity| %>
+        <div class="card">
+          <div class="tab-content admin-tab-content pt-30">
+            <div role="tabpanel" class="tab-pane active show" id="t1">
+              <ul class="activity-list list-unstyled">
+                <li class="clearfix">
+                  <div class="float-left">
+                    <%= link_to wall_path(uuid: activity.owner.uuid) do %>
+                      <% if activity.owner.profile_image.present? %>
+                        <%= image_tag activity.owner.profile_image, class: "img-fluid rounded-circle" %>
+                      <% else %>
+                        <%= image_tag "profile.png", class: "img-fluid rounded-circle" %>
+                      <% end %>
+                    <% end %>
+                  </div>
+                  <div class="act-content">
+                    <div class="font-400">
+                      <% if activity.trackable_type == "Post" || activity.trackable.present? %>
+                        <%= render partial: "public_activity/admin/user_activity/#{activity.trackable_type.downcase}", locals: {activity: activity} %>
+                      <% else %>
+                        <strong><%= activity&.owner&.name || 'A user' %></strong> <%= t("public_activity.admin.user_activity.#{activity.key}") %><strong><%= activity.trackable_type %></strong>
+                        <% unless t("public_activity.admin.user_activity.#{activity.key}") == "destory a" %>
+                          which does not exist anymore.
+                        <% end %>
+                      <% end %>
+
+                    </div>
+                    <span class="text-small"><%= activity.created_at.strftime('%B %d, %Y %H:%M') %></span>
+                    <div>
+                      <% if activity.ip.present? %>
+                       <strong>User iP:</strong> <%= activity.ip %>
+                      <% end %>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      <div class="pagination" id="pagination-container">
+        <%= paginate @activities %>
+      </div>
+
+    </div>
+  </div>
+</section>
+<script>
+    var clearSearchBtn = document.getElementById('clear-search-btn');
+    var dateInputs = document.querySelectorAll('input[type="date"]');
+
+    clearSearchBtn.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        dateInputs.forEach(function (input) {
+            input.value = ''; // Clear the value of each date input field
+        });
+
+        document.getElementById('search-form').submit(); // Submit the form
+    });
+</script>

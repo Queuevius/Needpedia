@@ -76,6 +76,9 @@ Rails.application.routes.draw do
       end
     end
     resources :users do
+      member do
+        get :user_history
+      end
       collection do
         delete 'bulk_delete'
         get 'send_confirmation_link'

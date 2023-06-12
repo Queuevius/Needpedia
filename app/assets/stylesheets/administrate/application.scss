@@ -52,3 +52,178 @@
 .text-center {
   text-align: center !important;
 }
+
+.tabs-admin > .nav-item > .nav-link {
+  padding: 10px 15px;
+  color: #555;
+  font-weight: 600;
+  text-transform: capitalize;
+  margin-bottom: -2px;
+  border-bottom: 2px solid transparent;
+}
+
+.act-content span.text-small {
+  display: block;
+  color: #999;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.admin-tab-content {
+  padding: 10px 15px;
+}
+
+.card .card-title {
+  flex: 1 1 auto;
+  min-height: 28px;
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 28px;
+}
+
+.activity-list > li {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.activity-list .float-left {
+  margin-right: 10px;
+  width: 40px;
+  height: 40px;
+  float: left;
+  display: block;
+  border-radius: 50%;
+  background-color: #eee;
+  font-size: 20px;
+  line-height: 100%;
+  line-height: 43px;
+  text-align: center;
+}
+
+.activity-list .float-left a {
+  display: inline-block;
+  color: #999;
+}
+
+.act-content {
+  overflow: hidden;
+}
+
+.act-content span.text-small {
+  display: block;
+  color: #999;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.form-inline {
+  display: flex;
+  align-items: center;
+}
+
+.form-group {
+  margin-right: 10px;
+}
+
+.form-label {
+  margin-right: 5px;
+}
+
+.form-control {
+  display: flex;
+  align-items: center;
+}
+
+.btn {
+  cursor: pointer;
+  margin-top: 21px;
+  margin-right: 5px;
+}
+
+.activity-container {
+  margin-top: 20px;
+}
+
+/* Responsive styles */
+@media (max-width: 576px) {
+  .form-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-group {
+    margin-bottom: 10px;
+  }
+
+  .form-control {
+    width: 100%;
+  }
+
+  .btn {
+    margin-top: 10px;
+    margin-right: 0;
+  }
+
+  .float-left {
+    margin-right: 0;
+    margin-bottom: 10px;
+    float: none;
+  }
+
+  .act-content {
+    margin-left: 50px;
+  }
+  
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.pagination .pagination {
+  margin: 0;
+}
+
+.pagination .page-item {
+  display: inline-block;
+  margin: 0 3px;
+}
+
+.pagination .page-item a,
+.pagination .page-item span {
+  display: inline-block;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  color: #333;
+  text-decoration: none;
+}
+
+.pagination .page-item.active span {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.pagination .page-item.disabled span {
+  color: #999;
+  pointer-events: none;
+  cursor: default;
+}
+
+.form-select {
+  height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+  line-height: 1.5;
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 16px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  appearance: none;
+  background-color: #fff;
+}
