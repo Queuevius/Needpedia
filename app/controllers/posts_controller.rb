@@ -189,6 +189,7 @@ class PostsController < ApplicationController
   # DELETE /posts/1.json
   def destroy
     DeletePostService.new(@post.id, current_user.id).delete_post
+    create_activity(@post, 'post.remove')
     respond_to do |format|
       format.html {redirect_to params[:redirect_to], notice: 'Post was successfully destroyed.'}
       format.json {head :no_content}
@@ -386,7 +387,7 @@ class PostsController < ApplicationController
   end
 
   def create_activity(post, event)
-    ActivityService.new(object: post, event: event, owner: current_user).call
+    ActivityService.new(object: post, event: event, owner: current_user, ip: request.remote_ip).call
   end
 
   def offsite_notification(post)

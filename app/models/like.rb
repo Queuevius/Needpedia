@@ -1,4 +1,6 @@
 class Like < ApplicationRecord
+  include PublicActivity::Model
+  tracked
 
   ################################ Relationships ########################
   belongs_to :likeable, polymorphic: true

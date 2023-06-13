@@ -38,3 +38,24 @@ en:
             images:
               content_type: 'file type is not supported'
   hello: "Hello world"
+  public_activity:
+    admin:
+      user_activity:
+          post:
+            update: "updated a"
+            create: "created a"
+            commented_on: "commented on a"
+            destroy: "destroyed a"
+            restore: "restored a"
+            remove: "removed a"
+          gig:
+            update: "updated a"
+            create: "created a"
+            destroy: "destroyed a"
+          token:
+            update: "updated a"
+            create: "created a"
+            destroy: "destroyed a"
+          message:
+            create: "sent the message to"
+            destroy: "destroyed a"

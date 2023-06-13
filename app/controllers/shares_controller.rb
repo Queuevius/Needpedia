@@ -28,6 +28,6 @@ class SharesController < ApplicationController
   end
 
   def create_activity(post, event)
-    ActivityService.new(object: post, event: event, owner: current_user).call
+    ActivityService.new(object: post, event: event, owner: current_user, ip: request.remote_ip).call
   end
 end

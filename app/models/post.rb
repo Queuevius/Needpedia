@@ -1,5 +1,6 @@
 class Post < ApplicationRecord
   include PublicActivity::Model
+  tracked
   has_rich_text :content
   has_one :content, class_name: 'ActionText::RichText', as: :record
   acts_as_taggable_on :tags, :resource_tags

@@ -1,4 +1,6 @@
 class TokenAnsDebate < ApplicationRecord
+  include PublicActivity::Model
+  tracked
   has_rich_text :content
 
   ################################ Relationships ########################

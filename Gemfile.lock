@@ -384,6 +384,8 @@ GEM
       json
     redis (4.8.0)
     regexp_parser (2.6.2)
+    request_store (1.5.0)
+      rack (>= 1.4)
     responders (3.0.1)
       actionpack (>= 5.0)
       railties (>= 5.0)
@@ -535,6 +537,7 @@ DEPENDENCIES
   ransack
   ratyrate
   recaptcha
+  request_store
   sass-rails (>= 6)
   selenium-webdriver
   sidekiq (~> 6.0, >= 6.0.3)

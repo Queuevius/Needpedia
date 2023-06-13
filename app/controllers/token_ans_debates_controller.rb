@@ -16,6 +16,7 @@ class TokenAnsDebatesController < ApplicationController
         else
           format.html { redirect_to question_post_tokens_path(id: @token_ans_debate.post_token_id), notice: "Something went wrong." }
         end
+        create_activity(@token_ans_debate, 'token.create')
 
         format.json { render :token_modal, post_token: @post_token }
       else
@@ -31,5 +32,9 @@ class TokenAnsDebatesController < ApplicationController
   # Only allow a list of trusted parameters through.
   def token_ans_debate_params
     params.require(:token_ans_debate).permit(:content, :post_id, :user_id, :debate_type, :post_token_id)
+  end
+
+  def create_activity(gig, event)
+    ActivityService.new(object: gig, event: event, owner: current_user, ip: request.remote_ip).call
   end
 end
