@@ -11,7 +11,7 @@ class FlagDashboard < Administrate::BaseDashboard
     flagable: Field::Polymorphic,
     user: Field::BelongsTo,
     id: Field::Number,
-    reason: Field::String,
+    reason: Field::RichText,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
   }.freeze
@@ -22,10 +22,9 @@ class FlagDashboard < Administrate::BaseDashboard
   # By default, it's limited to four items to reduce clutter on index pages.
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
-  flagable
-  user
   id
   reason
+  user
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES

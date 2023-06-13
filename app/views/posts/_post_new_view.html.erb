@@ -382,7 +382,7 @@
                                         <%= form.hidden_field :flagable_type, value: "PostVersion" %>
 
                                         <div class="form-group">
-                                          <%= form.rich_text_area :reason, autofocus: true, class: 'form-control', placeholder: "Reason" %>
+                                            <%= rich_text_area_tag :version_reason, nil, autofocus: true, class: 'form-control', placeholder: "Reason" %>
                                         </div>
                                       </div>
                                       <div class="modal-footer">

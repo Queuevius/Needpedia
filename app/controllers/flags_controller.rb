@@ -6,7 +6,7 @@ class FlagsController < ApplicationController
   # POST /flags
   # POST /flags.json
   def create
-    @flag = Flag.new(flag_params)
+    @flag = Flag.new(flag_params.merge(reason: params[:version_reason].presence || flag_params[:reason]))
     @resource_post_id =   @flag.flagable.post.id if @flag.flagable_type == "PostVersion"
 
     respond_to do |format|
