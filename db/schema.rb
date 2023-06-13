@@ -603,7 +603,7 @@ ActiveRecord::Schema.define(version: 2023_06_06_113854) do
     t.datetime "last_login_at"
     t.string "message_notifications", default: "non"
     t.string "track_notifications", default: "non"
-    t.string "daily_notifications", default: "non"
+    t.boolean "daily_notifications", default: false
     t.datetime "daily_notification_time"
     t.boolean "all_notifications", default: false
     t.datetime "daily_report_sent_at"

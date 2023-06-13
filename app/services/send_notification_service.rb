@@ -1,7 +1,8 @@
 class SendNotificationService
   def perform
     p "starting sending email at #{Time.now}"
-    users = User.includes(posts: [:likes, :comments, :shares, :flags, :ratings]).where(daily_notifications: true, daily_notification_time: Time.now.utc..Time.now.utc + 5.minutes)
+    users = User.includes(posts: [:likes, :comments, :shares, :flags, :ratings]).where(daily_notification_time: Time.now.utc..Time.now.utc + 1.minute).where("message_notifications = :value OR track_notifications = :value", value: Notification::NOTIFICATION_TYPE_DAILY)
+
     users.each do |user|
       p "processing user #{user&.name}"
       if already_send?(user)
@@ -10,7 +11,7 @@ class SendNotificationService
       end
 
       posts = []
-      if user&.track_notifications? || user&.all_notifications?
+      if user&.track_notifications == Notification::NOTIFICATION_TYPE_DAILY
         tracking_posts = user.tracking_posts.collect(&:post).flatten.uniq
         tracking_posts.each do |post|
           with_new_likes = post.likes.where(created_at: 24.hours.ago..Time.now.utc)
@@ -28,7 +29,7 @@ class SendNotificationService
 
 
       # tracking_posts = posts.uniq.reject(&:blank?) if user&.track_notifications? || user&.all_notifications?
-      messages = Message.where(receiver_id: user.id, created_at: 24.hours.ago..Time.now.utc) if user&.message_notifications? || user&.all_notifications?
+      messages = Message.where(receiver_id: user.id, created_at: 24.hours.ago..Time.now.utc) if user&.message_notifications == Notification::NOTIFICATION_TYPE_DAILY
       p "#{posts&.count || 0} posts and #{messages&.count || 0} messages updates needs email notification"
       p 'sending email'
       if posts.present? || messages.present?

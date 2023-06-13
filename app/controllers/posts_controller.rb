@@ -395,6 +395,8 @@ class PostsController < ApplicationController
     return unless settings.present?
 
     settings.collect(&:user).each do |user|
+      next unless user.track_notifications == Notification::NOTIFICATION_TYPE_INSTANT
+
       if post.post_type.in?(Post::CORE_POST_TYPES)
         UserMailer.send_tracking_email(actor: current_user, receiver: user, post: @post).deliver
       elsif post.post_type == Post::POST_TYPE_LAYER
@@ -405,9 +407,11 @@ class PostsController < ApplicationController
 
   def send_update_email
     @post.users.each do |user|
-      next if user.all_notifications? || user.daily_notifications? || !user.track_notifications?
+      next unless user.track_notifications == Notification::NOTIFICATION_TYPE_INSTANT
 
       UserMailer.send_tracking_email(actor: current_user, receiver: user, post: @post).deliver
+      push_notification = PushNotificationService.new(user, 1, 0)
+      push_notification.send_push_notification
     end
   end
 
