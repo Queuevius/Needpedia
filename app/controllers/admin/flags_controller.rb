@@ -42,5 +42,16 @@ module Admin
 
     # See https://administrate-prototype.herokuapp.com/customizing_controller_actions
     # for more information
+    def delete_flagable
+      flag = Flag.find(params[:flag_id])
+      flagable_type = flag.flagable_type
+      if flag.flagable.destroy
+        redirect_back(fallback_location: root_path)
+        flash[:notice] = "#{flagable_type} was destroyed successfully"
+      else
+        redirect_back(fallback_location: root_path)
+        flash[:alert] = "#{flagable_type} was not destroyed successfully"
+      end
+    end
   end
 end

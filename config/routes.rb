@@ -62,7 +62,9 @@ Rails.application.routes.draw do
     resources :token_ans_debates
     resources :connections
     resources :user_gigs
-    resources :flags
+    resources :flags do
+      delete 'flags/:flag_id', to: 'flags#delete_flagable', as: 'delete_flag'
+    end
     resources :comments
     resources :gigs
     resources :answers do

@@ -8,7 +8,7 @@ class FlagDashboard < Administrate::BaseDashboard
   # which determines how the attribute is displayed
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
-    flagable: Field::Polymorphic,
+    flagable: Field::Polymorphic.with_options(classes: [Post, PostVersion]),
     user: Field::BelongsTo,
     id: Field::Number,
     reason: Field::RichText,
