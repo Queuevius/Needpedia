@@ -7,7 +7,7 @@ class PostVersionsController < ApplicationController
 
     version.update!(restored_by_id: current_user.id, active: true)
     post.update!(content: version.content)
-
+    Notification.post(from: current_user, notifiable: current_user, to: post.users, action: Notification::NOTIFICATION_TYPE_POST_UPDATED, post_id: post.id)
     redirect_to post, notice: "Post reverted successfully."
   end
 

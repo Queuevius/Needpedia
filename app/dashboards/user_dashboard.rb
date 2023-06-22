@@ -10,6 +10,7 @@ class UserDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     email: Field::String,
+    comment: Field::String,
     password: Field::Password,
     encrypted_password: Field::String,
     remember_created_at: Field::DateTime,
@@ -68,6 +69,7 @@ class UserDashboard < Administrate::BaseDashboard
   track_notifications
   daily_report_sent_at
   daily_notifications
+  comment
   ].freeze
 
   # FORM_ATTRIBUTES

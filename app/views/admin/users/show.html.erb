@@ -44,6 +44,7 @@ as well as a link to its edit page.
 <section class="main-content__body">
   <dl>
     <% page.attributes.each do |attribute| %>
+      <% next if attribute.name == "comment" && attribute.resource.comment.blank? %>
       <dt class="attribute-label" id="<%= attribute.name %>">
       <%= t(
         "helpers.label.#{resource_name}.#{attribute.name}",
@@ -51,8 +52,24 @@ as well as a link to its edit page.
       ) %>
       </dt>
 
-      <dd class="attribute-data attribute-data--<%=attribute.html_class%>"
+      <dd class="attribute-data attribute-data--<%=attribute.html_class%> pl-3"
           ><%= render_field attribute %></dd>
     <% end %>
   </dl>
+
+  <%= form_for([:admin, page.resource], url: comment_user_admin_user_path(page.resource), method: :patch) do |f| %>
+    <dl>
+      <dt class="attribute-label" id="comment">
+        <%= t("helpers.label.comment", default: page.resource.comment.present? ? "Update Comment" : "Add Comment") %>
+      </dt>
+      <dd class="row attribute-data ml-4 pl-2">
+        <div class="col-sm-6">
+          <%= f.text_area :comment, class: "form-control", rows: 2 %>
+        </div>
+        <div class="col-sm-6 mt-2 mt-sm-0 text-sm-end">
+          <%= f.submit page.resource.comment.present? ? "Update Comment" : "Add Comment", class: "btn btn-primary" %>
+        </div>
+      </dd>
+    </dl>
+  <% end %>
 </section>

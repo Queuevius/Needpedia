@@ -78,6 +78,7 @@ Rails.application.routes.draw do
       end
     end
     resources :users do
+      patch 'comment_user', on: :member
       member do
         get :user_history
       end
@@ -90,7 +91,9 @@ Rails.application.routes.draw do
     resources :notifications
     resources :feedbacks
     resources :deletions
-    resources :deletion_requests
+    resources :deletion_requests do
+      post 'delete_post_version/:version_id', action: :delete_post_version, as: :delete_post_version
+    end
     resources :post_versions
 
     root to: "users#index"

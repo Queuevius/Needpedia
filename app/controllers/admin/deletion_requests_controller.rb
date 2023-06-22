@@ -42,5 +42,14 @@ module Admin
 
     # See https://administrate-prototype.herokuapp.com/customizing_controller_actions
     # for more information
+
+    def delete_post_version
+      post_version = PostVersion.find(params[:version_id])
+      if post_version.destroy
+        redirect_back(fallback_location: root_path, notice: "Post version was destroyed successfully")
+      else
+        redirect_back(fallback_location: root_path, alert: "Post version was not destroyed successfully")
+      end
+    end
   end
 end
