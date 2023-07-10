@@ -65,6 +65,7 @@ Rails.application.routes.draw do
     resources :flags
     resources :comments
     resources :gigs
+    resources :banned_terms
     resources :answers do
       get 'approve_user'
     end

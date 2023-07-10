@@ -126,28 +126,36 @@ class PostsController < ApplicationController
   # POST /posts.json
   def create
     @post = Post.new(post_params)
-
-    respond_to do |format|
-      if @post.save
-        @post.images.attach(params[:post][:images]) if params[:post][:images].present?
-        # @post.clean_froala_link
-        UserPrivatePost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_SUBJECT
-        UserCuratedPost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_SUBJECT
-        check_if_should_be_private(@post)
-        check_if_should_be_curated(@post)
-        create_private_users
-        create_curated_users
-        create_activity(@post, 'post.create')
-        if @post.post_type == Post::POST_TYPE_SOCIAL_MEDIA
-          format.html {redirect_to wall_path(uuid: params[:post][:uuid], anchor: "post-#{@post.id}"), notice: "Post was successfully saved."}
+    content = post_params[:content]
+    banned_terms = BannedTerm.last.term
+    checker = TermCheckerService.new
+    if checker.content_contains_banned_term?(content, banned_terms)
+      flash.now[:warning] = ""
+      @found_term = checker.found_term
+      render :new
+    else
+      respond_to do |format|
+        if @post.save
+          @post.images.attach(params[:post][:images]) if params[:post][:images].present?
+          # @post.clean_froala_link
+          UserPrivatePost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_SUBJECT
+          UserCuratedPost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_SUBJECT
+          check_if_should_be_private(@post)
+          check_if_should_be_curated(@post)
+          create_private_users
+          create_curated_users
+          create_activity(@post, 'post.create')
+          if @post.post_type == Post::POST_TYPE_SOCIAL_MEDIA
+            format.html {redirect_to wall_path(uuid: params[:post][:uuid], anchor: "post-#{@post.id}"), notice: "Post was successfully saved."}
+          else
+            format.html {redirect_to @post, notice: 'Post was successfully created.'}
+            format.json {render :show, status: :created, location: @post}
+          end
         else
-          format.html {redirect_to @post, notice: 'Post was successfully created.'}
-          format.json {render :show, status: :created, location: @post}
+          flash[:alert] = @post.errors.full_messages.join(',')
+          format.html {render :new}
+          format.json {render json: @post.errors, status: :unprocessable_entity}
         end
-      else
-        flash[:alert] = @post.errors.full_messages.join(',')
-        format.html {render :new}
-        format.json {render json: @post.errors, status: :unprocessable_entity}
       end
     end
   end
@@ -155,27 +163,36 @@ class PostsController < ApplicationController
   # PATCH/PUT /posts/1
   # PATCH/PUT /posts/1.json
   def update
-    respond_to do |format|
-      if @post.update(post_params)
-        if params[:post][:images].present?
-          @post.images.attach(params[:post][:images]) unless @post.images == params[:post][:images]
-        end
-        create_private_users
-        create_curated_users
-        # @post.clean_froala_link
-        Notification.post(from: current_user, notifiable: current_user, to: @post.users, action: Notification::NOTIFICATION_TYPE_POST_UPDATED, post_id: @post.id)
-        create_activity(@post, 'post.update')
-        offsite_notification(@post)
-        if @post.post_type == Post::POST_TYPE_SOCIAL_MEDIA
-          format.html {redirect_to wall_path(uuid: params[:post][:uuid], anchor: "post-#{@post.id}"), notice: "Post was successfully updated."}
+    content = post_params[:content]
+    banned_terms = BannedTerm.last.term
+    checker = TermCheckerService.new
+    if checker.content_contains_banned_term?(content, banned_terms)
+      flash.now[:warning] = ""
+      @found_term = checker.found_term
+      render :new
+    else
+      respond_to do |format|
+        if @post.update(post_params)
+          if params[:post][:images].present?
+            @post.images.attach(params[:post][:images]) unless @post.images == params[:post][:images]
+          end
+          create_private_users
+          create_curated_users
+          # @post.clean_froala_link
+          Notification.post(from: current_user, notifiable: current_user, to: @post.users, action: Notification::NOTIFICATION_TYPE_POST_UPDATED, post_id: @post.id)
+          create_activity(@post, 'post.update')
+          offsite_notification(@post)
+          if @post.post_type == Post::POST_TYPE_SOCIAL_MEDIA
+            format.html {redirect_to wall_path(uuid: params[:post][:uuid], anchor: "post-#{@post.id}"), notice: "Post was successfully updated."}
+          else
+            format.html {redirect_to @post, notice: 'Post was successfully updated.'}
+            format.json {render :show, status: :ok, location: @post}
+          end
         else
-          format.html {redirect_to @post, notice: 'Post was successfully updated.'}
-          format.json {render :show, status: :ok, location: @post}
+          flash[:alert] = @post.errors.full_messages.join(',')
+          format.html {render :edit}
+          format.json {render json: @post.errors, status: :unprocessable_entity}
         end
-      else
-        flash[:alert] = @post.errors.full_messages.join(',')
-        format.html {render :edit}
-        format.json {render json: @post.errors, status: :unprocessable_entity}
       end
     end
   end
