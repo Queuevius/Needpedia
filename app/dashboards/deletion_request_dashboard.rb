@@ -1,6 +1,6 @@
 require "administrate/base_dashboard"
 
-class UserDashboard < Administrate::BaseDashboard
+class DeletionRequestDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #
@@ -9,28 +9,11 @@ class UserDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    email: Field::String,
-    comment: Field::String,
-    password: Field::Password,
-    encrypted_password: Field::String,
-    remember_created_at: Field::DateTime,
-    confirmed_at: Field::DateTime,
-    first_name: Field::String,
-    last_name: Field::String,
-    announcements_last_read_at: Field::DateTime,
-    admin: Field::Boolean,
-    master_admin: Field::Boolean,
-    approved: Field::Boolean,
+    post_version: Field::BelongsTo,
+    reason: Field::RichText,
+    user: Field::BelongsTo,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
-    disabled: Field::Boolean,
-    profile_image: Field::ActiveStorage,
-    questionnaires: Field::HasMany,
-    answers: Field::HasMany,
-    daily_notification_time: Field::Time,
-    track_notifications: Field::Boolean,
-    daily_report_sent_at: Field::DateTime,
-    daily_notifications: Field::Boolean
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -39,55 +22,30 @@ class UserDashboard < Administrate::BaseDashboard
   # By default, it's limited to four items to reduce clutter on index pages.
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
-  id
-  first_name
-  last_name
-  profile_image
-  email
-  disabled
-  answers
-  approved
+    id
+    post_version
+    reason
+    user
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
-  id
-  email
-  first_name
-  last_name
-  admin
-  master_admin
-  approved
-  disabled
-  confirmed_at
-  answers
-  created_at
-  updated_at
-  profile_image
-  daily_notification_time
-  track_notifications
-  daily_report_sent_at
-  daily_notifications
-  comment
+    id
+    post_version
+    reason
+    user
+    created_at
+    updated_at
   ].freeze
 
   # FORM_ATTRIBUTES
   # an array of attributes that will be displayed
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
-  email
-  first_name
-  last_name
-  disabled
-  confirmed_at
-  admin
-  master_admin
-  password
-  approved
-  track_notifications
-  daily_report_sent_at
-  daily_notifications
+    post_version
+    reason
+    user
   ].freeze
 
   # COLLECTION_FILTERS
@@ -102,10 +60,10 @@ class UserDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how users are displayed
+  # Overwrite this method to customize how deletion requests are displayed
   # across all pages of the admin dashboard.
   #
-  def display_resource(user)
-    user.name
-  end
+  # def display_resource(deletion_request)
+  #   "DeletionRequest ##{deletion_request.id}"
+  # end
 end

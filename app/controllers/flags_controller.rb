@@ -6,7 +6,8 @@ class FlagsController < ApplicationController
   # POST /flags
   # POST /flags.json
   def create
-    @flag = Flag.new(flag_params)
+    @flag = Flag.new(flag_params.merge(reason: params[:version_reason].presence || flag_params[:reason]))
+    @resource_post_id =   @flag.flagable.post.id if @flag.flagable_type == "PostVersion"
 
     respond_to do |format|
       if @flag.save
@@ -26,6 +27,7 @@ class FlagsController < ApplicationController
   def destroy
     # id is here post id
     @flag = @resource.flags.where(user_id: current_user.id).last
+    @resource_post_id =   @flag.flagable.post.id if @flag.flagable_type == "PostVersion"
     if @flag.blank?
       flash[:notice] = 'Not flagged'
       redirect_to post_path(@resource_post_id) and return
@@ -51,7 +53,7 @@ class FlagsController < ApplicationController
 
   def set_resource
     p_params = params[:flag].present? ? params[:flag] : params
-    @klass = p_params[:flagable_type].capitalize.constantize
+    @klass = p_params[:flagable_type] == "PostVersion" ? p_params[:flagable_type].constantize : p_params[:flagable_type].capitalize.constantize
     @resource = @klass.find_by_id(p_params[:flagable_id])
     @resource_post_id = p_params[:flagable_type] == 'Comment' ? @resource.commentable_id : @resource.id
   end

@@ -1,8 +1,11 @@
 class Flag < ApplicationRecord
 
+  validates :reason, presence: true
+
   ################################ Relationships ########################
   belongs_to :flagable, polymorphic: true
   belongs_to :user
+  has_rich_text :reason
   ################################ Callbacks ########################
   after_create :send_notification_on_downvote_token_debate, if: -> { flagable_type == 'TokenAnsDebate' && user_id != flagable.user_id }
   after_create :send_email

@@ -254,6 +254,150 @@
                           <% if @post.tag_list.present? %><%= raw @post.tag_list.map {|t| link_to "##{t}", tag_path(t)}.join(', ') %>
                           <% end %></strong>
                       </div>
+                      <% if @post.post_versions.present? & current_user.present? %>
+                        <div class="row">
+                          <div class="col-lg-6 col-md-5 "></div>
+                          <div class="col-lg-5 col-md-7">
+                            <div class="dropdown">
+                              <a class="btn border dropdown-toggle w-100" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Revert to Previous Editions</a>
+                              <div class="dropdown-menu w-100 max-height-400 overflow-auto" aria-labelledby="dropdownMenuLink">
+                                <% @post.post_versions.order(created_at: :desc).each do |version| %>
+                                  <div class="previous-editions ms-5 m-2">
+                                    <ul class="dropdown-list">
+                                      <li class="border-bottom">
+                                        <div class="option">
+                                          <div class="option-content text-sm">
+                                            <%= version.created_at.strftime('%Y-%m-%d') %> & <%= version.user.name %>
+                                          </div>
+                                          <div class="p-1 option-buttons">
+                                            <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#Modal<%= version.id %>">
+                                              <i class="fa fa-eye"></i>
+                                            </button>
+                                            <% if version.active == false %>
+                                              <%= button_to restore_post_post_version_path(@post, version), method: :post, class: "btn btn-outline-secondary pl-1 pr-1", title: 'restore post version', data: {confirm: 'Are you sure you want to restore this post version?'} do %>
+                                                <%= image_tag "revert.png" %>
+                                              <% end %>
+                                            <% else %>
+                                              <%= button_to restore_post_post_version_path(@post, version), method: :post, class: "btn btn-outline-secondary pl-1 pr-1 disabled", title: 'Current  version', disabled: true do %>
+                                                <%= image_tag "revert.png" %>
+                                              <% end %>
+                                            <% end %>
+                                            <% if version.flags.pluck(:user_id).include?(current_user.id) %>
+                                              <%= link_to flag_path(flagable_id: version.id, flagable_type: 'PostVersion'), class: 'btn btn-primary', title: 'Un-Flag this post version', remote: true, :method => :delete do %>
+                                                <i class="fa fa-flag" aria-hidden="true"></i>
+                                              <% end %>
+                                            <% else %>
+                                              <!-- Button trigger flag modal -->
+                                              <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#flag<%= version.id %>">
+                                                <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                                              </button>
+                                            <% end %>
+                                            <!-- Button trigger delete request modal -->
+                                            <% if version.deletion_requests.pluck(:user_id).include?(current_user.id) %>
+                                              <button type="button" class="btn btn-outline-secondary" data-toggle="modal" disabled data-target="#request-delete<%= version.id %>">
+                                                <i class="fa fa-trash"></i>
+                                              </button>
+                                            <% else %>
+                                              <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#request-delete<%= version.id %>">
+                                                <i class="fa fa-trash"></i>
+                                              </button>
+                                            <% end %>
+                                          </div>
+                                        </div>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                <% end %>
+                              </div>
+                            </div>
+                            <% @post.post_versions.order(created_at: :desc).each do |version| %>
+                              <!-- Modal for Preview -->
+                              <div class="modal fade" id="Modal<%= version.id %>" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title" id="staticBackdropLabel">Preview</h5>
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                      </button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <% if version.restored_by_id.present? %>
+                                        <div class="card-title border-bottom">
+                                          <h5> restored by <%= User.find(version.restored_by_id).name %> </h5>
+                                        </div>
+                                      <% end %>
+                                      <div>
+                                        <%= version.content %>
+                                      </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- Modal for delete request -->
+                              <div class="modal fade" id="request-delete<%= version.id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title" id="exampleModalLabel">Delete Request</h5>
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                      </button>
+                                    </div>
+                                    <%= form_with url: request_delete_post_post_version_path(@post, version), method: :post, remote: true do |form| %>
+                                      <div class="modal-body">
+                                        <%= form.hidden_field :version_id, value: version.id %>
+                                        <div class="form-group">
+                                          <%= form.rich_text_area :reason, autofocus: true, class: 'form-control', placeholder: "Reason" %>
+                                        </div>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <div class="actions">
+                                          <%= form.submit "Submit Request", class: "btn btn-primary" %>
+                                        </div>
+                                      </div>
+                                    <% end %>
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- flage Modal -->
+                              <div class="modal fade" id="flag<%= version.id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title" id="exampleModalLabel">Report this version</h5>
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                      </button>
+                                    </div>
+                                    <%= form_with(model: version.flags.build, local: true, remote: true) do |form| %>
+                                      <div class="modal-body">
+
+                                        <%= form.hidden_field :user_id, value: current_user.id %>
+                                        <%= form.hidden_field :flagable_id, value: version.id %>
+                                        <%= form.hidden_field :flagable_type, value: "PostVersion" %>
+
+                                        <div class="form-group">
+                                            <%= rich_text_area_tag :version_reason, nil, autofocus: true, class: 'form-control', placeholder: "Reason" %>
+                                        </div>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <%= form.submit 'Create', class: 'btn btn-primary' %>
+                                      </div>
+                                    <% end %>
+                                  </div>
+                                </div>
+                              </div>
+                            <% end %>
+                          </div>
+                          <div class="col-lg col-md"></div>
+                        </div>
+                      <% end %>
                     </div>
                     <div class="col-md-12 border-top border-comments">
                       <div class="row mt-3">
@@ -610,6 +754,32 @@
     border: none;
     border-radius: 0;
   }
+
+  .dropdown-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+  }
+
+  .option-content {
+    flex: 1;
+  }
+
+  .option-buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn.btn-outline-secondary[disabled]:hover {
+    opacity: 0.7; /* Adjust the opacity value as desired */
+    cursor: not-allowed;
+  }
+
 </style>
 
 <script type="text/javascript" charset="utf-8">

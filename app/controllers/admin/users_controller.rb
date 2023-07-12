@@ -57,5 +57,14 @@ module Admin
         end
       end
     end
+
+    def comment_user
+      user = User.find(params[:id])
+      if user.update(comment: params[:user][:comment])
+        redirect_to admin_user_path(user), notice: "Comment was added successfully"
+      else
+        redirect_to admin_user_path(user), alert: "Comment was not added successfully"
+      end
+    end
   end
 end

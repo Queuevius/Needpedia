@@ -129,6 +129,7 @@ class PostsController < ApplicationController
 
     respond_to do |format|
       if @post.save
+        @post.post_versions.create(content: @post.content, user: @post.user, active: true)
         @post.images.attach(params[:post][:images]) if params[:post][:images].present?
         # @post.clean_froala_link
         UserPrivatePost.create(post_id: @post.id, user_id: current_user&.id) if @post.post_type == Post::POST_TYPE_SUBJECT
@@ -157,11 +158,15 @@ class PostsController < ApplicationController
   def update
     respond_to do |format|
       if @post.update(post_params)
+        new_content = @post.content
+        active_versions = @post.post_versions.where(active: true)
         if params[:post][:images].present?
           @post.images.attach(params[:post][:images]) unless @post.images == params[:post][:images]
         end
         create_private_users
         create_curated_users
+        active_versions.update(active: false) if active_versions.present?
+        @post.post_versions.create(content: new_content, user: current_user, active: true)
         # @post.clean_froala_link
         Notification.post(from: current_user, notifiable: current_user, to: @post.users, action: Notification::NOTIFICATION_TYPE_POST_UPDATED, post_id: @post.id)
         create_activity(@post, 'post.update')
@@ -390,6 +395,8 @@ class PostsController < ApplicationController
     return unless settings.present?
 
     settings.collect(&:user).each do |user|
+      next unless user.track_notifications == Notification::NOTIFICATION_TYPE_INSTANT
+
       if post.post_type.in?(Post::CORE_POST_TYPES)
         UserMailer.send_tracking_email(actor: current_user, receiver: user, post: @post).deliver
       elsif post.post_type == Post::POST_TYPE_LAYER
@@ -400,9 +407,11 @@ class PostsController < ApplicationController
 
   def send_update_email
     @post.users.each do |user|
-      next if user.all_notifications? || user.daily_notifications? || !user.track_notifications?
+      next unless user.track_notifications == Notification::NOTIFICATION_TYPE_INSTANT
 
       UserMailer.send_tracking_email(actor: current_user, receiver: user, post: @post).deliver
+      push_notification = PushNotificationService.new(user, 1, 0)
+      push_notification.send_push_notification
     end
   end
 

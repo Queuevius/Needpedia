@@ -1,0 +1,111 @@
+<%#
+# Collection
+
+This partial is used on the `index` and `show` pages
+to display a collection of resources in an HTML table.
+
+## Local variables:
+
+- `collection_presenter`:
+  An instance of [Administrate::Page::Collection][1].
+  The table presenter uses `ResourceDashboard::COLLECTION_ATTRIBUTES` to determine
+  the columns displayed in the table
+- `resources`:
+  An ActiveModel::Relation collection of resources to be displayed in the table.
+  By default, the number of resources is limited by pagination
+  or by a hard limit to prevent excessive page load times
+
+[1]: http://www.rubydoc.info/gems/administrate/Administrate/Page/Collection
+%>
+
+<table aria-labelledby="<%= table_title %>">
+  <thead>
+  <tr>
+    <% collection_presenter.attribute_types.each do |attr_name, attr_type| %>
+      <th class="cell-label
+        cell-label--<%= attr_type.html_class %>
+        cell-label--<%= collection_presenter.ordered_html_class(attr_name) %>
+        cell-label--<%= "#{collection_presenter.resource_name}_#{attr_name}" %>"
+          scope="col"
+          aria-sort="<%= sort_order(collection_presenter.ordered_html_class(attr_name)) %>">
+        <%= link_to(sanitized_order_params(page, collection_field_name).merge(
+            collection_presenter.order_params_for(attr_name, key: collection_field_name)
+        )) do %>
+          <%= t(
+                  "helpers.label.#{collection_presenter.resource_name}.#{attr_name}",
+                  default: resource_class.human_attribute_name(attr_name).titleize,
+              ) %>
+          <% if collection_presenter.ordered_by?(attr_name) %>
+              <span class="cell-label__sort-indicator cell-label__sort-indicator--<%= collection_presenter.ordered_html_class(attr_name) %>">
+                <svg aria-hidden="true">
+                  <use xlink:href="#icon-up-caret"/>
+                </svg>
+              </span>
+          <% end %>
+        <% end %>
+      </th>
+    <% end %>
+    <th class="text-center"> Pereview</th>
+    <%= render(
+            "collection_header_actions",
+            collection_presenter: collection_presenter,
+            page: page,
+            resources: resources,
+            table_title: "page-title"
+        ) %>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% resources.each do |resource| %>
+    <tr class="js-table-row"
+        <% if accessible_action?(resource, :show) %>
+        <%= %(tabindex=0 role=link data-url=#{polymorphic_path([namespace, resource])}) %>
+        <% end %>
+        >
+      <% collection_presenter.attributes_for(resource).each do |attribute| %>
+        <td class="cell-data cell-data--<%= attribute.html_class %>">
+          <% if accessible_action?(resource, :show) -%>
+            <a href="<%= polymorphic_path([namespace, resource]) -%>"
+               tabindex="-1"
+               class="action-show"
+            >
+              <%= render_field attribute %>
+            </a>
+          <% else %>
+            <%= render_field attribute %>
+          <% end -%>
+        </td>
+      <% end %>
+      <!-- Button to trigger flagable content modal -->
+      <td class="text-center">
+        <button type="button" class="btn btn-outline-dark mt-0" data-toggle="modal" data-target="#Modal<%= resource.id %>">
+          <i class="fa fa-eye"></i>
+        </button>
+      </td>
+      <!-- flagable content modal -->
+      <div class="modal fade" id="Modal<%= resource.id %>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="myModalLabel"><%= resource.flagable_type %></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p><%= resource.flagable.content %></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <td>
+        <%= link_to "Destroy", admin_flag_delete_flag_path(flag_id: resource.id), method: :delete, data: { confirm: "Are you sure you want to delete this?" }, class: "text-danger"  %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
