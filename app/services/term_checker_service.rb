@@ -1,25 +1,21 @@
 class TermCheckerService
-  attr_reader :found_term, :content, :banned_terms
+  attr_reader :content, :banned_terms
 
   def initialize(content, banned_terms)
     @content = content
     @banned_terms = banned_terms
   end
 
-  def content_contains_banned_term?
+  def content_contains_banned_term
     content_words = split_content_into_words(sanitize_content(content))
     banned_terms_words = sanitize_banned_terms(banned_terms)
     banned_phrases = extract_banned_phrases(banned_terms)
 
     found_term = find_catched_term(content_words, banned_terms_words)
     found_phrase = find_catched_phrase(sanitize_content(content), banned_phrases)
-    if found_term || found_phrase
-      @found_term = found_term || found_phrase
-      true
-    else
-      @found_term = nil
-      false
-    end
+    return nil if found_term.blank? && found_phrase.blank?
+
+    found_term || found_phrase
   end
 
   private

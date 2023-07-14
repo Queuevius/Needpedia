@@ -132,8 +132,9 @@ class PostsController < ApplicationController
       if banned_term.present?
         banned_terms = banned_term.term
         checker = TermCheckerService.new(content, banned_terms)
-        if checker.content_contains_banned_term?
-          @found_term = checker.found_term
+        response = checker.content_contains_banned_term
+        if response.present?
+          @found_term = response
           render :new
           return
         end
@@ -151,8 +152,9 @@ class PostsController < ApplicationController
       if banned_term.present?
         banned_terms = banned_term.term
         checker = TermCheckerService.new(content, banned_terms)
-        if checker&.content_contains_banned_term?
-          @found_term = checker.found_term
+        response = checker.content_contains_banned_term
+        if response.present?
+          @found_term = response
           render :edit
           return
         end
