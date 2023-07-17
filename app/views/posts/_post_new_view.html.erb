@@ -216,23 +216,14 @@
                         <tr>
                           <th scope="row">
                             <div>
-                              <% if @post.content.body.to_plain_text.squish.length > 580 %>
+                              <% if @cleaned_text.length > 1080 %>
                                 <div class="text-truncate-container">
-                                  <%= @post.content %>
+                                  <%= truncate(@post.content.body.to_plain_text, length: 1080, separator: ' ', omission: '...') %>
                                 </div>
-                                <%= link_to ' See more', '', class: "read-more-#{@post.id} fas fa-caret-right  mt-3" %>
-                                <%= 'No details provided' if @post.content.blank? %>
-                                <style>
-                                  .text-truncate-container {
-                                    -webkit-line-clamp: 4;
-                                    display: -webkit-box;
-                                    -webkit-box-orient: vertical;
-                                    overflow: hidden;
-                                  }
-                                </style>
+                                <%= link_to 'See more', '', class: "read-more-#{@post.id} fas fa-caret-right mt-3" %>
                               <% else %>
                                 <div>
-                                  <%= @post.content %>
+                                  <%= @post.content.blank? ? 'No details provided' : @post.content %>
                                 </div>
                               <% end %>
                             </div>
@@ -382,7 +373,7 @@
                                         <%= form.hidden_field :flagable_type, value: "PostVersion" %>
 
                                         <div class="form-group">
-                                            <%= rich_text_area_tag :version_reason, nil, autofocus: true, class: 'form-control', placeholder: "Reason" %>
+                                          <%= rich_text_area_tag :version_reason, nil, autofocus: true, class: 'form-control', placeholder: "Reason" %>
                                         </div>
                                       </div>
                                       <div class="modal-footer">
@@ -466,12 +457,14 @@
     <button class="btn btn-link text-left bg-white" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
       <div class="card-header border-bottom-0" id="headingOne">
         <h5>
-          <h1 class="font-weight-bold"><i class="fas fa-caret-right"></i> Objectives:</h1>
+          <h1 class="font-weight-bold">
+            <i class="<%= @objectives.present? ? 'fas fa-caret-down' : 'fas fa-caret-right' %>"></i> Objectives:
+          </h1>
         </h5>
       </div>
     </button>
 
-    <div id="collapseOne" class="collapse bg-white" aria-labelledby="headingOne" data-parent="#accordion">
+    <div id="collapseOne" class="collapse bg-white <%= ' show' if @objectives.present? %>" aria-labelledby="headingOne" data-parent="#accordion">
       <div class="card-body border-top">
         <div>
           <div class="mr-sm-5">
@@ -493,11 +486,14 @@
     <button class="btn btn-link collapsed text-left bg-white" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
       <div class="card-header border-bottom-0" id="headingTwo">
         <h5>
-          <h1 class="font-weight-bold"><i class="fas fa-caret-right"></i> Resources:</h1>
+          <h1 class="font-weight-bold">
+            <i class="<%= @post.resource_tag_list.present? ? 'fas fa-caret-down' : 'fas fa-caret-right' %>"></i>
+            Resources:
+          </h1>
         </h5>
       </div>
     </button>
-    <div id="collapseTwo" class="collapse bg-white" aria-labelledby="headingTwo" data-parent="#accordion">
+    <div id="collapseTwo" class="collapse bg-white <%= ' show' if @post.resource_tag_list.present? %>" aria-labelledby="headingTwo" data-parent="#accordion">
       <div class="card-body border-top">
         <h5 class="mb-3">Resource
           Tags: <%= raw @post.resource_tag_list.map {|t| link_to "##{t}", tag_path(t)}.join(', ') %>
@@ -527,11 +523,13 @@
     <button class="btn btn-link collapsed text-left bg-white" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
       <div class="card-header border-bottom-0" id="headingThree">
         <h5>
-          <h1 class="font-weight-bold"><i class="fas fa-caret-right"></i> Interested Users:</h1>
+          <h1 class="font-weight-bold">
+            <i class="<%= @interested_users.present? ? 'fas fa-caret-down' : 'fas fa-caret-right' %>"></i> Interested
+            Users:</h1>
         </h5>
       </div>
     </button>
-    <div id="collapseThree" class="collapse bg-white" aria-labelledby="headingThree" data-parent="#accordion">
+    <div id="collapseThree" class="collapse bg-white <%= ' show' if @interested_users.present? %>" aria-labelledby="headingThree" data-parent="#accordion">
       <div class="card-body border-top">
         <div>
           <div class="mr-sm-5">
@@ -551,10 +549,12 @@
   <div class="card m-0">
     <button class="btn btn-link collapsed text-left bg-white" data-toggle="collapse" data-target="#collapsefour" aria-expanded="false" aria-controls="collapsefour">
       <div class="card-header border-bottom-0" id="headingfour">
-        <h1 class="font-weight-bold"><i class="fas fa-caret-right"></i> Related Content:</h1>
+        <h1 class="font-weight-bold">
+          <i class="<%= @related_content.present? ? 'fas fa-caret-down' : 'fas fa-caret-right' %>"></i> Related Content:
+        </h1>
       </div>
     </button>
-    <div id="collapsefour" class="collapse bg-white" aria-labelledby="headingfour" data-parent="#accordion">
+    <div id="collapsefour" class="collapse bg-white <%= ' show' if @related_content.present? %>" aria-labelledby="headingfour" data-parent="#accordion">
       <div class="card-body border-top">
         <div>
           <div class="mr-sm-5">
@@ -576,12 +576,13 @@
     <button class="btn btn-link collapsed text-left bg-white" data-toggle="collapse" data-target="#collapsefive" aria-expanded="false" aria-controls="collapsefive">
       <div class="card-header border-bottom-0" id="headingfive">
         <h5>
-          <h1 class="font-weight-bold"><i class="fas fa-caret-right"></i> Comments:</h1>
+          <h1 class="font-weight-bold">
+            <i class=" <%= @comments.present? ? 'fas fa-caret-down' : 'fas fa-caret-right' %>"></i> Comments:</h1>
         </h5>
       </div>
     </button>
 
-    <div id="collapsefive" class="collapse bg-white" aria-labelledby="headingfive" data-parent="#accordion">
+    <div id="collapsefive" class="collapse bg-white <%= ' show' if @comments.present? %>" aria-labelledby="headingfive" data-parent="#accordion">
       <div class="card-body border-top">
         <div>
           <div class="mr-sm-5">

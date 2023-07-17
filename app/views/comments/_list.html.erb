@@ -5,7 +5,14 @@
         <div class="media-body">
           <h5 class="media-heading"><%= comment.user.name %></h5>
           <div id="comment-form-<%= comment.id %>"></div>
-          <p id="comment-body-<%= comment.id %>"><%= comment.body %></p>
+          <p id="comment-body-<%= comment.id %>">
+            <% if comment.body.length > 250 %>
+              <%= truncate(comment.body, length: 250, separator: ' ', omission: '...') %>
+              <a href="#" onclick="showFullComment('<%= comment.body %>')">See more</a>
+            <% else %>
+              <%= comment.body.blank? ? 'No details provided' : comment.body %>
+            <% end %>
+          </p>
           <ul class="list-unstyled list-inline media-detail pull-left">
             <li><i class="fa fa-calendar"></i> <%= time_ago_in_words(comment.created_at) %> ago</li>
             <% if comment.created_at != comment.updated_at %>
@@ -46,3 +53,10 @@
     </div>
   <% end %>
 <% end %>
+<script>
+    function showFullComment(commentBody) {
+        event.preventDefault();
+        var container = event.target.parentNode;
+        container.innerHTML = commentBody;
+    }
+</script>

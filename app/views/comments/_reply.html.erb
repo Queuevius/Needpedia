@@ -3,7 +3,14 @@
     <div class="media ml-5">
       <div class="media-body"><h5 class="media-heading"><%= reply.user.name %></h5>
         <div id="reply-form-<%= reply.id %>"></div>
-        <p id="reply-body-<%= reply.id %>"><%= reply.body %></p>
+        <p id="reply-body-<%= reply.id %>">
+          <% if reply.body.length > 250 %>
+            <%= truncate(reply.body, length: 250, separator: ' ', omission: '...') %>
+            <a href="#" onclick="showFullComment('<%= reply.body %>')">See more</a>
+          <% else %>
+            <%= reply.body.blank? ? 'No details provided' : reply.body %>
+          <% end %>
+        </p>
         <ul class="ist-unstyled list-inline media-detail pull-left">
           <li class="mt-2">
             <i class="fa fa-calendar"></i> <%= time_ago_in_words(reply.created_at) %> ago
