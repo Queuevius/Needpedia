@@ -6,9 +6,12 @@
           <h5 class="media-heading"><%= comment.user.name %></h5>
           <div id="comment-form-<%= comment.id %>"></div>
           <p id="comment-body-<%= comment.id %>">
-            <% if comment.body.length > 250 %>
-              <%= truncate(comment.body, length: 250, separator: ' ', omission: '...') %>
-              <a href="#" onclick="showFullComment('<%= comment.body %>')">See more</a>
+            <% if comment.body.length > Comment::MAX_COMMENT_BODY_LENGTH %>
+              <span class="comment-truncated-content">
+                <%= truncate(comment.body, length: Comment::MAX_COMMENT_BODY_LENGTH, separator: ' ', omission: '...') %>
+              </span>
+              <span class="comment-full-content" style="display: none;"><%= comment.body%></span>
+              <a href="#" class="see-more-link">See more</a>
             <% else %>
               <%= comment.body.blank? ? 'No details provided' : comment.body %>
             <% end %>
@@ -53,10 +56,3 @@
     </div>
   <% end %>
 <% end %>
-<script>
-    function showFullComment(commentBody) {
-        event.preventDefault();
-        var container = event.target.parentNode;
-        container.innerHTML = commentBody;
-    }
-</script>

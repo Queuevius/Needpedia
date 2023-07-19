@@ -1,1 +1,1 @@
-document.querySelector("#reply-form-<%= @objective.parent_id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { objective: @objective, post: @post })) %>")
+document.querySelector("#objectives-reply-form-<%= @objective.parent_id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { objective: @objective, post: @post })) %>")

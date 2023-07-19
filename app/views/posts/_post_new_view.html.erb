@@ -216,11 +216,19 @@
                         <tr>
                           <th scope="row">
                             <div>
-                              <% if @cleaned_text.length > 1080 %>
+                              <% if @cleaned_text.length > Post::MAX_POST_BODY_LENGTH %>
                                 <div class="text-truncate-container">
-                                  <%= truncate(@post.content.body.to_plain_text, length: 1080, separator: ' ', omission: '...') %>
+                                  <%= @post.content %>
                                 </div>
-                                <%= link_to 'See more', '', class: "read-more-#{@post.id} fas fa-caret-right mt-3" %>
+                                <%= link_to 'See more', '', class: "read-more-#{@post.id} fas fa-caret-right  mt-3" %>
+                                <style>
+                                  .text-truncate-container {
+                                    -webkit-line-clamp: 18;
+                                    display: -webkit-box;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                  }
+                                </style>
                               <% else %>
                                 <div>
                                   <%= @post.content.blank? ? 'No details provided' : @post.content %>
@@ -524,8 +532,7 @@
       <div class="card-header border-bottom-0" id="headingThree">
         <h5>
           <h1 class="font-weight-bold">
-            <i class="<%= @interested_users.present? ? 'fas fa-caret-down' : 'fas fa-caret-right' %>"></i> Interested
-            Users:</h1>
+            <i class="<%= @interested_users.present? ? 'fas fa-caret-down' : 'fas fa-caret-right' %>"></i> Interested Users:</h1>
         </h5>
       </div>
     </button>
@@ -550,11 +557,11 @@
     <button class="btn btn-link collapsed text-left bg-white" data-toggle="collapse" data-target="#collapsefour" aria-expanded="false" aria-controls="collapsefour">
       <div class="card-header border-bottom-0" id="headingfour">
         <h1 class="font-weight-bold">
-          <i class="<%= @related_content.present? ? 'fas fa-caret-down' : 'fas fa-caret-right' %>"></i> Related Content:
+          <i class="<%= @related_contents.present? ? 'fas fa-caret-down' : 'fas fa-caret-right' %>"></i> Related Content:
         </h1>
       </div>
     </button>
-    <div id="collapsefour" class="collapse bg-white <%= ' show' if @related_content.present? %>" aria-labelledby="headingfour" data-parent="#accordion">
+    <div id="collapsefour" class="collapse bg-white <%= ' show' if @related_contents.present? %>" aria-labelledby="headingfour" data-parent="#accordion">
       <div class="card-body border-top">
         <div>
           <div class="mr-sm-5">
@@ -798,5 +805,15 @@
         }).click(function () {
             $(this).remove();
         }).appendTo('body');
+    });
+
+    $(document).ready(function () {
+        $(".see-more-link").click(function (e) {
+            e.preventDefault();
+            var commentContainer = $(this).closest('.media-body');
+            commentContainer.find(".comment-truncated-content").hide();
+            commentContainer.find(".comment-full-content").show();
+            $(this).hide();
+        });
     });
 </script>

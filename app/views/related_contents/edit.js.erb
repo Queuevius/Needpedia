@@ -1,5 +1,5 @@
 <% if @content.parent_id.present? %>
-  document.querySelector("#reply-form-<%= @content.id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { related_content: @content, post: @post })) %>")
+  document.querySelector("#related-contents-reply-form-<%= @content.id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { related_content: @content, post: @post })) %>")
   $("#reply-body-<%= @content.id %>").hide();
 <% else %>
   document.querySelector("#comment-form-<%= @content.id %>").innerHTML = ("<%= j(render(partial: 'form', locals: { related_content: @content, post: @post })) %>")
