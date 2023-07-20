@@ -50,7 +50,7 @@
         <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Friends</a>
         <ul class="collapse list-unstyled" id="pageSubmenu">
           <li>
-            <%= link_to "Friends (#{@friends_count.count})", friends_path(uuid: @uuid) %>
+            <%= link_to "Friends (#{@friends_count.total_count})", friends_path(uuid: @uuid) %>
           </li>
           <% if current_user.uuid == @user.uuid %>
             <li>

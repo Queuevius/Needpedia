@@ -62,7 +62,9 @@ Rails.application.routes.draw do
     resources :token_ans_debates
     resources :connections
     resources :user_gigs
-    resources :flags
+    resources :flags do
+      delete 'flags/:flag_id', to: 'flags#delete_flagable', as: 'delete_flag'
+    end
     resources :comments
     resources :gigs
     resources :banned_terms
@@ -77,6 +79,7 @@ Rails.application.routes.draw do
       end
     end
     resources :users do
+      patch 'comment_user', on: :member
       member do
         get :user_history
       end
@@ -89,6 +92,10 @@ Rails.application.routes.draw do
     resources :notifications
     resources :feedbacks
     resources :deletions
+    resources :deletion_requests do
+      post 'delete_post_version/:version_id', action: :delete_post_version, as: :delete_post_version
+    end
+    resources :post_versions
 
     root to: "users#index"
   end
@@ -177,6 +184,13 @@ Rails.application.routes.draw do
       get 'geo_maxing_posts'
     end
     delete 'delete_image_attachment'
+    resources :post_versions, only: [] do
+      member do
+        post 'restore', to: 'post_versions#restore'
+        post 'report', to: 'post_versions#report'
+        post 'request_delete', to: 'post_versions#request_delete'
+      end
+    end
   end
   resources :comments
   resources :related_contents
