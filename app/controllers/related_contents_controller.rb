@@ -11,8 +11,20 @@ class RelatedContentsController < ApplicationController
 
   def create
     @post = Post.find(related_content_params[:post_id])
-    @related_content = @post.related_contents.create(related_content_params)
+    @related_content = @post.related_contents.new(related_content_params)
     respond_to do |format|
+      content = related_content_params[:body]
+      banned_term = BannedTerm.last
+      if banned_term.present?
+        banned_terms = banned_term.term
+        checker = TermCheckerService.new(content, banned_terms)
+        response = checker.content_contains_banned_term
+        if response.present?
+          @found_term = response
+          render :new
+          return
+        end
+      end
       if @related_content.save
         format.js
         format.html {redirect_to post_path(@post), notice: 'Related Content was successfully created.'}
@@ -30,6 +42,18 @@ class RelatedContentsController < ApplicationController
     @post = @content.post
 
     respond_to do |format|
+      content = related_content_params[:body]
+      banned_term = BannedTerm.last
+      if banned_term.present?
+        banned_terms = banned_term.term
+        checker = TermCheckerService.new(content, banned_terms)
+        response = checker.content_contains_banned_term
+        if response.present?
+          @found_term = response
+          render :edit
+          return
+        end
+      end
       if @content.update(related_content_params)
         format.html {redirect_to post_path(@post), notice: 'Related Content was successfully updated.'}
         format.json {render :edit, status: :created, location: @content}
