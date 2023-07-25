@@ -1,1 +1,9 @@
-document.querySelector("#reply-form-<%= @interested_user.parent_id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { interested_user: @interested_user, post: @post })) %>")
+<% if @found_term.present? %>
+  $(document).ready(function () {
+      $('#interestedUserWarningModal').modal('show');
+      const foundTermValue = '<%= j(@found_term) %>';
+      $('#interestedUserWarningModal .modal-body p strong').text(foundTermValue);
+  });
+<% else %>
+  document.querySelector("#reply-form-<%= @interested_user.parent_id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { interested_user: @interested_user, post: @post })) %>")
+<% end %>

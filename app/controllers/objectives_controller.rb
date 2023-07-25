@@ -12,8 +12,20 @@ class ObjectivesController < ApplicationController
 
   def create
     @post = Post.find(objective_params[:post_id])
-    @objective = @post.objectives.create(objective_params)
+    @objective = @post.objectives.new(objective_params)
     respond_to do |format|
+      content = objective_params[:body]
+      banned_term = BannedTerm.last
+      if banned_term.present?
+        banned_terms = banned_term.term
+        checker = TermCheckerService.new(content, banned_terms)
+        response = checker.content_contains_banned_term
+        if response.present?
+          @found_term = response
+          render :new
+          return
+        end
+      end
       if @objective.save
         format.js
         format.html {redirect_to post_path(@post), notice: 'Objective was successfully created.'}
@@ -39,6 +51,18 @@ class ObjectivesController < ApplicationController
     @post = @objective.post
 
     respond_to do |format|
+      content = objective_params[:body]
+      banned_term = BannedTerm.last
+      if banned_term.present?
+        banned_terms = banned_term.term
+        checker = TermCheckerService.new(content, banned_terms)
+        response = checker.content_contains_banned_term
+        if response.present?
+          render :edit
+          @found_term = response
+          return
+        end
+      end
       if @objective.update(objective_params)
         format.html {redirect_to post_path(@post), notice: 'Objective was successfully updated.'}
         format.json {render :edit, status: :created, location: @objective}

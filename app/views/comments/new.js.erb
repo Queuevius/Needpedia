@@ -1,1 +1,10 @@
+<% if @found_term.present? %>
+$(document).ready(function () {
+    $('#commentWarningModal').modal('show');
+    const foundTermValue = '<%= j(@found_term) %>';
+    $('#commentWarningModal .modal-body p strong').text(foundTermValue);
+});
+
+<% else %>
 document.querySelector("#reply-form-<%= @comment.parent_id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { comment: @comment, post: @post })) %>")
+<% end %>

@@ -25,6 +25,18 @@ class CommentsController < ApplicationController
     @post = Post.find(@comment.commentable_id)
 
     respond_to do |format|
+      content = comment_params[:body]
+      banned_term = BannedTerm.last
+      if banned_term.present?
+        banned_terms = banned_term.term
+        checker = TermCheckerService.new(content, banned_terms)
+        response = checker.content_contains_banned_term
+        if response.present?
+          @found_term = response
+          render :new
+          return
+        end
+      end
       if @comment.save
         if @comment.commentable_type == 'Post'
           create_activity(@comment.commentable, 'post.commented_on')
@@ -45,6 +57,18 @@ class CommentsController < ApplicationController
     @post = Post.find(@comment.commentable_id)
 
     respond_to do |format|
+      content = comment_params[:body]
+      banned_term = BannedTerm.last
+      if banned_term.present?
+        banned_terms = banned_term.term
+        checker = TermCheckerService.new(content, banned_terms)
+        response = checker.content_contains_banned_term
+        if response.present?
+          @found_term = response
+          render :edit
+          return
+        end
+      end
       if @comment.update(comment_params)
         format.html {redirect_to post_path(@post), notice: 'Comment was successfully updated.'}
         format.json {render :edit, status: :created, location: @comment}
