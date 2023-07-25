@@ -1,1 +1,9 @@
-document.querySelector("#related-contents-reply-form-<%= @content.parent_id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { related_content: @content, post: @post })) %>")
+<% if @found_term.present? %>
+$(document).ready(function () {
+    $('#relatedWarningModal').modal('show');
+    const foundTermValue = '<%= j(@found_term) %>';
+    $('#relatedWarningModal .modal-body p strong').text(foundTermValue);
+});
+<% else %>
+document.querySelector("#reply-form-<%= @content.parent_id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { related_content: @content, post: @post })) %>")
+<% end %>

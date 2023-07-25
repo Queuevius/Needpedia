@@ -1,7 +1,15 @@
-<% if @objective.parent_id.present? %>
-  document.querySelector("#objectives-reply-form-<%= @objective.id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { objective: @objective, post: @post })) %>")
-  $("#reply-body-<%= @objective.id %>").hide();
+<% if @found_term.present? %>
+  $(document).ready(function () {
+      $('#objectiveWarningModal').modal('show');
+      const foundTermValue = '<%= j(@found_term) %>';
+      $('#objectiveWarningModal .modal-body p strong').text(foundTermValue);
+  });
 <% else %>
-  document.querySelector("#comment-form-<%= @objective.id %>").innerHTML = ("<%= j(render(partial: 'form', locals: { objective: @objective, post: @post })) %>")
-  $("#comment-body-<%= @objective.id %>").hide();
+  <% if @objective.parent_id.present? %>
+    document.querySelector("#reply-form-<%= @objective.id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { objective: @objective, post: @post })) %>")
+    $("#reply-body-<%= @objective.id %>").hide();
+  <% else %>
+    document.querySelector("#comment-form-<%= @objective.id %>").innerHTML = ("<%= j(render(partial: 'form', locals: { objective: @objective, post: @post })) %>")
+    $("#comment-body-<%= @objective.id %>").hide();
+  <% end %>
 <% end %>
