@@ -6,7 +6,7 @@
   });
 <% else %>
   <% if @interested_user.parent_id.present? %>
-    document.querySelector("#reply-form-<%= @interested_user.id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { interested_user: @interested_user, post: @post })) %>")
+    document.querySelector("#interested-user-reply-form-<%= @interested_user.id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { interested_user: @interested_user, post: @post })) %>")
     $("#reply-body-<%= @interested_user.id %>").hide();
   <% else %>
     document.querySelector("#comment-form-<%= @interested_user.id %>").innerHTML = ("<%= j(render(partial: 'form', locals: { interested_user: @interested_user, post: @post })) %>")
