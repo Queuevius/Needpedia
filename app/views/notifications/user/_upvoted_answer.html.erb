@@ -1,5 +1,9 @@
 <div class="card mb-1">
   <div class="card-body">
-    <h5><%= link_to "#{actor.name}", wall_path(uuid: actor.uuid) %> upvoted your answer on post <%= link_to notification.post.title, post_path(notification.post.id) %></h5>
+    <% if notification.post.present? %>
+      <h5><%= link_to "#{actor.name}", wall_path(uuid: actor.uuid) %> upvoted your answer on post <%= link_to notification.post.title, post_path(notification.post.id) %></h5>
+    <% else %>
+      <h5><%= link_to "#{actor.name}", wall_path(uuid: actor.uuid) %> upvoted your answer on post "Which is not available anymore."</h5>
+    <% end %>
   </div>
 </div>

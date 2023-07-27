@@ -170,6 +170,9 @@
           <br>
           <p>*What does our program want you to edit? </p>
           <p>"<strong><%=@found_term %> </strong>"</p>
+          <div class="text-center">
+            <%= link_to 'Provide Feedback', new_feedback_path, class: 'btn btn-sm btn-primary' %>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
