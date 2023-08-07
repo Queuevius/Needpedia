@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_07_07_092103) do
+ActiveRecord::Schema.define(version: 2023_08_02_053348) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -66,6 +66,18 @@ ActiveRecord::Schema.define(version: 2023_07_07_092103) do
     t.index ["recipient_type", "recipient_id"], name: "index_activities_on_recipient_type_and_recipient_id"
     t.index ["trackable_id", "trackable_type"], name: "index_activities_on_trackable_id_and_trackable_type"
     t.index ["trackable_type", "trackable_id"], name: "index_activities_on_trackable_type_and_trackable_id"
+  end
+
+  create_table "admin_histories", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "action"
+    t.string "target_type"
+    t.bigint "target_id"
+    t.text "message"
+    t.string "ip_address"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_admin_histories_on_user_id"
   end
 
   create_table "admin_notifications", force: :cascade do |t|
@@ -625,6 +637,7 @@ ActiveRecord::Schema.define(version: 2023_07_07_092103) do
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "admin_histories", "users"
   add_foreign_key "answers", "questions"
   add_foreign_key "answers", "users"
   add_foreign_key "comments", "users"

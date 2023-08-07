@@ -1,10 +1,6 @@
 module Admin
   class UsersController < Admin::ApplicationController
-
-    def update
-      params[:user].delete(:password) if params[:user][:password].blank?
-      super
-    end
+    include AdminActions
 
     def bulk_delete
       user_ids = params[:user_ids]
