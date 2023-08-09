@@ -5,7 +5,17 @@
         <div class="media-body">
           <h5 class="media-heading"><%= comment.user.name %></h5>
           <div id="comment-form-<%= comment.id %>"></div>
-          <p id="comment-body-<%= comment.id %>"><%= comment.body %></p>
+          <p id="comment-body-<%= comment.id %>">
+            <% if comment.body.length > Comment::MAX_COMMENT_BODY_LENGTH %>
+              <span class="comment-truncated-content">
+                <%= truncate(comment.body, length: Comment::MAX_COMMENT_BODY_LENGTH, separator: ' ', omission: '...') %>
+              </span>
+              <span class="comment-full-content" style="display: none;"><%= comment.body%></span>
+              <a href="#" class="see-more-link">See more</a>
+            <% else %>
+              <%= comment.body.blank? ? 'No details provided' : comment.body %>
+            <% end %>
+          </p>
           <ul class="list-unstyled list-inline media-detail pull-left">
             <li><i class="fa fa-calendar"></i> <%= time_ago_in_words(comment.created_at) %> ago</li>
             <% if comment.created_at != comment.updated_at %>
