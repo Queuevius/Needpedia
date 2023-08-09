@@ -5,7 +5,17 @@
         <div class="media-body">
           <h5 class="media-heading"><%= objective.user.name %></h5>
           <div id="comment-form-<%= objective.id %>"></div>
-          <p id="comment-body-<%= objective.id %>"><%= objective.body %></p>
+          <p id="comment-body-<%= objective.id %>">
+            <% if objective.body.length > Objective::MAX_BODY_LENGTH %>
+              <span class="comment-truncated-content">
+                <%= truncate(objective.body, length: Objective::MAX_BODY_LENGTH, separator: ' ', omission: '...') %>
+              </span>
+              <span class="comment-full-content" style="display: none;"><%= objective.body %></span>
+              <a href="#" class="see-more-link">See more</a>
+            <% else %>
+              <%= objective.body.blank? ? 'No details provided' : objective.body %>
+            <% end %>
+          </p>
           <ul class="list-unstyled list-inline media-detail pull-left">
             <li><i class="fa fa-calendar"></i> <%= time_ago_in_words(objective.created_at) %> ago</li>
             <% if objective.created_at != objective.updated_at %>
@@ -32,7 +42,7 @@
           <%= render partial: 'objectives/replies', locals: {replies: objective.replies, post: post} %>
         <% end %>
       </div>
-      <div id="reply-form-<%= objective.id %>"></div>
+      <div id="objectives-reply-form-<%= objective.id %>"></div>
     </div>
   <% end %>
 <% end %>

@@ -1,5 +1,11 @@
 <div class="card mb-1">
   <div class="card-body">
-    <h5>You have been removed from a curated Area <span class="text-primary">"<%= notification.post.title %>"</span> </h5>
+    <% if notification.post.present? %>
+      <h5>You have been removed from a curated Area <span class="text-primary">"<%= notification.post.title %>"</span>
+      </h5>
+    <% else %>
+      <h5>You have been removed from a curated Area <span class="text-primary">"Which is not available anymore."</span>
+      </h5>
+    <% end %>
   </div>
 </div>

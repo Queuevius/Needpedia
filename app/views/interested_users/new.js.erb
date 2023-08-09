@@ -5,5 +5,5 @@
       $('#interestedUserWarningModal .modal-body p strong').text(foundTermValue);
   });
 <% else %>
-  document.querySelector("#reply-form-<%= @interested_user.parent_id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { interested_user: @interested_user, post: @post })) %>")
+  document.querySelector("#interested-user-reply-form-<%= @interested_user.parent_id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { interested_user: @interested_user, post: @post })) %>")
 <% end %>

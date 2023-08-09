@@ -2,8 +2,18 @@
   <div class="border-top">
     <div class="media ml-5">
       <div class="media-body"><h5 class="media-heading"><%= reply.user.name %></h5>
-        <div id="reply-form-<%= reply.id %>"></div>
-        <p id="reply-body-<%= reply.id %>"><%= reply.content %></p>
+        <div id="interested-user-reply-form-<%= reply.id %>"></div>
+        <p id="reply-body-<%= reply.id %>">
+          <% if reply.content.length > InterestedUser::MAX_BODY_LENGTH %>
+              <span class="comment-truncated-content">
+               <%= truncate(reply.content, length: InterestedUser::MAX_BODY_LENGTH, separator: ' ', omission: '...') %>
+              </span>
+            <span class="comment-full-content" style="display: none;"><%= reply.content %></span>
+            <a href="#" class="see-more-link">See more</a>
+          <% else %>
+            <%= reply.content.blank? ? 'No details provided' : reply.content %>
+          <% end %>
+        </p>
         <ul class="ist-unstyled list-inline media-detail pull-left">
           <li class="mt-2">
             <i class="fa fa-calendar"></i> <%= time_ago_in_words(reply.created_at) %> ago

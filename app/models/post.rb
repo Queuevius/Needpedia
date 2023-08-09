@@ -47,6 +47,7 @@ class Post < ApplicationRecord
 
   GENERAL_AREA = ENV['GENERAL_AREA_ID']
   GENERAL_PROBLEM = ENV['GENERAL_PROBLEM_ID']
+  MAX_POST_BODY_LENGTH = 2000
   ################################ Relationships ########################
   belongs_to :user, optional: true
   belongs_to :parent_subject, class_name: 'Post', foreign_key: :subject_id, optional: true

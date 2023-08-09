@@ -5,7 +5,17 @@
         <div class="media-body">
           <h5 class="media-heading"><%= interested_user.user.name %></h5>
           <div id="comment-form-<%= interested_user.id %>"></div>
-          <p id="comment-body-<%= interested_user.id %>"><%= interested_user.content %></p>
+          <p id="comment-body-<%= interested_user.id %>">
+            <% if interested_user.content.length > InterestedUser::MAX_BODY_LENGTH %>
+              <span class="comment-truncated-content">
+                <%= truncate(interested_user.content, length: InterestedUser::MAX_BODY_LENGTH, separator: ' ', omission: '...') %>
+              </span>
+              <span class="comment-full-content" style="display: none;"><%= interested_user.content %></span>
+              <a href="#" class="see-more-link">See more</a>
+            <% else %>
+              <%= interested_user.content.blank? ? 'No details provided' : interested_user.content %>
+            <% end %>
+          </p>
           <ul class="list-unstyled list-inline media-detail pull-left">
             <li><i class="fa fa-calendar"></i> <%= time_ago_in_words(interested_user.created_at) %> ago</li>
             <% if interested_user.created_at != interested_user.updated_at %>
@@ -32,7 +42,7 @@
           <%= render partial: 'interested_users/replies', locals: {replies: interested_user.replies, post: post} %>
         <% end %>
       </div>
-      <div id="reply-form-<%= interested_user.id %>"></div>
+      <div id="interested-user-reply-form-<%= interested_user.id %>"></div>
     </div>
   <% end %>
 <% end %>
