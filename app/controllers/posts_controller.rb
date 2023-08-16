@@ -82,13 +82,14 @@ class PostsController < ApplicationController
     end
 
     @comment = Comment.new(parent_id: params[:parent_id])
-    @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('comments.created_at DESC')
-    @objectives = @post.objectives.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('objectives.created_at DESC')
-    @related_contents = @post.related_contents.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('related_contents.created_at DESC')
-    @interested_users = @post.interested_users.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(12).order('interested_users.created_at DESC')
+    @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
+    @objectives = @post.objectives.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('objectives.created_at DESC')
+    @related_contents = @post.related_contents.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('related_contents.created_at DESC')
+    @interested_users = @post.interested_users.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('interested_users.created_at DESC')
     @interested_user = InterestedUser.new(parent_id: params[:parent_id])
     @related_content = RelatedContent.new(parent_id: params[:parent_id])
     @objective = Objective.new(parent_id: params[:parent_id])
+    @cleaned_text = @post.content.body.to_plain_text.squish
   end
 
   # GET /posts/new

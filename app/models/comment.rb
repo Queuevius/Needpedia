@@ -10,6 +10,7 @@ class Comment < ApplicationRecord
   has_many :replies, class_name: 'Comment', foreign_key: :parent_id, dependent: :destroy
   has_many :flags, as: :flagable, dependent: :destroy
   validates_presence_of :body
+  MAX_COMMENT_BODY_LENGTH = 350
 
   enum status: %i[active deleted]
 

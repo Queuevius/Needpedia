@@ -8,8 +8,9 @@ class FeedbacksController < ApplicationController
 
   def create
     @feedback = @current_user.feedbacks.new(response_params)
+    return_to_url = params[:feedback][:return_to]
     if @feedback.save
-      redirect_to edit_user_registration_path, notice: 'Thanks for your feedback.'
+      redirect_to return_to_url || root_path, notice: 'Thanks for your feedback.'
     else
       flash[:alert] = @feedback.errors.full_messages.join(',')
       redirect_to new_feedback_path
@@ -19,6 +20,6 @@ class FeedbacksController < ApplicationController
   private
 
   def response_params
-    params.require(:feedback).permit(feedback_responses_attributes: [:id, :feedback_question_id, :feedback_question_option_id, :comment, :_destroy])
+    params.require(:feedback).permit(feedback_responses_attributes: [:id, :feedback_question_id, :feedback_question_option_id, :comment, :_destroy, :return_to])
   end
 end
