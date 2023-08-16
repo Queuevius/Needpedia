@@ -6,6 +6,12 @@ module MasterAdmin
       super
     end
 
+    def show
+      @user = User.find(params[:id])
+      @admin_histories = AdminHistory.where(user: @user).order(created_at: :desc).page(params[:page]).per(5)
+      super
+    end
+
     def bulk_delete
       user_ids = params[:user_ids]
       return unless user_ids.present?

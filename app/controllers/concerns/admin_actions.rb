@@ -31,6 +31,13 @@ module AdminActions
     create_admin_history_log(params[:id])
   end
 
+  def show
+    super
+    if resource_class.model_name.singular == "user"
+      create_admin_history_log(params[:id])
+    end
+  end
+
   def destroy
     if resource_class.model_name.singular == "post"
       Post.unscoped do
@@ -50,12 +57,12 @@ module AdminActions
     action = action_name.capitalize
     target_type = controller_name.singularize.capitalize
 
-    if id.nil?
-      id = params[:id]
-      message = "Admin looked at a user profile"
-    else
-      message = "Admin #{action}d #{target_type}"
-    end
+    message = if id.nil? || target_type == "User"
+                id ||= params[:id]
+                "Admin looked at a user profile"
+              else
+                "Admin #{action}d #{target_type}"
+              end
 
     AdminHistory.create(
         user: current_user,
