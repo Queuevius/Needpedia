@@ -55,7 +55,7 @@ as well as a link to its edit page.
     <% end %>
   </dl>
   <br>
-  <h2 class="text-center m-5 pt-3"> Admin History </h2>
+  <h2 class="text-center m-5 pt-3"> <%= "Admin History" if @admin_histories.present? %></h2>
   <% @admin_histories.each do |history| %>
     <div class="card">
       <div class="tab-content admin-tab-content pt-30">
