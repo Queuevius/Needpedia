@@ -55,48 +55,50 @@ as well as a link to its edit page.
     <% end %>
   </dl>
   <br>
-  <h2 class="text-center m-5 pt-3"> <%= "Admin History" if @admin_histories.present? %></h2>
-  <% @admin_histories.each do |history| %>
-    <div class="card">
-      <div class="tab-content admin-tab-content pt-30">
-        <div role="tabpanel" class="tab-pane active show" id="t1">
-          <ul class="activity-list list-unstyled">
-            <li class="clearfix">
-              <div class="float-left">
-                <% if @user.profile_image.present? %>
-                  <%= image_tag @user.profile_image, class: "img-fluid rounded-circle" %>
-                <% else %>
-                  <%= image_tag "profile.png", class: "img-fluid rounded-circle" %>
-                <% end %>
-              </div>
-              <div class="act-content">
-                <div class="font-400">
-                  <% message = history.message.humanize %>
-                  <%= @user.name %>
-                  <% target_type = history.target_type.underscore.camelize.constantize %>
-                  <% target = target_type.find_by(id: history.target_id) %>
-                  <% if history.target_type == "Message" %>
-                    send a message to
-                    <%= link_to (user = User.find_by(id: target.user_id)) ? user.name : 'user doesn\'t exist anymore', (user ? feed_path(uuid: user.uuid) : '#'), class: (target ? '' : ' btn disabled m-0 p-0') %>
-                    <%= "'#{message}'" %>
+  <% if @admin_histories.present? %>
+    <h2 class="text-center m-5 pt-3"> Admin History </h2>
+    <% @admin_histories.each do |history| %>
+      <div class="card">
+        <div class="tab-content admin-tab-content pt-30">
+          <div role="tabpanel" class="tab-pane active show" id="t1">
+            <ul class="activity-list list-unstyled">
+              <li class="clearfix">
+                <div class="float-left">
+                  <% if @user.profile_image.present? %>
+                    <%= image_tag @user.profile_image, class: "img-fluid rounded-circle" %>
                   <% else %>
-                    <%= target ? "as" : "#{history.action} a" %>
-                    <%= message if target_type == User %>
-                    <%= link_to (target ? target_type == User ? target.name : message : "#{target_type} doesn't exist anymore"), (target ? target_type == User ? feed_path(uuid: target.uuid) : send("admin_#{target_type.to_s.underscore}_path", target) : '#'), title: "This will lead you to the admin dashboard (currently you are in master admin dashboard) in a new tab", target: "_blank", class: (target ? '' : ' btn disabled m-0 p-0') %>
+                    <%= image_tag "profile.png", class: "img-fluid rounded-circle" %>
                   <% end %>
                 </div>
-                <span class="text-small"><%= history.created_at.strftime('%B %d, %Y %H:%M') %></span>
-                <div>
-                  <% if history.ip_address.present? %>
-                    <strong>Admin iP:</strong> <%= history.ip_address %>
-                  <% end %>
+                <div class="act-content">
+                  <div class="font-400">
+                    <% message = history.message.humanize %>
+                    <%= @user.name %>
+                    <% target_type = history.target_type.underscore.camelize.constantize %>
+                    <% target = target_type.find_by(id: history.target_id) %>
+                    <% if history.target_type == "Message" %>
+                      send a message to
+                      <%= link_to (user = User.find_by(id: target.user_id)) ? user.name : 'user doesn\'t exist anymore', (user ? feed_path(uuid: user.uuid) : '#'), class: (target ? '' : ' btn disabled m-0 p-0') %>
+                      <%= "'#{message}'" %>
+                    <% else %>
+                      <%= target ? "as" : "#{history.action} a" %>
+                      <%= message if target_type == User %>
+                      <%= link_to (target ? target_type == User ? target.name : message : "#{target_type} doesn't exist anymore"), (target ? target_type == User ? feed_path(uuid: target.uuid) : send("admin_#{target_type.to_s.underscore}_path", target) : '#'), title: "This will lead you to the admin dashboard (currently you are in master admin dashboard) in a new tab", target: "_blank", class: (target ? '' : ' btn disabled m-0 p-0') %>
+                    <% end %>
+                  </div>
+                  <span class="text-small"><%= history.created_at.strftime('%B %d, %Y %H:%M') %></span>
+                  <div>
+                    <% if history.ip_address.present? %>
+                      <strong>Admin iP:</strong> <%= history.ip_address %>
+                    <% end %>
+                  </div>
                 </div>
-              </div>
-            </li>
-          </ul>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
+    <% end %>
   <% end %>
   <%= paginate @admin_histories %>
 </section>
