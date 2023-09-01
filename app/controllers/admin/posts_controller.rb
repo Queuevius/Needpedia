@@ -1,5 +1,6 @@
 module Admin
   class PostsController < Admin::ApplicationController
+    include AdminActions
     def private_posts
       redirect_to admin_posts_path(private: true)
     end
@@ -8,14 +9,6 @@ module Admin
       redirect_to admin_posts_path(deleted_at: true)
     end
 
-    def destroy
-      Post.unscoped do
-        post = Post.find(params[:id])
-        create_activity(post, 'post.destroy')
-        post.destroy
-        redirect_to admin_posts_path, notice: 'Post was successfully destroyed.'
-      end
-    end
 
     def restore_deleted_posts
       Post.unscoped do

@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :master_admin do
     resources :settings
+    resources :admin_histories
     resources :preformatted_messages
     resources :how_tos
     resources :questions
@@ -88,6 +89,7 @@ Rails.application.routes.draw do
         get 'send_confirmation_link'
         get 'unconfirmed_users'
       end
+      post :create_admin_history_log, on: :member
     end
     resources :notifications
     resources :feedbacks

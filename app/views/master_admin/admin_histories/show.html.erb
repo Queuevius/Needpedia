@@ -1,0 +1,74 @@
+<%#
+# Show
+
+This view is the template for the show page.
+It renders the attributes of a resource,
+as well as a link to its edit page.
+
+## Local variables:
+
+- `page`:
+  An instance of [Administrate::Page::Show][1].
+  Contains methods for accessing the resource to be displayed on the page,
+  as well as helpers for describing how each attribute of the resource
+  should be displayed.
+
+[1]: http://www.rubydoc.info/gems/administrate/Administrate/Page/Show
+%>
+
+<% content_for(:title) {t("administrate.actions.show_resource", name: page.page_title)} %>
+
+<header class="main-content__header">
+  <h1 class="main-content__page-title">
+    <%= content_for(:title) %>
+  </h1>
+
+  <div>
+    <%= link_to(
+            t("administrate.actions.edit_resource", name: page.page_title),
+            [:edit, namespace, page.resource],
+            class: "button",
+        ) if accessible_action?(page.resource, :edit) %>
+
+    <%= link_to(
+            t("administrate.actions.destroy"),
+            [namespace, page.resource],
+            class: "button button--danger",
+            method: :delete,
+            data: {confirm: t("administrate.actions.confirm")}
+        ) if accessible_action?(page.resource, :destroy) %>
+  </div>
+</header>
+
+<section class="main-content__body">
+  <dl>
+    <% page.attributes.each do |attribute| %>
+      <dt class="attribute-label" id="<%= attribute.name %>">
+        <% if attribute.name == "user" %>
+          <%= t(
+                  "helpers.label.#{resource_name}.#{Admin}",
+                  default: page.resource.class.human_attribute_name(Admin),
+                  ) %>
+        <% else %>
+          <%= t(
+                  "helpers.label.#{resource_name}.#{attribute.name}",
+                  default: page.resource.class.human_attribute_name(attribute.name),
+              ) %>
+        <% end %>
+      </dt>
+      <dd class="attribute-data attribute-data--<%= attribute.html_class %>">
+        <% if attribute.name == "target_id" %>
+          <% target_type = attribute.resource.target_type.underscore.camelize.constantize %>
+          <% target = target_type.find_by(id: attribute.resource.target_id) %>
+          <% if attribute.resource.target_type == "Message" %>
+            <%= link_to (user = User.find_by(id: target.user_id)) ? user.name : 'user doesn\'t exist anymore', (user ? feed_path(uuid: user.uuid) : '#'), class: (target ? '' : ' btn disabled m-0 p-0') %>
+          <% else %>
+            <%= link_to (target ? target_type == User ? target.name : target.id : "#{target_type} doesn't exist anymore"), (target ? target_type == User ? feed_path(uuid: target.uuid) : send("admin_#{target_type.to_s.underscore}_path", target) : '#'), title: "This will lead you to the admin dashboard (currently you are in master admin dashboard) in a new tab", target: "_blank", class: (target ? '' : ' btn disabled m-0 p-0') %>
+          <% end %>
+        <% else %>
+          <%= render_field attribute, page: page %>
+        <% end %>
+      </dd>
+    <% end %>
+  </dl>
+</section>

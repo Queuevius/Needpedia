@@ -1,0 +1,2 @@
+module MasterAdmin::AdminHistoriesHelper
+end

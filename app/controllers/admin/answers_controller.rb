@@ -1,5 +1,6 @@
 module Admin
   class AnswersController < Admin::ApplicationController
+    include AdminActions
     def approve_user
       answer = Answer.find(params[:answer_id])
       user = answer.user
