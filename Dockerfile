@@ -26,6 +26,8 @@ COPY . ./
 RUN chmod +x /workspace/bin/rails
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | /bin/bash -
 
+RUN apt-get update && apt-get install -y python3-pip
+RUN pip3 install psycopg2
 
 RUN chmod 0755 /workspace/bin/rails
 RUN chmod 0755 /workspace/bin/start.sh

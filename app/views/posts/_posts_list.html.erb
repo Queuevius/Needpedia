@@ -29,9 +29,9 @@
                     <div class="row">
                       <div class="col-3 search-result-img">
                         <% if post.images.present? %>
-                          <%= image_tag(post.images.first, class: 'img-fluid') %>
+                          <%= image_tag(post.images.first, class: 'img-fluid shadow-sm') %>
                         <% else %>
-                          <%= image_tag('thumbs_for_bars.png', class: 'img-fluid missing-image') %>
+                          <%= image_tag('thumbs_for_bars.png', class: 'img-fluid shadow-sm missing-image') %>
                         <% end %>
                       </div>
                       <div class="col-9 text-dark text-break overflow-auto">
@@ -79,13 +79,21 @@
 </div>
 <style>
   .missing-image {
-    height: 65%;
+    /*max-width: 57% !important;*/
   }
   @media (min-width: 766px) {
     .custom-width {
       max-height: 200px !important;
       min-height: 125px !important;
-      height: 125px !important;
+      /*height: 125px !important;*/
     }
+    .img-fluid {
+        max-height: 153px; /* = 200px - 24px - 23px */
+    }
+  }
+  .img-fluid {
+      max-width: 100%; /* modify this value to change picture default scale */
+      height: auto;
+      width: 100%;
   }
 </style>
