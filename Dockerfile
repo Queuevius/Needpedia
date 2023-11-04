@@ -1,4 +1,4 @@
-FROM ruby:2.7.1
+FROM ruby:2.7.3
 
 WORKDIR /workspace
 
@@ -19,7 +19,7 @@ RUN apt install shared-mime-info
 RUN gem install nokogiri -v 1.13.10
 RUN gem install mimemagic -v '0.3.10' --source 'https://rubygems.org/'
 RUN gem install bundler -v 2.4.4
-RUN gem install rails -v 6.0.4
+RUN gem install rails -v 6.0.2
 RUN bundle install
 
 COPY . ./
