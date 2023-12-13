@@ -10,7 +10,9 @@
     </ul>
   </div>
 </footer>
-<script src="https://cdn.botpress.cloud/webchat/v1/inject.js"></script>
-<script src="https://mediafiles.botpress.cloud/<%= ENV['BOTPRESS_CLIENT_ID'] %>/webchat/config.js" defer></script>
+<% if current_user %>
+  <script src="https://cdn.botpress.cloud/webchat/v1/inject.js"></script>
+  <script src="https://mediafiles.botpress.cloud/<%= ENV['BOTPRESS_CLIENT_ID'] %>/webchat/config.js" defer></script>
+<% end %>
 
 <div id="modal-window"></div>
