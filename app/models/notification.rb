@@ -26,6 +26,7 @@ class Notification < ApplicationRecord
   NOTIFICATION_TYPE_NONE  = 'none'.freeze
   NOTIFICATION_TYPE_DAILY  = 'daily'.freeze
   NOTIFICATION_TYPE_INSTANT  = 'instant'.freeze
+  NOTIFICATION_TYPE_INVITE  = 'invite'.freeze
 
   ################################ relationships ############################
   belongs_to :recipient, class_name: "User"
@@ -33,16 +34,18 @@ class Notification < ApplicationRecord
   belongs_to :notifiable, polymorphic: true
   belongs_to :post, optional: true
   belongs_to :admin_notification, optional: true
+  belongs_to :group, optional: true
 
   scope :unread, -> { where(read_at: nil) }
   scope :recent, -> { order(created_at: :desc).limit(5) }
 
-  def self.post(to:, from:, action:, notifiable:, post_id: nil, admin_notification_id: nil)
+  def self.post(to:, from:, action:, notifiable:, post_id: nil, admin_notification_id: nil, group_id: nil)
     recipients = Array.wrap(to)
     notifications = []
     Notification.transaction do
       notifications = recipients.uniq.each do |recipient|
         Notification.create(
+          group_id: group_id,
           notifiable: notifiable,
           action: action,
           recipient: recipient,

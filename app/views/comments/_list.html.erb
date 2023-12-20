@@ -4,6 +4,10 @@
       <div class="media">
         <div class="media-body">
           <h5 class="media-heading"><%= comment.user.name %></h5>
+          <% if comment.group_id.present?  %>
+            <% group = Group.find(comment.group_id)  %>
+            as a group (<%= link_to group.name, group %>)
+          <% end %>
           <div id="comment-form-<%= comment.id %>"></div>
           <p id="comment-body-<%= comment.id %>">
             <% if comment.body.length > Comment::MAX_COMMENT_BODY_LENGTH %>

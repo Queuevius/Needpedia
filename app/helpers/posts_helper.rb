@@ -56,4 +56,32 @@ module PostsHelper
   def post_content_for_map(post)
     post&.content&.to_plain_text&.squish&.delete('\\"')
   end
+
+  def group_info
+    content_tag(:p) do
+      concat("Created by ")
+      concat(link_to(@post.user.name, wall_path(uuid: uuid)))
+      concat(" as a ")
+      concat(group_role)
+      concat(" of ")
+      concat(link_to(@group.name, @group))
+      concat(" group")
+    end
+  end
+
+  def post_user_name
+    @post.user.name
+  end
+
+  def uuid
+    @post.user.uuid
+  end
+
+  def group_role
+    if @group.user == current_user
+      " admin "
+    else
+      " member "
+    end
+  end
 end

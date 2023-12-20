@@ -80,7 +80,9 @@ class PostsController < ApplicationController
       redirect_to root_path, notice: 'Post you are accessing in not available'
       return
     end
-
+    if @post.group_id.present?
+      @group = Group.find(@post.group_id)
+    end
     @comment = Comment.new(parent_id: params[:parent_id])
     @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
     @objectives = @post.objectives.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('objectives.created_at DESC')
@@ -127,7 +129,12 @@ class PostsController < ApplicationController
   # POST /posts.json
   def create
     respond_to do |format|
-      @post = Post.new(post_params)
+      if current_user.default_group_id > 0
+        post_params_with_group_id = post_params.merge(group_id: current_user.default_group_id)
+        @post = Post.new(post_params_with_group_id)
+      else
+        @post = Post.new(post_params)
+      end
       content = post_params[:content]
       banned_term = BannedTerm.last
       if banned_term.present?
@@ -362,7 +369,7 @@ class PostsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def post_params
-    params.require(:post).permit(:title, :content, :user_id, :post_type, :subject_id, :problem_id, :private, :curated, :post_id, :posted_to_id, :tag_list, :resource_tag_list, :geo_maxing, :lat, :long)
+    params.require(:post).permit(:title, :content, :user_id, :post_type, :subject_id, :problem_id, :private, :curated, :post_id, :posted_to_id, :tag_list, :resource_tag_list, :geo_maxing, :lat, :long, :group_id)
   end
 
   def create_activity(post, event)

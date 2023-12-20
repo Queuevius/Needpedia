@@ -119,6 +119,11 @@
                             <%= link_to truncate(@post&.title, length: 30).titleize, post_path(@post), title: @post.title %>
                           </h5>
                         <% end %>
+                        <% if @group.present? %>
+                          <p>
+                            <%= group_info %>
+                          </p>
+                        <% end %>
                         <% if @post.images.present? %>
                           <div class="row mx-auto my-auto">
                             <div id="recipeCarousel" class="carousel slide w-100" data-ride="carousel">

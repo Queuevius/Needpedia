@@ -9,6 +9,17 @@ Rails.application.routes.draw do
       match '/register_device', to: 'device_registration#register_device', via: [:post]
     end
   end
+  resources :groups do
+    patch 'update_default_group', on: :collection
+    member do
+      post 'join', to: 'groups#join'
+      post 'request_to_join', to: 'groups#request_to_join'
+      post 'accept_request/:request_id', to: 'groups#accept_request', as: 'accept_request'
+      delete 'reject_request/:request_id', to: 'groups#reject_request', as: 'reject_request'
+      delete 'leave_group', to: 'groups#leave_group'
+      post '/groups/:group_id/invite/:user_id', to: 'groups#invite_user', as: 'invite_user_to_group'
+    end
+  end
   resources :interested_users
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
   get 'how_tos/index'
@@ -98,6 +109,10 @@ Rails.application.routes.draw do
       post 'delete_post_version/:version_id', action: :delete_post_version, as: :delete_post_version
     end
     resources :post_versions
+    resources :groups
+    resources :invitations
+    resources :membership
+    resources :request
 
     root to: "users#index"
   end

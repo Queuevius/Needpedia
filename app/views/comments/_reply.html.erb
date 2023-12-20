@@ -2,6 +2,10 @@
   <div class="border-top">
     <div class="media ml-5">
       <div class="media-body"><h5 class="media-heading"><%= reply.user.name %></h5>
+        <% if reply.group_id.present?  %>
+          <% group = Group.find(reply.group_id)  %>
+          as a group (<%= link_to group.name, group %>)
+        <% end %>
         <div id="reply-form-<%= reply.id %>"></div>
         <p id="reply-body-<%= reply.id %>">
           <% if reply.body.length > Comment::MAX_COMMENT_BODY_LENGTH %>
