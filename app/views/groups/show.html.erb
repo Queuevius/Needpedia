@@ -235,7 +235,7 @@
               <% @posts.each do |post| %>
                 <tr>
                   <td>
-                    <%= link_to post.title, post_path %>
+                    <%= link_to post.title, post_path(post.id) %>
                   </td>
                   <td>
                     <%= post.post_type %>
