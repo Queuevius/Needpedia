@@ -71,6 +71,11 @@
           <% end %>
         </select>
       </li>
+      <li class="map-icon">
+        <%= link_to chatbot_path do %>
+          <%= image_tag('buttler.png', height: "70%", width: "70%") %>
+        <% end %>
+      </li>
       <li>
         <%= link_to "#", id: "navbar-dropdown", class: "dropdown-toggle", data: {target: "nav-account-dropdown", toggle: "dropdown"}, aria: {haspopup: true, expanded: false} do %>
           <i class="fa fa-rss" style="font-size: x-large" aria-hidden="true"></i>

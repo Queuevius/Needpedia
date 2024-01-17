@@ -15,6 +15,15 @@
     <%= form.label :name %>
     <%= form.text_field :name, class: 'form-control' %>
   </div>
+  <% if params[:group_type].present? || params[:group_id].present? %>
+    <%= form.hidden_field :group_type, value: params[:group_type] %>
+    <%= form.hidden_field :group_id, value: params[:group_id] %>
+  <% end %>
+
+  <div class="form-group">
+    <%= form.text_area :content, autofocus: true, rows: 20, class: 'form-control', placeholder: "Body", id: 'summernote' %>
+  </div>
+
   <div class="form-group">
     <%= form.label :Logo %>
     <%= form.file_field :logo, class: 'form-control' %>
@@ -42,3 +51,156 @@
     <% end %>
   </div>
 <% end %>
+
+<script>
+    $(document).ready(function () {
+        $('#warningModal').modal('show');
+    });
+    <% if @group.persisted? %>
+      var NoteButton = function (context) {
+        var ui = $.summernote.ui;
+
+        var button = ui.button({
+            contents: '<%= image_tag('note.png', class: 'img-responsive', width: '20') %>',
+            tooltip: 'Note Token',
+            click: function () {
+
+                dropToken(context, 'note')
+            }
+        });
+
+        return button.render();
+      };
+      var DebateButton = function (context) {
+        var ui = $.summernote.ui;
+
+        // create button
+        var button = ui.button({
+            contents: '<%= image_tag('debate.png', class: 'img-responsive', width: '20') %>',
+            tooltip: 'Debate Token',
+            click: function () {
+                dropToken(context, 'debate')
+            }
+        });
+
+        return button.render();
+    };
+      var QuestionButton = function (context) {
+        var ui = $.summernote.ui;
+
+        var button = ui.button({
+            contents: '<%= image_tag('question.png', class: 'img-responsive', width: '20') %>',
+            tooltip: 'Question Token',
+            click: function () {
+                dropToken(context, 'question')
+            }
+        });
+
+        return button.render();
+    };
+      function dropToken(e, token_type) {
+        var editor = e;
+        $.ajax({
+            url: '/post_tokens',
+            type: "POST",
+            dataType: "JSON",
+            data: {
+                user_id: <%= current_user.id %>,
+                group_id: <%= @group.id || 2 %>,
+                post_token_type: token_type,
+            },
+            success: function (data) {
+
+                if (data.post_token_type === 'note') {
+                    var noteHTML = '<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('note.png', width: "20") %>';
+                    editor.invoke('editor.pasteHTML', noteHTML);
+                } else if (data.post_token_type === 'debate') {
+                    var debateHTML = '<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('debate.png', width: "20") %>';
+                    editor.invoke('editor.pasteHTML', debateHTML);
+                } else {
+                    var questionHTML = '<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('question.png', width: "20") %>';
+                    editor.invoke('editor.pasteHTML', questionHTML);
+                }
+
+                $.ajax({
+                    url: '/post_tokens/token_modal',
+                    type: "get",
+                    data: {
+                        id: data.id,
+                    }
+                })
+            },
+            error: function (data) {
+            }
+        })
+    };
+      $('#summernote').summernote({
+        height: 150,
+        disableDragAndDrop: true,
+        toolbar: [
+            // [groupName, [list of button]]
+            ['style', ['bold', 'italic', 'underline', 'link']],
+            ['font', ['strikethrough', 'fontsize']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['tokens', ['note', 'question', 'debate']],
+            ['misc', ['undo', 'redo']],
+            ['insert', ['picture']]
+        ],
+        popover: {
+            image: [
+                ['remove', ['removeMedia']]
+            ],
+            link: []
+        },
+        buttons: {
+            note: NoteButton,
+            question: QuestionButton,
+            debate: DebateButton,
+        }
+    });
+    <% else %>
+      $('#summernote').summernote({
+        height: 150,
+        disableDragAndDrop: true,
+        toolbar: [
+            // [groupName, [list of button]]
+            ['style', ['bold', 'italic', 'underline', 'link']],
+            ['font', ['strikethrough', 'fontsize']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['misc', ['undo', 'redo']]
+        ],
+        popover: {
+            image: [
+                ['remove', ['removeMedia']]
+            ],
+            link: []
+        }
+    });
+    <% end %>
+
+    function initSelect2(selector, disable, placeholder) {
+        $(selector).select2({
+            placeholder: placeholder,
+            quietMillis: 200,
+            multiple: false,
+            minimumInputLength: 2,
+            disabled: disable
+        });
+    }
+
+    function formatRepo(user) {
+        if (user.loading) return user.text;
+        console.log('user', user);
+
+        var $span = $("<span><img src=" + user.profile_picture + " style=\"width: 20px; height: 20px\" /> " + user.text + "</span>");
+        return $span;
+    }
+
+    function formatRepoSelection(user) {
+        return user.text;
+    }
+
+    $('.card-header').click(function () {
+        $(this).find('i').toggleClass('fas fa-caret-right fas fa-caret-down');
+    });
+</script>

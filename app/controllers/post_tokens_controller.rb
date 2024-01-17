@@ -8,7 +8,8 @@ class PostTokensController < ApplicationController
   # POST /post_tokens.json
   def create
     @post_token = PostToken.new(post_token_params)
-    @post = Post.find(@post_token.post_id)
+    @post = Post.find_by(id: @post_token.post_id) if @post_token.post_id.present?
+    @group = Group.find_by(id: @post_token.group_id) if @post_token.group_id.present?
 
     respond_to do |format|
       if @post_token.save
@@ -23,7 +24,8 @@ class PostTokensController < ApplicationController
   # PATCH/PUT /post_tokens/1
   # PATCH/PUT /post_tokens/1.json
   def update
-    @post = Post.find(@post_token.post_id)
+    @post = Post.find(@post_token.post_id) if @post_token.post_id.present?
+    @group = Group.find_by(id: @post_token.group_id) if @post_token.group_id.present?
     @post_token.update(token_params)
     respond_to do |format|
       format.js
@@ -96,7 +98,7 @@ class PostTokensController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def post_token_params
-    params.permit(:content, :post_id, :post_token_type, :user_id)
+    params.permit(:content, :post_id, :post_token_type, :user_id, :group_id)
   end
 
   def token_params

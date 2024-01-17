@@ -116,6 +116,7 @@ Rails.application.routes.draw do
 
     root to: "users#index"
   end
+  get '/chatbot', to: 'home#chatbot'
   get '/user_tutorials', to: 'profile#tutorials'
   get '/nuclear_note', to: 'nuclear_note#index'
   get '/privacy', to: 'home#privacy'

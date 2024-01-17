@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_12_19_045019) do
+ActiveRecord::Schema.define(version: 2024_01_15_102134) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -278,6 +278,8 @@ ActiveRecord::Schema.define(version: 2023_12_19_045019) do
     t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "group_id"
+    t.string "group_type"
     t.index ["user_id"], name: "index_groups_on_user_id"
   end
 
@@ -383,11 +385,12 @@ ActiveRecord::Schema.define(version: 2023_12_19_045019) do
 
   create_table "post_tokens", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.bigint "post_id", null: false
+    t.bigint "post_id"
     t.string "content"
     t.string "post_token_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "group_id"
     t.index ["post_id"], name: "index_post_tokens_on_post_id"
     t.index ["user_id"], name: "index_post_tokens_on_user_id"
   end
@@ -699,7 +702,7 @@ ActiveRecord::Schema.define(version: 2023_12_19_045019) do
   add_foreign_key "messages", "users"
   add_foreign_key "notification_settings", "users"
   add_foreign_key "objectives", "users"
-  add_foreign_key "post_tokens", "posts"
+  add_foreign_key "post_tokens", "posts", on_delete: :cascade
   add_foreign_key "post_tokens", "users"
   add_foreign_key "post_versions", "posts"
   add_foreign_key "post_versions", "users"

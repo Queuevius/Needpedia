@@ -1,47 +1,48 @@
 <div class="page-header">
 
-  <div class="row">
-    <div class="col-6">
-      <%= link_to groups_path, class: 'btn btn-default' do %>
-        Back to Groups
-      <% end %>
-      <% if current_user == @group.user %>
-        <%= link_to edit_group_path(@group), class: 'btn btn-primary' do %>
-          Edit
+  <div class="row bg-white p-4">
+    <div class="col">
+      <% unless @group.group_type == Group::GROUP_TYPE_LAYER %>
+        <%= link_to groups_path, class: 'btn btn-default' do %>
+          Back to Groups
         <% end %>
+      <% end %>
+      <% if @group.group_type == Group::GROUP_TYPE_LAYER %>
+        <%= link_to 'Back', group_path(id: @group.group_id), class: 'btn btn-primary btn-sm mt-1' %>
       <% end %>
     </div>
-    <% if current_user == @group.user %>
-      <div class="col">
-        <% if @requests.present? %>
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#request">
-            Request List
-          </button>
-        <% end %>
-      </div>
-      <div class="col">
-        <div class="align-content-end">
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-            Invite Users
-          </button>
-        </div>
-      </div>
-
-      <% if @members.present? %>
+    <% unless @group.group_type == Group::GROUP_TYPE_LAYER %>
+      <% if current_user == @group.user %>
         <div class="col">
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Member">
-            Members
-          </button>
+          <% if @requests.present? %>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#request">
+              Request List
+            </button>
+          <% end %>
         </div>
+        <div class="col">
+          <div class="align-content-end">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+              Invite Users
+            </button>
+          </div>
+        </div>
+        <% if @members.present? %>
+          <div class="col">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Member">
+              Members
+            </button>
+          </div>
+        <% end %>
       <% end %>
     <% end %>
-    <% unless current_user == @group.user || @group.requests.exists?(user_id: current_user.id) || @group.members.exists?(id: current_user.id) %>
+    <% unless current_user == @group.user || @group.requests.exists?(user_id: current_user.id) || @group.members.exists?(id: current_user.id) || @group.group_type == Group::GROUP_TYPE_LAYER %>
       <div class="col">
         <%= link_to "Request to Join", request_to_join_group_path(@group), method: :post, class: "btn btn-primary" %>
       </div>
     <% end %>
     <% if current_user && @group.memberships.exists?(user_id: current_user.id) %>
-      <%= link_to 'Leave Group', leave_group_group_path(@group), method: :delete, data: {confirm: 'Are you sure?'}, class: "btn btn-danger" %>
+      <%= link_to 'Leave Group', leave_group_group_path(@group), method: :delete, data: {confirm: 'Are you sure?'}, class: "btn btn-danger mr-2" %>
     <% end %>
     <% if @current_user_invitation.present? %>
       <%= link_to "Join Group", join_group_path(@group, invitation_id: @current_user_invitation.id), method: :post %>
@@ -53,21 +54,49 @@
         </button>
       </div>
     <% end %>
+    <% if current_user == @group.user %>
+      <%= link_to edit_group_path(@group), class: 'btn btn-primary mr-2' do %>
+        Edit
+      <% end %>
+    <% end %>
+    <div class="dropdown mt-1 float-right">
+      <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Layers
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <% if @group.group_type == Group::GROUP_TYPE_LAYER %>
+          <%= link_to 'Default Layer', group_path(@group.parent_group), class: "dropdown-item #{post_type_color(@group.parent_group.group_type)}" %>
+        <% end %>
+        <%= link_to 'Add Layer', new_group_path(group_type: Group::GROUP_TYPE_LAYER, group_id: @group.group_type == Group::GROUP_TYPE_LAYER ? @group.parent_group.id : @group.id), class: "dropdown-item" %>
+        <% layers = @group.group_type == Group::GROUP_TYPE_LAYER ? @group.parent_group.layers : @group.layers %>
+        <% layers.each do |layer| %>
+          <%= link_to layer.name, group_path(layer), class: 'dropdown-item' %>
+        <% end %>
+      </div>
+    </div>
   </div>
-  <div class="container-sm mt-3">
-    <h1 class="text-center">Show group</h1>
-    <div class="card" style="width: 18rem;">
-      <div class="card-body">
-        <div class="container-sm">
-          <%= image_tag @group.logo, class: 'card-img-top' if @group.logo.attached? %>
+  <h1 class="text-center mt-3"> <%= @group.group_type == Group::GROUP_TYPE_LAYER ? 'Layer' : 'Show group' %></h1>
+  <div class="row bg-white mb-2">
+    <div class="bg-white mt-2 col">
+      <% if @group.group_type == Group::GROUP_TYPE_LAYER %>
+        <%= link_to edit_group_path(@group), class: 'btn btn-primary float-right mt-2' do %>
+          Edit Layer
+        <% end %>
+      <% end %>
+      <div class="card bg-white" style="width: 18rem;">
+        <div class="card-body">
+          <div class="container-sm">
+            <%= image_tag @group.logo, class: 'card-img-top' if @group.logo.attached? %>
+          </div>
+          <dl class="dl-horizontal mt-4">
+            <dt class="mb-2">Name:</dt>
+            <dd class="mb-2"><%= @group.name %></dd>
+            <dt class="mb-2">Group admin:</dt>
+            <dd class="mb-2"><%= @group.user.name %></dd>
+            <dt class="mb-2">Content</dt>
+            <dd> <%= @group.content %> </dd>
+          </dl>
         </div>
-        <dl class="dl-horizontal mt-4">
-          <dt class="mb-2">Name:</dt>
-          <dd class="mb-2"><%= @group.name %></dd>
-
-          <dt class="mb-2">Group admin:</dt>
-          <dd class="mb-2"><%= @group.user.name %></dd>
-        </dl>
       </div>
     </div>
   </div>

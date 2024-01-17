@@ -1,13 +1,14 @@
 class GroupsController < ApplicationController
-  before_action :set_group, only: %i[ show edit update destroy join request_to_join ]
+  before_action :set_group, only: %i[ layers show edit update destroy join request_to_join ]
   before_action :authenticate_user!
 
   # GET /groups or /groups.json
   def index
     if params[:user].present?
-      @groups = current_user.groups
+      @groups = current_user.groups.where("group_type IS NULL OR group_type != ?", Group::GROUP_TYPE_LAYER)
     else
-      @groups = Group.where.not(user_id: current_user.id).includes(:requests, :user).all
+      groups = Group.where.not(user_id: current_user.id).includes(:requests, :user).all
+      @groups = groups.where("group_type IS NULL OR group_type != ?", Group::GROUP_TYPE_LAYER)
     end
   end
 
@@ -20,6 +21,10 @@ class GroupsController < ApplicationController
     @users_not_in_group = User.where.not(id: @members.pluck(:id)).where.not(id: @requests.pluck(:user_id)).where.not(id: @invitations.pluck(:id))
     @invitations = Invitation.where(group_id: @group.id)
     @current_user_invitation = @invitations.where(user_id: current_user.id).first
+  end
+
+  def layers
+    @groups = Group.layer_groups.where(group_id: @group.id)
   end
 
   # GET /groups/new
@@ -198,6 +203,6 @@ class GroupsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def group_params
-    params.require(:group).permit(:name, :user_id, :logo)
+    params.require(:group).permit(:name, :user_id, :logo, :content, :group_id, :group_type)
   end
 end

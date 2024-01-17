@@ -129,12 +129,8 @@ class PostsController < ApplicationController
   # POST /posts.json
   def create
     respond_to do |format|
-      if current_user.default_group_id > 0
-        post_params_with_group_id = post_params.merge(group_id: current_user.default_group_id)
-        @post = Post.new(post_params_with_group_id)
-      else
-        @post = Post.new(post_params)
-      end
+      group_id = current_user.default_group_id&.positive? ? current_user.default_group_id : nil
+      @post = Post.new(post_params.merge(group_id: group_id))
       content = post_params[:content]
       banned_term = BannedTerm.last
       if banned_term.present?
