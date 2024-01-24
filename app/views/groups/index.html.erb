@@ -3,11 +3,19 @@
     <div class="col-sm">
       <h1>Group List</h1>
     </div>
-    <div class="input-group col-sm">
-<!--      <input type="text" class="form-control" placeholder="Search...">-->
-<!--      <div class="input-group-append">-->
-<!--        <button class="btn btn-primary mb-5" type="submit">Search</button>-->
-<!--      </div>-->
+    <div class="col-sm mt-3">
+      <p style="display: inline-block;">Select Group</p>
+      <select class="form-select"  id="groupSelect2">
+        <option value="nil"><%= current_user.name.titleize %>(as individual)</option>
+        <%  current_user_groups = current_user.groups %>
+        <% membership_groups = Group.joins(:memberships).where(memberships: { user_id: current_user.id }) %>
+        <% groups = (current_user_groups + membership_groups).uniq %>
+        <%filter_groups = groups.reject { |group| group.group_type == Group::GROUP_TYPE_LAYER } %>
+        <% filter_groups .uniq.each do |group| %>
+          <% selected = current_user.default_group_id == group.id ? 'selected' : '' %>
+          <option <%= "selected='selected'" if selected.present? %> value="<%= group.id %>"><%= group.name.titleize %></option>
+        <% end %>
+      </select>
     </div>
     <div class="col-sm text-right">
       <% if params[:user].present? %>
@@ -90,12 +98,44 @@
             </div>
           </div>
         </div>
-
       <% end %>
       </tbody>
     </table>
   </div>
 </div>
+<script>
+    $('#user').select2({
+        placeholder: 'Search',
+        quietMillis: 200,
+        multiple: true,
+        minimumInputLength: 2
+    })
+    // JavaScript to handle selection change
+    document.addEventListener('DOMContentLoaded', () => {
+        const selectElement = document.getElementById('groupSelect2');
 
+        selectElement.addEventListener('change', () => {
+            const selectedGroupId = selectElement.value;
 
-
+            fetch('/groups/update_default_group', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '<%= form_authenticity_token %>'
+                },
+                body: JSON.stringify({group_id: selectedGroupId})
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log(`Default group updated to ${selectedGroupId}`);
+                    // Optionally, you can update the user interface to reflect the change
+                } else {
+                    console.error('Failed to update default group');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating default group:', error);
+            });
+        });
+    });
+</script>

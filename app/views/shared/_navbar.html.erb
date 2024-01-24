@@ -61,16 +61,21 @@
           <span><i class="fas fa-users" aria-hidden="true" style="font-size: x-large" ></i></span>
         <% end %>
       </li>
-      <li>
-        <select class="form-select p-3 px-0 border-0 bg-transparent" aria-label="Default select example" id="groupSelect">
-          <option value="nil"><%= current_user.name.titleize %>(as individual)</option>
-          <% groups = current_user.groups + Group.joins(:memberships).where(memberships: { user_id: current_user.id }) %>
-          <% groups.uniq.each do |group| %>
-            <% selected = current_user.default_group_id == group.id ? 'selected' : '' %>
-            <option <%= "selected='selected'" if selected.present? %> value="<%= group.id %>"><%= group.name.titleize %></option>
-          <% end %>
-        </select>
-      </li>
+      <% if current_user.default_group_id&.positive? %>
+        <li>
+          <select class="form-select p-3 px-0 border-0 bg-transparent" aria-label="Default select example" id="groupSelect">
+            <option value="nil"><%= current_user.name.titleize %>(as individual)</option>
+            <%  current_user_groups = current_user.groups %>
+            <% membership_groups = Group.joins(:memberships).where(memberships: { user_id: current_user.id }) %>
+            <% groups = (current_user_groups + membership_groups).uniq %>
+            <%filter_groups = groups.reject { |group| group.group_type == Group::GROUP_TYPE_LAYER } %>
+            <% filter_groups .uniq.each do |group| %>
+              <% selected = current_user.default_group_id == group.id ? 'selected' : '' %>
+              <option <%= "selected='selected'" if selected.present? %> value="<%= group.id %>"><%= group.name.titleize %></option>
+            <% end %>
+          </select>
+        </li>
+      <% end %>
       <li class="map-icon">
         <%= link_to chatbot_path do %>
           <%= image_tag('buttler.png', height: "70%", width: "70%") %>
