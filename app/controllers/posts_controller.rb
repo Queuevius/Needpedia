@@ -241,7 +241,7 @@ class PostsController < ApplicationController
       else
         @posts = Kaminari.paginate_array(post_query_service.filter).page(params[:posts]).per(10)
       end
-      @active_tab = @users.count > @posts.count ? 'people' : 'posts'
+      @active_tab = @users.total_count >= @posts.total_count ? 'people' : 'posts'
     end
   end
 
