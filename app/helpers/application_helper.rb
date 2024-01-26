@@ -95,4 +95,14 @@ module ApplicationHelper
     ratings = post&.ratings.where.not(rating: 6)
     "Points - #{ratings.count == 0 ? "0" : ratings.average(:rating).round(1)} Point Average"
   end
+
+  def options_for_active_group_select(current_user)
+    groups = current_user.groups.where(group_id: nil).uniq
+    options_for_select = []
+    options_for_select << ["#{current_user.name.titleize} (as individual)", 0]
+    groups.uniq.each do |group|
+      options_for_select << [group.name.titleize, group.id]
+    end
+    options_for_select
+  end
 end

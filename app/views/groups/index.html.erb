@@ -5,17 +5,7 @@
     </div>
     <div class="col-sm mt-3">
       <p style="display: inline-block;">Select Group</p>
-      <select class="form-select"  id="groupSelect2">
-        <option value="nil"><%= current_user.name.titleize %>(as individual)</option>
-        <%  current_user_groups = current_user.groups %>
-        <% membership_groups = Group.joins(:memberships).where(memberships: { user_id: current_user.id }) %>
-        <% groups = (current_user_groups + membership_groups).uniq %>
-        <%filter_groups = groups.reject { |group| group.group_type == Group::GROUP_TYPE_LAYER } %>
-        <% filter_groups .uniq.each do |group| %>
-          <% selected = current_user.default_group_id == group.id ? 'selected' : '' %>
-          <option <%= "selected='selected'" if selected.present? %> value="<%= group.id %>"><%= group.name.titleize %></option>
-        <% end %>
-      </select>
+      <%= select_tag 'current_group', options_for_select(options_for_active_group_select(current_user), current_user.default_group_id), id: 'groupSelectGroupPage', class: 'mb-2 pd-2' %>
     </div>
     <div class="col-sm text-right">
       <% if params[:user].present? %>
@@ -109,33 +99,14 @@
         quietMillis: 200,
         multiple: true,
         minimumInputLength: 2
-    })
-    // JavaScript to handle selection change
-    document.addEventListener('DOMContentLoaded', () => {
-        const selectElement = document.getElementById('groupSelect2');
+    });
 
-        selectElement.addEventListener('change', () => {
-            const selectedGroupId = selectElement.value;
-
-            fetch('/groups/update_default_group', {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': '<%= form_authenticity_token %>'
-                },
-                body: JSON.stringify({group_id: selectedGroupId})
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log(`Default group updated to ${selectedGroupId}`);
-                    location.reload();
-                } else {
-                    console.error('Failed to update default group');
-                }
-            })
-            .catch(error => {
-                console.error('Error updating default group:', error);
-            });
+    $(document).on('change', '#groupSelectGroupPage', function() {
+        var selectedOption = $(this).val();
+        $.ajax({
+            url: '/groups/update_default_group',
+            type: 'PATCH',
+            data: { group_id: selectedOption }
         });
     });
 </script>

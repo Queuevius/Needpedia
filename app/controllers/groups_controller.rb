@@ -60,16 +60,22 @@ class GroupsController < ApplicationController
 
   # POST /groups or /groups.json
   def create
-    @group = Group.new(group_params)
+    begin
+      @group = Group.new(group_params)
 
-    respond_to do |format|
-      if @group.save
-        format.html {redirect_to group_url(@group), notice: "Group was successfully created."}
-        format.json {render :show, status: :created, location: @group}
-      else
-        format.html {render :new, status: :unprocessable_entity}
-        format.json {render json: @group.errors, status: :unprocessable_entity}
+      respond_to do |format|
+        if @group.save
+          create_membership(@group, current_user)
+          format.html {redirect_to group_url(@group), notice: "Group was successfully created."}
+          format.json {render :show, status: :created, location: @group}
+        else
+          format.html {render :new, status: :unprocessable_entity}
+          format.json {render json: @group.errors, status: :unprocessable_entity}
+        end
       end
+    rescue StandardError => e
+      flash[:alert] = "An Error occurred: #{e}"
+      redirect_to new_group_path(@group)
     end
   end
 
@@ -109,18 +115,15 @@ class GroupsController < ApplicationController
 
   def update_default_group
     group_id = params[:group_id]
-    current_user.update(default_group_id: group_id)
-
-    group = Group.find(group_id) unless group_id == "nil"
-
-    respond_to do |format|
-      if current_user.save
-        flash[:notice] = "You are now logged in as #{group.present? ? group.name : current_user.name.titleize}#{group.present? ? '' : ' (as individual)'}"
-        format.json { head :no_content }
-      else
-        format.json { render json: { error: 'Failed to update default group' }, status: :unprocessable_entity }
-      end
+    # 0 means update to current user id
+    group = Group.find(group_id) unless group_id&.to_i == 0
+    current_user.default_group_id = group_id.in?([nil, 0]) ? nil : group_id
+    if current_user.save
+      flash[:notice] = "You are now logged in as #{group.present? ? group.name : "#{current_user.name.titleize} (as individual)"}"
+    else
+      flash[:alert] = 'Failed to update default group'
     end
+    render js: "window.location.reload();"
   end
 
   def accept_request
@@ -206,5 +209,9 @@ class GroupsController < ApplicationController
   # Only allow a list of trusted parameters through.
   def group_params
     params.require(:group).permit(:name, :user_id, :logo, :content, :group_id, :group_type)
+  end
+
+  def create_membership(group, user)
+    Membership.create!(user: user, group: group, role: "admin")
   end
 end
