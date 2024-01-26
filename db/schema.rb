@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_08_02_053348) do
+ActiveRecord::Schema.define(version: 2024_01_25_054630) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -136,6 +136,7 @@ ActiveRecord::Schema.define(version: 2023_08_02_053348) do
     t.integer "parent_id"
     t.integer "status", default: 0
     t.boolean "inappropriate", default: false
+    t.integer "group_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
@@ -272,6 +273,16 @@ ActiveRecord::Schema.define(version: 2023_08_02_053348) do
     t.index ["user_id"], name: "index_gigs_on_user_id"
   end
 
+  create_table "groups", force: :cascade do |t|
+    t.string "name"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "group_id"
+    t.string "group_type"
+    t.index ["user_id"], name: "index_groups_on_user_id"
+  end
+
   create_table "home_videos", force: :cascade do |t|
     t.string "link"
     t.datetime "created_at", precision: 6, null: false
@@ -296,6 +307,15 @@ ActiveRecord::Schema.define(version: 2023_08_02_053348) do
     t.index ["user_id"], name: "index_interested_users_on_user_id"
   end
 
+  create_table "invitations", force: :cascade do |t|
+    t.bigint "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.bigint "group_id"
+    t.index ["group_id"], name: "index_invitations_on_group_id"
+    t.index ["user_id"], name: "index_invitations_on_user_id"
+  end
+
   create_table "likes", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "likeable_id"
@@ -303,6 +323,16 @@ ActiveRecord::Schema.define(version: 2023_08_02_053348) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_likes_on_user_id"
+  end
+
+  create_table "memberships", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "group_id", null: false
+    t.string "role"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["group_id"], name: "index_memberships_on_group_id"
+    t.index ["user_id"], name: "index_memberships_on_user_id"
   end
 
   create_table "messages", force: :cascade do |t|
@@ -339,6 +369,7 @@ ActiveRecord::Schema.define(version: 2023_08_02_053348) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "post_id"
     t.integer "admin_notification_id"
+    t.integer "group_id"
   end
 
   create_table "objectives", force: :cascade do |t|
@@ -354,11 +385,12 @@ ActiveRecord::Schema.define(version: 2023_08_02_053348) do
 
   create_table "post_tokens", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.bigint "post_id", null: false
+    t.bigint "post_id"
     t.string "content"
     t.string "post_token_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "group_id"
     t.index ["post_id"], name: "index_post_tokens_on_post_id"
     t.index ["user_id"], name: "index_post_tokens_on_user_id"
   end
@@ -397,6 +429,7 @@ ActiveRecord::Schema.define(version: 2023_08_02_053348) do
     t.boolean "geo_maxing", default: false
     t.datetime "deleted_at"
     t.datetime "restore_at"
+    t.integer "group_id"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
@@ -441,6 +474,15 @@ ActiveRecord::Schema.define(version: 2023_08_02_053348) do
     t.string "body"
     t.index ["post_id"], name: "index_related_contents_on_post_id"
     t.index ["user_id"], name: "index_related_contents_on_user_id"
+  end
+
+  create_table "requests", force: :cascade do |t|
+    t.bigint "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.bigint "group_id"
+    t.index ["group_id"], name: "index_requests_on_group_id"
+    t.index ["user_id"], name: "index_requests_on_user_id"
   end
 
   create_table "services", force: :cascade do |t|
@@ -529,6 +571,16 @@ ActiveRecord::Schema.define(version: 2023_08_02_053348) do
     t.string "link"
     t.text "content"
     t.boolean "show"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "user_assistant_documents", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.text "change_log"
+    t.integer "user_id"
+    t.string "file_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -631,6 +683,7 @@ ActiveRecord::Schema.define(version: 2023_08_02_053348) do
     t.string "uid", default: "", null: false
     t.text "tokens"
     t.string "comment"
+    t.integer "default_group_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -648,13 +701,18 @@ ActiveRecord::Schema.define(version: 2023_08_02_053348) do
   add_foreign_key "feedback_question_options", "feedback_questions"
   add_foreign_key "flags", "users"
   add_foreign_key "gigs", "users"
+  add_foreign_key "groups", "users"
   add_foreign_key "interested_users", "users"
+  add_foreign_key "invitations", "groups"
+  add_foreign_key "invitations", "users"
   add_foreign_key "likes", "users"
+  add_foreign_key "memberships", "groups"
+  add_foreign_key "memberships", "users"
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "users"
   add_foreign_key "notification_settings", "users"
   add_foreign_key "objectives", "users"
-  add_foreign_key "post_tokens", "posts"
+  add_foreign_key "post_tokens", "posts", on_delete: :cascade
   add_foreign_key "post_tokens", "users"
   add_foreign_key "post_versions", "posts"
   add_foreign_key "post_versions", "users"
@@ -663,6 +721,8 @@ ActiveRecord::Schema.define(version: 2023_08_02_053348) do
   add_foreign_key "questions", "questionnaires"
   add_foreign_key "ratings", "users"
   add_foreign_key "related_contents", "users"
+  add_foreign_key "requests", "groups"
+  add_foreign_key "requests", "users"
   add_foreign_key "services", "users"
   add_foreign_key "shares", "users"
   add_foreign_key "taggings", "tags"
