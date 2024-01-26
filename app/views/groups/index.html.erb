@@ -128,7 +128,7 @@
             .then(response => {
                 if (response.ok) {
                     console.log(`Default group updated to ${selectedGroupId}`);
-                    // Optionally, you can update the user interface to reflect the change
+                    location.reload();
                 } else {
                     console.error('Failed to update default group');
                 }

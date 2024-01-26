@@ -111,9 +111,11 @@ class GroupsController < ApplicationController
     group_id = params[:group_id]
     current_user.update(default_group_id: group_id)
 
-    # Handle success or failure accordingly
+    group = Group.find(group_id) unless group_id == "nil"
+
     respond_to do |format|
       if current_user.save
+        flash[:notice] = "You are now logged in as #{group.present? ? group.name : current_user.name.titleize}#{group.present? ? '' : ' (as individual)'}"
         format.json { head :no_content }
       else
         format.json { render json: { error: 'Failed to update default group' }, status: :unprocessable_entity }
