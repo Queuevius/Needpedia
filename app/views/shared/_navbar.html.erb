@@ -61,11 +61,6 @@
           <span><i class="fas fa-users" aria-hidden="true" style="font-size: x-large" ></i></span>
         <% end %>
       </li>
-      <% if current_user.default_group_id&.positive? %>
-        <li>
-          <%= select_tag 'current_group', options_for_select(options_for_active_group_select(current_user), current_user.default_group_id), id: 'groupSelectNavbar', class: 'form-select p-3 px-0 border-0 bg-transparent' %>
-        </li>
-      <% end %>
       <li class="map-icon">
         <%= link_to chatbot_path do %>
           <%= image_tag('buttler.png', height: "70%", width: "70%") %>
@@ -87,6 +82,11 @@
           <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
         </div>
       </li>
+      <% if current_user.default_group_id&.positive? %>
+        <li class="align-items-md-end">
+          <%= select_tag 'current_group', options_for_select(options_for_active_group_select(current_user), current_user.default_group_id), id: 'groupSelectNavbar', class: 'form-select p-3 px-0 border-0 bg-transparent' %>
+        </li>
+      <% end %>
     <% else %>
       <li class="nav-item"><%= link_to "Sign Up", new_user_registration_path, class: 'mt-2' %></li>
       <li class="nav-item"><%= link_to "Login", new_user_session_path, class: 'mt-2' %></li>
@@ -114,3 +114,17 @@
       });
   });
 </script>
+<style>
+  @media (max-width: 515px) {
+    .align-items-md-end {
+
+      margin-left: 50%;
+    }
+  }
+  @media (max-width: 392px) {
+    .align-items-md-end {
+
+      margin-left: 45%;
+    }
+  }
+</style>
