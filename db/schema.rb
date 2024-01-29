@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_01_15_102134) do
+ActiveRecord::Schema.define(version: 2024_01_25_054630) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -571,6 +571,16 @@ ActiveRecord::Schema.define(version: 2024_01_15_102134) do
     t.string "link"
     t.text "content"
     t.boolean "show"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "user_assistant_documents", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.text "change_log"
+    t.integer "user_id"
+    t.string "file_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
