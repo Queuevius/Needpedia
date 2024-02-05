@@ -1,0 +1,10 @@
+<div class="card mb-1">
+  <div class="card-body">
+    <h5>
+      <%= actor == current_user ? 'You' : link_to(actor.name, wall_path(uuid: actor.uuid)) %>
+      join the
+      <%= link_to notification.notifiable&.name, group_path(notifiable.id) if notification.notifiable.present? %>
+    </h5>
+    <em class="text-muted"><%= notification.created_at.strftime('%e %b %Y %H:%M %p') %></em>
+  </div>
+</div>

@@ -27,6 +27,12 @@ class Notification < ApplicationRecord
   NOTIFICATION_TYPE_DAILY  = 'daily'.freeze
   NOTIFICATION_TYPE_INSTANT  = 'instant'.freeze
   NOTIFICATION_TYPE_INVITE  = 'invite'.freeze
+  NOTIFICATION_TYPE_JOIN_GROUP  = 'join_group'.freeze
+  NOTIFICATION_TYPE_LEAVE_GROUP  = 'leave_group'.freeze
+  NOTIFICATION_TYPE_GROUP_INVITE  = 'group_invite'.freeze
+  NOTIFICATION_TYPE_GROUP_REQUEST = 'group_request'.freeze
+  NOTIFICATION_TYPE_GROUP_REQUEST_ACCEPTED = 'group_request_accept'.freeze
+  NOTIFICATION_TYPE_GROUP_REQUEST_REJECTED = 'group_request_rejected'.freeze
 
   ################################ relationships ############################
   belongs_to :recipient, class_name: "User"
@@ -34,18 +40,16 @@ class Notification < ApplicationRecord
   belongs_to :notifiable, polymorphic: true
   belongs_to :post, optional: true
   belongs_to :admin_notification, optional: true
-  belongs_to :group, optional: true
 
   scope :unread, -> { where(read_at: nil) }
   scope :recent, -> { order(created_at: :desc).limit(5) }
 
-  def self.post(to:, from:, action:, notifiable:, post_id: nil, admin_notification_id: nil, group_id: nil)
+  def self.post(to:, from:, action:, notifiable:, post_id: nil, admin_notification_id: nil)
     recipients = Array.wrap(to)
     notifications = []
     Notification.transaction do
       notifications = recipients.uniq.each do |recipient|
         Notification.create(
-          group_id: group_id,
           notifiable: notifiable,
           action: action,
           recipient: recipient,

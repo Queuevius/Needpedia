@@ -4,7 +4,7 @@ class Group < ApplicationRecord
   has_many :members, through: :memberships, source: :user, dependent: :destroy
   has_many :requests, dependent: :destroy
   has_one_attached :logo, dependent: :destroy
-  has_many :notifications, dependent: :destroy
+  has_many :notifications, as: :notifiable, dependent: :destroy
   has_many :invitations, dependent: :destroy
   has_many :flags, as: :flagable, dependent: :destroy
   has_rich_text :content

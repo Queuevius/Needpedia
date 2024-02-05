@@ -37,9 +37,10 @@ class GroupsController < ApplicationController
   end
 
   def request_to_join
-    @request = @group.requests.new(user_id: current_user.id)
+    @request = @group.requests.new(user_id: current_user.id, status: :pending)
 
     if @request.save
+      send_notification(current_user, @group, @request.user, Notification::NOTIFICATION_TYPE_GROUP_REQUEST)
       redirect_back(fallback_location: root_path, notice: "Request has been sent successfully.")
     else
       redirect_back(fallback_location: root_path, alert: "Unable to send the request.")
@@ -48,13 +49,27 @@ class GroupsController < ApplicationController
 
   def leave_group
     @group = Group.find(params[:id])
-    @membership = @group.memberships.find_by(user_id: current_user.id) # Assuming memberships belong to groups
+    @membership = @group.memberships.find_by(user_id: current_user.id)
+    if current_user.default_group_id == params[:id]
+      current_user.update(default_group_id: '0')
+    end
 
     if @membership
       @membership.destroy
+      send_notification(current_user, @group, @group.user, Notification::NOTIFICATION_TYPE_LEAVE_GROUP)
       redirect_back(fallback_location: root_path, notice: "You have left the group.")
     else
       redirect_back(fallback_location: root_path, alert: "You are not a member of this group.")
+    end
+  end
+
+  def group_notifications
+    @group = Group.find(params[:id])
+    @request = @group.requests
+    @notifications = @group.notifications.order(created_at: :desc)
+    unless @group.members.include?(current_user)
+      flash[:alert] = "You are not authorized to view this page."
+      redirect_to @group
     end
   end
 
@@ -107,6 +122,7 @@ class GroupsController < ApplicationController
     @invitation = Invitation.find(params[:invitation_id])
     @invitation.destroy!
     if @membership.save
+      send_notification(current_user, @group, @group.user, Notification::NOTIFICATION_TYPE_JOIN_GROUP)
       redirect_to @group, notice: "You have joined the group as a member."
     else
       redirect_to @group, alert: "Unable to join the group."
@@ -133,7 +149,9 @@ class GroupsController < ApplicationController
     if @request
       @membership = Membership.create(user: @request.user, group: @group, role: "member")
       if @membership.save
-        @request.destroy # Remove the accepted request after adding the user to the group
+        send_notification(current_user, @group, @request.user, Notification::NOTIFICATION_TYPE_GROUP_REQUEST_ACCEPTED)
+        send_notification(current_user, current_user, @request.user, Notification::NOTIFICATION_TYPE_GROUP_REQUEST_ACCEPTED)
+        @request.update(status: :accepted)
         redirect_to @group, notice: "Request accepted."
       else
         redirect_to @group, alert: "Unable to accept the request."
@@ -145,10 +163,11 @@ class GroupsController < ApplicationController
 
   def reject_request
     @group = Group.find(params[:id])
-    @request = @group.requests.find(params[:request_id]) # Assuming a request belongs to a group
+    @request = @group.requests.find(params[:request_id])
 
     if @request
-      @request.destroy # Simply delete the request upon rejection
+      @request.update(status: :rejected)
+      send_notification(current_user, current_user, @request.user, Notification::NOTIFICATION_TYPE_GROUP_REQUEST_REJECTED)
       redirect_to @group, notice: "Request rejected."
     else
       redirect_to @group, alert: "Request not found."
@@ -172,7 +191,7 @@ class GroupsController < ApplicationController
         invitation = Invitation.create(user: user_to_invite, group: @group)
 
         if invitation.save
-          Notification.post(from: current_user, notifiable: current_user, to: user_to_invite, group_id: @group.id, action: Notification::NOTIFICATION_TYPE_INVITE)
+          send_notification(current_user, @group, user_to_invite, Notification::NOTIFICATION_TYPE_GROUP_INVITE)
           redirect_to @group, notice: "Invitation sent to #{user_to_invite.email}."
         else
           redirect_to @group, alert: "Unable to send invitation."
@@ -213,5 +232,9 @@ class GroupsController < ApplicationController
 
   def create_membership(group, user)
     Membership.create!(user: user, group: group, role: "admin")
+  end
+
+  def send_notification(from, notifiable, to, action)
+    Notification.post(from: from, notifiable: notifiable, to: to, action: action)
   end
 end

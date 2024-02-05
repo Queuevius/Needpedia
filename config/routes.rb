@@ -18,6 +18,7 @@ Rails.application.routes.draw do
       delete 'reject_request/:request_id', to: 'groups#reject_request', as: 'reject_request'
       delete 'leave_group', to: 'groups#leave_group'
       post '/groups/:group_id/invite/:user_id', to: 'groups#invite_user', as: 'invite_user_to_group'
+      get 'group_notifications', to: 'groups#group_notifications'
     end
   end
   resources :interested_users

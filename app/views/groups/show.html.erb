@@ -1,62 +1,67 @@
 <div class="page-header">
 
   <div class="row bg-white p-4">
-    <div class="col">
+    <div class="col mb-2">
       <% unless @group.group_type == Group::GROUP_TYPE_LAYER %>
         <%= link_to groups_path, class: 'btn btn-default' do %>
-          Back to Groups
+          <span style="white-space: nowrap;">Back to Groups</span>
         <% end %>
       <% end %>
       <% if @group.group_type == Group::GROUP_TYPE_LAYER %>
-        <%= link_to 'Back', group_path(id: @group.group_id), class: 'btn btn-primary btn-sm mt-1' %>
+        <%= link_to 'Back', group_path(id: @group.group_id), class: 'btn btn-primary btn-sm mt-1 mb-2' %>
       <% end %>
     </div>
     <% unless @group.group_type == Group::GROUP_TYPE_LAYER %>
       <% if current_user == @group.user %>
-        <div class="col">
+        <div class="col mb-2">
           <% if @requests.present? %>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#request">
-              Request List
+              <span style="white-space: nowrap;">Request List</span>
             </button>
           <% end %>
         </div>
-        <div class="col">
+        <div class="col mb-2">
           <div class="align-content-end">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-              Invite Users
+              <span style="white-space: nowrap;">Invite Users</span>
             </button>
           </div>
         </div>
         <% if @members.present? %>
-          <div class="col">
+          <div class="col mb-2">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Member">
-              Members
+             <span style="white-space: nowrap;"> Members </span>
             </button>
           </div>
         <% end %>
       <% end %>
     <% end %>
     <% unless current_user == @group.user || @group.requests.exists?(user_id: current_user.id) || @group.members.exists?(id: current_user.id) || @group.group_type == Group::GROUP_TYPE_LAYER %>
-      <div class="col">
+      <div class="col mb-2">
         <%= link_to "Request to Join", request_to_join_group_path(@group), method: :post, class: "btn btn-primary" %>
       </div>
     <% end %>
     <% if current_user && @group.memberships.exists?(user_id: current_user.id) %>
-      <%= link_to 'Leave Group', leave_group_group_path(@group), method: :delete, data: {confirm: 'Are you sure?'}, class: "btn btn-danger mr-2" %>
+      <%= link_to 'Leave Group', leave_group_group_path(@group), method: :delete, data: {confirm: 'Once left, groups cannot be rejoined without insider permission'}, class: "btn btn-danger  mb-2", style: 'white-space: nowrap;' %>
     <% end %>
     <% if @current_user_invitation.present? %>
       <%= link_to "Join Group", join_group_path(@group, invitation_id: @current_user_invitation.id), method: :post %>
     <% end %>
     <% if @posts.present? %>
-      <div class="col">
+      <div class="col mb-2">
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Post_list">
-          Posts list
+          <span style="white-space: nowrap;">Posts list</span>
         </button>
       </div>
     <% end %>
+    <% if @group.notifications.present? && @group.members.include?(current_user) %>
+      <%= link_to group_notifications_group_path(@group)  do %>
+        <span><i class="far fa-bell m-2" aria-hidden="true" style="font-size: x-large"></i></span>
+      <% end %>
+    <% end %>
     <% if current_user == @group.user %>
-      <%= link_to edit_group_path(@group), class: 'btn btn-primary mr-2' do %>
-        Edit
+      <%= link_to edit_group_path(@group), class: 'btn btn-primary mr-2 mb-2' do %>
+        <span style="white-space: nowrap;">Edit</span>
       <% end %>
     <% end %>
     <div class="dropdown mt-1 float-right">
@@ -175,11 +180,11 @@
                                 <img class="rounded-circle d-flex align-self-center" src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
                               <% end %>
                               <div class="media-body">
-                                <h5><%= request.user.name %></h5>
-                                <p><span class="badge badge-outline badge-sm badge-info badge-pill"><%= link_to accept_request_group_path(@group, request), method: :post do %>
+                                <h5><%= link_to request.user.name, wall_path(uuid: request.user.uuid) %></h5>
+                                <p><span class="badge badge-outline badge-sm badge-info badge-pill"data-toggle="tooltip" data-placement="bottom" title="Accept Request"><%= link_to accept_request_group_path(@group, request), method: :post do %>
                                 <i class="fas fa-check"></i>
                               <% end %></span>
-                                  <span class="badge badge-outline badge-sm badge-danger badge-pill"><%= link_to reject_request_group_path(@group, request), method: :delete, data: {confirm: 'Are you sure?'}, class: "text-danger" do %>
+                                  <span class="badge badge-outline badge-sm badge-danger badge-pill " data-toggle="tooltip" data-placement="bottom" title="Reject Request"><%= link_to reject_request_group_path(@group, request), method: :delete, data: {confirm: 'Are you sure?'}, class: "text-danger" do %>
                                 <i class="far fa-trash-alt"></i>
                               <% end %></span>
                                 </p>

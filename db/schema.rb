@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_01_15_102134) do
+ActiveRecord::Schema.define(version: 2024_02_05_111515) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -369,7 +369,6 @@ ActiveRecord::Schema.define(version: 2024_01_15_102134) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "post_id"
     t.integer "admin_notification_id"
-    t.integer "group_id"
   end
 
   create_table "objectives", force: :cascade do |t|
@@ -481,6 +480,7 @@ ActiveRecord::Schema.define(version: 2024_01_15_102134) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "group_id"
+    t.integer "status", default: 0
     t.index ["group_id"], name: "index_requests_on_group_id"
     t.index ["user_id"], name: "index_requests_on_user_id"
   end
@@ -571,6 +571,16 @@ ActiveRecord::Schema.define(version: 2024_01_15_102134) do
     t.string "link"
     t.text "content"
     t.boolean "show"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "user_assistant_documents", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.text "change_log"
+    t.integer "user_id"
+    t.string "file_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
