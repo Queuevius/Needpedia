@@ -36,16 +36,16 @@
         <% end %>
       <% end %>
     <% end %>
-    <% unless current_user == @group.user || @group.requests.exists?(user_id: current_user.id) || @group.members.exists?(id: current_user.id) || @group.group_type == Group::GROUP_TYPE_LAYER %>
+    <% unless current_user == @group.user || @group.requests.exists?(user_id: current_user.id) || @group.members.exists?(id: current_user.id) || @group.group_type == Group::GROUP_TYPE_LAYER || @group.invitations.exists?(user_id: current_user.id) %>
       <div class="col mb-2">
         <%= link_to "Request to Join", request_to_join_group_path(@group), method: :post, class: "btn btn-primary" %>
       </div>
     <% end %>
-    <% if current_user && @group.memberships.exists?(user_id: current_user.id) %>
-      <%= link_to 'Leave Group', leave_group_group_path(@group), method: :delete, data: {confirm: 'Once left, groups cannot be rejoined without insider permission'}, class: "btn btn-danger  mb-2", style: 'white-space: nowrap;' %>
+    <% if current_user && @group.memberships.exists?(user_id: current_user.id) & !(current_user == @group.user) %>
+      <%= link_to 'Leave Group', leave_group_group_path(@group), method: :delete, data: {confirm: 'Once left, groups cannot be rejoined without insider permission'}, class: "btn btn-danger mr-2 mb-2", style: 'white-space: nowrap;' %>
     <% end %>
     <% if @current_user_invitation.present? %>
-      <%= link_to "Join Group", join_group_path(@group, invitation_id: @current_user_invitation.id), method: :post %>
+      <%= link_to "Join Group", join_group_path(@group, invitation_id: @current_user_invitation.id), method: :post, class: "btn btn-success mr-2  mb-2", style: 'white-space: nowrap;'  %>
     <% end %>
     <% if @posts.present? %>
       <div class="col mb-2">

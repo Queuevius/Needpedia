@@ -14,11 +14,11 @@ class GroupsController < ApplicationController
 
   # GET /groups/1 or /groups/1.json
   def show
-    @requests = @group.requests
+    @requests = @group.requests.where(status: 'pending')
     @members = @group.members
     @posts = Post.where(group_id: @group.id)
     @invitations = Invitation.where(group_id: @group.id)
-    @users_not_in_group = User.where.not(id: @members.pluck(:id)).where.not(id: @requests.pluck(:user_id)).where.not(id: @invitations.pluck(:id))
+    @users_not_in_group = User.where.not(id: @members.pluck(:id)).where.not(id: @invitations.pluck(:id))
     @invitations = Invitation.where(group_id: @group.id)
     @current_user_invitation = @invitations.where(user_id: current_user.id).first
   end
