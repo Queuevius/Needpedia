@@ -1,6 +1,7 @@
 class HomeController < ApplicationController
   after_action :read_new_comers_message, only: [:index]
   before_action :set_tutorial
+  before_action :authenticate_user!, only: [:chatbot]
   def index
     # @q = Post.ransack(params[:q])
     @messages_for_guests = AdminNotification.for_guests
@@ -28,6 +29,9 @@ class HomeController < ApplicationController
 
   def chat
     @f = User.ransack(params[:q])
+  end
+
+  def chatbot
   end
 
   private

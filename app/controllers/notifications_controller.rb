@@ -4,7 +4,7 @@ class NotificationsController < ApplicationController
   before_action :set_tutorial
 
   def index
-    @notifications = current_user.notifications.order(created_at: :desc)
+    @notifications = current_user.notifications.where.not(notifiable_type: "Group").order(created_at: :desc)
   end
 
   private

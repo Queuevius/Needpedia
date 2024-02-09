@@ -1,0 +1,127 @@
+<div class="container text-center">
+  <div class="row">
+    <div class="col-sm">
+      <h1>Group List</h1>
+    </div>
+    <div class="col-sm mt-3">
+      <p style="display: inline-block;">Select Group</p>
+      <%= select_tag 'current_group', options_for_select(options_for_active_group_select(current_user), current_user.default_group_id), id: 'groupSelectGroupPage', class: 'mb-2 pd-2' %>
+    </div>
+    <div class="col-sm text-right">
+      <% if params[:user].present? %>
+        <%= link_to "All Groups", groups_path, class: 'btn btn-primary' %>
+      <% else %>
+        <%= link_to "My Groups", groups_path(user: current_user), class: 'btn btn-primary' %>
+      <% end %>
+      <%= link_to new_group_path, class: 'btn btn-primary' do %>
+        Add New Group
+      <% end %>
+    </div>
+  </div>
+
+  <div class="table-responsive mb-10">
+    <table class="table table-striped table-bordered table-hover">
+      <thead>
+      <tr>
+        <th>Group Name</th>
+        <th>Admin</th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% @groups.each do |group| %>
+        <%= content_tag :tr, id: dom_id(group), class: dom_class(group) do %>
+
+          <td><%= link_to group.name, group %></td>
+          <td> <%= link_to group.user.name, wall_path(uuid: group.user.uuid) %> </td>
+          <td>
+            <% unless group.user == current_user || group.members.include?(current_user) || group.requests.exists?(user_id: current_user.id) %>
+              <%= link_to "Request to Join", request_to_join_group_path(group), method: :post, class: "btn btn-primary" %>
+            <% end %>
+            <% unless group.members.include?(current_user) %>
+              <% if group.requests.exists?(user_id: current_user.id) %>
+               Request <%=  group.requests.where(user_id: current_user.id).last.status %>
+              <% end %>
+            <% end %>
+            <% if current_user && group.memberships.exists?(user_id: current_user.id) %>
+              <%= link_to 'Leave Group', leave_group_group_path(group), method: :delete, data: {confirm: 'Once left, groups cannot be rejoined without insider permission'}, class: 'text-danger' %>
+            <% end %>
+          </td>
+          <td>
+            <% unless group.user == current_user %>
+              <% if group.flags.pluck(:user_id).include?(current_user.id) %>
+                <% group_flag = group.flags.where(user_id: current_user.id).first %>
+                <%= link_to flag_path(id: group_flag.id, flagable_id: group.id, flagable_type: 'Group'), method: :delete, class: 'btn btn-primary', title: 'Un-Flag this group', remote: true do %>
+                  <i class="fa fa-flag" aria-hidden="true"></i>
+                <% end %>
+              <% else %>
+                <!-- Button trigger flag modal -->
+                <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#flag<%= group.id %>">
+                  <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                </button>
+              <% end %>
+            <% end %>
+          </td>
+          <td>
+            <% if current_user && group.memberships.exists?(user_id: current_user.id) || current_user.id == group.user.id %>
+              <% if current_user.default_group_id == group.id %>
+                <%= link_to "Logout", update_default_group_groups_path(group_id: '0'), method: :patch, remote: true, data: {confirm: 'Are you sure you want to logout?'}, class: 'text-danger' %>
+              <% else %>
+                <%= link_to "Login", update_default_group_groups_path(group_id: group.id), method: :patch, remote: true %>
+              <% end %>
+            <% end %>
+          </td>
+        <% end %>
+        <!-- flage Modal -->
+        <div class="modal fade" id="flag<%= group.id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Report this version</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <%= form_with(model: group.flags.build, local: true, remote: true) do |form| %>
+                <div class="modal-body">
+                  <%= form.hidden_field :user_id, value: current_user.id %>
+                  <%= form.hidden_field :flagable_id, value: group.id %>
+                  <%= form.hidden_field :flagable_type, value: "Group" %>
+
+                  <div class="form-group">
+                    <%= rich_text_area_tag :version_reason, nil, autofocus: true, class: 'form-control', placeholder: "Reason" %>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <%= form.submit 'Create', class: 'btn btn-primary' %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+    $('#user').select2({
+        placeholder: 'Search',
+        quietMillis: 200,
+        multiple: true,
+        minimumInputLength: 2
+    });
+
+    $(document).on('change', '#groupSelectGroupPage', function() {
+        var selectedOption = $(this).val();
+        $.ajax({
+            url: '/groups/update_default_group',
+            type: 'PATCH',
+            data: { group_id: selectedOption }
+        });
+    });
+</script>

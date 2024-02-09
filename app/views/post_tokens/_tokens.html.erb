@@ -7,7 +7,7 @@
       <div class="col-md-12">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <%= link_to 'Back', post_path(post_token.post_id), class: 'btn btn-primary float-left padding-top-10' %>
+            <%= link_to 'Back', @post_token.post_id.present? ? post_path(@post_token.post_id) : group_path(@post_token.group_id), class: 'btn btn-primary float-left padding-top-10' if @post_token.post_id.present? || @post_token.group_id.present? %>
           </div>
         </div>
       </div>

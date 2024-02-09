@@ -61,7 +61,7 @@
                         <div class="row no-gutters align-items-center">
                           <div class="col-6">
                             <div class="form-group row">
-                              <label for="inputPassword" class="col-sm-3 col-form-label">Keyword</label>
+                              <label for="inputPassword" class="col-sm-2 text-sm-center col-form-label" style="white-space: nowrap;">Keyword</label>
                               <div class="col-sm-8">
                                 <%= f.text_field :title_cont, class: 'form-control' %>
                               </div>
@@ -70,7 +70,7 @@
 
                           <div class="col-6">
                             <div class="form-group row">
-                              <label for="inputPassword" class="col-sm-3 col-form-label">Author</label>
+                              <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Author</label>
                               <div class="col-sm-8">
                                 <%= f.text_field :user_first_name_cont, class: 'form-control' %>
                               </div>
@@ -79,7 +79,7 @@
 
                           <div class="col-6">
                             <div class="form-group row">
-                              <label for="inputPassword" class="col-sm-3 col-form-label">Post Type</label>
+                              <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Post Type</label>
                               <div class="col-sm-8">
                                 <%#= f.select(:post_type_cont , options_for_select(Post::TYPES_FOR_SEARCH.map { |r| [r.titleize, r] }, @post_type), { include_blank: false }, {class: 'selectpicker form-control', autofocus: false })%>
                                 <%= select_tag 'post_type', options_for_select(Post::TYPES_FOR_SEARCH.map { |r| [r.titleize, r] }, @post_type), include_blank: false , class: "form form-group form-control" %>
@@ -89,7 +89,7 @@
 
                           <div class="col-6">
                             <div class="form-group row">
-                              <label for="inputPassword" class="col-sm-3 col-form-label">Sorted By</label>
+                              <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Sorted By</label>
                               <div class="col-sm-8">
                                 <%= select_tag "sorted_by", options_for_select(%w[Highest-Rated Highest-Rated/View New Random], @sorted_by), include_blank: false, class: "form form-group form-control" %>
                               </div>
@@ -112,7 +112,7 @@
                           <div class="row no-gutters align-items-center">
                             <div class="col-6">
                               <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Access Type</label>
+                                <label for="inputPassword" class="col-sm-3 col-form-label " style="white-space: nowrap;">Access Type</label>
                                 <div class="col-sm-8">
                                   <%= select_tag 'access_type', options_for_select(%w[Public All Curated], @access_type), include_blank: false, class: "form form-group form-control" %>
                                 </div>
@@ -121,7 +121,7 @@
 
                             <div class="col-6">
                               <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Subject</label>
+                                <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Subject</label>
                                 <div class="col-sm-8">
                                   <%= text_field_tag 'subject', @subject, class: 'form-control' %>
                                 </div>
@@ -130,7 +130,7 @@
 
                             <div class="col-6">
                               <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Resource Tags</label>
+                                <label for="inputPassword" class="col-sm-3 pr-2 col-form-label " style="white-space: nowrap; ">Resource Tags</label>
                                 <div class="col-sm-8">
                                   <%= text_field_tag 'resource_tags', @resource_tags, class: 'form-control' %>
                                 </div>
@@ -139,7 +139,7 @@
 
                             <div class="col-6">
                               <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Problem</label>
+                                <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Problem</label>
                                 <div class="col-sm-8">
                                   <%= text_field_tag 'problem', @problem, class: 'form-control' %>
                                 </div>
@@ -148,7 +148,7 @@
 
                             <div class="col-6">
                               <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Location Tags</label>
+                                <label for="inputPassword" class="col-sm-3 col-form-label " style="white-space: nowrap;">Location Tags</label>
                                 <div class="col-sm-8">
                                   <%= text_field_tag 'location_tags', @location_tags, class: 'form-control' %>
                                 </div>
@@ -157,7 +157,7 @@
 
                             <div class="col-6">
                               <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Idea</label>
+                                <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Idea</label>
                                 <div class="col-sm-8">
                                   <%= text_field_tag 'idea', @idea, class: 'form-control' %>
                                 </div>

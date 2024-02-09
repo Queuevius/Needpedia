@@ -14,6 +14,9 @@ class User < ApplicationRecord
   has_rich_text :about
 
   has_person_name
+  has_many :memberships, dependent: :destroy
+  has_many :groups, through: :memberships, dependent: :destroy
+  has_many :requests, dependent: :destroy
 
   has_many :notifications, foreign_key: :recipient_id
   has_many :services, dependent: :destroy

@@ -26,6 +26,13 @@ class Notification < ApplicationRecord
   NOTIFICATION_TYPE_NONE  = 'none'.freeze
   NOTIFICATION_TYPE_DAILY  = 'daily'.freeze
   NOTIFICATION_TYPE_INSTANT  = 'instant'.freeze
+  NOTIFICATION_TYPE_INVITE  = 'invite'.freeze
+  NOTIFICATION_TYPE_JOIN_GROUP  = 'join_group'.freeze
+  NOTIFICATION_TYPE_LEAVE_GROUP  = 'leave_group'.freeze
+  NOTIFICATION_TYPE_GROUP_INVITE  = 'group_invite'.freeze
+  NOTIFICATION_TYPE_GROUP_REQUEST = 'group_request'.freeze
+  NOTIFICATION_TYPE_GROUP_REQUEST_ACCEPTED = 'group_request_accept'.freeze
+  NOTIFICATION_TYPE_GROUP_REQUEST_REJECTED = 'group_request_rejected'.freeze
 
   ################################ relationships ############################
   belongs_to :recipient, class_name: "User"

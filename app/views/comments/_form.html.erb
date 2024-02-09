@@ -11,6 +11,9 @@
     <%= form.hidden_field :commentable_id, value: post.id %>
     <%= form.hidden_field :commentable_type, value: 'Post' %>
   <% end %>
+  <% if current_user.default_group_id.to_i.positive? %>
+    <%= form.hidden_field :group_id, value: current_user.default_group_id %>
+  <% end %>
 
   <div class="row">
     <div class="col-md-10">
