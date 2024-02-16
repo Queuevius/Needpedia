@@ -105,7 +105,31 @@
       </div>
     </div>
   </div>
-
+  <div class="card">
+    <p class="bg-white">
+      <a class="text-dark" data-toggle="collapse" href="#collapseTopic" role="button" aria-expanded="false" aria-controls="collapseExample">
+        <div class="card-header border-bottom-0">
+          <h1 class="font-weight-bold">
+            Topics:
+          </h1>
+        </div>
+      </a>
+    </p>
+    <div class="collapse bg-white <%= ' show' if @topics.present? %>" id="collapseTopic">
+      <div class="card card-body bg-white ">
+        <div>
+          <div class="mr-sm-5">
+            <% if current_user.present? %>
+              <%= render 'topics/form', group: @group, topic: @topic %>
+            <% end %>
+          </div>
+          <div class="row topics_container_<%= @group.id %>">
+            <%= render 'topics/list', {group: @group, topics: @topics} %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- invite Modal -->
   <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -293,8 +317,6 @@
     </div>
   </div>
 </div>
-
-
 <style>
   .user-widget-2 .media {
     margin-bottom: 20px;

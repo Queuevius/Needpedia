@@ -1,0 +1,59 @@
+<%= form_with(model: topic, local: false) do |form| %>
+  <%= form.hidden_field :user_id, value: current_user.id %>
+  <%= form.hidden_field :group_id, value: @group.id %>
+  <div class="row">
+    <div class="col-md-10">
+      <div class="form-group">
+        <%= form.text_area :body, autofocus: true, class: 'form-control', placeholder: "Topic", id: 'summernote' %>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="float-left form-group">
+        <%= form.submit 'Submit', class: 'btn btn-primary float-right' %>
+      </div>
+    </div>
+  </div>
+<% end %>
+<div class="modal  fade" id="topicWarningModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-warning">Warning !</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>We apologize for the inconvenience but in order to keep Needpedia a productive and enjoyable place to be we've created a program that prevents the posting of certain content. If this has happened in error or was simply unhelpful to the community we encourage you to provide feedback here below, or in the part of Needpedia's wiki section. devoted to discussing the site itself.</p>
+        <br>
+        <p>*What does our program want you to edit? </p>
+        <p>"<strong></strong>"</p>
+        <div class="text-center">
+          <%= link_to 'Provide Feedback', new_feedback_path, class: 'btn btn-sm btn-primary' %>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    $('#summernote').summernote({
+        height: 150,
+        disableDragAndDrop: true,
+        toolbar: [
+            // [groupName, [list of button]]
+            ['style', ['bold', 'italic', 'underline', 'link']],
+            ['font', ['strikethrough', 'fontsize']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['misc', ['undo', 'redo']]
+        ],
+        popover: {
+            image: [
+                ['remove', ['removeMedia']]
+            ],
+            link: []
+        }
+    });
+</script>

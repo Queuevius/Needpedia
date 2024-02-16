@@ -85,7 +85,7 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <%= form_with(model: group.flags.build, local: true, remote: true) do |form| %>
+              <%= form_with(model: group.flags.build, local: true, remote: true, data: { turbo: false })  do |form| %>
                 <div class="modal-body">
                   <%= form.hidden_field :user_id, value: current_user.id %>
                   <%= form.hidden_field :flagable_id, value: group.id %>
