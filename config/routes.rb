@@ -7,6 +7,9 @@ Rails.application.routes.draw do
       match '/auth/sign_in', to: 'auth#options_request', via: [:options]
       mount_devise_token_auth_for 'User', at: 'auth'
       match '/register_device', to: 'device_registration#register_device', via: [:post]
+      resources :faqs, only: [:index]
+      resources :how_to, only: [:index]
+      resources :posts, only: [:index]
     end
   end
   resources :groups do
