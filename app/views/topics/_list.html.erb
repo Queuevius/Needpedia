@@ -33,3 +33,132 @@
     </div>
   <% end %>
 <% end %>
+<script>
+    var NoteButton = function (context) {
+        var ui = $.summernote.ui;
+
+        var button = ui.button({
+            contents: '<%= image_tag('note.png', class: 'img-responsive', width: '20') %>',
+            tooltip: 'Note Token',
+            click: function () {
+
+                dropToken(context, 'note')
+            }
+        });
+
+        return button.render();
+    };
+    var DebateButton = function (context) {
+        var ui = $.summernote.ui;
+
+        // create button
+        var button = ui.button({
+            contents: '<%= image_tag('debate.png', class: 'img-responsive', width: '20') %>',
+            tooltip: 'Debate Token',
+            click: function () {
+                dropToken(context, 'debate')
+            }
+        });
+
+        return button.render();
+    };
+    var QuestionButton = function (context) {
+        var ui = $.summernote.ui;
+
+        var button = ui.button({
+            contents: '<%= image_tag('question.png', class: 'img-responsive', width: '20') %>',
+            tooltip: 'Question Token',
+            click: function () {
+                dropToken(context, 'question')
+            }
+        });
+
+        return button.render();
+    };
+    function dropToken(e, token_type) {
+        var editor = e;
+        $.ajax({
+            url: '/post_tokens',
+            type: "POST",
+            dataType: "JSON",
+            data: {
+                user_id: <%= current_user.id %>,
+                group_id: <%= @group.id || 2 %>,
+                post_token_type: token_type,
+            },
+            success: function (data) {
+
+                if (data.post_token_type === 'note') {
+                    var noteHTML = '<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('note.png', width: "20") %>';
+                    editor.invoke('editor.pasteHTML', noteHTML);
+                } else if (data.post_token_type === 'debate') {
+                    var debateHTML = '<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('debate.png', width: "20") %>';
+                    editor.invoke('editor.pasteHTML', debateHTML);
+                } else {
+                    var questionHTML = '<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('question.png', width: "20") %>';
+                    editor.invoke('editor.pasteHTML', questionHTML);
+                }
+
+                $.ajax({
+                    url: '/post_tokens/token_modal',
+                    type: "get",
+                    data: {
+                        id: data.id,
+                    }
+                })
+            },
+            error: function (data) {
+            }
+        })
+    }
+    $(document).ready(function() {
+        function initializeSummernote(element) {
+            if (!$(element).hasClass('summernote-initialized')) {
+                $(element).addClass('summernote-initialized');
+                $(element).summernote({
+                    height: 150,
+                    disableDragAndDrop: true,
+                    toolbar: [
+                        // [groupName, [list of button]]
+                        ['style', ['bold', 'italic', 'underline', 'link']],
+                        ['font', ['strikethrough', 'fontsize']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['tokens', ['note', 'question', 'debate']],
+                        ['misc', ['undo', 'redo']],
+                        ['insert', ['picture']]
+                    ],
+                    popover: {
+                        image: [
+                            ['remove', ['removeMedia']]
+                        ],
+                        link: []
+                    },
+                    buttons: {
+                        note: NoteButton,
+                        question: QuestionButton,
+                        debate: DebateButton,
+                    }
+                });
+            }
+        }
+
+        function observeMutations() {
+            var targetNode = document.body;
+
+            var observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    $(mutation.addedNodes).find('#summernote_reply').each(function() {
+                        initializeSummernote(this);
+                    });
+                });
+            });
+            var config = { childList: true, subtree: true };
+            observer.observe(targetNode, config);
+        }
+        $(document).ready(function() {
+            observeMutations();
+
+            initializeSummernote('#summernote_reply');
+        });
+    });
+</script>

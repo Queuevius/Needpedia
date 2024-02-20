@@ -6,7 +6,7 @@
       <%= f.hidden_field :group_id, value: group.id %>
       <div class="form-group">
         <%= f.label 'Reply' %>
-        <%= f.text_area :body, autofocus: true, class: 'form-control', placeholder: "Topic", id: 'summernote' %>
+        <%= f.text_area :body, autofocus: true, class: 'form-control', placeholder: "Topic", id: 'summernote_reply' %>
       </div>
       <%= f.submit 'Submit', class: 'btn btn-primary' %>
       <button type="button" name="button" class='btn btn-secondary' onclick="this.closest('.card').remove();">Cancel</button>

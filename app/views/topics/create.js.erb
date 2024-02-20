@@ -1,6 +1,6 @@
 <% if @topic.parent_id.present? %>
   $(".reply_container_<%= @topic.parent_id %>").append("<%= j(render(partial: '/topics/replies', locals: { replies: [@topic], group: @topic })) %>")
-  $('.reply_body').val(''); $('#summernote').summernote('code', '');
+  $('#summernote_reply').summernote('code', '');
 <% else %>
   $(".topics_container_<%= @group.id %>").prepend("<%= j(render(partial: 'topics/list', locals: { topics: [@topic], group: @group })) %>")
 $('#summernote').summernote('code', '');
