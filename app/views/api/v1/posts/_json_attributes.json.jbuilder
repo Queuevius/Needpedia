@@ -8,4 +8,4 @@ json.problem_id post.problem_id
 json.created_at post.created_at
 json.updated_at post.updated_at
 json.post_id post.post_id
-json.disabled post.disabled
+json.curated post.curated
