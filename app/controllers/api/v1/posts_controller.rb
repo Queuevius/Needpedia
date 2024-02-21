@@ -1,5 +1,5 @@
 class Api::V1::PostsController < ApplicationController
-  before_action :authenticate_token
+  # before_action :authenticate_token
 
   def index
     @subjects = Post.where(post_type: Post::POST_TYPE_SUBJECT, post_id: nil, disabled: false, private: false).includes(:ideas, :child_posts).uniq
