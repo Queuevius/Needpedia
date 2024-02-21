@@ -76,6 +76,7 @@ class User < ApplicationRecord
   has_many :devices, dependent: :destroy
 
   has_many :user_tutorials, dependent: :destroy
+  has_many :topics, dependent: :destroy
 
   def credit_hours
     active_gigs_amount = posted_gigs.active_progress.sum(:amount)

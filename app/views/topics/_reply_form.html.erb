@@ -1,0 +1,62 @@
+<div class="card reply_form_<%= topic.id %>">
+  <div class="card-body">
+    <%= form_with(model: [group, topic], local: false) do |f| %>
+      <%= f.hidden_field :user_id, value: current_user.id %>
+      <%= f.hidden_field :parent_id %>
+      <%= f.hidden_field :group_id, value: group.id %>
+      <div class="form-group">
+        <%= f.label 'Reply' %>
+        <%= f.text_area :body, autofocus: true, class: 'form-control', placeholder: "Topic", id: 'summernote_reply' %>
+      </div>
+      <%= f.submit 'Submit', class: 'btn btn-primary' %>
+      <button type="button" name="button" class='btn btn-secondary' onclick="this.closest('.card').remove();">Cancel</button>
+    <% end %>
+  </div>
+</div>
+<script>
+    $(document).ready(function() {
+        function initializeSummernote(element) {
+            if (!$(element).hasClass('summernote-initialized')) {
+                $(element).addClass('summernote-initialized');
+                $(element).summernote({
+                    height: 150,
+                    disableDragAndDrop: true,
+                    toolbar: [
+                        ['style', ['bold', 'italic', 'underline', 'link']],
+                        ['font', ['strikethrough', 'fontsize']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['tokens', ['note', 'question', 'debate']],
+                        ['misc', ['undo', 'redo']],
+                        ['insert', ['picture']]
+                    ],
+                    popover: {
+                        image: [
+                            ['remove', ['removeMedia']]
+                        ],
+                        link: []
+                    }
+                });
+                console.log("Hello, world!");
+            }
+        }
+
+        function observeMutations() {
+            var targetNode = document.body;
+
+            var observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    $(mutation.addedNodes).find('#summernote').each(function() {
+                        initializeSummernote(this);
+                    });
+                });
+            });
+            var config = { childList: true, subtree: true };
+            observer.observe(targetNode, config);
+        }
+        $(document).ready(function() {
+            observeMutations();
+
+            initializeSummernote('#summernote');
+        });
+    });
+</script>

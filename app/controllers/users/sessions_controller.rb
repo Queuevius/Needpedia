@@ -14,12 +14,16 @@ class Users::SessionsController < Devise::SessionsController
     end
   end
 
+  def after_sign_in_path_for(resource)
+    resource.last_login_at.nil? ? (resource.update(last_login_at: Time.now); chatbot_path) : super
+  end
+
   private
 
   def check_captcha
     unless verify_recaptcha
       self.resource = resource_class.new sign_in_params
-      respond_with_navigational(resource) { render :new }
+      respond_with_navigational(resource) {render :new}
     end
   end
 end

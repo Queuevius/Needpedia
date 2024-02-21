@@ -16,5 +16,28 @@ module MasterAdmin
       flash[:alert] = e.message
       redirect_to master_admin_users_path
     end
+
+    def bulk_delete
+      answers_ids = params[:answers_ids]
+      return unless answers_ids.present?
+
+      begin
+        Answer.where(id: answers_ids).destroy_all
+        flash[:notice] = "Selected answers have been deleted successfully."
+      rescue => e
+        flash[:alert] = "An error occurred while deleting selected answers: #{e.message}"
+      end
+      redirect_to master_admin_answers_path
+    end
+
+    def destroy_all
+      begin
+        Answer.destroy_all
+        flash[:notice] = "All answers have been deleted successfully."
+      rescue => e
+        flash[:alert] = "An error occurred while deleting all answers: #{e.message}"
+      end
+      redirect_to master_admin_answers_path
+    end
   end
 end

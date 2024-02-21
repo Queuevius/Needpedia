@@ -12,7 +12,11 @@ Rails.application.routes.draw do
       resources :posts, only: [:index]
     end
   end
+  resources :topics
   resources :groups do
+    resources :topics do
+      delete 'remove_topic'
+    end
     patch 'update_default_group', on: :collection
     member do
       post 'join', to: 'groups#join'
@@ -48,6 +52,10 @@ Rails.application.routes.draw do
     resources :comments
     resources :gigs
     resources :answers do
+      collection do
+        delete 'bulk_delete'
+        delete :all_delete, action: :destroy_all
+      end
       get 'approve_user'
     end
     resources :posts do
@@ -86,6 +94,10 @@ Rails.application.routes.draw do
     resources :gigs
     resources :banned_terms
     resources :answers do
+      collection do
+        delete 'bulk_delete'
+        delete :all_delete, action: :destroy_all
+      end
       get 'approve_user'
     end
     resources :posts do
@@ -118,6 +130,7 @@ Rails.application.routes.draw do
     resources :invitations
     resources :membership
     resources :request
+
 
     root to: "users#index"
   end
