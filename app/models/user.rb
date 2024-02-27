@@ -154,4 +154,12 @@ class User < ApplicationRecord
       self.user_tutorials.create(link: tutorial.link, content: tutorial.content)
     end
   end
+
+  def combined_links_with_mascot
+    if mascot.present? && self.friends.include?(mascot)
+      links + mascot.links
+    else
+      links
+    end
+  end
 end

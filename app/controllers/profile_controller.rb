@@ -5,13 +5,13 @@ class ProfileController < ApplicationController
   before_action :set_tutorial, except: [:update_details, :update_profile_image, :create_pictures]
 
   def wall
-    blocked_user_ids = params[:uuid].present? ? [] : current_user.blocked_users.pluck(:block_user_id)
+    blocked_user_ids = params[:uuid].present? ? [] : current_user&.blocked_users&.pluck(:block_user_id)
     @f = Post.posts_feed.where.not(user_id: blocked_user_ids).ransack(params[:q])
-    @posted_posts = @f.result.where(user_id: @user.id).or(@f.result.where(posted_to: @user.id)).page(params[:page].present? ? params[:page] : 1).per(20).order('created_at desc')
-    @liked_posts = @user.likes.where(likeable_type: 'Post').collect(&:likeable).uniq
-    @commented_posts = @user.comments.collect(&:commentable).uniq
-    @flagged_posts = @user.flags.where(flagable_type: 'Flag').collect(&:flagable).uniq
-    @shared_posts = @user.shares.collect(&:shareable)
+    @posted_posts = @f.result.where(user_id: @user&.id).or(@f.result.where(posted_to: @user&.id)).page(params[:page].present? ? params[:page] : 1).per(20).order('created_at desc')
+    @liked_posts = @user&.likes&.where(likeable_type: 'Post')&.collect(&:likeable)&.uniq
+    @commented_posts = @user&.comments&.collect(&:commentable)&.uniq
+    @flagged_posts = @user&.flags&.where(flagable_type: 'Flag')&.collect(&:flagable)&.uniq
+    @shared_posts = @user&.shares&.collect(&:shareable)
   end
 
   def about; end
@@ -146,9 +146,9 @@ class ProfileController < ApplicationController
     # @activities = PublicActivity::Activity.includes(:owner, trackable: [:flags, :likes, :comments, :shares, :post_tokens, :notifications, images_attachment: :blob]).order('created_at DESC').limit(50)
       # @activities = PublicActivity::Activity.order('created_at DESC')
       # @activities = @activities.select { |p| p.trackable&.private == false }
-      blocked_user_ids = params[:uuid].present? ? [] : current_user.blocked_users.pluck(:block_user_id)
+      blocked_user_ids = params[:uuid].present? ? [] : current_user&.blocked_users&.pluck(:block_user_id)
       @f = Post.posts_feed.where.not(user_id: blocked_user_ids).ransack(params[:q])
-      posts = @f.result.where(user_id: @user.links.pluck(:id), private: false, disabled: false).order('created_at desc')
+      posts = @f.result.where(user_id: @user&.combined_links_with_mascot&.pluck(:id), private: false, disabled: false).order('created_at desc').uniq
       @posts = Kaminari.paginate_array(posts).page(params[:page]).per 10
       respond_to do |format|
         format.html
@@ -170,7 +170,7 @@ class ProfileController < ApplicationController
   end
 
   def block_user
-    block_user = current_user.blocked_users.create(block_user_id: @user.id)
+    block_user = current_user&.blocked_users&.create(block_user_id: @user.id)
     redirect_to wall_path(uuid: params[:uuid]), notice: 'User blocked successfully.' if block_user.present?
   end
 
@@ -200,11 +200,15 @@ class ProfileController < ApplicationController
   end
 
   def friend_count
-    @friends_count = Kaminari.paginate_array(@user.links)
+    if current_user.present?
+      @friends_count = Kaminari.paginate_array(@user.links)
+    end
   end
 
   def connection_requests_count
-    @connection_requests_count = ConnectionRequest.where(to: @user.uuid, status: 'pending')
+    if current_user.present?
+      @connection_requests_count = ConnectionRequest.where(to: @user.uuid, status: 'pending')
+    end
   end
 
   def set_tutorial

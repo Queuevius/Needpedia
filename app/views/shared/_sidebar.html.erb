@@ -2,12 +2,12 @@
 <nav id="sidebar">
   <div class="pl-4 pt-5">
     <div class="image-part ml-3">
-      <% if @user.profile_image.attached? %>
+      <% if @user&.profile_image&.attached? %>
         <%= image_tag(@user.profile_image, class: 'img logo rounded-circle mb-2', alt: "Avatar") %>
       <% else %>
         <%= image_tag('img_avatar.png', class: 'img logo rounded-circle mb-2', alt: "Avatar") %>
       <% end %>
-      <% if current_user == @user %>
+      <% if current_user.present? == @user %>
         <div class="middle">
           <%= link_to profile_image_path, remote: true, class: 'text' do %>
             Change
@@ -15,7 +15,7 @@
         </div>
       <% end %>
     </div>
-    <h4><%= @user.name %></h4>
+    <h4><%= @user&.name %></h4>
     <div class="container">
       <% if current_user.present? %>
         <% if current_user.id != @user.id %>
@@ -25,22 +25,23 @@
           <% elsif @user.connection_status(current_user)[:status] == 'request_received' || request_recieved?(@user.id, current_user.uuid) %>
             <%= link_to 'Accept', accept_invitation_path(:uuid => @user.connection_status(current_user)[:request_uuid]), class: 'btn btn-sm btn-rounded btn-primary' %>
           <% elsif @user.connection_status(current_user)[:status] == 'connected' %>
-            <%= link_to 'Unfriend', un_friend_path(uuid: @user.uuid, redirect: 'friend'), method: :delete, class: 'btn btn-sm btn-rounded btn-primary', data: { confirm: "Are you sure?" } %>
+            <%= link_to 'Unfriend', un_friend_path(uuid: @user.uuid, redirect: 'friend'), method: :delete, class: 'btn btn-sm btn-rounded btn-primary', data: {confirm: "Are you sure?"} %>
           <% else %>
             <%= link_to 'Add Friend', new_connection_request_path(:uuid => @user.uuid), class: 'btn btn-sm btn-rounded btn-primary' %>
           <% end %>
         <% end %>
 
       <% else %>
-        <%= link_to 'Add Friend', new_connection_request_path(:uuid => @user.uuid), class: 'btn btn-rounded btn-sm btn-primary' %>
+        <%= link_to 'Add Friend', new_connection_request_path(:uuid => @user&.uuid), class: 'btn btn-rounded btn-sm btn-primary' %>
       <% end %>
-
-      <% if current_user != @user %>
-        <%= link_to 'Message', conversations_path(receiver_id: @user.id), method: :post, class: 'btn btn-rounded btn-secondary btn-sm' %>
-        <% if current_user.blocked_users.where(block_user_id: @user.id).exists? %>
-          <%= link_to 'Unblock Account', unblock_user_path(uuid: @user.uuid), method: :delete, class: 'btn btn-rounded btn-secondary btn-sm mt-1 ml-1' %>
-        <% else %>
-          <%= link_to 'Block Account', block_user_path(uuid: @user.uuid), method: :post, class: 'btn btn-rounded btn-secondary btn-sm mt-1 ml-1' %>
+      <% if current_user.present? %>
+        <% if current_user != @user %>
+          <%= link_to 'Message', conversations_path(receiver_id: @user.id), method: :post, class: 'btn btn-rounded btn-secondary btn-sm' %>
+          <% if current_user&.blocked_users&.where(block_user_id: @user.id)&.exists? %>
+            <%= link_to 'Unblock Account', unblock_user_path(uuid: @user.uuid), method: :delete, class: 'btn btn-rounded btn-secondary btn-sm mt-1 ml-1' %>
+          <% else %>
+            <%= link_to 'Block Account', block_user_path(uuid: @user.uuid), method: :post, class: 'btn btn-rounded btn-secondary btn-sm mt-1 ml-1' %>
+          <% end %>
         <% end %>
       <% end %>
 
@@ -50,13 +51,13 @@
         <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Friends</a>
         <ul class="collapse list-unstyled" id="pageSubmenu">
           <li>
-            <%= link_to "Friends (#{@friends_count.total_count})", friends_path(uuid: @uuid) %>
+            <%= link_to "Friends (#{@friends_count&.total_count})", friends_path(uuid: @uuid) %>
           </li>
-          <% if current_user.uuid == @user.uuid %>
+          <% if current_user&.uuid == @user&.uuid %>
             <li>
-              <%= link_to "Request (#{@connection_requests_count.count})", friend_request_path(uuid: @uuid) %>
+              <%= link_to "Request (#{@connection_requests_count&.count})", friend_request_path(uuid: @uuid) %>
             </li>
-            <% end %>
+          <% end %>
         </ul>
       </li>
       <li>
@@ -90,9 +91,9 @@
         <%= link_to "Tutorials", user_tutorials_path(uuid: @uuid) %>
       </li>
 
-      <% if current_user == @user %>
+      <% if current_user.present? == @user %>
         <li>
-          <%= link_to registration_path(current_user), data: { confirm: "Are you sure? You cannot undo this." }, method: :delete do %>
+          <%= link_to registration_path(current_user), data: {confirm: "Are you sure? You cannot undo this."}, method: :delete do %>
             <p class="text-danger">Deactivate my account</p>
           <% end %>
         </li>
