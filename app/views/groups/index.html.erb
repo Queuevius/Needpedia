@@ -75,39 +75,41 @@
             <% end %>
           </td>
         <% end %>
-        <!-- flage Modal -->
-        <div class="modal fade" id="flag<%= group.id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Report this version</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <%= form_with(model: group.flags.build, local: true, remote: true, data: { turbo: false })  do |form| %>
-                <div class="modal-body">
-                  <%= form.hidden_field :user_id, value: current_user.id %>
-                  <%= form.hidden_field :flagable_id, value: group.id %>
-                  <%= form.hidden_field :flagable_type, value: "Group" %>
-
-                  <div class="form-group">
-                    <%= rich_text_area_tag :version_reason, nil, autofocus: true, class: 'form-control', placeholder: "Reason" %>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  <%= form.submit 'Create', class: 'btn btn-primary' %>
-                </div>
-              <% end %>
-            </div>
-          </div>
-        </div>
       <% end %>
       </tbody>
     </table>
   </div>
 </div>
+<% @groups.each do |group| %>
+  <!-- flage Modal -->
+  <div class="modal fade" id="flag<%= group.id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Report this version</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <%= form_with(model: group.flags.build, local: true, remote: true) do |form| %>
+          <div class="modal-body">
+            <%= form.hidden_field :user_id, value: current_user.id %>
+            <%= form.hidden_field :flagable_id, value: group.id %>
+            <%= form.hidden_field :flagable_type, value: "Group" %>
+
+            <div class="form-group">
+              <%= rich_text_area_tag :version_reason, nil, autofocus: true, class: 'form-control', placeholder: "Reason" %>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <%= form.submit 'Create', class: 'btn btn-primary' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
 <script>
     $('#user').select2({
         placeholder: 'Search',

@@ -33,6 +33,8 @@ class Notification < ApplicationRecord
   NOTIFICATION_TYPE_GROUP_REQUEST = 'group_request'.freeze
   NOTIFICATION_TYPE_GROUP_REQUEST_ACCEPTED = 'group_request_accept'.freeze
   NOTIFICATION_TYPE_GROUP_REQUEST_REJECTED = 'group_request_rejected'.freeze
+  NOTIFICATION_TYPE_GROUP_INVITATION_ACCEPTED = 'group_invitation_accept'.freeze
+  NOTIFICATION_TYPE_GROUP_INVITATION_REJECTED = 'group_invitation_rejected'.freeze
 
   ################################ relationships ############################
   belongs_to :recipient, class_name: "User"

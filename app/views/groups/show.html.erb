@@ -44,7 +44,7 @@
     <% if current_user && @group.memberships.exists?(user_id: current_user.id) & !(current_user == @group.user) %>
       <%= link_to 'Leave Group', leave_group_group_path(@group), method: :delete, data: {confirm: 'Once left, groups cannot be rejoined without insider permission'}, class: "btn btn-danger mr-2 mb-2", style: 'white-space: nowrap;' %>
     <% end %>
-    <% if @current_user_invitation.present? %>
+    <% if @current_user_invitation.present? && @current_user_invitation.status == "pending" %>
       <%= link_to "Join Group", join_group_path(@group, invitation_id: @current_user_invitation.id), method: :post, class: "btn btn-success mr-2  mb-2", style: 'white-space: nowrap;'  %>
     <% end %>
     <% if @posts.present? %>
@@ -143,28 +143,10 @@
         </div>
         <div class="modal-body">
           <div class="container bootdey">
-
+            <input type="text" id="searchInputModal" class="form-control" placeholder="Search for users...">
             <div class="user-widget-2">
-              <ul class="list-unstyled">
-                <% @users_not_in_group.each do |user| %>
-                  <% next if user == current_user || @group.invitations.find_by(user_id: user.id) %>
-                  <li class="media">
-                    <% if user.profile_image.attached? %>
-                      <%= image_tag(user.profile_image, class: 'rounded-circle d-flex align-self-center', alt: "Avatar") %>
-                    <% else %>
-                      <img class="rounded-circle d-flex align-self-center" src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
-                    <% end %>
-                    <div class="media-body">
-                      <h5><%= user.name %></h5>
-                      <p>
-                        <%= link_to invite_user_to_group_group_path(user_id: user.id, group_id: @group.id), method: :post do %>
-                          <span class="badge badge-outline badge-sm badge-info badge-pill">Invite</span>
-                        <% end %>
-
-                      </p>
-                    </div>
-                    <i class="d-flex align-self-center fa fa-dot-circle-o color-success"></i></li>
-                <% end %>
+              <ul class="list-unstyled" id="userListModal">
+                <%= render 'users_list', users: @users_not_in_group  %>
               </ul>
             </div>
           </div>
@@ -693,3 +675,27 @@
     margin-right: 20px;
   }
 </style>
+<script>
+    $(document).ready(function() {
+        $('#searchInputModal').on('input', function() {
+            var q = $(this).val();
+            if (q.length === 0 || q.length > 2) {
+                getUserList(q);
+            }
+        });
+
+        function getUserList(q) {
+            $.ajax({
+                url: '/search_users_modal',
+                method: 'GET',
+                data: { q: q, group_id: <%= @group.id %> },
+                success: function(response) {
+                    $('#userListModal').html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                }
+            });
+        }
+    });
+</script>

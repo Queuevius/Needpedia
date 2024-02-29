@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_02_20_104040) do
+ActiveRecord::Schema.define(version: 2024_02_28_062109) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -312,6 +312,7 @@ ActiveRecord::Schema.define(version: 2024_02_20_104040) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "group_id"
+    t.integer "status", default: 0
     t.index ["group_id"], name: "index_invitations_on_group_id"
     t.index ["user_id"], name: "index_invitations_on_user_id"
   end

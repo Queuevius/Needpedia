@@ -5,33 +5,7 @@
     >
       <iframe
         style="border: none;"
-        srcdoc="<body><script src='https://cdn.botpress.cloud/webchat/v1/inject.js'></script>
-            <script>
-              window.botpressWebChat.init({
-                  'composerPlaceholder': 'Chat with bot',
-                  'botConversationDescription': 'This chatbot was built surprisingly fast with Botpress',
-                  'botName': 'Name',
-                  'botId': 'f87c4530-e481-49dd-8841-236d83aa1389',
-                  'hostUrl': 'https://cdn.botpress.cloud/webchat/v0',
-                  'messagingUrl': 'https://messaging.botpress.cloud',
-                  'clientId': '<%= ENV['BOTPRESS_CLIENT_ID'] %>',
-                  'enableConversationDeletion': true,
-                  'showPoweredBy': true,
-                  'className': 'webchatIframe',
-                  'containerWidth': '100%25',
-                  'layoutWidth': '100%25',
-                  'hideWidget': true,
-                  'showCloseButton': false,
-                  'disableAnimations': true,
-                  'closeOnEscape': false,
-                  'showConversationsButton': false,
-                  'enableTranscriptDownload': false,
-                  'stylesheet':'https://webchat-styler-css.botpress.app/prod/code/f08c89b1-6ab3-4778-845c-fe6c6df32d8e/v46757/style.css'
-
-
-              });
-            window.botpressWebChat.onEvent(function () { window.botpressWebChat.sendEvent({ type: 'show' }) }, ['LIFECYCLE.LOADED']);
-            </script></body>"
+        src="https://needpedia-openai.netlify.app/"
         width="100%"
         height="100%"
       ></iframe>

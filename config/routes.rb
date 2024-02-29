@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     end
   end
   resources :topics
+  get '/search_users_modal', to: 'groups#search_users_modal'
   resources :groups do
     resources :topics do
       delete 'remove_topic'
@@ -26,6 +27,8 @@ Rails.application.routes.draw do
       delete 'leave_group', to: 'groups#leave_group'
       post '/groups/:group_id/invite/:user_id', to: 'groups#invite_user', as: 'invite_user_to_group'
       get 'group_notifications', to: 'groups#group_notifications'
+      delete 'reject_invitation/:invitation_id', to: 'groups#reject_invitation', as: 'reject_invitation'
+      post 'accept_invitation/:invitation_id', to: 'groups#accept_invitation', as: 'accept_invitation'
     end
   end
   resources :interested_users
