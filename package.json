@@ -18,7 +18,8 @@
     "select2": "^4.0.13",
     "summernote": "^0.8.18",
     "trix": "^1.0.0",
-    "turbolinks": "^5.2.0"
+    "turbolinks": "^5.2.0",
+    "node-sass": "^9.0.0"
   },
   "version": "0.1.0",
   "devDependencies": {
