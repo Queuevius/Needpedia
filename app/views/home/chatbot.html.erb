@@ -1,15 +1,6 @@
 <div class="chatbot text-center">
-  <div class="absolute inset-4 ">
-    <div
-      class="center-div relative h-full w-full overflow-clip rounded-md border border-zinc-200 bg-white p-2 px-0 py-0"
-    >
-      <iframe
-        style="border: none;"
-        src="https://needpedia-openai.netlify.app/"
-        width="100%"
-        height="100%"
-      ></iframe>
-    </div>
+  <div class="chatbot-container">
+    <iframe class="chatbot-frame" src="https://needpedia-openai.netlify.app/"></iframe>
   </div>
 </div>
 <style>
@@ -23,24 +14,34 @@
     font-family: Arial, sans-serif;
   }
 
-  .center-div {
+  .chatbot-container {
+    max-width: 90%;
     width: 50vw;
-    height: 80vh;
-    background-color: rgb(102, 71, 255);
+    height: 80%;
+    background-color: #ffffff;
     border-radius: 15px;
-    padding: 5px;
-    box-sizing: border-box;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
   }
 
-  @media only screen and (max-width: 600px) {
-    .center-div {
-      height: 80vh;
-      width: 60vw;
+  .chatbot-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  @media only screen and (max-width: 768px) {
+    .chatbot-container {
+      width: 90%;
+      height: 70vh;
+    }
+  }
+
+  @media only screen and (max-width: 480px) {
+    .chatbot-container {
+      height: 60vh;
+      width: 100%;
+      padding: 0;
     }
   }
 

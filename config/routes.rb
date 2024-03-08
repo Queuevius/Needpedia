@@ -137,7 +137,7 @@ Rails.application.routes.draw do
 
     root to: "users#index"
   end
-  get '/chatbot', to: 'home#chatbot'
+  get '/ai', to: 'home#chatbot'
   get '/user_tutorials', to: 'profile#tutorials'
   get '/nuclear_note', to: 'nuclear_note#index'
   get '/privacy', to: 'home#privacy'
@@ -147,6 +147,7 @@ Rails.application.routes.draw do
   get '/contact_us', to: 'home#contact_us'
   get '/faq', to: 'home#faq'
   get '/pdf', to: 'user_assistant_documents#pdf_file'
+  get '/pdf_links', to: 'user_assistant_documents#pdf_links'
   get '/chat', to: 'home#chat'
   get '/wall', to: 'profile#wall'
   get '/friends', to: 'profile#friends'
