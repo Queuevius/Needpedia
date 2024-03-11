@@ -17,10 +17,12 @@ class GroupsController < ApplicationController
     @requests = @group.requests.where(status: 'pending')
     @members = @group.members
     @posts = Post.where(group_id: @group.id)
-    @invitations = Invitation.where(group_id: @group.id)
-    @users_not_in_group = User.where.not(id: @members.pluck(:id)).where.not(id: @invitations.pluck(:id))
+    @invitations = @group.invitations.where(status: "pending")
+    @users_not_in_group = User.where.not(id: @members.pluck(:id)).where.not(id: @invitations&.pluck(:id))
     @invitations = Invitation.where(group_id: @group.id)
     @current_user_invitation = @invitations.where(user_id: current_user.id).first
+    @topic = Topic.new(parent_id: params[:parent_id])
+    @topics = @group.topics.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('topics.created_at DESC')
   end
 
   def layers
@@ -40,7 +42,8 @@ class GroupsController < ApplicationController
     @request = @group.requests.new(user_id: current_user.id, status: :pending)
 
     if @request.save
-      send_notification(current_user, @group, @request.user, Notification::NOTIFICATION_TYPE_GROUP_REQUEST)
+      send_notification(current_user, @group, @group.user, Notification::NOTIFICATION_TYPE_GROUP_REQUEST)
+      send_notification(current_user, @request, @group.user, Notification::NOTIFICATION_TYPE_GROUP_REQUEST)
       redirect_back(fallback_location: root_path, notice: "Request has been sent successfully.")
     else
       redirect_back(fallback_location: root_path, alert: "Unable to send the request.")
@@ -120,8 +123,8 @@ class GroupsController < ApplicationController
   def join
     @membership = Membership.new(user: current_user, group: @group, role: "member")
     @invitation = Invitation.find(params[:invitation_id])
-    @invitation.destroy!
     if @membership.save
+      @invitation.update(status: :accepted)
       send_notification(current_user, @group, @group.user, Notification::NOTIFICATION_TYPE_JOIN_GROUP)
       redirect_to @group, notice: "You have joined the group as a member."
     else
@@ -150,7 +153,7 @@ class GroupsController < ApplicationController
       @membership = Membership.create(user: @request.user, group: @group, role: "member")
       if @membership.save
         send_notification(current_user, @group, @request.user, Notification::NOTIFICATION_TYPE_GROUP_REQUEST_ACCEPTED)
-        send_notification(current_user, current_user, @request.user, Notification::NOTIFICATION_TYPE_GROUP_REQUEST_ACCEPTED)
+        send_notification(current_user, @request, @request.user, Notification::NOTIFICATION_TYPE_GROUP_REQUEST_ACCEPTED)
         @request.update(status: :accepted)
         redirect_to @group, notice: "Request accepted."
       else
@@ -167,7 +170,7 @@ class GroupsController < ApplicationController
 
     if @request
       @request.update(status: :rejected)
-      send_notification(current_user, current_user, @request.user, Notification::NOTIFICATION_TYPE_GROUP_REQUEST_REJECTED)
+      send_notification(current_user, @request, @request.user, Notification::NOTIFICATION_TYPE_GROUP_REQUEST_REJECTED)
       redirect_to @group, notice: "Request rejected."
     else
       redirect_to @group, alert: "Request not found."
@@ -181,7 +184,7 @@ class GroupsController < ApplicationController
     if @group && user_to_invite
       existing_membership = @group.memberships.find_by(user_id: user_to_invite.id)
 
-      existing_invitation = @group.invitations.find_by(user_id: user_to_invite.id)
+      existing_invitation = @group.invitations.find_by(user_id: user_to_invite.id, status: :pending)
 
       if existing_membership
         redirect_to @group, alert: "User is already a member of this group."
@@ -191,7 +194,7 @@ class GroupsController < ApplicationController
         invitation = Invitation.create(user: user_to_invite, group: @group)
 
         if invitation.save
-          send_notification(current_user, @group, user_to_invite, Notification::NOTIFICATION_TYPE_GROUP_INVITE)
+          send_notification(current_user, invitation, user_to_invite, Notification::NOTIFICATION_TYPE_GROUP_INVITE)
           redirect_to @group, notice: "Invitation sent to #{user_to_invite.email}."
         else
           redirect_to @group, alert: "Unable to send invitation."
@@ -203,7 +206,7 @@ class GroupsController < ApplicationController
   end
 
   def accept_invitation
-    invitation = current_user.invitations.find_by(group_id: params[:group_id])
+    invitation = find_invitation(params[:invitation_id], params[:group_id])
 
     if invitation
       membership = Membership.create(user: current_user, group: invitation.group, role: "member")
@@ -218,7 +221,34 @@ class GroupsController < ApplicationController
     end
   end
 
+  def search_users_modal
+    @group = Group.find(params[:group_id])
+    @members = @group.members
+    @invitations = @group.invitations.where(status: :pending)
+    @users_not_in_group = User.where.not(id: @members.pluck(:id)).where.not(id: @invitations.pluck(:user_id))
+    @searched_users = @users_not_in_group.ransack(first_name_or_last_name_cont: params[:q]).result(distinct: true)
+    render partial: 'users_list', locals: { users: @searched_users }
+  end
+
+  def reject_invitation
+    invitation = find_invitation(params[:invitation_id], params[:group_id])
+
+    if invitation
+      send_notification(current_user, invitation, invitation.group.user, Notification::NOTIFICATION_TYPE_GROUP_INVITATION_REJECTED)
+      invitation.update(status: :rejected)
+      redirect_back(fallback_location: root_path, notice: 'Rejected invitation.')
+    else
+      redirect_back(fallback_location: root_path, notice: 'Invitation not found.')
+    end
+  end
+
   private
+
+  def find_invitation(invitation_id, group_id)
+    return Invitation.find(invitation_id) if invitation_id.present?
+
+    current_user.invitations.find_by(group_id: group_id)
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_group

@@ -7,9 +7,17 @@ Rails.application.routes.draw do
       match '/auth/sign_in', to: 'auth#options_request', via: [:options]
       mount_devise_token_auth_for 'User', at: 'auth'
       match '/register_device', to: 'device_registration#register_device', via: [:post]
+      resources :faqs, only: [:index]
+      resources :how_to, only: [:index]
+      resources :posts, only: [:index]
     end
   end
+  resources :topics
+  get '/search_users_modal', to: 'groups#search_users_modal'
   resources :groups do
+    resources :topics do
+      delete 'remove_topic'
+    end
     patch 'update_default_group', on: :collection
     member do
       post 'join', to: 'groups#join'
@@ -19,6 +27,8 @@ Rails.application.routes.draw do
       delete 'leave_group', to: 'groups#leave_group'
       post '/groups/:group_id/invite/:user_id', to: 'groups#invite_user', as: 'invite_user_to_group'
       get 'group_notifications', to: 'groups#group_notifications'
+      delete 'reject_invitation/:invitation_id', to: 'groups#reject_invitation', as: 'reject_invitation'
+      post 'accept_invitation/:invitation_id', to: 'groups#accept_invitation', as: 'accept_invitation'
     end
   end
   resources :interested_users
@@ -45,6 +55,10 @@ Rails.application.routes.draw do
     resources :comments
     resources :gigs
     resources :answers do
+      collection do
+        delete 'bulk_delete'
+        delete :all_delete, action: :destroy_all
+      end
       get 'approve_user'
     end
     resources :posts do
@@ -83,6 +97,10 @@ Rails.application.routes.draw do
     resources :gigs
     resources :banned_terms
     resources :answers do
+      collection do
+        delete 'bulk_delete'
+        delete :all_delete, action: :destroy_all
+      end
       get 'approve_user'
     end
     resources :posts do
@@ -116,9 +134,10 @@ Rails.application.routes.draw do
     resources :membership
     resources :request
 
+
     root to: "users#index"
   end
-  get '/chatbot', to: 'home#chatbot'
+  get '/ai', to: 'home#chatbot'
   get '/user_tutorials', to: 'profile#tutorials'
   get '/nuclear_note', to: 'nuclear_note#index'
   get '/privacy', to: 'home#privacy'
@@ -128,6 +147,7 @@ Rails.application.routes.draw do
   get '/contact_us', to: 'home#contact_us'
   get '/faq', to: 'home#faq'
   get '/pdf', to: 'user_assistant_documents#pdf_file'
+  get '/pdf_links', to: 'user_assistant_documents#pdf_links'
   get '/chat', to: 'home#chat'
   get '/wall', to: 'profile#wall'
   get '/friends', to: 'profile#friends'

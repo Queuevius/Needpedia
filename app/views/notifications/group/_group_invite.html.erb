@@ -1,12 +1,41 @@
 <div class="card mb-1">
   <div class="card-body">
-    <h5><%= link_to "#{actor.name}", wall_path(uuid: actor.uuid) %> has invited
+    <% invitation_group = group_invitation(notification.notifiable.id, notification.recipient.id).last %>
+    <h5 class="<%= invitation_group&.status == "pending" ? "" : "text-black-50" %>"><%= link_to "#{actor.name}", wall_path(uuid: actor.uuid) %> has invited
       <% if notification.recipient == current_user %>
         you
       <% else %>
         <%= link_to "#{notification.recipient.name}", wall_path(uuid: actor.uuid) %>
       <% end %>
-      to join <%= link_to notification.notifiable&.name, group_path(notification.notifiable) if notification.notifiable.present? %> group </h5>
+      to join <%= link_to notification.notifiable&.name, group_path(notification.notifiable) if notification.notifiable.present? %> group
+      <% if notification.recipient == current_user && invitation_group&.status == "pending" %>
+        <p>
+          <span class="badge badge-outline badge-sm badge-info badge-pill" data-toggle="tooltip" data-placement="bottom" title="Accept Invitation">
+            <%= link_to accept_invitation_group_path(notifiable, invitation_group.id), method: :post do %>
+                  <i class="fas fa-check"></i>
+              <% end %>
+          </span>
+          <span class="badge badge-outline badge-sm badge-danger badge-pill " data-toggle="tooltip" data-placement="bottom" title="Reject Invitation">
+            <%= link_to reject_invitation_group_path(notifiable, invitation_group.id), method: :delete, data: {confirm: 'Are you sure?'}, class: "text-danger" do %>
+                <i class="far fa-trash-alt"></i>
+              <% end %>
+          </span>
+        </p>
+      <% end %>
+    </h5>
+    <p><%= invitation_group&.status %></p>
     <em class="text-muted"><%= notification.created_at.strftime('%e %b %Y %H:%M %p') %></em>
   </div>
 </div>
+<style>
+  .badge.badge-outline.badge-info {
+    border: 1px solid #0288d1;
+    background-color: transparent;
+    color: #0288d1;
+  }
+  .badge.badge-outline.badge-danger {
+    border: 1px solid #d32f2f;
+    background-color: transparent;
+    color: #d32f2f;
+  }
+</style>

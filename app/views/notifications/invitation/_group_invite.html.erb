@@ -1,0 +1,41 @@
+<div class="card mb-1">
+  <div class="card-body text-gray">
+    <% invitation = notification.notifiable %>
+    <h5 class="<%= invitation&.status == "pending" ? "" : "text-black-50" %>"><%= link_to "#{actor.name}", wall_path(uuid: actor.uuid) %> has invited
+      <% if notification.recipient == current_user %>
+        you
+      <% else %>
+        <%= link_to "#{notification.recipient.name}", wall_path(uuid: actor.uuid) %>
+      <% end %>
+      to join <%= link_to notifiable&.group.name, group_path(notifiable.group.id) if notification.notifiable.present? %> group
+      <% if notification.recipient == current_user && invitation&.status == "pending" %>
+        <p>
+          <span class="badge badge-outline badge-sm badge-info badge-pill" data-toggle="tooltip" data-placement="bottom" title="Accept Invitation">
+            <%= link_to accept_invitation_group_path(notifiable, invitation.id), method: :post do %>
+                  <i class="fas fa-check"></i>
+              <% end %>
+          </span>
+          <span class="badge badge-outline badge-sm badge-danger badge-pill " data-toggle="tooltip" data-placement="bottom" title="Reject Invitation">
+            <%= link_to reject_invitation_group_path(notifiable, invitation.id), method: :delete, data: {confirm: 'Are you sure?'}, class: "text-danger" do %>
+                <i class="far fa-trash-alt"></i>
+              <% end %>
+          </span>
+        </p>
+      <% end %>
+    </h5>
+    <p><%= invitation&.status %></p>
+    <em class="text-muted"><%= notification.created_at.strftime('%e %b %Y %H:%M %p') %></em>
+  </div>
+</div>
+<style>
+  .badge.badge-outline.badge-info {
+    border: 1px solid #0288d1;
+    background-color: transparent;
+    color: #0288d1;
+  }
+  .badge.badge-outline.badge-danger {
+    border: 1px solid #d32f2f;
+    background-color: transparent;
+    color: #d32f2f;
+  }
+</style>

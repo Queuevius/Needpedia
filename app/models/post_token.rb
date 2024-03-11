@@ -7,6 +7,7 @@ class PostToken < ApplicationRecord
   belongs_to :post, optional: true
   has_many :token_ans_debate, dependent: :destroy
   belongs_to :group, optional: true
+  belongs_to :topic, optional: true
 
   ################################ Constants ############################
   TOKEN_TYPE_NOTE = 'note'.freeze
