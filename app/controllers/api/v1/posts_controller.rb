@@ -10,7 +10,7 @@ class Api::V1::PostsController < ApplicationController
     user = User.find_by(uuid: token)
 
     if user.blank?
-      render json: {status: '401', message: 'User must be present', content: {}}
+      render json: {status: 401, message: 'User must be present', content: {}}
       return
     end
     post_type = post_params[:post_type]
@@ -21,12 +21,12 @@ class Api::V1::PostsController < ApplicationController
       case post_type
       when Post::POST_TYPE_PROBLEM
         if subject_id.nil?
-          render json: {status: '422', message: 'Subject id must be present', content: {}}
+          render json: {status: 422, message: 'Subject id must be present', content: {}}
           return
         end
       when Post::POST_TYPE_IDEA
         if problem_id.nil?
-          render json: {status: '422', message: 'Problem id must be present', content: {}}
+          render json: {status: 422, message: 'Problem id must be present', content: {}}
           return
         end
       end
@@ -36,7 +36,8 @@ class Api::V1::PostsController < ApplicationController
     @post = Post.new(post_params.merge(user_id: user.id))
     if @post.save
       render json: {
-          status: 'success',
+          status: 200,
+          message: 'Post was successfully created.',
           content: {
               post: {
                   link: post_url(@post),
@@ -60,7 +61,7 @@ class Api::V1::PostsController < ApplicationController
           }
       }
     else
-      render json: {status: '422', message: @post.errors.full_messages}
+      render json: {status: 422, message: @post.errors.full_messages, content: {}}
     end
   end
 
