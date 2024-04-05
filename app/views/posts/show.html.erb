@@ -88,7 +88,7 @@
                           <% end %>
 
                           <% if @post.geo_maxing? %>
-                            <%= link_to 'Map', post_map_path(@post), class: 'btn btn-primary btn-sm mr-1 mt-1' %>
+                            <%= link_to 'Map', post_map_path(@post), class: 'btn btn-primary btn-sm mr-1 mt-1', data: { turbolinks: false } %>
                           <% end %>
                           <div class="dropdown float-right">
                             <% if @post.layering_disabled? %>
