@@ -1,94 +1,89 @@
 class Api::V1::PostsController < ApplicationController
-  # before_action :authenticate_token
+  before_action :authenticate_token
+  before_action :validate_post_type_presence, only: [:create]
 
   def index
     @subjects = Post.where(post_type: Post::POST_TYPE_SUBJECT, post_id: nil, disabled: false, private: false).includes(:ideas, :child_posts).uniq
   end
 
   def create
-    token = extract_token_from_header
-    user = User.find_by(uuid: token)
-
-    if user.blank?
-      render json: {status: 401, message: 'User must be present', content: {}}
-      return
-    end
-    post_type = post_params[:post_type]
-    subject_id = post_params[:subject_id]
-    problem_id = post_params[:problem_id]
-
-    if post_type.present?
-      case post_type
-      when Post::POST_TYPE_PROBLEM
-        if subject_id.nil?
-          render json: {status: 422, message: 'Subject id must be present', content: {}}
-          return
-        end
-      when Post::POST_TYPE_IDEA
-        if problem_id.nil?
-          render json: {status: 422, message: 'Problem id must be present', content: {}}
-          return
-        end
-      end
-    end
-
-
-    @post = Post.new(post_params.merge(user_id: user.id))
+    @post = Post.new(post_params.merge(user_id: current_user.id))
     if @post.save
-      render json: {
-          status: 200,
-          message: 'Post was successfully created.',
-          content: {
-              post: {
-                  link: post_url(@post),
-                  title: @post.title,
-                  content: @post.content.body,
-                  post_type: @post.post_type,
-                  curated: @post.curated,
-                  group_id: @post.group_id,
-                  disabled: @post.disabled,
-                  private: @post.private,
-              }.tap do |post_hash|
-                post_hash[:problem] =
-                    if @post.problem_id.present?
-                      post_url(Post.find(@post.problem_id))
-                    end
-                post_hash[:subject] =
-                    if @post.subject_id.present?
-                      post_url(Post.find(@post.subject_id))
-                    end
-              end
-          }
-      }
+      render_success_response
     else
-      render json: {status: 422, message: @post.errors.full_messages, content: {}}
+      render json: { status: 422, message: @post.errors.full_messages, content: {} }
     end
   end
 
   private
 
   def authenticate_token
-    unless ENV['AUTH_TOKEN'].present? && valid_token?
-      render json: {error: 'Not authorized'}, status: :unauthorized
+    render_unauthorized_response unless valid_token?
+  end
+
+  def validate_post_type_presence
+    case post_params[:post_type]
+    when Post::POST_TYPE_PROBLEM
+      render_missing_param_response("Invalid subject id OR subject id is not present") unless post_params[:subject_id].present? && valid_subject_post?(post_params[:subject_id])
+    when Post::POST_TYPE_IDEA
+      render_missing_param_response("Invalid Problem id OR Problem id is not present") unless post_params[:problem_id].present? && valid_problem_post?(post_params[:problem_id])
     end
   end
 
+
+  def render_success_response
+    render json: {
+        status: 200,
+        message: 'Post was successfully created.',
+        content: {
+            post: {
+                link: post_url(@post),
+                title: @post.title,
+                content: @post.content.body,
+                post_type: @post.post_type,
+                curated: @post.curated,
+                group_id: @post.group_id,
+                disabled: @post.disabled,
+                private: @post.private,
+                problem: @post.problem_id.present? ? post_url(Post.find(@post.problem_id)) : nil,
+                subject: @post.subject_id.present? ? post_url(Post.find(@post.subject_id)) : nil
+            }
+        }
+    }
+  end
+
+  def render_unauthorized_response
+    render json: { status: 401, message: 'User must be present', content: {} }
+  end
+
+  def render_missing_param_response(message)
+    render json: { status: 422, message: message, content: {} }
+  end
+
   def valid_token?
-    token = extract_token_from_header
-    token.present? && token == ENV['AUTH_TOKEN']
+    extract_token_from_header.present? && current_user.present?
   end
 
   def extract_token_from_header
     header = request.headers['Authorization']
-    if header && header.match(/^Bearer (.*)$/)
-      return $1
-    else
-      return nil
-    end
+    header&.match(/^Bearer (.*)$/) { $1 }
   end
 
   def post_params
     params.require(:post).permit(:title, :content, :post_type, :subject_id, :problem_id)
   end
 
+  def current_user
+    @current_user ||= User.find_by(uuid: extract_token_from_header)
+  end
+
+  def valid_subject_post?(id)
+    post = Post.find_by(id: id)
+    post.present? && post&.post_type == Post::POST_TYPE_SUBJECT
+  end
+
+  def valid_problem_post?(id)
+    post = Post.find_by(id: id)
+    post.present? && post&.post_type == Post::POST_TYPE_PROBLEM
+  end
 end
