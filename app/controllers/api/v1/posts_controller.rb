@@ -1,9 +1,15 @@
 class Api::V1::PostsController < ApplicationController
-  before_action :authenticate_token
+  before_action :authenticate_token, except: [:index]
   before_action :validate_post_type_presence, only: [:create]
 
   def index
-    @subjects = Post.where(post_type: Post::POST_TYPE_SUBJECT, post_id: nil, disabled: false, private: false).includes(:ideas, :child_posts).uniq
+    header_token = extract_token_from_header
+    token = ENV['POST_TOKEN']
+    unless header_token.present? && token.present? && header_token == token
+      render json: {status: 401, message: 'Not authenticated', content: {}}
+    else
+      @subjects = Post.where(post_type: Post::POST_TYPE_SUBJECT, post_id: nil, disabled: false, private: false).includes(:ideas, :child_posts).uniq
+    end
   end
 
   def create
@@ -44,7 +50,9 @@ class Api::V1::PostsController < ApplicationController
                 curated: @post.curated,
                 group_id: @post.group_id,
                 disabled: @post.disabled,
-                private: @post.private,
+                private: @post.
+
+                private,
                 problem: @post.problem_id.present? ? post_url(Post.find(@post.problem_id)) : nil,
                 subject: @post.subject_id.present? ? post_url(Post.find(@post.subject_id)) : nil
             }
@@ -53,11 +61,11 @@ class Api::V1::PostsController < ApplicationController
   end
 
   def render_unauthorized_response
-    render json: { status: 401, message: 'User must be present', content: {} }
+    render json: {status: 401, message: 'User must be present', content: {}}
   end
 
   def render_missing_param_response(message)
-    render json: { status: 422, message: message, content: {} }
+    render json: {status: 422, message: message, content: {}}
   end
 
   def valid_token?
@@ -66,7 +74,7 @@ class Api::V1::PostsController < ApplicationController
 
   def extract_token_from_header
     header = request.headers['Authorization']
-    header&.match(/^Bearer (.*)$/) { $1 }
+    header&.match(/^Bearer (.*)$/) {$1}
   end
 
   def post_params
