@@ -108,6 +108,7 @@ Rails.application.routes.draw do
         get 'private_posts'
         get 'deleted_posts'
         get 'restore_deleted_posts'
+        post 'upload'
       end
     end
     resources :users do
