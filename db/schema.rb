@@ -13,7 +13,6 @@
 ActiveRecord::Schema.define(version: 2024_02_28_062109) do
 
   # These are extensions that must be enabled in order to support this database
-  enable_extension "hstore"
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
 

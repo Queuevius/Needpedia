@@ -62,6 +62,45 @@ It renders the `_table` partial to display details about the resources.
       <%= link_to 'Deleted Posts', deleted_posts_admin_posts_path, class: 'button', style: 'margin-left: 4px;'%>
     <% end %>
   </div>
+  <div>
+    <%#= link_to 'Upload Posts', upload_admin_posts_path, class: 'button', style: 'margin-left: 4px;'%>
+
+    <!-- Button to trigger flagable content modal -->
+    <td class="text-center">
+      <button type="button" style="margin-left: 4px;" class="button" data-toggle="modal" data-target="#postsModal">
+        Upload
+      </button>
+    </td>
+    <!-- flagable content modal -->
+    <div class="modal fade" id="postsModal" tabindex="-1" role="dialog" aria-labelledby="postsModal" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="myModalLabel"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <%= form_with(url: upload_admin_posts_path, method: :post, multipart: true) do |form| %>
+              <div class="field m-4">
+                <%= form.label 'Upload CSV file only' %>
+                <%= form.file_field :csv_file, accept: '.csv' %>
+              </div>
+
+              <div class="actions m-4">
+                <%= form.submit "Upload CSV" %>
+              </div>
+            <% end %>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </header>
 
 <section class="main-content__body main-content__body--flush">
