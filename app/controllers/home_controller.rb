@@ -32,6 +32,7 @@ class HomeController < ApplicationController
   end
 
   def chatbot
+    @token = current_user.uuid
   end
 
   private
