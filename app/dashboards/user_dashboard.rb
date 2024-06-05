@@ -30,7 +30,8 @@ class UserDashboard < Administrate::BaseDashboard
     daily_notification_time: Field::Time,
     track_notifications: Field::Boolean,
     daily_report_sent_at: Field::DateTime,
-    daily_notifications: Field::Boolean
+    daily_notifications: Field::Boolean,
+    features: FeaturesField
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -69,6 +70,7 @@ class UserDashboard < Administrate::BaseDashboard
   track_notifications
   daily_report_sent_at
   daily_notifications
+  features
   comment
   ].freeze
 
@@ -88,6 +90,7 @@ class UserDashboard < Administrate::BaseDashboard
   track_notifications
   daily_report_sent_at
   daily_notifications
+  features
   ].freeze
 
   # COLLECTION_FILTERS
@@ -107,5 +110,9 @@ class UserDashboard < Administrate::BaseDashboard
   #
   def display_resource(user)
     user.name
+  end
+
+  def permitted_attributes
+    super + [{ features: {} }]
   end
 end

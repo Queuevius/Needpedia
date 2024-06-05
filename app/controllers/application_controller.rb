@@ -10,6 +10,7 @@ class ApplicationController < ActionController::Base
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
     devise_parameter_sanitizer.permit(:account_update, keys: [:name, :message_notifications, :track_notifications, :daily_notifications, :all_notifications, :default_group_id])
+    devise_parameter_sanitizer.permit(:accept_invitation, keys: [:name])
   end
 
   def set_ransack
