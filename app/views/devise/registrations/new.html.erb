@@ -15,8 +15,12 @@
             <%= f.email_field :email, autofocus: false, class: 'form-control', placeholder: "Email Address" %>
           </div>
 
+
           <div class="form-group">
             <%= f.password_field :password, autocomplete: "off", class: 'form-control', placeholder: 'Password' %>
+            <small class="form-text text-muted">
+              Password must include at least one uppercase letter, one lowercase letter, one digit, and one special character from these (#?!@$%^&*_-).
+            </small>
           </div>
 
           <div class="form-group">

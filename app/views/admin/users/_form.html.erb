@@ -34,9 +34,14 @@ and renders all form fields for a resource's editable attributes.
   <% end %>
 
   <% page.attributes.delete_if { |x| x.attribute == :master_admin }.each do |attribute| -%>
-    <div class="field-unit field-unit--<%= attribute.html_class %> field-unit--<%= requireness(attribute) %>">
+    <div class="field-unit field-unit--<%= attribute.html_class %> field-unit--<%= requireness(attribute) %> <%= "mb-0" if attribute.attribute == :password %>">
       <%= render_field attribute, f: f %>
     </div>
+    <% if attribute.attribute == :password %>
+      <small class="form-text text-muted form-actions mt-0">
+        Password must include at least one uppercase letter, one lowercase letter, one digit, and one special character from these (#?!@$%^&*_-).
+      </small>
+    <% end %>
   <% end -%>
 
   <div class="form-actions">
