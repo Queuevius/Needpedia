@@ -78,7 +78,7 @@ class Api::V1::PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:title, :content, :post_type, :subject_id, :problem_id)
+    params.permit(:title, :content, :post_type, :subject_id, :problem_id)
   end
 
   def current_user
