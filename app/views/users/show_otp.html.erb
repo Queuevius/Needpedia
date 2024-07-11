@@ -1,0 +1,14 @@
+<h2 class="text-center">Enter OTP</h2>
+<div class="row">
+  <div class="col-lg-4 col-md-6 ml-auto mr-auto">
+    <%= form_tag verify_user_otp_path, method: :post do %>
+      <div class="form-group">
+        <%= label_tag :otp_attempt, "OTP Code", class: "form-control-label" %>
+        <%= text_field_tag :otp_attempt, nil, class: 'form-control' %>
+      </div>
+      <div class="form-group">
+        <%= submit_tag "Verify", class: 'btn btn-lg btn-block btn-primary' %>
+      </div>
+    <% end %>
+  </div>
+</div>

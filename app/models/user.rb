@@ -1,8 +1,11 @@
 class User < ApplicationRecord
+  devise :two_factor_authenticatable,
+         :otp_secret_encryption_key => ENV['OTP_KEY']
+
   include DeviseTokenAuth::Concerns::User
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :masqueradable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :confirmable
+  devise :masqueradable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :confirmable
 
 
   after_create :add_default_credit, :create_admin_notifications, :make_friend_with_mascot, :create_user_tutorials
@@ -154,5 +157,12 @@ class User < ApplicationRecord
     Tutorial.all.each do |tutorial|
       self.user_tutorials.create(link: tutorial.link, content: tutorial.content)
     end
+  end
+
+  def otp_qr_code
+    issuer = "#{Rails.application.class.module_parent_name}-#{Rails.env}"
+    label = "#{issuer}:#{email}"
+    qrcode = RQRCode::QRCode.new(otp_provisioning_uri(label, issuer: issuer))
+    qrcode.as_svg(module_size: 4)
   end
 end

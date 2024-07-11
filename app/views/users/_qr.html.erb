@@ -1,0 +1,27 @@
+<div class="row">
+  <div class="col-8">
+    <ol class="mt-5">
+      <li>
+        Install Google Authenticator:
+        <%= link_to "Android", "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en", target: :blank %>
+        or
+        <%= link_to "iOS", "https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8", target: :blank %>
+      </li>
+      <li>In the app, select "Set up account" or the Plus (+) sign.</li>
+      <li>Choose "Scan barcode"</li>
+    </ol>
+  </div>
+
+  <div class="col-4 text-center">
+    <%= current_user.otp_qr_code.html_safe %>
+  </div>
+  <div>
+    <%= form_tag(enable_otp_verify_path, method: :post) do %>
+      <div>
+        <label for="otp_attempt">Enter OTP</label>
+        <%= text_field_tag :otp_attempt %>
+      </div>
+      <%= submit_tag "Verify and Enable" %>
+    <% end %>
+  </div>
+</div>
