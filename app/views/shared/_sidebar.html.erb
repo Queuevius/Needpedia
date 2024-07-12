@@ -65,6 +65,11 @@
       <li>
         <%= link_to 'About', about_path(uuid: @uuid) %>
       </li>
+      <% if current_user.features["invitable"] %>
+        <li>
+          <%= link_to 'Invite Friend', new_user_invitation_path%>
+        </li>
+      <% end %>
       <li>
         <%= link_to 'Have', have_posts_path(uuid: params[:uuid]) %>
       </li>
