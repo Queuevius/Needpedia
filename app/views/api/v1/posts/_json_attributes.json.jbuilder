@@ -1,4 +1,5 @@
 json.id post.id
+json.link post_url(post)
 json.post_type post.post_type
 json.user_id post.user_id
 json.title post.title

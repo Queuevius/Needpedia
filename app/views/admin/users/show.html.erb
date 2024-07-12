@@ -55,6 +55,19 @@ as well as a link to its edit page.
       <dd class="attribute-data attribute-data--<%=attribute.html_class%>"
           ><%= render_field attribute, page: page %></dd>
     <% end %>
+    <% if page.resource.created_by_invite? %>
+      <dt class="attribute-label">
+        CREATED BY INVITE
+      </dt>
+      <dd class="attribute-data attribute-data--<%=page.attributes.last.html_class%>" >
+        <%= page.resource.created_by_invite? %>
+      </dd>
+      <dt class="attribute-label">
+        INVITED BY
+      </dt>
+      <dd class="attribute-data attribute-data--<%=page.attributes.last.html_class%>"><%= link_to page.resource.invited_by.name, admin_user_path(page.resource.invited_by.id) %>
+      </dd>
+    <% end %>
   </dl>
 
   <%= form_for([:admin, page.resource], url: comment_user_admin_user_path(page.resource), method: :patch) do |f| %>

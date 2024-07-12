@@ -62,5 +62,16 @@ module Admin
         redirect_to admin_user_path(user), alert: "Comment was not added successfully"
       end
     end
+
+    def update
+      user = User.find(params[:id])
+
+      if params[:features].present?
+        features = params[:features]
+        u_features = features.transform_values { |v| v == "1" }
+        user.update(features: u_features)
+      end
+      super
+    end
   end
 end
