@@ -1,0 +1,59 @@
+<% if @found_term.present? %>
+$(document).ready(function () {
+    $('#topicWarningModal').modal('show');
+    const foundTermValue = '<%= j(@found_term) %>';
+    $('#topicWarningModal .modal-body p strong').text(foundTermValue);
+});
+<% else %>
+document.querySelector("#topics-reply-form-<%= @topic.parent_id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { topic: @topic, group: @group })) %>")
+<% end %>
+
+$(document).ready(function() {
+    function initializeSummernote(element) {
+        if (!$(element).hasClass('summernote-initialized')) {
+            $(element).addClass('summernote-initialized');
+
+            $(element).summernote({
+                height: 150,
+                disableDragAndDrop: true,
+                toolbar: [
+                    ['style', ['bold', 'italic', 'underline', 'link']],
+                    ['font', ['strikethrough', 'fontsize']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['tokens', ['note', 'question', 'debate']],
+                    ['misc', ['undo', 'redo']],
+                    ['insert', ['picture']]
+                ],
+                popover: {
+                    image: [
+                        ['remove', ['removeMedia']]
+                    ],
+                    link: []
+                }
+            });
+            console.log("Hello, world!");
+        }
+    }
+
+    function observeMutations() {
+        var targetNode = document.body;
+
+        var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                $(mutation.addedNodes).find('#summernote').each(function() {
+                    initializeSummernote(this);
+                });
+            });
+        });
+
+        var config = { childList: true, subtree: true };
+
+        observer.observe(targetNode, config);
+    }
+
+    $(document).ready(function() {
+        observeMutations();
+
+        initializeSummernote('#summernote');
+    });
+});

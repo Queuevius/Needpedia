@@ -1,0 +1,701 @@
+<div class="page-header">
+
+  <div class="row bg-white p-4">
+    <div class="col mb-2">
+      <% unless @group.group_type == Group::GROUP_TYPE_LAYER %>
+        <%= link_to groups_path, class: 'btn btn-default' do %>
+          <span style="white-space: nowrap;">Back to Groups</span>
+        <% end %>
+      <% end %>
+      <% if @group.group_type == Group::GROUP_TYPE_LAYER %>
+        <%= link_to 'Back', group_path(id: @group.group_id), class: 'btn btn-primary btn-sm mt-1 mb-2' %>
+      <% end %>
+    </div>
+    <% unless @group.group_type == Group::GROUP_TYPE_LAYER %>
+      <% if current_user == @group.user %>
+        <div class="col mb-2">
+          <% if @requests.present? %>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#request">
+              <span style="white-space: nowrap;">Request List</span>
+            </button>
+          <% end %>
+        </div>
+        <div class="col mb-2">
+          <div class="align-content-end">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+              <span style="white-space: nowrap;">Invite Users</span>
+            </button>
+          </div>
+        </div>
+        <% if @members.present? %>
+          <div class="col mb-2">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Member">
+             <span style="white-space: nowrap;"> Members </span>
+            </button>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% unless current_user == @group.user || @group.requests.exists?(user_id: current_user.id) || @group.members.exists?(id: current_user.id) || @group.group_type == Group::GROUP_TYPE_LAYER || @group.invitations.exists?(user_id: current_user.id) %>
+      <div class="col mb-2">
+        <%= link_to "Request to Join", request_to_join_group_path(@group), method: :post, class: "btn btn-primary" %>
+      </div>
+    <% end %>
+    <% if current_user && @group.memberships.exists?(user_id: current_user.id) & !(current_user == @group.user) %>
+      <%= link_to 'Leave Group', leave_group_group_path(@group), method: :delete, data: {confirm: 'Once left, groups cannot be rejoined without insider permission'}, class: "btn btn-danger mr-2 mb-2", style: 'white-space: nowrap;' %>
+    <% end %>
+    <% if @current_user_invitation.present? && @current_user_invitation.status == "pending" %>
+      <%= link_to "Join Group", join_group_path(@group, invitation_id: @current_user_invitation.id), method: :post, class: "btn btn-success mr-2  mb-2", style: 'white-space: nowrap;'  %>
+    <% end %>
+    <% if @posts.present? %>
+      <div class="col mb-2">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Post_list">
+          <span style="white-space: nowrap;">Posts list</span>
+        </button>
+      </div>
+    <% end %>
+    <% if @group.notifications.present? && @group.members.include?(current_user) %>
+      <%= link_to group_notifications_group_path(@group)  do %>
+        <span><i class="far fa-bell m-2" aria-hidden="true" style="font-size: x-large"></i></span>
+      <% end %>
+    <% end %>
+    <% if current_user == @group.user %>
+      <%= link_to edit_group_path(@group), class: 'btn btn-primary mr-2 mb-2' do %>
+        <span style="white-space: nowrap;">Edit</span>
+      <% end %>
+    <% end %>
+    <div class="dropdown mt-1 float-right">
+      <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Layers
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <% if @group.group_type == Group::GROUP_TYPE_LAYER %>
+          <%= link_to 'Default Layer', group_path(@group.parent_group), class: "dropdown-item #{post_type_color(@group.parent_group.group_type)}" %>
+        <% end %>
+        <%= link_to 'Add Layer', new_group_path(group_type: Group::GROUP_TYPE_LAYER, group_id: @group.group_type == Group::GROUP_TYPE_LAYER ? @group.parent_group.id : @group.id), class: "dropdown-item" %>
+        <% layers = @group.group_type == Group::GROUP_TYPE_LAYER ? @group.parent_group.layers : @group.layers %>
+        <% layers.each do |layer| %>
+          <%= link_to layer.name, group_path(layer), class: 'dropdown-item' %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <h1 class="text-center mt-3"> <%= @group.group_type == Group::GROUP_TYPE_LAYER ? 'Layer' : 'Show group' %></h1>
+  <div class="row bg-white mb-2">
+    <div class="bg-white mt-2 col">
+      <% if @group.group_type == Group::GROUP_TYPE_LAYER %>
+        <%= link_to edit_group_path(@group), class: 'btn btn-primary float-right mt-2' do %>
+          Edit Layer
+        <% end %>
+      <% end %>
+      <div class="card bg-white" style="width: 18rem;">
+        <div class="card-body">
+          <div class="container-sm">
+            <%= image_tag @group.logo, class: 'card-img-top' if @group.logo.attached? %>
+          </div>
+          <dl class="dl-horizontal mt-4">
+            <dt class="mb-2">Name:</dt>
+            <dd class="mb-2"><%= @group.name %></dd>
+            <dt class="mb-2">Group admin:</dt>
+            <dd class="mb-2"><%= @group.user.name %></dd>
+            <dt class="mb-2">Content</dt>
+            <dd> <%= @group.content %> </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <p class="bg-white">
+      <a class="text-dark" data-toggle="collapse" href="#collapseTopic" role="button" aria-expanded="false" aria-controls="collapseExample">
+        <div class="card-header border-bottom-0">
+          <h1 class="font-weight-bold">
+            Topics:
+          </h1>
+        </div>
+      </a>
+    </p>
+    <div class="collapse bg-white <%= ' show' if @topics.present? %>" id="collapseTopic">
+      <div class="card card-body bg-white ">
+        <div>
+          <div class="mr-sm-5">
+            <% if current_user.present? %>
+              <%= render 'topics/form', group: @group, topic: @topic %>
+            <% end %>
+          </div>
+          <div class="row topics_container_<%= @group.id %>">
+            <%= render 'topics/list', {group: @group, topics: @topics} %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- invite Modal -->
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Invite people</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container bootdey">
+            <input type="text" id="searchInputModal" class="form-control" placeholder="Search for users...">
+            <div class="user-widget-2">
+              <ul class="list-unstyled" id="userListModal">
+                <%= render 'users_list', users: @users_not_in_group  %>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal request list -->
+  <div class="modal fade" id="request" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Requests List</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container mt-3 mb-4">
+            <div class=" mt-4 mt-lg-0">
+              <h3 class="text-center">Requests List</h3>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="user-dashboard-info-box table-responsive mb-0 bg-white p-4 shadow-sm">
+                    <div class="container bootdey">
+                      <div class="user-widget-2">
+                        <ul class="list-unstyled">
+                          <% @requests.each do |request| %>
+                            <li class="media">
+                              <% if request.user.profile_image.attached? %>
+                                <%= image_tag(request.user.profile_image, class: 'rounded-circle d-flex align-self-center', alt: "Avatar") %>
+                              <% else %>
+                                <img class="rounded-circle d-flex align-self-center" src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+                              <% end %>
+                              <div class="media-body">
+                                <h5><%= link_to request.user.name, wall_path(uuid: request.user.uuid) %></h5>
+                                <p><span class="badge badge-outline badge-sm badge-info badge-pill"data-toggle="tooltip" data-placement="bottom" title="Accept Request"><%= link_to accept_request_group_path(@group, request), method: :post do %>
+                                <i class="fas fa-check"></i>
+                              <% end %></span>
+                                  <span class="badge badge-outline badge-sm badge-danger badge-pill " data-toggle="tooltip" data-placement="bottom" title="Reject Request"><%= link_to reject_request_group_path(@group, request), method: :delete, data: {confirm: 'Are you sure?'}, class: "text-danger" do %>
+                                <i class="far fa-trash-alt"></i>
+                              <% end %></span>
+                                </p>
+                              </div>
+                          <% end %>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal member list -->
+  <div class="modal fade" id="Member" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Members List</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container bootdey">
+            <div class="user-widget-2">
+              <ul class="list-unstyled">
+                <% @members.each do |member| %>
+                  <li class="media">
+                    <% if member.profile_image.attached? %>
+                      <%= image_tag(member.profile_image, class: 'rounded-circle d-flex align-self-center', alt: "Avatar") %>
+                    <% else %>
+                      <img class="rounded-circle d-flex align-self-center" src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+                    <% end %>
+                    <div class="media-body">
+                      <h5 class="mt-4"><%= link_to member.name, wall_path(uuid: member.uuid) %></h5>
+                    </div>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal post list -->
+  <div class="modal fade" id="Post_list" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Group list</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="table-responsive mb-10">
+            <table class="table table-striped table-bordered table-hover">
+              <thead>
+              <tr>
+                <th>Title</th>
+                <th>Post type</th>
+                <th>Created at</th>
+                <th>User</th>
+              </tr>
+              </thead>
+
+              <tbody>
+              <% @posts.each do |post| %>
+                <tr>
+                  <td>
+                    <%= link_to post.title, post_path(post.id) %>
+                  </td>
+                  <td>
+                    <%= post.post_type %>
+                  </td>
+                  <td>
+                    <%= post.created_at.strftime('%Y-%m-%d') %>
+                  </td>
+                  <td>
+                    <%= link_to post.user.name, wall_path(uuid: post.user.uuid) %>
+                  </td>
+                </tr>
+              <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  .user-widget-2 .media {
+    margin-bottom: 20px;
+  }
+
+  .user-widget-2 h5 {
+    font-size: 0.9375rem;
+    font-weight: 400;
+    margin-bottom: 10px;
+  }
+
+  .user-widget-2 p {
+    font-size: 0.8125rem;
+    margin-bottom: 10px;
+  }
+
+  .user-widget-2 p .badge {
+    margin-right: 10px;
+  }
+
+  .user-widget-2 i {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .user-widget-2 .rounded-circle {
+    border: 3px solid #fff;
+    height: 50px;
+    width: 50px;
+    -webkit-box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+    box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+    margin-right: 20px;
+  }
+
+  .sample-badges .badge {
+    margin-right: 10px;
+  }
+
+  .badge {
+    border-radius: 8px;
+    border: 0;
+    font-size: 0.75rem;
+    text-align: center;
+    line-height: 0.8;
+    padding: 8px 12px;
+    font-weight: normal;
+  }
+
+  .badge.badge-sm {
+    font-size: 0.625rem;
+    line-height: 0.6;
+  }
+
+  .badge.badge-lg {
+    font-size: 0.875rem;
+    line-height: 1;
+  }
+
+  .badge.badge-rounded {
+    padding: 0;
+    height: 24px;
+    width: 24px;
+    line-height: 24px;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .badge.badge-rounded.badge-sm {
+    height: 18px;
+    width: 18px;
+    line-height: 18px;
+    border-radius: 50%;
+  }
+
+  .badge.badge-rounded.badge-sm.badge-outline {
+    line-height: 16px;
+  }
+
+  .badge.badge-rounded.badge-lg {
+    height: 30px;
+    width: 30px;
+    line-height: 30px;
+    border-radius: 50%;
+  }
+
+  .badge.badge-rounded.badge-lg.badge-outline {
+    line-height: 28px;
+  }
+
+  .badge.badge-light:not(.badge-outline) {
+    background-color: #ffffff;
+    color: #fff;
+  }
+
+  .badge.badge-outline.badge-light {
+    border: 1px solid #ffffff;
+    background-color: transparent;
+    color: #ffffff;
+  }
+
+  .badge.badge-dark:not(.badge-outline) {
+    background-color: #212121;
+    color: #fff;
+  }
+
+  .badge.badge-outline.badge-dark {
+    border: 1px solid #212121;
+    background-color: transparent;
+    color: #212121;
+  }
+
+  .badge.badge-default:not(.badge-outline) {
+    background-color: #212121;
+    color: #fff;
+  }
+
+  .badge.badge-outline.badge-default {
+    border: 1px solid #212121;
+    background-color: transparent;
+    color: #212121;
+  }
+
+  .badge.badge-primary:not(.badge-outline) {
+    background-color: #303f9f;
+    color: #fff;
+  }
+
+  .badge.badge-outline.badge-primary {
+    border: 1px solid #303f9f;
+    background-color: transparent;
+    color: #303f9f;
+  }
+
+  .badge.badge-secondary:not(.badge-outline) {
+    background-color: #7b1fa2;
+    color: #fff;
+  }
+
+  .badge.badge-outline.badge-secondary {
+    border: 1px solid #7b1fa2;
+    background-color: transparent;
+    color: #7b1fa2;
+  }
+
+  .badge.badge-info:not(.badge-outline) {
+    background-color: #0288d1;
+    color: #fff;
+  }
+
+  .badge.badge-outline.badge-info {
+    border: 1px solid #0288d1;
+    background-color: transparent;
+    color: #0288d1;
+  }
+
+  .badge.badge-success:not(.badge-outline) {
+    background-color: #388e3c;
+    color: #fff;
+  }
+
+  .badge.badge-outline.badge-success {
+    border: 1px solid #388e3c;
+    background-color: transparent;
+    color: #388e3c;
+  }
+
+  .badge.badge-warning:not(.badge-outline) {
+    background-color: #ffa000;
+    color: #fff;
+  }
+
+  .badge.badge-outline.badge-warning {
+    border: 1px solid #ffa000;
+    background-color: transparent;
+    color: #ffa000;
+  }
+
+  .badge.badge-danger:not(.badge-outline) {
+    background-color: #d32f2f;
+    color: #fff;
+  }
+
+  .badge.badge-outline.badge-danger {
+    border: 1px solid #d32f2f;
+    background-color: transparent;
+    color: #d32f2f;
+  }
+
+  .p-4 {
+    padding: 1.5rem !important;
+  }
+
+  .mb-0, .my-0 {
+    margin-bottom: 0 !important;
+  }
+
+  .shadow-sm {
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075) !important;
+  }
+
+  /* user-dashboard-info-box */
+  .user-dashboard-info-box .candidates-list .thumb {
+    margin-right: 20px;
+  }
+
+  .user-dashboard-info-box .candidates-list .thumb img {
+    width: 80px;
+    height: 80px;
+    -o-object-fit: cover;
+    object-fit: cover;
+    overflow: hidden;
+    border-radius: 50%;
+  }
+
+  .user-dashboard-info-box .title {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: 30px 0;
+  }
+
+  .user-dashboard-info-box .candidates-list td {
+    vertical-align: middle;
+  }
+
+  .user-dashboard-info-box td li {
+    margin: 0 4px;
+  }
+
+  .user-dashboard-info-box .table thead th {
+    border-bottom: none;
+  }
+
+  .table.manage-candidates-top th {
+    border: 0;
+  }
+
+  .user-dashboard-info-box .candidate-list-favourite-time .candidate-list-favourite {
+    margin-bottom: 10px;
+  }
+
+  .table.manage-candidates-top {
+    min-width: 650px;
+  }
+
+  .user-dashboard-info-box .candidate-list-details ul {
+    color: #969696;
+  }
+
+  /* Candidate List */
+  .candidate-list {
+    background: #ffffff;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    border-bottom: 1px solid #eeeeee;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: 20px;
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .candidate-list:hover {
+    -webkit-box-shadow: 0px 0px 34px 4px rgba(33, 37, 41, 0.06);
+    box-shadow: 0px 0px 34px 4px rgba(33, 37, 41, 0.06);
+    position: relative;
+    z-index: 99;
+  }
+
+  .candidate-list:hover a.candidate-list-favourite {
+    color: #e74c3c;
+    -webkit-box-shadow: -1px 4px 10px 1px rgba(24, 111, 201, 0.1);
+    box-shadow: -1px 4px 10px 1px rgba(24, 111, 201, 0.1);
+  }
+
+  .candidate-list .candidate-list-image {
+    margin-right: 25px;
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 80px;
+    flex: 0 0 80px;
+    border: none;
+  }
+
+  .candidate-list .candidate-list-image img {
+    width: 80px;
+    height: 80px;
+    -o-object-fit: cover;
+    object-fit: cover;
+  }
+
+  .candidate-list-title {
+    margin-bottom: 5px;
+  }
+
+  .candidate-list-details ul {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    margin-bottom: 0px;
+  }
+
+  .candidate-list-details ul li {
+    margin: 5px 10px 5px 0px;
+    font-size: 13px;
+  }
+
+  .candidate-list .candidate-list-favourite-time {
+    margin-left: auto;
+    text-align: center;
+    font-size: 13px;
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 90px;
+    flex: 0 0 90px;
+  }
+
+  .candidate-list .candidate-list-favourite-time span {
+    display: block;
+    margin: 0 auto;
+  }
+
+  .candidate-list .candidate-list-favourite-time .candidate-list-favourite {
+    display: inline-block;
+    position: relative;
+    height: 40px;
+    width: 40px;
+    line-height: 40px;
+    border: 1px solid #eeeeee;
+    border-radius: 100%;
+    text-align: center;
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: #646f79;
+  }
+
+  .candidate-list .candidate-list-favourite-time .candidate-list-favourite:hover {
+    background: #ffffff;
+    color: #e74c3c;
+  }
+
+  .candidate-banner .candidate-list:hover {
+    position: inherit;
+    -webkit-box-shadow: inherit;
+    box-shadow: inherit;
+    z-index: inherit;
+  }
+
+  .bg-white {
+    background-color: #ffffff !important;
+  }
+
+  .p-4 {
+    padding: 1.5rem !important;
+  }
+
+  .mb-0, .my-0 {
+    margin-bottom: 0 !important;
+  }
+
+  .shadow-sm {
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075) !important;
+  }
+
+  .user-dashboard-info-box .candidates-list .thumb {
+    margin-right: 20px;
+  }
+</style>
+<script>
+    $(document).ready(function() {
+        $('#searchInputModal').on('input', function() {
+            var q = $(this).val();
+            if (q.length === 0 || q.length > 2) {
+                getUserList(q);
+            }
+        });
+
+        function getUserList(q) {
+            $.ajax({
+                url: '/search_users_modal',
+                method: 'GET',
+                data: { q: q, group_id: <%= @group.id %> },
+                success: function(response) {
+                    $('#userListModal').html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                }
+            });
+        }
+    });
+</script>

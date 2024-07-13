@@ -1,46 +1,44 @@
 module Admin
   class AnswersController < Admin::ApplicationController
-    # Overwrite any of the RESTful controller actions to implement custom behavior
-    # For example, you may want to send an email after a foo is updated.
-    #
-    # def update
-    #   super
-    #   send_foo_updated_email(requested_resource)
-    # end
+    include AdminActions
+    def approve_user
+      answer = Answer.find(params[:answer_id])
+      user = answer.user
+      redirect_to_page = params[:redirect_to]
+      if answer.blank? || user.blank?
+        flash[:alert] = 'Can not find this User'
+      else
+        user.update!(approved: true)
+        user.send_confirmation_instructions.deliver
+        flash[:notice] = 'Confirmation link has been sent on user email'
+      end
+      redirect_to redirect_to_page == "answer_page" ? admin_answer_path(answer) : unconfirmed_users_admin_users_path
+    rescue StandardError => e
+      flash[:alert] = e.message
+      redirect_to admin_users_path
+    end
 
-    # Override this method to specify custom lookup behavior.
-    # This will be used to set the resource for the `show`, `edit`, and `update`
-    # actions.
-    #
-    # def find_resource(param)
-    #   Foo.find_by!(slug: param)
-    # end
+    def bulk_delete
+      answers_ids = params[:answers_ids]
+      return unless answers_ids.present?
 
-    # The result of this lookup will be available as `requested_resource`
+      begin
+        Answer.where(id: answers_ids).destroy_all
+        flash[:notice] = "Selected answers have been deleted successfully."
+      rescue => e
+        flash[:alert] = "An error occurred while deleting selected answers: #{e.message}"
+      end
+      redirect_to master_admin_answers_path
+    end
 
-    # Override this if you have certain roles that require a subset
-    # this will be used to set the records shown on the `index` action.
-    #
-    # def scoped_resource
-    #   if current_user.super_admin?
-    #     resource_class
-    #   else
-    #     resource_class.with_less_stuff
-    #   end
-    # end
-
-    # Override `resource_params` if you want to transform the submitted
-    # data before it's persisted. For example, the following would turn all
-    # empty values into nil values. It uses other APIs such as `resource_class`
-    # and `dashboard`:
-    #
-    # def resource_params
-    #   params.require(resource_class.model_name.param_key).
-    #     permit(dashboard.permitted_attributes).
-    #     transform_values { |value| value == "" ? nil : value }
-    # end
-
-    # See https://administrate-prototype.herokuapp.com/customizing_controller_actions
-    # for more information
+    def destroy_all
+      begin
+        Answer.destroy_all
+        flash[:notice] = "All answers have been deleted successfully."
+      rescue => e
+        flash[:alert] = "An error occurred while deleting all answers: #{e.message}"
+      end
+      redirect_to master_admin_answers_path
+    end
   end
 end

@@ -1,3 +1,21 @@
 $("#body-<%= @post.id %>").replaceWith('<div class="p-2"><%= j render "posts/rating_modal", post: @post&.reload %></div>');
-$('#rating_title-<%= @post.id %>').text('<%= @post&.ratings&.pluck(:rating)&.sum || 0 %>');
+$('#rating_title-<%= @post.id %>').html('<i class="fa fa-sort" aria-hidden="true"></i> <%= @post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %> <%= rating(@post, params[:action]) %>');
+$('#list_rating_title-<%= @post.id %>').html('<%= @post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %> <%= rating(@post, "list_view") %>');
+<!--$(".rating-count-<%= @post.id %>-<%= @rating&.rating %>").text('<%= rating_count(@post.ratings, @rating&.rating) %>');-->
 $("#rating_modal-<%= @post&.id %>").modal('hide');
+
+<% if @post.ratings.present? %>
+  <% Rating::RATINGS.each do |rating| %>
+    $(".rating-count-<%= @post.id %>-<%= rating %>").text('<%= rating_count(@post.ratings, rating) %>');
+    <% if @rating&.rating == rating %>
+      $(".rating-count-<%= @post.id %>-<%= rating %>").removeClass('text-dark').addClass('text-primary')
+    <% else %>
+      $(".rating-count-<%= @post.id %>-<%= rating %>").removeClass('text-primary').addClass('text-dark')
+    <% end %>
+  <% end %>
+<% else %>
+  <% Rating::RATINGS.each do |rating| %>
+    $(".rating-count-<%= @post.id %>-<%= rating %>").text('<%= rating_count(@post.ratings, rating) %>');
+    $(".rating-count-<%= @post.id %>-<%= rating %>").removeClass('text-primary').addClass('text-dark')
+  <% end %>
+<% end %>

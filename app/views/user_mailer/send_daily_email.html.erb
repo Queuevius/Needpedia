@@ -14,6 +14,8 @@
           <p>You received a new <a href="<%= "#{@domain}/conversations/#{message.conversation.id}" %>" target="_blank">message</a> from <%= message.user.name %></p>
         <% end %>
       <% end %>
+      <br>
+      <p>See all your notification by clicking <a href="<%= "#{@domain}/notifications" %>" target="_blank">here</a></p>
       <p>
         If you have any questions or other feedback let us know at <b>Needpedia@gmail.com</b>
       </p>

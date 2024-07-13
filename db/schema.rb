@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_03_202021) do
+ActiveRecord::Schema.define(version: 2024_05_28_092457) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,6 +58,7 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.bigint "recipient_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "ip"
     t.index ["owner_id", "owner_type"], name: "index_activities_on_owner_id_and_owner_type"
     t.index ["owner_type", "owner_id"], name: "index_activities_on_owner_type_and_owner_id"
     t.index ["recipient_id", "recipient_type"], name: "index_activities_on_recipient_id_and_recipient_type"
@@ -66,8 +67,19 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.index ["trackable_type", "trackable_id"], name: "index_activities_on_trackable_type_and_trackable_id"
   end
 
-  create_table "admin_notifications", force: :cascade do |t|
+  create_table "admin_histories", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "action"
+    t.string "target_type"
+    t.bigint "target_id"
     t.text "message"
+    t.string "ip_address"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_admin_histories_on_user_id"
+  end
+
+  create_table "admin_notifications", force: :cascade do |t|
     t.string "audience"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -92,6 +104,27 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.index ["user_id"], name: "index_answers_on_user_id"
   end
 
+  create_table "banned_terms", force: :cascade do |t|
+    t.string "term"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "blocked_users", force: :cascade do |t|
+    t.bigint "user_id"
+    t.integer "block_user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_blocked_users_on_user_id"
+  end
+
+  create_table "button_images", force: :cascade do |t|
+    t.string "name"
+    t.string "page_name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "comments", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "commentable_id"
@@ -102,6 +135,7 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.integer "parent_id"
     t.integer "status", default: 0
     t.boolean "inappropriate", default: false
+    t.integer "group_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
@@ -129,11 +163,79 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "deletion_requests", force: :cascade do |t|
+    t.bigint "post_version_id", null: false
+    t.bigint "user_id", null: false
+    t.string "reason"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["post_version_id"], name: "index_deletion_requests_on_post_version_id"
+    t.index ["user_id"], name: "index_deletion_requests_on_user_id"
+  end
+
+  create_table "deletions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "deletable_id"
+    t.string "deletable_type"
+    t.string "reason"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_deletions_on_user_id"
+  end
+
+  create_table "devices", force: :cascade do |t|
+    t.string "registration_id"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_devices_on_user_id"
+  end
+
+  create_table "email_templates", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "subject"
+  end
+
   create_table "faqs", force: :cascade do |t|
     t.text "question"
     t.text "answer"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "feedback_question_options", force: :cascade do |t|
+    t.text "body"
+    t.bigint "feedback_question_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["feedback_question_id"], name: "index_feedback_question_options_on_feedback_question_id"
+  end
+
+  create_table "feedback_questions", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "feedback_responses", force: :cascade do |t|
+    t.bigint "feedback_id"
+    t.bigint "feedback_question_id"
+    t.bigint "feedback_question_option_id"
+    t.text "comment"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["feedback_id"], name: "index_feedback_responses_on_feedback_id"
+    t.index ["feedback_question_id"], name: "index_feedback_responses_on_feedback_question_id"
+    t.index ["feedback_question_option_id"], name: "index_feedback_responses_on_feedback_question_option_id"
+  end
+
+  create_table "feedbacks", force: :cascade do |t|
+    t.bigint "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_feedbacks_on_user_id"
   end
 
   create_table "flags", force: :cascade do |t|
@@ -170,6 +272,16 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.index ["user_id"], name: "index_gigs_on_user_id"
   end
 
+  create_table "groups", force: :cascade do |t|
+    t.string "name"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "group_id"
+    t.string "group_type"
+    t.index ["user_id"], name: "index_groups_on_user_id"
+  end
+
   create_table "home_videos", force: :cascade do |t|
     t.string "link"
     t.datetime "created_at", precision: 6, null: false
@@ -183,6 +295,27 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "interested_users", force: :cascade do |t|
+    t.string "content"
+    t.integer "parent_id"
+    t.bigint "post_id"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["post_id"], name: "index_interested_users_on_post_id"
+    t.index ["user_id"], name: "index_interested_users_on_user_id"
+  end
+
+  create_table "invitations", force: :cascade do |t|
+    t.bigint "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.bigint "group_id"
+    t.integer "status", default: 0
+    t.index ["group_id"], name: "index_invitations_on_group_id"
+    t.index ["user_id"], name: "index_invitations_on_user_id"
+  end
+
   create_table "likes", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "likeable_id"
@@ -190,6 +323,16 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_likes_on_user_id"
+  end
+
+  create_table "memberships", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "group_id", null: false
+    t.string "role"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["group_id"], name: "index_memberships_on_group_id"
+    t.index ["user_id"], name: "index_memberships_on_user_id"
   end
 
   create_table "messages", force: :cascade do |t|
@@ -202,6 +345,17 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.integer "receiver_id"
     t.index ["conversation_id"], name: "index_messages_on_conversation_id"
     t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
+  create_table "notification_settings", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "post_id"
+    t.boolean "edit_post"
+    t.boolean "expert_layer"
+    t.boolean "related_wiki_post"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_notification_settings_on_user_id"
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -217,15 +371,42 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.integer "admin_notification_id"
   end
 
+  create_table "objectives", force: :cascade do |t|
+    t.bigint "post_id"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "parent_id"
+    t.string "body"
+    t.index ["post_id"], name: "index_objectives_on_post_id"
+    t.index ["user_id"], name: "index_objectives_on_user_id"
+  end
+
   create_table "post_tokens", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.bigint "post_id", null: false
+    t.bigint "post_id"
     t.string "content"
     t.string "post_token_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "group_id"
+    t.integer "topic_id"
     t.index ["post_id"], name: "index_post_tokens_on_post_id"
     t.index ["user_id"], name: "index_post_tokens_on_user_id"
+  end
+
+  create_table "post_versions", force: :cascade do |t|
+    t.bigint "post_id"
+    t.text "content"
+    t.datetime "modification_date"
+    t.bigint "user_id"
+    t.bigint "restored_by_id"
+    t.boolean "active", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["post_id"], name: "index_post_versions_on_post_id"
+    t.index ["restored_by_id"], name: "index_post_versions_on_restored_by_id"
+    t.index ["user_id"], name: "index_post_versions_on_user_id"
   end
 
   create_table "posts", force: :cascade do |t|
@@ -243,6 +424,12 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.boolean "layering_disabled", default: false
     t.boolean "curated", default: false
     t.integer "posted_to_id"
+    t.decimal "lat"
+    t.decimal "long"
+    t.boolean "geo_maxing", default: false
+    t.datetime "deleted_at"
+    t.datetime "restore_at"
+    t.integer "group_id"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
@@ -278,6 +465,27 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.index ["user_id"], name: "index_ratings_on_user_id"
   end
 
+  create_table "related_contents", force: :cascade do |t|
+    t.bigint "post_id"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "parent_id"
+    t.string "body"
+    t.index ["post_id"], name: "index_related_contents_on_post_id"
+    t.index ["user_id"], name: "index_related_contents_on_user_id"
+  end
+
+  create_table "requests", force: :cascade do |t|
+    t.bigint "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.bigint "group_id"
+    t.integer "status", default: 0
+    t.index ["group_id"], name: "index_requests_on_group_id"
+    t.index ["user_id"], name: "index_requests_on_user_id"
+  end
+
   create_table "services", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "provider"
@@ -290,6 +498,15 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_services_on_user_id"
+  end
+
+  create_table "settings", force: :cascade do |t|
+    t.boolean "freeze_accounts_activity", default: false
+    t.boolean "freeze_posts_activity", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.boolean "active_nuclear_note", default: false
+    t.text "nuclear_note"
   end
 
   create_table "shares", force: :cascade do |t|
@@ -341,12 +558,40 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.index ["user_id"], name: "index_token_ans_debates_on_user_id"
   end
 
+  create_table "topics", force: :cascade do |t|
+    t.bigint "group_id"
+    t.integer "parent_id"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["group_id"], name: "index_topics_on_group_id"
+    t.index ["user_id"], name: "index_topics_on_user_id"
+  end
+
   create_table "transactions", force: :cascade do |t|
     t.bigint "recipient_id"
     t.bigint "actor_id"
     t.string "transaction_type"
     t.float "amount"
     t.bigint "gig_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "tutorials", force: :cascade do |t|
+    t.string "link"
+    t.text "content"
+    t.boolean "show"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "user_assistant_documents", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.text "change_log"
+    t.integer "user_id"
+    t.string "file_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -406,6 +651,16 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.index ["user_id"], name: "index_user_questionnaires_on_user_id"
   end
 
+  create_table "user_tutorials", force: :cascade do |t|
+    t.string "link"
+    t.text "content"
+    t.boolean "viewed", default: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_user_tutorials_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -427,37 +682,78 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
     t.datetime "last_login_at"
-    t.boolean "message_notifications", default: false
-    t.boolean "track_notifications", default: false
+    t.string "message_notifications", default: "non"
+    t.string "track_notifications", default: "non"
     t.boolean "daily_notifications", default: false
     t.datetime "daily_notification_time"
     t.boolean "all_notifications", default: false
     t.datetime "daily_report_sent_at"
+    t.boolean "master_admin", default: false
+    t.boolean "approved", default: false
+    t.string "provider", default: "email", null: false
+    t.string "uid", default: "", null: false
+    t.text "tokens"
+    t.string "comment"
+    t.integer "default_group_id"
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.string "invited_by_type"
+    t.bigint "invited_by_id"
+    t.integer "invitations_count", default: 0
+    t.jsonb "features", default: {}, null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
+    t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_users_on_invited_by_type_and_invited_by_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "admin_histories", "users"
   add_foreign_key "answers", "questions"
   add_foreign_key "answers", "users"
   add_foreign_key "comments", "users"
+  add_foreign_key "deletion_requests", "post_versions"
+  add_foreign_key "deletion_requests", "users"
+  add_foreign_key "deletions", "users"
+  add_foreign_key "devices", "users"
+  add_foreign_key "feedback_question_options", "feedback_questions"
   add_foreign_key "flags", "users"
   add_foreign_key "gigs", "users"
+  add_foreign_key "groups", "users"
+  add_foreign_key "interested_users", "users"
+  add_foreign_key "invitations", "groups"
+  add_foreign_key "invitations", "users"
   add_foreign_key "likes", "users"
+  add_foreign_key "memberships", "groups"
+  add_foreign_key "memberships", "users"
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "users"
-  add_foreign_key "post_tokens", "posts"
+  add_foreign_key "notification_settings", "users"
+  add_foreign_key "objectives", "users"
+  add_foreign_key "post_tokens", "posts", on_delete: :cascade
   add_foreign_key "post_tokens", "users"
+  add_foreign_key "post_versions", "posts"
+  add_foreign_key "post_versions", "users"
+  add_foreign_key "post_versions", "users", column: "restored_by_id"
   add_foreign_key "posts", "users"
   add_foreign_key "questions", "questionnaires"
   add_foreign_key "ratings", "users"
+  add_foreign_key "related_contents", "users"
+  add_foreign_key "requests", "groups"
+  add_foreign_key "requests", "users"
   add_foreign_key "services", "users"
   add_foreign_key "shares", "users"
   add_foreign_key "taggings", "tags"
   add_foreign_key "token_ans_debates", "post_tokens"
   add_foreign_key "token_ans_debates", "posts"
   add_foreign_key "token_ans_debates", "users"
+  add_foreign_key "topics", "groups"
+  add_foreign_key "topics", "users"
   add_foreign_key "user_conversations", "conversations"
   add_foreign_key "user_conversations", "users"
   add_foreign_key "user_curated_posts", "posts"
@@ -470,4 +766,5 @@ ActiveRecord::Schema.define(version: 2021_09_03_202021) do
   add_foreign_key "user_private_posts", "users"
   add_foreign_key "user_questionnaires", "questionnaires"
   add_foreign_key "user_questionnaires", "users"
+  add_foreign_key "user_tutorials", "users"
 end

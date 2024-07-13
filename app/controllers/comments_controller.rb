@@ -2,6 +2,12 @@ class CommentsController < ApplicationController
   before_action :authenticate_user!
   before_action :find_comment, only: [:remove_comment, :inappropriate]
 
+
+  def index
+    @post = Post.find(params[:post_id])
+    @comments = @post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
+  end
+
   def new
     @post = Post.find(params[:post_id])
     @comment = @post.comments.new(parent_id: params[:parent_id])
@@ -19,16 +25,29 @@ class CommentsController < ApplicationController
     @post = Post.find(@comment.commentable_id)
 
     respond_to do |format|
+      content = comment_params[:body]
+      banned_term = BannedTerm.last
+      if banned_term.present?
+        banned_terms = banned_term.term
+        checker = TermCheckerService.new(content, banned_terms)
+        response = checker.content_contains_banned_term
+        if response.present?
+          @found_term = response
+          render :new
+          return
+        end
+      end
       if @comment.save
         if @comment.commentable_type == 'Post'
           create_activity(@comment.commentable, 'post.commented_on')
         end
-        format.html { redirect_to post_path(@post), notice: 'Comment was successfully created.' }
-        format.json { render :show, status: :created, location: @comment }
+        format.js
+        format.html {redirect_to post_path(@post), notice: 'Comment was successfully created.'}
+        format.json {render :show, status: :created, location: @comment}
       else
         flash[:alert] = @comment.errors.full_messages.join(',')
-        format.html { redirect_to post_path(@post) }
-        format.json { render json: @comment.errors, status: :unprocessable_entity }
+        format.html {redirect_to post_path(@post)}
+        format.json {render json: @comment.errors, status: :unprocessable_entity}
       end
     end
   end
@@ -38,19 +57,31 @@ class CommentsController < ApplicationController
     @post = Post.find(@comment.commentable_id)
 
     respond_to do |format|
+      content = comment_params[:body]
+      banned_term = BannedTerm.last
+      if banned_term.present?
+        banned_terms = banned_term.term
+        checker = TermCheckerService.new(content, banned_terms)
+        response = checker.content_contains_banned_term
+        if response.present?
+          @found_term = response
+          render :edit
+          return
+        end
+      end
       if @comment.update(comment_params)
-        format.html { redirect_to post_path(@post), notice: 'Comment was successfully updated.' }
-        format.json { render :edit, status: :created, location: @comment }
+        format.html {redirect_to post_path(@post), notice: 'Comment was successfully updated.'}
+        format.json {render :edit, status: :created, location: @comment}
       else
         flash[:alert] = @comment.errors.full_messages.join(',')
-        format.html { redirect_to post_path(@post) }
-        format.json { render json: @comment.errors, status: :unprocessable_entity }
+        format.html {redirect_to post_path(@post)}
+        format.json {render json: @comment.errors, status: :unprocessable_entity}
       end
     end
   end
 
   def remove_comment
-    if @comment.deleted!
+    if @comment.destroy
       redirect_to post_path(@post), notice: 'Comment successfully deleted.'
     else
       flash[:alert] = @comment.errors.full_messages.join(',')
@@ -77,10 +108,10 @@ class CommentsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def comment_params
-    params.require(:comment).permit(:body, :commentable_id, :commentable_type, :user_id, :parent_id)
+    params.require(:comment).permit(:body, :commentable_id, :commentable_type, :user_id, :parent_id, :group_id)
   end
 
   def create_activity(post, event)
-    ActivityService.new(object: post, event: event, owner: current_user).call
+    ActivityService.new(object: post, event: event, owner: current_user, ip: request.remote_ip).call
   end
 end

@@ -33,7 +33,7 @@
       <%= form_with(model: @token_ans_debate, local: true) do |form| %>
 
         <% if @post_token.present? %>
-          <%= form.hidden_field :user_id, value: @post_token.user_id %>
+          <%= form.hidden_field :user_id, value: current_user&.id %>
           <%= form.hidden_field :post_token_id, value: @post_token.id %>
           <%= form.hidden_field :post_id, value: @post_token.post_id %>
           <%= form.hidden_field :debate_type, value: debate_type_value %>

@@ -1,0 +1,60 @@
+<%#
+    locals:
+      heading_text,
+      main_section_id,
+      searched_title,
+      modal_section_id
+      input_field_name,
+      input_field_value
+%>
+<div class="col-auto pb-2 <%= 'hidden' unless searched_title.present? %>" id="<%= main_section_id %>">
+    <span class="badge badge-pill border border-dark pl-2 pr-2 font-weight-bold ">
+      <h6 class="pt-2">
+        <button type="button" id="select-<%= heading_text&.downcase %>" class="close float-left pr-1" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <span class="p-2" id="<%= heading_text&.downcase %>-heading-section" data-toggle="modal" data-target="#<%= modal_section_id %>">
+          <%= heading_text %>: <%= searched_title.present? ? searched_title : '<All>' %>
+        </span>
+      </h6>
+    </span>
+  <div class="modal fade" id="<%= modal_section_id %>" tabindex="-1" role="dialog" aria-labelledby="<%= modal_section_id %>" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Enter <%= heading_text %> title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body p-2">
+          <%#= select_tag input_field_name, options_for_select(Post.where(post_type: heading_text&.downcase).pluck(:title, :id), 1), include_blank: 'Select Option', class: "form form-group form-control" %>
+          <%= text_field_tag input_field_name, input_field_value, class: 'form-control', autocomplete: "off" %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="<%= heading_text&.downcase %>-submit" class="btn btn-primary" data-dismiss="modal" aria-label="Close">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    $('#select-<%= heading_text&.downcase %>').click(function (e) {
+        $("#<%= main_section_id %>").addClass('hidden');
+        $("#<%= input_field_name %>").val('');
+        $("#<%= heading_text&.downcase %>-heading-section").text("<%= heading_text %>: <All>");
+    })
+    $('#<%= heading_text&.downcase %>-submit').click(function (e) {
+        var input = $("#<%= input_field_name %>");
+        $("#<%= heading_text&.downcase %>-heading-section").text("<%= heading_text %>: " + input.val());
+
+        var subject_field = $('#subject_input_field');
+        var problem_field = $('#problem_input_field');
+        var idea_field = $('#idea_input_field');
+        $('#new_button').attr('href', `/posts/new?subject_title=${subject_field.val()}&problem_title=${problem_field.val()}&idea_title=${idea_field.val()}`);
+    })
+
+</script>

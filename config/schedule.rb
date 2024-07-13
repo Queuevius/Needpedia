@@ -5,11 +5,11 @@
 
 # Example:
 #
-set :output, 'log/whenever.log'
+# set :output, 'log/whenever.log'
 #
-every 15.minutes do
-  rake "emails:send_daily_emails"
-end
+# every 15.minutes do
+#   rake "emails:send_daily_emails"
+# end
 #
 # every 4.days do
 #   runner "AnotherModel.prune_old_records"

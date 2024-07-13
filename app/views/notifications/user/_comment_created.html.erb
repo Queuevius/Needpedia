@@ -1,6 +1,10 @@
 <div class="card mb-1">
   <div class="card-body">
-    <h5><%= notification.actor.name %> commented on your post <%= link_to notification.post.title, post_path(notification.post_id) %></h5>
+    <% if notification.post.present? %>
+      <h5><%= notification.actor.name %> commented on your post <%= link_to notification.post.title, post_path(notification.post_id) %></h5>
+    <% else %>
+      <h5><%= notification.actor.name %> commented on your post "Which is not available anymore."</h5>
+    <% end %>
     <em class="text-muted"><%= notification.created_at.strftime('%e %b %Y %H:%M %p') %></em>
   </div>
 </div>

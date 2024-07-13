@@ -25,24 +25,26 @@ as well as a link to its edit page.
 
   <div>
     <% if page.resource.confirmed_at.present? %>
-      <button type="button" class="button" disabled>Send confirmation</button>
+      <button type="button" class="button btn" disabled>Send confirmation</button>
+      <%#= link_to "Login As User", masquerade_path(page.resource), class: "button" %>
     <% else %>
-      <%= link_to "Send confirmation", send_confirmation_link_admin_users_path(id: page.resource.id), class: "button" %>
+      <%= link_to "Send confirmation", send_confirmation_link_admin_users_path(id: page.resource.id), class: "button btn" %>
     <% end %>
-    <%= link_to "Login As User", masquerade_path(page.resource), class: "button" %>
-    <%= link_to "Profile", feed_path(uuid: page.resource.uuid), class: "button", target: '_blank' %>
+    <%= link_to "Profile", feed_path(uuid: page.resource.uuid), class: "button btn", target: '_blank', onclick: "callCreateAdminHistoryLog(#{params[:id]})" %>
 
     <%= link_to(
       "#{t("administrate.actions.edit")} #{page.page_title}",
       [:edit, namespace, page.resource],
-      class: "button",
+      class: "button btn",
     ) if valid_action? :edit %>
+    <%= link_to "User History", user_history_admin_user_path(id: params[:id]), class: "button btn" %>
   </div>
 </header>
 
 <section class="main-content__body">
   <dl>
     <% page.attributes.each do |attribute| %>
+      <% next if attribute.name == "comment" && attribute.resource.comment.blank? %>
       <dt class="attribute-label" id="<%= attribute.name %>">
       <%= t(
         "helpers.label.#{resource_name}.#{attribute.name}",
@@ -51,7 +53,49 @@ as well as a link to its edit page.
       </dt>
 
       <dd class="attribute-data attribute-data--<%=attribute.html_class%>"
-          ><%= render_field attribute %></dd>
+          ><%= render_field attribute, page: page %></dd>
+    <% end %>
+    <% if page.resource.created_by_invite? %>
+      <dt class="attribute-label">
+        CREATED BY INVITE
+      </dt>
+      <dd class="attribute-data attribute-data--<%=page.attributes.last.html_class%>" >
+        <%= page.resource.created_by_invite? %>
+      </dd>
+      <dt class="attribute-label">
+        INVITED BY
+      </dt>
+      <dd class="attribute-data attribute-data--<%=page.attributes.last.html_class%>"><%= link_to page.resource.invited_by.name, admin_user_path(page.resource.invited_by.id) %>
+      </dd>
     <% end %>
   </dl>
+
+  <%= form_for([:admin, page.resource], url: comment_user_admin_user_path(page.resource), method: :patch) do |f| %>
+    <dl>
+      <dt class="attribute-label" id="comment">
+        <%= t("helpers.label.comment", default: page.resource.comment.present? ? "Update Comment" : "Add Comment") %>
+      </dt>
+      <dd class="row attribute-data ml-4 pl-2">
+        <div class="col-sm-6">
+          <%= f.text_area :comment, class: "form-control", rows: 2 %>
+        </div>
+        <div class="col-sm-6 mt-2 mt-sm-0 text-sm-end">
+          <%= f.submit page.resource.comment.present? ? "Update Comment" : "Add Comment", class: "btn btn-primary" %>
+        </div>
+      </dd>
+    </dl>
+  <% end %>
 </section>
+<script>
+    function callCreateAdminHistoryLog(userId) {
+        fetch(`/admin/users/${userId}/create_admin_history_log?id=${userId}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: userId })
+        })
+    }
+</script>
+

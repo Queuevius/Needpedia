@@ -1,0 +1,28 @@
+<%= render "shared/tutorial" %>
+<div id="map"></div>
+<style>
+  #map { height: 600px;}
+</style>
+<script>
+
+    var mymap = L.map('map').setView([32.1656, -82.9001], 1);
+    const accessToken = '<%= ENV["MAPBOX_ACCESS_TOKEN"] %>';
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + accessToken, {
+        maxZoom: 18,
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        id: 'mapbox/streets-v11',
+        tileSize: 512,
+        zoomOffset: -1
+    }).addTo(mymap);
+
+    <% @geo_maxing_posts.each do |post| %>
+      var title = "<%= truncate(post.title, length: 20) %>"
+      var content = "<%= post.content.present? ? truncate(post_content_for_map(post), length: 40).to_s : 'Body missing' %>"
+      L.marker([<%= post.lat %>, <%= post.long %>]).addTo(mymap)
+          .bindPopup(`<a style="color:black;" href="<%= post_path(post) %>"><b>${title}</b><br/>${content}</a>`);
+    <% end %>
+
+    // georgia coordinates = [32.1656, -82.9001]
+
+</script>

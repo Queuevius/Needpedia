@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.6.3'
+ruby '2.7.1'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.2', '>= 6.0.2.2'
@@ -61,7 +61,7 @@ group :test do
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'faker', :git => 'https://github.com/stympy/faker.git', :branch => 'master'
+gem 'faker'
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'administrate', github: 'excid3/administrate', branch: 'jumpstart'
@@ -79,7 +79,6 @@ gem 'omniauth-github', '~> 1.3'
 gem 'omniauth-twitter', '~> 1.4'
 gem 'sidekiq', '~> 6.0', '>= 6.0.3'
 gem 'sitemap_generator', '~> 6.0', '>= 6.0.1'
-gem 'whenever', require: false
 gem 'ransack'
 gem 'file_validators'
 gem 'aws-sdk-s3', require: false
@@ -92,3 +91,11 @@ gem 'valid_email2'
 gem 'administrate-field-select', '~> 2.0', require: 'administrate/field/select_basic'
 gem 'administrate-field-active_storage'
 gem 'recaptcha'
+gem 'sidekiq-cron'
+gem 'trix-rails', require: 'trix'
+gem 'liquid'
+gem 'devise_token_auth'
+gem 'fcm'
+gem 'rack-cors'
+gem 'request_store'
+gem 'devise_invitable', '~> 2.0.0'

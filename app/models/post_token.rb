@@ -1,10 +1,13 @@
 class PostToken < ApplicationRecord
+  # Todo - change name of  "post token" to just "token"
   has_rich_text :content
 
   ################################ Relationships ########################
   belongs_to :user
-  belongs_to :post
+  belongs_to :post, optional: true
   has_many :token_ans_debate, dependent: :destroy
+  belongs_to :group, optional: true
+  belongs_to :topic, optional: true
 
   ################################ Constants ############################
   TOKEN_TYPE_NOTE = 'note'.freeze

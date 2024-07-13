@@ -1,3 +1,4 @@
+<%= render "shared/tutorial" %>
 <div class="container">
   <div class="row">
     <div class="col-md-12 text-center mb-2">
@@ -7,6 +8,13 @@
       <div class="ui-block shadow-lg rounded">
         <div class="ui-block-content">
           <% if @post_token.present? %>
+            <div class="col-md-12">
+              <div class="row mb-2">
+                <div class="col-sm-6">
+                  <%= link_to 'Back', @post_token.post_id.present? ? post_path(@post_token.post_id) : group_path(@post_token.group_id), class: 'btn btn-primary float-left padding-top-10' if @post_token.post_id.present? || @post_token.group_id.present? %>
+                </div>
+              </div>
+            </div>
             <div class="row">
               <div class="col-sm-12 text-left mb-2 text-center pb-3 border-bottome">
                 <%= @post_token.content %>
@@ -66,7 +74,7 @@
                       <%= form_with(model: @token_ans_debate, local: true) do |form| %>
 
                         <% if @post_token.present? %>
-                          <%= form.hidden_field :user_id, value: @post_token.user_id %>
+                          <%= form.hidden_field :user_id, value: current_user&.id %>
                           <%= form.hidden_field :post_token_id, value: @post_token.id %>
                           <%= form.hidden_field :post_id, value: @post_token.post_id %>
                         <% end %>

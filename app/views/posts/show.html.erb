@@ -1,250 +1,271 @@
-<div class="container mb-5">
-  <% if allowed_to_see?(@post, current_user) %>
-    <div class="row">
-      <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
-        <h4 class="alert alert-warning">You are not allowed to see this post</h4>
-      </div>
-    </div>
-  <% else %>
-    <% if @post.disabled %>
+<% if @post.post_type.in? Post::IDEA_POST_TYPES %>
+  <%= render('post_new_view') %>
+<% else %>
+  <div class="container mb-5">
+    <% if allowed_to_see?(@post, current_user) %>
       <div class="row">
         <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
-          <h4 class="alert alert-warning">This Page has been disabled by Admin, No activity is allowed</h4>
+          <h4 class="alert alert-warning">Sorry but this post is private, would you like to request access?</h4>
+          <%= render "profile/small_friends_list", friends: @post.private_users %>
         </div>
       </div>
     <% else %>
-      <div class="row mt-1">
-        <div class="col-md-12 text-center mb-2">
-          <% if @post.post_type == Post::POST_TYPE_LAYER %>
-            <h1 class="<%= post_type_color(@post.parent_post.post_type) %>">
-              <% if check_if_private?(@post) %>
-                <i class="fa fa-lock" aria-hidden="true" style="font-size: 25px; color: black" title="Private Post"></i>
-              <% end %>
-              <%= @post.parent_post.title %>
-            </h1>
-          <% else %>
-            <h1 class="<%= post_type_color(@post.post_type != Post::POST_TYPE_LAYER ? @post.post_type : @post.parent_post.post_type) %>">
-              <% if check_if_private?(@post) %>
-                <i class="fa fa-lock" aria-hidden="true" style="font-size: 25px; color: black" title="Private Post"></i>
-              <% end %>
-              <%= @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.title : @post.title %> </h1>
-          <% end %>
+      <% if @post.disabled %>
+        <div class="row">
+          <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
+            <h4 class="alert alert-warning">This Page has been disabled by Admin, No activity is allowed</h4>
+          </div>
         </div>
-        <div class="col-md-12 mb-2">
-          <div class="row">
-            <div class="col-lg-12 col-md-12 ml-auto mr-auto">
-              <div class="ui-block shadow-lg rounded">
-                <div class="ui-block-content">
-                  <div class="row">
-                    <div class="col-sm-3 text-left mb-2">
-                      <%= link_to 'Back', :back, class: 'btn btn-primary' %>
-                    </div>
-
-                    <% if @post.post_type != Post::POST_TYPE_SOCIAL_MEDIA %>
-                      <div class="col-sm-9 text-right mb-2">
-
-                        <div class="dropdown ml-1 float-right">
-                          <% if @post.layering_disabled? || @post.user_id != current_user.id %>
-                            <button type="button" class="btn btn-secondary dropdown-toggle disabled" data-toggle="tooltip" data-placement="top" title="Adding Layers disabled by Admins">
-                              Layers
-                            </button>
-                          <% else %>
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              Layers
-                            </button>
-                          <% end %>
-                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <% if @post.post_type == Post::POST_TYPE_LAYER %>
-                              <%= link_to 'Default Layer', post_path(@post.parent_post), class: "dropdown-item #{post_type_color(@post.parent_post.post_type)}" %>
-                            <% end %>
-                            <%= link_to 'Add Layer', new_post_path(post_type: Post::POST_TYPE_LAYER, post_id: @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.id : @post.id), class: "dropdown-item" %>
-                            <% layers = @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.layers : @post.layers %>
-                            <% layers.each do |layer| %>
-                              <%= link_to layer.title, post_path(layer), class: 'dropdown-item' %>
-                            <% end %>
-                          </div>
-                        </div>
-                        <%#= link_to all_areas_posts_path(), class: 'btn btn-default' do %>
+      <% else %>
+        <div class="row mt-1">
+          <div class="col-md-12 text-center mb-2">
+            <% if @post.post_type == Post::POST_TYPE_LAYER %>
+              <h1 class="<%= post_type_color(@post.parent_post.post_type) %>">
+                <% if check_if_private?(@post) %>
+                  <i class="fa fa-lock" aria-hidden="true" style="font-size: 25px; color: black" title="Private Post"></i>
+                <% end %>
+                <%= @post.parent_post.title %>
+              </h1>
+            <% else %>
+              <h1 class="<%= post_type_color(@post.post_type != Post::POST_TYPE_LAYER ? @post.post_type : @post.parent_post.post_type) %>">
+                <% if check_if_private?(@post) %>
+                  <i class="fa fa-lock" aria-hidden="true" style="font-size: 25px; color: black" title="Private Post"></i>
+                <% end %>
+                <%= @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.title : @post.title %> </h1>
+            <% end %>
+          </div>
+          <div class="col-md-12 mb-2">
+            <div class="row">
+              <div class="col-auto">
+                <h4 id="rating_title-<%= @post.id %>" class="search-result-rating" data-toggle="modal" data-target="#rating_modal-<%= @post.id %>"><%= @post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %></h4>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+                <div class="ui-block shadow-lg rounded">
+                  <div class="ui-block-content">
+                    <div class="d-flex">
+                      <div class="mr-auto">
+                        <% post_type = @post.post_type %>
+                        <% case post_type %>
+                        <% when Post::POST_TYPE_LAYER %>
+                          <%= link_to 'Back', post_path(id: @post.post_id), class: 'btn btn-primary btn-sm mt-1' %>
+                        <% when Post::POST_TYPE_PROBLEM %>
+                          <%= link_to 'back', post_problems_path(post_id: @post.subject_id, post_type: Post::POST_TYPE_PROBLEM), class: 'btn btn-primary btn-sm mt-1' %>
+                        <% else %>
+                          <%= link_to 'Back', search_result_posts_path(q: {post_type: ''}, post_type: @post.post_type), class: 'btn btn-primary mb-3 btn-sm mt-1' %>
+                        <% end %>
+                        <%#= link_to 'Back', :back, class: 'btn btn-primary btn-sm mt-1' %>
+                      </div>
+                      <div>
+                        <% if ![Post::POST_TYPE_SOCIAL_MEDIA, Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(@post.post_type) %>
+                          <%#= link_to all_areas_posts_path(), class: 'btn btn-default' do %>
                           <%#= image_tag('area_icon.svg', height: "50%", width: "40%", title: 'See All Area posts') %>
-                        <%# end %>
-                        <%#= link_to 'Problems', all_problems_posts_path(), class: 'btn btn-danger' %>
-                        <% if @post.post_type == Post::POST_TYPE_SUBJECT %>
-                          <%= link_to post_problems_path(post_id: @post.id, post_type: Post::POST_TYPE_PROBLEM), class: 'btn btn-default' do %>
-                            <%= image_tag('problem_icon.svg', height: "50%", width: "40%", title: 'Problems') %>
-                          <% end %>
-                        <% end %>
-                        <% if @post.post_type == Post::POST_TYPE_PROBLEM %>
-                          <%= link_to post_ideas_path(post_id: @post.id, post_type: Post::POST_TYPE_IDEA), class: 'btn btn-default' do %>
-                            <%= image_tag('idea_icon.svg', height: "50%", width: "40%", title: 'Ideas') %>
-                          <% end %>
-                        <% end %>
-
-                        <% if current_user.present? %>
-                          <% if @post.editing_disabled? || @post.user_id != current_user.id %>
-                            <button type="button" class="btn btn-primary disabled" data-toggle="tooltip" data-placement="top" title="Editing disabled by Admins">
-                              Edit
-                            </button>
-                          <% elsif !@post.curated? %>
-                            <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
-                              Edit
+                          <%# end %>
+                          <%#= link_to 'Problems', all_problems_posts_path(), class: 'btn btn-danger' %>
+                          <% if @post.post_type == Post::POST_TYPE_PROBLEM %>
+                            <%= link_to post_ideas_path(post_id: @post.id, post_type: Post::POST_TYPE_IDEA), class: 'btn btn-default p-0' do %>
+                              <%= image_tag('idea_icon.svg', height: "50%", width: "40%", title: 'Ideas', class: "rounded") %>
                             <% end %>
-                          <% elsif @post.curated? && @post&.curated_users&.include?(current_user) %>
-                            <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary' do %>
-                              Edit
+                          <% end %>
+
+                          <% if current_user.present? %>
+                            <% if @post.editing_disabled? %>
+                              <button type="button" class="btn btn-primary btn-sm disabled mr-1 mt-1" data-toggle="tooltip" data-placement="top" title="Editing disabled by Admins">
+                                Edit
+                              </button>
+                            <% elsif (!@post.curated? && @post.user_id == current_user.id) || (!@post.curated? && !@post.
+
+                                private && Post::CORE_POST_TYPES.include?(@post.post_type)) %>
+                              <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary btn-sm mr-1 mt-1' do %>
+                                Edit
+                              <% end %>
+                            <% elsif @post.curated? && @post&.curated_users&.include?(current_user) %>
+                              <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary btn-sm mr-1 mt-1' do %>
+                                Edit
+                              <% end %>
+                            <% end %>
+                          <% end %>
+
+                          <% if @post.geo_maxing? %>
+                            <%= link_to 'Map', post_map_path(@post), class: 'btn btn-primary btn-sm mr-1 mt-1', data: { turbolinks: false } %>
+                          <% end %>
+                          <div class="dropdown float-right">
+                            <% if @post.layering_disabled? %>
+                              <button type="button" class="btn btn-secondary btn-sm mt-1 dropdown-toggle disabled" data-toggle="tooltip" data-placement="top" title="Adding Layers disabled by Admins">
+                                Layers
+                              </button>
+                            <% else %>
+                              <button class="btn btn-secondary btn-sm mt-1 dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Layers
+                              </button>
+                            <% end %>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                              <% if @post.post_type == Post::POST_TYPE_LAYER %>
+                                <%= link_to 'Default Layer', post_path(@post.parent_post), class: "dropdown-item #{post_type_color(@post.parent_post.post_type)}" %>
+                              <% end %>
+                              <%= link_to 'Add Layer', new_post_path(post_type: Post::POST_TYPE_LAYER, post_id: @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.id : @post.id), class: "dropdown-item" %>
+                              <% layers = @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.layers : @post.layers %>
+                              <% layers.each do |layer| %>
+                                <%= link_to layer.title, post_path(layer), class: 'dropdown-item' %>
+                              <% end %>
+                            </div>
+                          </div>
+                        <% else %>
+                          <% if current_user.present? %>
+                            <% if !@post.editing_disabled? && @post.user_id == current_user.id %>
+                              <div class="col-sm-9 text-right mb-2">
+                                <%= link_to edit_post_path(@post), class: 'btn btn-primary' do %>
+                                  Edit
+                                <% end %>
+                              </div>
                             <% end %>
                           <% end %>
                         <% end %>
                       </div>
-                    <% end %>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <% if Post::CORE_POST_TYPES.include?(@post.post_type) %>
-              <div class="col-md-12">
-                <div class="row">
-                  <div class="col-lg-12 col-md-12 ml-auto mr-auto">
-                    <div class="ui-block shadow-lg rounded">
-                      <div class="ui-block-content">
-                        <div class="row">
-                          <div class="col-12">
+              <% if Post::CORE_POST_TYPES.include?(@post.post_type) %>
+                <div class="col-md-12">
+                  <div class="row">
+                    <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+                      <div class="ui-block shadow-lg rounded">
+                        <div class="ui-block-content">
+                          <div class="row">
+                            <div class="col-12">
                             <span>
                               <% if @post.type_of?(Post::POST_TYPE_PROBLEM) %>
-                                <%= link_to truncate(@post&.parent_subject&.title, length: 30), post_path(@post&.parent_subject), title: @post&.parent_subject&.title %> >
+                                <%= link_to truncate(@post&.parent_subject&.title, length: 30), post_path(@post&.parent_subject), title: @post&.parent_subject&.title %>
+                                >
                                 <%= link_to truncate(@post&.title, length: 30), post_path(@post), title: @post&.title %>
                               <% elsif @post.type_of?(Post::POST_TYPE_SUBJECT) %>
                                 <%= link_to truncate(@post&.title, length: 30), post_path(@post), title: @post.title %>
                               <% elsif @post.type_of?(Post::POST_TYPE_IDEA) %>
-                                <%= link_to truncate(@post&.problem&.parent_subject&.title, length: 30), post_path(@post.problem.parent_subject), title: @post&.problem&.parent_subject&.title %> >
-                                <%= link_to truncate(@post&.problem&.title, length: 30), post_path(@post&.problem), title: @post.problem.title %> >
+                                <%= link_to truncate(@post&.problem&.parent_subject&.title, length: 30), post_path(@post.problem.parent_subject), title: @post&.problem&.parent_subject&.title %>
+                                >
+                                <%= link_to truncate(@post&.problem&.title, length: 30), post_path(@post&.problem), title: @post.problem.title %>
+                                >
                                 <%= link_to truncate(@post&.title, length: 30), post_path(@post), title: @post.title %>
                               <% end %>
                             </span>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            <% end %>
-            <% if @post.post_type == Post::POST_TYPE_LAYER %>
-              <div class="col-md-12 text-center mb-2">
-                <h1>Layer </h1>
-              </div>
-            <% end %>
-            <div class="col-lg-12 col-md-12 ml-auto mr-auto">
-              <div class="ui-block shadow-lg rounded">
-                <div class="ui-block-content">
-                  <div class="row">
-                    <% if @post.post_type == Post::POST_TYPE_LAYER %>
-                      <div class="col-lg-9 col-md-10 ml-auto mr-auto mb3">
-                        <h1><%= @post.title %></h1>
-                      </div>
-                      <div class="col-lg-3 col-md-2 ml-auto mr-auto mb3">
-                        <%= link_to edit_post_path(@post), class: 'btn btn-primary float-right' do %>
-                          Edit Layer
-                        <% end %>
-                      </div>
-                    <% end %>
-                    <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-5">
-                      <%= @post.content %>
-                      <%= 'No details provided' if @post.content.blank? %>
-                    </div>
-                    <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-5 justify-content-center">
-                      <div class="row">
-                        <% if @post.images.present? %>
-                          <% @post.images.each do |image|  %>
-                            <div class="col-md-6">
-                              <%= image_tag(image, class: 'img-fluid') %>
-                            </div>
+              <% end %>
+              <% if @post.post_type == Post::POST_TYPE_LAYER %>
+                <div class="col-md-12 text-center mb-2">
+                  <h1>Layer </h1>
+                </div>
+              <% end %>
+              <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+                <div class="ui-block shadow-lg rounded">
+                  <div class="ui-block-content">
+                    <div class="row">
+                      <% if @post.post_type == Post::POST_TYPE_LAYER %>
+                        <div class="col-lg-9 col-md-10 ml-auto mr-auto mb3">
+                          <h1><%= @post.title %></h1>
+                        </div>
+                        <div class="col-lg-3 col-md-2 ml-auto mr-auto mb3">
+                          <%= link_to edit_post_path(@post), class: 'btn btn-primary float-right' do %>
+                            Edit Layer
                           <% end %>
-                        <% end %>
+                        </div>
+                      <% end %>
+                      <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-5">
+                        <%= @post.content %>
+                        <%= 'No details provided' if @post.content.blank? %>
                       </div>
-                    </div>
-                    <div class="col-md-12 border-top border-comments">
-                      <div class="row mt-3">
-                        <div class="col-md-12 mb-2">
-    <!--                      <div class="row">-->
-    <!--                        <div class="col-md-2">-->
-                              <%#= rating_for @post, 'rate' %>
-    <!--                        </div>-->
-    <!--                      </div>-->
-                          <div class="row">
-                            <% if current_user %>
-                              <div class="col-md-1">
-                                <% if @post.flags.pluck(:user_id).include?(current_user.id) %>
-                                  <%= link_to flag_path(flagable_id: @post.id, flagable_type: 'Post'), class: 'btn btn-primary', title: 'Un-Flag this post', remote: true, :method => :delete do %>
-                                    <i class="fa fa-flag" aria-hidden="true"></i>
-                                  <% end %>
-                                <% else %>
-                                  <%= link_to reason_modal_flags_path(flagable_id: @post.id, flagable_type: 'Post'), title: 'Flag this post', class: 'btn btn-secondary', remote: true do %>
-                                    <i class="fa fa-flag-checkered" aria-hidden="true"></i>
-                                  <% end %>
-                                <% end %>
-                                <span><%= @post.flags.count %></span>
-                              </div>
-                              <div class="col-md-1">
-                                <% if @post.likes.pluck(:user_id).include?(current_user.id) %>
-                                  <%= link_to like_path(id: @post.id), class: 'btn btn-primary', title: 'Un-Like this post', remote: true, :method => :delete do %>
-                                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>
-                                  <% end %>
-                                <% else %>
-                                  <%= link_to like_path(likeable_id: @post.id, user_id: current_user.id, likeable_type: 'Post'), title: 'Like this post', class: 'btn btn-secondary', remote: true, :method => :patch do %>
-                                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>
-                                  <% end %>
-                                <% end %>
-                                <span><%= @post.likes.count %></span>
-                              </div>
-                              <div class="col-md-1">
-                                <% if @post.shares.pluck(:user_id).include?(current_user.id) %>
-                                  <div class="btn btn-primary" title="Already Shared by me">
-                                    <i class="fa fa-share" aria-hidden="true"></i>
-                                  </div>
-                                <% else %>
-                                  <%= link_to shares_path(shareable_id: @post.id, user_id: current_user.id, shareable_type: 'Post'), title: 'Share this post', class: 'btn btn-secondary', remote: true, method: :post do %>
-                                    <i class="fa fa-share"  aria-hidden="true"></i>
-                                  <% end %>
-                                <% end %>
-                                <span><%= @post.shares.count %></span>
-                              </div>
-                              <div class="col-md-1">
-                              <div class="btn btn-secondary" id="checkbox-btn">
-                                <%= check_box_tag "tracking", current_user.tracking_posts.pluck(:post_id).include?(@post.id), current_user.tracking_posts.pluck(:post_id).include?(@post.id), remote: true, method: :patch, class: "", title: 'Track this post' %>
-                              </div>
-                            </div>
-                              <div class="col-md-8">
-                                <div class="mb-5">
-                                  <%= render 'comments/form', comment: @comment, layer: @post %>
-                                </div>
-                              </div>
-                            <% else %>
-                              <div class="col-md-1">
-                                <span><%= @post.flags.count %></span> flags
-                              </div>
-                              <div class="col-md-1">
-                                <span><%= @post.likes.count %></span> likes
-                              </div>
-                              <div class="col-md-1">
-                                <span><%= @post.shares.count %></span> shares
+                      <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-5 justify-content-center">
+                        <div class="row">
+                          <% if @post.images.present? %>
+                            <% @post.images.each do |image| %>
+                              <div class="col-md-6">
+                                <%= image_tag(image, class: 'img-fluid') %>
                               </div>
                             <% end %>
-
-                          </div>
+                          <% end %>
                         </div>
                       </div>
+                      <div class="col-md-12 border-top border-comments">
+                        <div class="row mt-3">
+                          <div class="col-md-12 mb-2">
+                            <!--                      <div class="row">-->
+                            <!--                        <div class="col-md-2">-->
+                            <%#= rating_for @post, 'rate' %>
+                            <!--                        </div>-->
+                            <!--                      </div>-->
+                            <div class="row">
+                              <% if current_user %>
+                                <div class="col-md-1">
+                                  <% if @post.flags.pluck(:user_id).include?(current_user.id) %>
+                                    <%= link_to flag_path(flagable_id: @post.id, flagable_type: 'Post'), class: 'btn btn-primary', title: 'Un-Flag this post', remote: true, :method => :delete do %>
+                                      <i class="fa fa-flag" aria-hidden="true"></i>
+                                    <% end %>
+                                  <% else %>
+                                    <%= link_to reason_modal_flags_path(flagable_id: @post.id, flagable_type: 'Post'), title: 'Flag this post', class: 'btn btn-secondary', remote: true do %>
+                                      <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                                    <% end %>
+                                  <% end %>
+                                  <span><%= @post.flags.count %></span>
+                                </div>
+                                <div class="col-md-1">
+                                  <% if @post.shares.pluck(:user_id).include?(current_user.id) %>
+                                    <div class="btn btn-primary" title="Already Shared by me">
+                                      <i class="fa fa-share" aria-hidden="true"></i>
+                                    </div>
+                                  <% else %>
+                                    <%= link_to shares_path(shareable_id: @post.id, user_id: current_user.id, shareable_type: 'Post'), title: 'Share this post', class: 'btn btn-secondary', remote: true, method: :post do %>
+                                      <i class="fa fa-share" aria-hidden="true"></i>
+                                    <% end %>
+                                  <% end %>
+                                  <span><%= @post.shares.count %></span>
+                                </div>
+                                <div class="col-md-1">
+                                  <div class="btn btn-secondary" id="checkbox-btn">
+                                    <%= check_box_tag "tracking", current_user.tracking_posts.pluck(:post_id).include?(@post.id), current_user.tracking_posts.pluck(:post_id).include?(@post.id), remote: true, method: :patch, class: "", title: 'Track this post' %>
+                                  </div>
+                                </div>
+                                <div class="col-md-8">
+                                  <div class="mb-5">
+                                    <%= render 'comments/form', comment: @comment, post: @post %>
+                                  </div>
+                                </div>
+                              <% else %>
+                                <div class="col-md-1">
+                                  <span><%= @post.flags.count %></span> flags
+                                </div>
+                                <div class="col-md-1">
+                                  <span><%= @post.likes.count %></span> likes
+                                </div>
+                                <div class="col-md-1">
+                                  <span><%= @post.shares.count %></span> shares
+                                </div>
+                              <% end %>
 
-                      <p>Tags: <%= raw @post.tag_list.map { |t| link_to "##{t}", tag_path(t) }.join(', ') %></p>
-                      <% if @post.post_type == Post::POST_TYPE_IDEA %>
-                        <p>Resource Tags: <%= raw @post.resource_tag_list.map { |t| link_to "##{t}", tag_path(t) }.join(', ') %></p>
-                      <% end  %>
-                      <h4><%= @post.comments.count %> Comments</h4>
-                      <div class="row comments_container">
-                        <%= render 'comments/list', { post: @post } %>
+                            </div>
+                          </div>
+                        </div>
+                        <% if @post.tag_list.present? %>
+                          <p>Tags: <%= raw @post.tag_list.map {|t| link_to "##{t}", tag_path(t)}.join(', ') %></p>
+                        <% end %>
+                        <% if @post.post_type == Post::POST_TYPE_IDEA %>
+                          <p>Resource
+                            Tags: <%= raw @post.resource_tag_list.map {|t| link_to "##{t}", tag_path(t)}.join(', ') %></p>
+                        <% end %>
+                        <h4><%= @post.comments.count %> Comments</h4>
+                        <div class="row comments_container_<%= @post.id %>">
+                          <%= render 'comments/list', {post: @post, comments: @comments} %>
+                        </div>
+                        <% if !@comments.last_page? && @comments.present? %>
+                          <%= link_to "Load more", post_path(@post, page: @comments.current_page + 1), id: "load-more-posts", class: 'd-flex justify-content-center text-center p-3 h6', remote: true %>
+                        <% end %>
                       </div>
-                      <% if !@comments.last_page? && @comments.present? %>
-                        <%= link_to "Load more", post_path(@post, page: @comments.current_page + 1), id: "load-more-posts", class: 'd-flex justify-content-center text-center p-3 h6', remote: true %>
-                      <% end %>
                     </div>
                   </div>
                 </div>
@@ -252,37 +273,59 @@
             </div>
           </div>
         </div>
-      </div>
+      <% end %>
     <% end %>
-  <% end %>
-</div>
-<script>
-    $('#checkbox-btn').click(function(){
-        const checkboxValue = $("#tracking").prop("checked");
-        trackRequest();
-        if (checkboxValue == true) {
-            $("#tracking").prop("checked", false);
-        } else {
-            $("#tracking").prop("checked", true);
-        }
-    });
-    $('#tracking').change(function() {
-        if (this.checked) {
-            $("#tracking").prop("checked", false);
-        } else {
-            $("#tracking").prop("checked", true);
-        }
-    });
-    function trackRequest() {
-        const checkboxValue = $("#tracking").prop("checked");
-        $.ajax({
-            url: "<%= post_track_post_path(@post.id) %>",
-            type: "PATCH",
-            dataType: "JS",
-            data: {
-                tracking: checkboxValue
-            }
-        });
+  </div>
+  <% if user_signed_in? %>
+    <div class="modal fade" id="rating_modal-<%= @post.id %>" tabindex="-1" role="dialog" aria-labelledby="rating_modal-<%= @post.id %>" aria-hidden="true">
 
-    }
-</script>
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Rate <%= @post.title %></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body p-2" id="body-<%= @post.id %>">
+
+            <%= render 'rating_modal', post: @post %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%= render "tracking_notifications_modal" %>
+  <% end %>
+  <script>
+      $('#checkbox-btn').click(function () {
+          const checkboxValue = $("#tracking").prop("checked");
+          if (checkboxValue == true) {
+              $('#tracking-post-modal').modal();
+              $("#tracking").prop("checked", false);
+          } else {
+              trackRequest();
+              $("#tracking").prop("checked", true);
+          }
+      });
+      $('#tracking').change(function () {
+          if (this.checked) {
+              $("#tracking").prop("checked", false);
+          } else {
+              $("#tracking").prop("checked", true);
+          }
+      });
+
+      function trackRequest() {
+          const checkboxValue = $("#tracking").prop("checked");
+          $.ajax({
+              url: "<%= post_track_post_path(@post.id) %>",
+              type: "PATCH",
+              dataType: "JS",
+              data: {
+                  tracking: checkboxValue
+              }
+          });
+
+      }
+  </script>
+<% end %>

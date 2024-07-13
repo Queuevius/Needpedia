@@ -1,0 +1,9 @@
+<% if @found_term.present? %>
+$(document).ready(function () {
+    $('#objectiveWarningModal').modal('show');
+    const foundTermValue = '<%= j(@found_term) %>';
+    $('#objectiveWarningModal .modal-body p strong').text(foundTermValue);
+});
+<% else %>
+document.querySelector("#objectives-reply-form-<%= @objective.parent_id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { objective: @objective, post: @post })) %>")
+<% end %>

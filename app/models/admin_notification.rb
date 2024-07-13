@@ -1,4 +1,5 @@
 class AdminNotification < ApplicationRecord
+  has_rich_text :message
   ALL = 'All'.freeze
   NEW_COMERS = 'New Comers'.freeze
   GUESTS = 'Guests'.freeze

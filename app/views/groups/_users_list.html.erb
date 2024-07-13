@@ -1,0 +1,18 @@
+<% users.each do |user| %>
+  <% next if user == current_user  %>
+  <li class="media">
+    <% if user.profile_image.attached? %>
+      <%= image_tag(user.profile_image, class: 'rounded-circle d-flex align-self-center', alt: "Avatar") %>
+    <% else %>
+      <img class="rounded-circle d-flex align-self-center" src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+    <% end %>
+    <div class="media-body">
+      <h5><%= user.name %></h5>
+      <p>
+        <%= link_to invite_user_to_group_group_path(@group.id, user_id: user.id, group_id: @group.id), method: :post do %>
+          <span class="badge badge-outline badge-sm badge-info badge-pill">Invite</span>
+        <% end %>
+      </p>
+    </div>
+    <i class="d-flex align-self-center fa fa-dot-circle-o color-success"></i></li>
+<% end %>

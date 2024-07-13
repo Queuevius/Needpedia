@@ -3,12 +3,17 @@ set :stages, %w(production staging)
 set :default_stage, "production"
 
 # config valid for current version and patch releases of Capistrano
-lock "~> 3.14.1"
+lock "~> 3.17.1"
 
 set :application, "needpedia"
-set :repo_url, "git@github.com:Queuevius/Needpedia2.git"
+set :repo_url, "git@github.com:Queuevius/Needpedia.git"
 
-set :deploy_to, "/home/deploy/#{fetch :application}"
+# Todo - configure the repo name dynamically
+# uncomment this line if deploying to production
+# set :deploy_to, "/home/deploy/needpedia_production"
+
+# uncomment this line if deploying to staging
+set :deploy_to, "/home/deploy/needpedia_staging"
 
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', '.bundle', 'public/system', 'public/uploads'
 

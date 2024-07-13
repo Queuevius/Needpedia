@@ -1,0 +1,39 @@
+<% if @topic.parent_id.present? %>
+  $(".reply_container_<%= @topic.parent_id %>").append("<%= j(render(partial: '/topics/replies', locals: { replies: [@topic], group: @topic })) %>")
+  $('#summernote_reply').summernote('code', '');
+<% else %>
+  $(".topics_container_<%= @group.id %>").prepend("<%= j(render(partial: 'topics/list', locals: { topics: [@topic], group: @group })) %>")
+$('#summernote').summernote('code', '');
+<% end %>
+
+function initializeSummernote(element) {
+    $(element).summernote({
+        height: 150,
+        disableDragAndDrop: true,
+        toolbar: [
+            ['style', ['bold', 'italic', 'underline', 'link']],
+            ['font', ['strikethrough', 'fontsize']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['tokens', ['note', 'question', 'debate']],
+            ['misc', ['undo', 'redo']],
+            ['insert', ['picture']]
+        ],
+        popover: {
+            image: [
+                ['remove', ['removeMedia']]
+            ],
+            link: []
+        }
+    });
+    console.log("Summernote initialized for:", element);
+}
+
+$(window).on('load', function() {
+    initializeSummernote('#summernote');
+
+    $(document).on('DOMNodeInserted', function(e) {
+        if ($(e.target).is('#summernote')) {
+            initializeSummernote(e.target);
+        }
+    });
+});

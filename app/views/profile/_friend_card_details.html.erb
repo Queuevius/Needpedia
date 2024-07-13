@@ -1,4 +1,4 @@
-<h5 class="font-medium mb-0 mt-3 text-center"> <%= link_to "#{friend.name}", feed_path(uuid: friend.uuid) %></h5>
+<h5 class="font-medium mb-0 mt-3 text-center"> <%= link_to "#{friend.name}", wall_path(uuid: friend.uuid) %></h5>
 <h6 class="subtitle text-center">
   <i class="icon-Handshake"></i>
   <%= friend.links.count || '&nbsp'.html_safe %> Connections
@@ -21,4 +21,3 @@
 <% else %>
   <%= link_to 'Add Friend', new_connection_request_path(:uuid => friend.uuid), class: 'btn waves-effect waves-light btn-rounded btn-secondary btn-block' %>
 <% end %>
-

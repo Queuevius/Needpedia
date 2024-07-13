@@ -1,0 +1,824 @@
+<div class="container mb-5">
+  <% if allowed_to_see?(@post, current_user) %>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
+        <h4 class="alert alert-warning">Sorry but this post is private, would you like to request access?</h4>
+        <%= render "profile/small_friends_list", friends: @post.private_users %>
+      </div>
+    </div>
+  <% else %>
+    <% if @post.disabled %>
+      <div class="row">
+        <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
+          <h4 class="alert alert-warning">This Page has been disabled by Admin, No activity is allowed</h4>
+        </div>
+      </div>
+    <% else %>
+      <div class="row mt-1">
+        <div class="col-md-12 text-center mb-2">
+          <% if check_if_private?(@post) %>
+            <i class="fa fa-lock" aria-hidden="true" style="font-size: 25px; color: black" title="Private Post"></i>
+          <% end %>
+        </div>
+        <div class="col-md-12 mb-2">
+          <div class="row">
+            <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+              <div class="ui-block shadow-lg rounded">
+                <div class="ui-block-content">
+                  <div class="d-flex">
+                    <div class="mr-auto">
+                      <% case @post.post_type %>
+                      <% when Post::POST_TYPE_LAYER %>
+                        <%= link_to 'Back', post_path(id: @post.post_id), class: 'btn btn-primary mb-3 btn-sm mt-1' %>
+                      <% when Post::POST_TYPE_IDEA %>
+                        <%= link_to 'Back', post_ideas_path(post_id: @post.problem_id, post_type: Post::POST_TYPE_IDEA), class: 'btn btn-primary mb-3 btn-sm mt-1' %>
+                      <% when Post::POST_TYPE_SUBJECT, Post::POST_TYPE_QUICK_SHARE, Post::POST_TYPE_GEOMAXING %>
+                        <%= link_to 'Back', search_result_posts_path(q: {post_type: ''}, post_type: @post.post_type), class: 'btn btn-primary mb-3 btn-sm mt-1' %>
+                      <% end %>
+                      <%#= link_to 'Back', :back, class: 'btn btn-primary mb-3 btn-sm mt-1' %>
+                    </div>
+                    <div>
+                      <% if ![Post::POST_TYPE_SOCIAL_MEDIA, Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(@post.post_type) %>
+                        <% if @post.post_type == Post::POST_TYPE_SUBJECT %>
+                          <%= link_to post_problems_path(post_id: @post.id, post_type: Post::POST_TYPE_PROBLEM) do %>
+                            <%= image_tag('problem-r.png', width: "21%", title: 'Problems', class: "rounded mb-3") %>
+                          <% end %>
+                        <% end %>
+                        <% if current_user.present? %>
+                          <% if @post.editing_disabled? %>
+                            <button type="button" class="btn btn-primary disabled btn-sm mt-1" data-toggle="tooltip" data-placement="top" title="Editing disabled by Admins">
+                              Edit
+                            </button>
+                          <% elsif (!@post.curated? && @post.user_id == current_user.id) || (!@post.curated? && !@post.
+
+                              private && Post::CORE_POST_TYPES.include?(@post.post_type)) %>
+                            <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary mb-3 btn-sm mt-1 mr-1' do %>
+                              Edit
+                            <% end %>
+                          <% elsif @post.curated? && @post&.curated_users&.include?(current_user) %>
+                            <%= link_to edit_post_path(@post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post : @post), class: 'btn btn-primary mb-3 btn-sm mt-1 mr-1' do %>
+                              Edit
+                            <% end %>
+                          <% end %>
+                        <% end %>
+                        <% if @post.geo_maxing? %>
+                          <%= link_to 'Map', post_map_path(@post), class: 'btn btn-primary mb-3 btn-sm', data: { turbolinks: false } %>
+                        <% end %>
+                        <div class="dropdown mt-1 float-right">
+                          <% if @post.layering_disabled? %>
+                            <button type="button" class="btn btn-secondary dropdown-toggle disabled btn-sm" data-toggle="tooltip" data-placement="top" title="Adding Layers disabled by Admins">
+                              Layers
+                            </button>
+                          <% else %>
+                            <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              Layers
+                            </button>
+                          <% end %>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <% if @post.post_type == Post::POST_TYPE_LAYER %>
+                              <%= link_to 'Default Layer', post_path(@post.parent_post), class: "dropdown-item #{post_type_color(@post.parent_post.post_type)}" %>
+                            <% end %>
+                            <%= link_to 'Add Layer', new_post_path(post_type: Post::POST_TYPE_LAYER, post_id: @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.id : @post.id), class: "dropdown-item" %>
+                            <% layers = @post.post_type == Post::POST_TYPE_LAYER ? @post.parent_post.layers : @post.layers %>
+                            <% layers.each do |layer| %>
+                              <%= link_to layer.title, post_path(layer), class: 'dropdown-item' %>
+                            <% end %>
+                          </div>
+                        </div>
+                      <% else %>
+                        <% if !@post.editing_disabled? && @post.user_id == current_user.id %>
+                          <div class="col-sm-9 text-right mb-2">
+                            <%= link_to edit_post_path(@post), class: 'btn btn-primary' do %>
+                              Edit
+                            <% end %>
+                          </div>
+                        <% end %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+              <div class="ui-block shadow-lg rounded">
+                <div class="ui-block-content">
+                  <div class="row">
+                    <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-5">
+                      <span>
+                        <h5 id="rating_title-<%= @post.id %>" class="search-result-rating" data-toggle="modal" data-target="#rating_modal-<%= @post.id %>">
+                          <i class="fa fa-sort" aria-hidden="true"></i>
+                          <%= @post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %> <%= rating(@post, params[:action]) %>
+                        </h5>
+                        <h5 class="ml-5"><%= @post.post_type.titleize %> Post</h5>
+                        <h1 class="m-2"><%= @post.title.titleize %></h1>
+                        <% if @post.post_type == Post::POST_TYPE_IDEA %>
+                          <h5 class="text-primary m-2"><%= link_to truncate(@post&.problem&.parent_subject&.title, length: 30).titleize, post_path(@post.problem.parent_subject), title: @post&.problem&.parent_subject&.title.titleize %>
+                            -
+                            <%= link_to truncate(@post&.problem&.title, length: 30).titleize, post_path(@post&.problem), title: @post.problem.title %>
+                            -
+                            <%= link_to truncate(@post&.title, length: 30).titleize, post_path(@post), title: @post.title %>
+                          </h5>
+                        <% end %>
+                        <% if @group.present? %>
+                          <p>
+                            <%= group_info %>
+                          </p>
+                        <% end %>
+                        <% if @post.images.present? %>
+                          <div class="row mx-auto my-auto">
+                            <div id="recipeCarousel" class="carousel slide w-100" data-ride="carousel">
+                              <div class="carousel-inner w-100" role="listbox">
+                                <% if @post.images.count > 4 %>
+                                  <% @post.images.each_with_index do |photo, n| %>
+                                    <% if n == 0 %>
+                                      <div class="carousel-item active ">
+                                        <%= image_tag photo, class: "d-block col-md-3 img-fluid style_image" %>
+                                      </div>
+                                    <% else %>
+                                      <div class="carousel-item">
+                                        <%= image_tag photo, class: "d-block col-md-3 img-fluid style_image" %>
+                                      </div>
+                                    <% end %>
+                                  <% end %>
+                                <% else %>
+                                  <div class="row">
+                                    <% @post.images.each do |photo| %>
+                                      <div class="col-md-3">
+                                        <%= image_tag photo, class: "img-fluid style-photo style_image" %>
+                                      </div>
+                                    <% end %>
+                                  </div>
+                                <% end %>
+                              </div>
+                              <div>
+                                <% if @post.images.count > 4 %>
+                                  <a class="carousel-control-prev mr-1" href="#recipeCarousel" data-slide="prev">
+                                    <i class="fa fa-angle-left"></i>
+                                  </a>
+                                  <a class="carousel-control-next" href="#recipeCarousel" data-slide="next">
+                                    <i class="fa fa-angle-right"></i>
+                                  </a>
+                                <% else %>
+                                  <a class="carousel-control-prev mr-1">
+                                    <i class="fa fa-angle-left"></i>
+                                  </a>
+                                  <a class="carousel-control-next">
+                                    <i class="fa fa-angle-right"></i>
+                                  </a>
+                                <% end %>
+                              </div>
+                            </div>
+                          </div>
+                        <% end %>
+                      </span>
+                      <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                          <% if @post.user == current_user %>
+                            <th scope="col">
+                              <%= link_to edit_post_path(@post), class: "bg-white" do %>
+                                <div class=" p-0">
+                                  <div class="note-btn-group btn-group note-tokens ">
+                                    <div class="row m-0">
+                                      <div class="col float-left p-0"><%= image_tag "note.png", class: "note-btn btn btn-light btn-sm img-responsive btn-sm", style: "width:9%;" %>
+                                        <%= image_tag "question.png", class: "note-btn btn btn-light btn-sm img-responsive ", style: "width:9%;" %>
+
+                                        <%= image_tag "debate.png", class: "note-btn btn btn-light btn-sm img-responsive ", style: "width:9%;" %>
+                                        <button type="button" class="note-btn btn btn-light btn-sm ml-3">
+                                          <i class="note-icon-undo"></i></button>
+                                        <button type="button" class="note-btn btn btn-light btn-sm">
+                                          <i class="note-icon-redo"></i></button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              <% end %>
+                            </th>
+                          <% else %>
+                            <th scope="col">
+                              <div class=" p-0">
+                                <div class="note-btn-group btn-group note-tokens ">
+                                  <div class="row m-0">
+                                    <div class="col float-left p-0"><%= image_tag "note.png", class: "note-btn btn btn-light btn-sm img-responsive btn-sm", style: "width:9%;" %>
+                                      <%= image_tag "question.png", class: "note-btn btn btn-light btn-sm img-responsive ", style: "width:9%;" %>
+
+                                      <%= image_tag "debate.png", class: "note-btn btn btn-light btn-sm img-responsive ", style: "width:9%;" %>
+                                      <button type="button" class="note-btn btn btn-light btn-sm ml-3">
+                                        <i class="note-icon-undo"></i>
+                                      </button>
+                                      <button type="button" class="note-btn btn btn-light btn-sm">
+                                        <i class="note-icon-redo"></i>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </th>
+                          <% end %>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                          <th scope="row">
+                            <div>
+                              <% if @cleaned_text.length > Post::MAX_POST_BODY_LENGTH %>
+                                <div class="text-truncate-container">
+                                  <%= @post.content %>
+                                </div>
+                                <%= link_to 'See more', '', class: "read-more-#{@post.id} fas fa-caret-right  mt-3" %>
+                                <style>
+                                  .text-truncate-container {
+                                    -webkit-line-clamp: 18;
+                                    display: -webkit-box;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                  }
+                                </style>
+                              <% else %>
+                                <div>
+                                  <%= @post.content.blank? ? 'No details provided' : @post.content %>
+                                </div>
+                              <% end %>
+                            </div>
+                          </th>
+                        </tr>
+                        </tbody>
+                      </table>
+                      <div class="mt-2">
+                        <% if @post.curated %>
+                          <p><strong>Authers and Editors:</strong> <%= @post.user.name %>,
+                            <% @post.curated_users.uniq.each do |user| %>
+                              <%= user.name %>
+                            <% end %>
+                          </p>
+                        <% end %>
+                      </div>
+                      <div class="mt-5">
+                        <strong>Tags:
+                          <% if @post.tag_list.present? %><%= raw @post.tag_list.map {|t| link_to "##{t}", tag_path(t)}.join(', ') %>
+                          <% end %></strong>
+                      </div>
+                      <% if @post.post_versions.present? & current_user.present? %>
+                        <div class="row">
+                          <div class="col-lg-6 col-md-5 "></div>
+                          <div class="col-lg-5 col-md-7">
+                            <div class="dropdown">
+                              <a class="btn border dropdown-toggle w-100" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Revert to Previous Editions</a>
+                              <div class="dropdown-menu w-100 max-height-400 overflow-auto" aria-labelledby="dropdownMenuLink">
+                                <% @post.post_versions.order(created_at: :desc).each do |version| %>
+                                  <div class="previous-editions ms-5 m-2">
+                                    <ul class="dropdown-list">
+                                      <li class="border-bottom">
+                                        <div class="option">
+                                          <div class="option-content text-sm">
+                                            <%= version.created_at.strftime('%Y-%m-%d') %> & <%= version.user.name %>
+                                          </div>
+                                          <div class="p-1 option-buttons">
+                                            <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#Modal<%= version.id %>">
+                                              <i class="fa fa-eye"></i>
+                                            </button>
+                                            <% if version.active == false %>
+                                              <%= button_to restore_post_post_version_path(@post, version), method: :post, class: "btn btn-outline-secondary pl-1 pr-1", title: 'restore post version', data: {confirm: 'Are you sure you want to restore this post version?'} do %>
+                                                <%= image_tag "revert.png" %>
+                                              <% end %>
+                                            <% else %>
+                                              <%= button_to restore_post_post_version_path(@post, version), method: :post, class: "btn btn-outline-secondary pl-1 pr-1 disabled", title: 'Current  version', disabled: true do %>
+                                                <%= image_tag "revert.png" %>
+                                              <% end %>
+                                            <% end %>
+                                            <% if version.flags.pluck(:user_id).include?(current_user.id) %>
+                                              <%= link_to flag_path(flagable_id: version.id, flagable_type: 'PostVersion'), class: 'btn btn-primary', title: 'Un-Flag this post version', remote: true, :method => :delete do %>
+                                                <i class="fa fa-flag" aria-hidden="true"></i>
+                                              <% end %>
+                                            <% else %>
+                                              <!-- Button trigger flag modal -->
+                                              <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#flag<%= version.id %>">
+                                                <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                                              </button>
+                                            <% end %>
+                                            <!-- Button trigger delete request modal -->
+                                            <% if version.deletion_requests.pluck(:user_id).include?(current_user.id) %>
+                                              <button type="button" class="btn btn-outline-secondary" data-toggle="modal" disabled data-target="#request-delete<%= version.id %>">
+                                                <i class="fa fa-trash"></i>
+                                              </button>
+                                            <% else %>
+                                              <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#request-delete<%= version.id %>">
+                                                <i class="fa fa-trash"></i>
+                                              </button>
+                                            <% end %>
+                                          </div>
+                                        </div>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                <% end %>
+                              </div>
+                            </div>
+                            <% @post.post_versions.order(created_at: :desc).each do |version| %>
+                              <!-- Modal for Preview -->
+                              <div class="modal fade" id="Modal<%= version.id %>" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title" id="staticBackdropLabel">Preview</h5>
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                      </button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <% if version.restored_by_id.present? %>
+                                        <div class="card-title border-bottom">
+                                          <h5> restored by <%= User.find(version.restored_by_id).name %> </h5>
+                                        </div>
+                                      <% end %>
+                                      <div>
+                                        <%= version.content %>
+                                      </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- Modal for delete request -->
+                              <div class="modal fade" id="request-delete<%= version.id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title" id="exampleModalLabel">Delete Request</h5>
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                      </button>
+                                    </div>
+                                    <%= form_with url: request_delete_post_post_version_path(@post, version), method: :post, remote: true do |form| %>
+                                      <div class="modal-body">
+                                        <%= form.hidden_field :version_id, value: version.id %>
+                                        <div class="form-group">
+                                          <%= form.rich_text_area :reason, autofocus: true, class: 'form-control', placeholder: "Reason" %>
+                                        </div>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <div class="actions">
+                                          <%= form.submit "Submit Request", class: "btn btn-primary" %>
+                                        </div>
+                                      </div>
+                                    <% end %>
+                                  </div>
+                                </div>
+                              </div>
+                              <!-- flage Modal -->
+                              <div class="modal fade" id="flag<%= version.id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title" id="exampleModalLabel">Report this version</h5>
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                      </button>
+                                    </div>
+                                    <%= form_with(model: version.flags.build, local: true, remote: true) do |form| %>
+                                      <div class="modal-body">
+
+                                        <%= form.hidden_field :user_id, value: current_user.id %>
+                                        <%= form.hidden_field :flagable_id, value: version.id %>
+                                        <%= form.hidden_field :flagable_type, value: "PostVersion" %>
+
+                                        <div class="form-group">
+                                          <%= rich_text_area_tag :version_reason, nil, autofocus: true, class: 'form-control', placeholder: "Reason" %>
+                                        </div>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <%= form.submit 'Create', class: 'btn btn-primary' %>
+                                      </div>
+                                    <% end %>
+                                  </div>
+                                </div>
+                              </div>
+                            <% end %>
+                          </div>
+                          <div class="col-lg col-md"></div>
+                        </div>
+                      <% end %>
+                    </div>
+                    <div class="col-md-12 border-top border-comments">
+                      <div class="row mt-3">
+                        <div class="col-md-12 mb-2">
+                          <div class="row">
+                            <% if current_user %>
+                              <strong class="mt-2">Report post: </strong>
+                              <div class="col-md-1">
+                                <% if @post.flags.pluck(:user_id).include?(current_user.id) %>
+                                  <%= link_to flag_path(flagable_id: @post.id, flagable_type: 'Post'), class: 'btn btn-primary', title: 'Un-Flag this post', remote: true, :method => :delete do %>
+                                    <i class="fa fa-flag" aria-hidden="true"></i>
+                                  <% end %>
+                                <% else %>
+                                  <%= link_to reason_modal_flags_path(flagable_id: @post.id, flagable_type: 'Post'), title: 'Flag this post', class: 'btn btn-secondary', remote: true do %>
+                                    <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                                  <% end %>
+                                <% end %>
+                                <span><%= @post.flags.count %></span>
+                              </div>
+                              <strong class="mt-2">Share: </strong>
+                              <div class="col-md-1">
+                                <% if @post.shares.pluck(:user_id).include?(current_user.id) %>
+                                  <div class="btn btn-primary" title="Already Shared by me">
+                                    <i class="fa fa-share" aria-hidden="true"></i>
+                                  </div>
+                                <% else %>
+                                  <%= link_to shares_path(shareable_id: @post.id, user_id: current_user.id, shareable_type: 'Post'), title: 'Share this post', class: 'btn btn-secondary', remote: true, method: :post do %>
+                                    <i class="fa fa-share" aria-hidden="true"></i>
+                                  <% end %>
+                                <% end %>
+                                <span class="mb-1"><%= @post.shares.count %></span>
+                              </div>
+                              <strong class="m-2 mr-0">Track Post: </strong>
+                              <div class="col-md-1">
+                                <div class="btn btn-secondary" id="checkbox-btn">
+                                  <%= check_box_tag "tracking", current_user.tracking_posts.pluck(:post_id).include?(@post.id), current_user.tracking_posts.pluck(:post_id).include?(@post.id), remote: true, method: :patch, class: "", title: 'Track this post' %>
+                                </div>
+                              </div>
+                            <% else %>
+                              <div class="col-md-1">
+                                <span><%= @post.flags.count %></span> flags
+                              </div>
+                              <div class="col-md-1">
+                                <span><%= @post.likes.count %></span> likes
+                              </div>
+                              <div class="col-md-1">
+                                <span><%= @post.shares.count %></span> shares
+                              </div>
+                            <% end %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    <% end %>
+  <% end %>
+  </div>
+  <!--          objective card-->
+  <div class="card m-0">
+
+    <button class="btn btn-link text-left bg-white" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+      <div class="card-header border-bottom-0" id="headingOne">
+        <h5>
+          <h1 class="font-weight-bold">
+            <i class="<%= @objectives.present? ? 'fas fa-caret-down' : 'fas fa-caret-right' %>"></i> Objectives:
+          </h1>
+        </h5>
+      </div>
+    </button>
+
+    <div id="collapseOne" class="collapse bg-white <%= ' show' if @objectives.present? %>" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body border-top">
+        <div>
+          <div class="mr-sm-5">
+            <% if current_user.present? %>
+              <%= render 'objectives/form', post: @post, objective: @objective %>
+            <% end %>
+          </div>
+          <div class="row objectives_container_<%= @post.id %>">
+            <%= render 'objectives/list', {post: @post, objectives: @objectives} %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <!--     Resources card     -->
+  <div class="card m-0">
+
+    <button class="btn btn-link collapsed text-left bg-white" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+      <div class="card-header border-bottom-0" id="headingTwo">
+        <h5>
+          <h1 class="font-weight-bold">
+            <i class="<%= @post.resource_tag_list.present? ? 'fas fa-caret-down' : 'fas fa-caret-right' %>"></i>
+            Resources:
+          </h1>
+        </h5>
+      </div>
+    </button>
+    <div id="collapseTwo" class="collapse bg-white <%= ' show' if @post.resource_tag_list.present? %>" aria-labelledby="headingTwo" data-parent="#accordion">
+      <div class="card-body border-top">
+        <h5 class="mb-3">Resource
+          Tags: <%= raw @post.resource_tag_list.map {|t| link_to "##{t}", tag_path(t)}.join(', ') %>
+          <% if current_user.present? %>
+            <button class="btn btn-primary float-right" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Edit</button>
+          <% end %>
+        </h5>
+        <div class="collapse" id="collapseExample">
+          <div class="card card-body">
+            <%= form_with(model: @post, local: true) do |form| %>
+              <p class="text-center">Edit Resource Tags (separated by commas)</p>
+              <%= form.text_field :resource_tag_list, class: 'form-control', placeholder: "Resource Tags (separated by commas)" %>
+              <br>
+              <div class="form-group">
+                <%= form.submit "Update", class: 'btn btn-primary' %>
+                <%= link_to "Cancel", :back, class: "btn btn-link" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <!--     Interested users card     -->
+  <div class="card m-0">
+    <button class="btn btn-link collapsed text-left bg-white" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+      <div class="card-header border-bottom-0" id="headingThree">
+        <h5>
+          <h1 class="font-weight-bold">
+            <i class="<%= @interested_users.present? ? 'fas fa-caret-down' : 'fas fa-caret-right' %>"></i> Interested Users:</h1>
+        </h5>
+      </div>
+    </button>
+    <div id="collapseThree" class="collapse bg-white <%= ' show' if @interested_users.present? %>" aria-labelledby="headingThree" data-parent="#accordion">
+      <div class="card-body border-top">
+        <div>
+          <div class="mr-sm-5">
+            <% if current_user.present? %>
+              <%= render 'interested_users/form', interested_user: @interested_user, post: @post %>
+            <% end %>
+          </div>
+          <div class="row interested_users_container_<%= @post.id %>">
+            <%= render 'interested_users/list', {post: @post, interested_users: @interested_users} %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <!--     Related Content card     -->
+  <div class="card m-0">
+    <button class="btn btn-link collapsed text-left bg-white" data-toggle="collapse" data-target="#collapsefour" aria-expanded="false" aria-controls="collapsefour">
+      <div class="card-header border-bottom-0" id="headingfour">
+        <h1 class="font-weight-bold">
+          <i class="<%= @related_contents.present? ? 'fas fa-caret-down' : 'fas fa-caret-right' %>"></i> Related Content:
+        </h1>
+      </div>
+    </button>
+    <div id="collapsefour" class="collapse bg-white <%= ' show' if @related_contents.present? %>" aria-labelledby="headingfour" data-parent="#accordion">
+      <div class="card-body border-top">
+        <div>
+          <div class="mr-sm-5">
+            <% if current_user.present? %>
+              <%= render 'related_contents/form', related_content: @related_content, post: @post %>
+            <% end %>
+          </div>
+          <div class="row related_contents_container_<%= @post.id %>">
+            <%= render 'related_contents/list', {post: @post, related_contents: @related_contents} %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <!--     Comments card     -->
+  <div class="card m-0">
+
+    <button class="btn btn-link collapsed text-left bg-white" data-toggle="collapse" data-target="#collapsefive" aria-expanded="false" aria-controls="collapsefive">
+      <div class="card-header border-bottom-0" id="headingfive">
+        <h5>
+          <h1 class="font-weight-bold">
+            <i class=" <%= @comments.present? ? 'fas fa-caret-down' : 'fas fa-caret-right' %>"></i> Comments:</h1>
+        </h5>
+      </div>
+    </button>
+
+    <div id="collapsefive" class="collapse bg-white <%= ' show' if @comments.present? %>" aria-labelledby="headingfive" data-parent="#accordion">
+      <div class="card-body border-top">
+        <div>
+          <div class="mr-sm-5">
+            <% if current_user.present? %>
+              <%= render 'comments/form', comment: @comment, post: @post %>
+            <% end %>
+          </div>
+          <div class="row comments_container_<%= @post.id %>">
+            <%= render 'comments/list', {post: @post, comments: @comments} %>
+          </div>
+          <% if !@comments.last_page? && @comments.present? %>
+            <%= link_to "Load more", post_path(@post, page: @comments.current_page + 1), id: "load-more-posts", class: 'd-flex justify-content-center text-center p-3 h6', remote: true %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="accordion">
+</div>
+
+<% if user_signed_in? %>
+  <div class="modal fade" id="rating_modal-<%= @post.id %>" tabindex="-1" role="dialog" aria-labelledby="rating_modal-<%= @post.id %>" aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Rate <%= @post.title %></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body p-2" id="body-<%= @post.id %>">
+
+          <%= render 'rating_modal', post: @post %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <%= render "tracking_notifications_modal" %>
+<% end %>
+<script>
+    $('#checkbox-btn').click(function () {
+        const checkboxValue = $("#tracking").prop("checked");
+        if (checkboxValue == true) {
+            $('#tracking-post-modal').modal();
+            $("#tracking").prop("checked", false);
+        } else {
+            trackRequest();
+            $("#tracking").prop("checked", true);
+        }
+    });
+    $('#tracking').change(function () {
+        if (this.checked) {
+            $("#tracking").prop("checked", false);
+        } else {
+            $("#tracking").prop("checked", true);
+        }
+    });
+
+    function trackRequest() {
+        const checkboxValue = $("#tracking").prop("checked");
+        $.ajax({
+            url: "<%= post_track_post_path(@post.id) %>",
+            type: "PATCH",
+            dataType: "JS",
+            data: {
+                tracking: checkboxValue
+            }
+        });
+
+    }
+
+    $('.card-header').click(function () {
+        $(this).find('i').toggleClass('fas fa-caret-right fas fa-caret-down');
+    });
+
+    $('.read-more-<%= @post.id %>').on('click', function (e) {
+        e.preventDefault()
+        $(this).parent().html('<%= escape_javascript @post.content %>')
+    });
+
+    $('#recipeCarousel').carousel({
+        interval: 2000
+    })
+
+    $('.carousel .carousel-item').each(function () {
+        var next = $(this).next();
+        if (!next.length) {
+            next = $(this).siblings(':first');
+        }
+        next.children(':first-child').clone().appendTo($(this));
+
+        for (var i = 0; i < 2; i++) {
+            next = next.next();
+            if (!next.length) {
+                next = $(this).siblings(':first');
+            }
+
+            next.children(':first-child').clone().appendTo($(this));
+        }
+    });
+</script>
+<style>
+  .carousel-inner .carousel-item.active,
+  .carousel-inner .carousel-item-next,
+  .carousel-inner .carousel-item-prev {
+    display: flex;
+  }
+
+  .carousel-inner .carousel-item-right.active,
+  .carousel-inner .carousel-item-next {
+    transform: translateX(25%);
+  }
+
+  .carousel-inner .carousel-item-left.active,
+  .carousel-inner .carousel-item-prev {
+    transform: translateX(-25%);
+  }
+
+  .carousel-inner .carousel-item-right,
+  .carousel-inner .carousel-item-left {
+    transform: translateX(0);
+
+  }
+
+  .carousel-item img {
+    height: 11em;
+  }
+
+  .carousel {
+    margin: 30px auto 60px;
+    padding: 0 80px;
+  }
+
+  .carousel .carousel-item {
+    text-align: center;
+  }
+
+  .carousel .carousel-item .btn i {
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 5px;
+  }
+
+  .carousel-control-prev, .carousel-control-next {
+    height: 44px;
+    width: 44px;
+    background: none;
+    margin: auto 0;
+  }
+
+  .carousel-control-prev i, .carousel-control-next i {
+    font-size: 36px;
+    position: absolute;
+    top: 50%;
+    display: inline-block;
+    margin: -19px 0 0 0;
+    z-index: 5;
+    left: 0;
+    right: 0;
+    color: rgba(0, 0, 0, 0.8);
+    text-shadow: none;
+    font-weight: bold;
+  }
+
+  .card {
+    margin: 0 0.5em;
+    box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);
+    border: none;
+    border-radius: 0;
+  }
+
+  .dropdown-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+  }
+
+  .option-content {
+    flex: 1;
+  }
+
+  .option-buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn.btn-outline-secondary[disabled]:hover {
+    opacity: 0.7; /* Adjust the opacity value as desired */
+    cursor: not-allowed;
+  }
+
+</style>
+
+<script type="text/javascript" charset="utf-8">
+
+    $('img.style_image').addClass('img-enlargable').click(function () {
+        var src = $(this).attr('src');
+        $('<div class="container">').css({
+            background: ' url(' + src + ') no-repeat center',
+            backgroundSize: 'contain',
+            width: '100%', height: '80%',
+            position: 'fixed',
+            zIndex: '10000',
+            top: '10%', left: '15%',
+            cursor: 'zoom-out'
+        }).click(function () {
+            $(this).remove();
+        }).appendTo('body');
+    });
+
+    $(document).ready(function () {
+        $(".see-more-link").click(function (e) {
+            e.preventDefault();
+            var commentContainer = $(this).closest('.media-body');
+            commentContainer.find(".comment-truncated-content").hide();
+            commentContainer.find(".comment-full-content").show();
+            $(this).hide();
+        });
+    });
+</script>

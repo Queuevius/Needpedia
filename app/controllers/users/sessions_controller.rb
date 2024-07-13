@@ -6,9 +6,16 @@ class Users::SessionsController < Devise::SessionsController
     if user && user&.disabled
       flash[:alert] = 'Your Account has been terminated.'
       redirect_to root_path
+    elsif user && !user.admin && Setting.accounts_freezed
+      sign_out user
+      redirect_to root_path, alert: "Can't perform this action right now sorry for the inconvenience."
     else
       super
     end
+  end
+
+  def after_sign_in_path_for(resource)
+    resource.last_login_at.nil? ? (resource.update(last_login_at: Time.now); chatbot_path) : super
   end
 
   private
@@ -16,7 +23,7 @@ class Users::SessionsController < Devise::SessionsController
   def check_captcha
     unless verify_recaptcha
       self.resource = resource_class.new sign_in_params
-      respond_with_navigational(resource) { render :new }
+      respond_with_navigational(resource) {render :new}
     end
   end
 end

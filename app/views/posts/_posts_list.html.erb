@@ -21,21 +21,25 @@
           <div class="row">
             <div class="col-12">
               <div class="row">
-                <div class="col-2">
-                  <% if post.images.present? %>
-                    <%= image_tag(post.images.first, class: 'img-fluid') %>
-                  <% else %>
-                    <%= image_tag('thumbs_for_bars.png', class: 'img-fluid missing-image') %>
-                  <% end %>
+                <div class="btn btn-link p-0 m-0 font-weight-bold">
+                  <span id="list_rating_title-<%= post.id %>" class="search-result-rating text-dark" data-toggle="modal" data-target="#rating_modal-<%= post.id %>"><%= post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %></span>
                 </div>
-                <div class="col-10 pl-0">
-                  <b>
-                    <span id="rating_title-<%= post.id %>" class="text-dark" data-toggle="modal" data-target="#rating_modal-<%= post.id %>"><%= post&.ratings&.pluck(:rating)&.sum || 0 %></span>
-
-                  </b>   <b class="pl-2"><%= post.post_type.titleize %>:</b> <%= link_to post.title, post_path(post), class: 'text-dark' %>
-                  </h6>
-                  <p><%= truncate(strip_tags(post&.content&.to_s), length: 150) %></p>
-<!--                  <p><%#= post.content %></p>-->
+                <div class="col-11">
+                  <%= link_to post_path(post.id), class: 'text-decoration-none' do %>
+                    <div class="row">
+                      <div class="col-3 search-result-img">
+                        <% if post.images.present? %>
+                          <%= image_tag(post.images.first, class: 'img-fluid') %>
+                        <% else %>
+                          <%= image_tag('thumbs_for_bars.png', class: 'img-fluid missing-image') %>
+                        <% end %>
+                      </div>
+                      <div class="col-9 text-dark text-break overflow-auto">
+                        <b class="pl-2"><%= post.post_type.titleize %>:</b> <h6><%= post.title %></h6>
+                        <p><%= truncate(strip_tags(post&.content&.to_s), length: 150) %></p>
+                      </div>
+                    </div>
+                  <% end %>
                 </div>
               </div>
             </div>
@@ -70,30 +74,18 @@
                 return $("#popover-content-<%= post.id %>").html();
             }
         });
-        <% Rating::RATINGS.each do |rating| %>
-          var element = $('.rating-count-<%= post.id %>-<%= rating %>');
-          element.click(function() {
-              $.ajax({
-                  url: "<%= change_rating_path %>",
-                  type: "PATCH",
-                  data: {
-                      rateable_id: '<%= post.id %>',
-                      rateable_type: 'Post',
-                      rating: '<%= rating %>'
-                  }
-              });
-          })
-        <% end %>
     </script>
   <% end %>
 </div>
 <style>
-  .custom-width {
-    max-height: 200px !important;
-    min-height: 125px !important;
-    height: 125px !important;
-  }
   .missing-image {
     height: 65%;
+  }
+  @media (min-width: 766px) {
+    .custom-width {
+      max-height: 200px !important;
+      min-height: 125px !important;
+      height: 125px !important;
+    }
   }
 </style>

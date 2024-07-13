@@ -1,0 +1,15 @@
+<% if @found_term.present? %>
+  $(document).ready(function () {
+      $('#relatedWarningModal').modal('show');
+      const foundTermValue = '<%= j(@found_term) %>';
+      $('#relatedWarningModal .modal-body p strong').text(foundTermValue);
+  });
+<% else %>
+  <% if @content.parent_id.present? %>
+    document.querySelector("#related-contents-reply-form-<%= @content.id %>").innerHTML = ("<%= j(render(partial: 'reply_form', locals: { related_content: @content, post: @post })) %>")
+    $("#reply-body-<%= @content.id %>").hide();
+  <% else %>
+    document.querySelector("#comment-form-<%= @content.id %>").innerHTML = ("<%= j(render(partial: 'form', locals: { related_content: @content, post: @post })) %>")
+    $("#comment-body-<%= @content.id %>").hide();
+  <% end %>
+<% end %>

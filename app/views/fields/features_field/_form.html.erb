@@ -1,0 +1,12 @@
+<!-- app/views/fields/features_field/_form.html.erb -->
+<div class="field-unit__label">
+  <%= f.label field.attribute %>
+</div>
+<div class="field-unit__field">
+  <% field.feature_keys.each do |feature| %>
+    <div>
+      <%= check_box_tag "features[#{feature}]", 1, field.feature_enabled?(feature) %>
+      <%= label_tag "features[#{feature}]", feature.capitalize %>
+    </div>
+  <% end %>
+</div>

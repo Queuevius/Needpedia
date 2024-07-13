@@ -23,12 +23,14 @@ module ApplicationHelper
   end
 
   def unread_messages(user)
-    count = user&.conversations.joins(:messages).where(messages: { read_at: nil }).where.not(messages: { user_id: user.id }).count
+    blocked_user_ids = user.blocked_users.pluck(:block_user_id)
+    count = user&.conversations.joins(:messages).where(messages: { read_at: nil }).where.not(messages: { user_id: blocked_user_ids.push(user.id) }).count
     'unread-notificatios' if count&.positive?
   end
 
   def unread_msg_in_navbar(conversation, user)
-    count = conversation.messages.where(read_at: nil).where.not(user_id: user.id).count
+    blocked_user_ids = user.blocked_users.pluck(:block_user_id)
+    count = conversation.messages.where(read_at: nil).where.not(user_id: blocked_user_ids.push(user.id)).count
     'unread-notificatios' if count&.positive?
   end
 
@@ -70,5 +72,37 @@ module ApplicationHelper
 
   def post_token(post, user)
     PostToken.where(post_id: post.id, user_id: user.id).last
+  end
+
+  def post_comments(post)
+    post.comments.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('comments.created_at DESC')
+  end
+
+  def liquid_template(name, arguments: {})
+    email_template = EmailTemplate.where(name: name).last
+    return '' unless email_template.present?
+
+    message = email_template.message
+    template = Liquid::Template.parse(message) # Parses and compiles the template
+    template.render!(arguments.deep_stringify_keys)
+  rescue Liquid::Error
+    text.to_s
+  end
+
+  def rating(post, action)
+    return if action == "list_view"
+
+    ratings = post&.ratings.where.not(rating: 6)
+    "Points - #{ratings.count == 0 ? "0" : ratings.average(:rating).round(1)} Point Average"
+  end
+
+  def options_for_active_group_select(current_user)
+    groups = current_user.groups.where(group_id: nil).uniq
+    options_for_select = []
+    options_for_select << ["#{current_user.name.titleize} (as individual)", 0]
+    groups.uniq.each do |group|
+      options_for_select << [group.name.titleize, group.id]
+    end
+    options_for_select
   end
 end

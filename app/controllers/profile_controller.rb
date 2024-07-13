@@ -1,14 +1,16 @@
 class ProfileController < ApplicationController
-  before_action :set_user, only: [:wall, :about, :friends, :friend_request, :un_friend, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed]
-  before_action :friend_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed]
-  before_action :connection_requests_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed]
+  before_action :set_user, only: [:wall, :about, :friends, :friend_request, :un_friend, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed, :block_user, :unblock_user, :tutorials]
+  before_action :friend_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed, :tutorials]
+  before_action :connection_requests_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed, :tutorials]
+  before_action :set_tutorial, except: [:update_details, :update_profile_image, :create_pictures]
 
   def wall
-    @f = Post.posts_feed.ransack(params[:q])
-    @posted_posts = @f.result.where(user_id: @user.id).or(@f.result.where(posted_to: @user.id))
-    @liked_posts = @user.likes.where(likeable_type: 'Post').collect(&:likeable)
-    @commented_posts = @user.comments.collect(&:commentable)
-    @flagged_posts = @user.flags.where(flagable_type: 'Flag').collect(&:flagable)
+    blocked_user_ids = params[:uuid].present? ? [] : current_user.blocked_users.pluck(:block_user_id)
+    @f = Post.posts_feed.where.not(user_id: blocked_user_ids).ransack(params[:q])
+    @posted_posts = @f.result.where(user_id: @user.id).or(@f.result.where(posted_to: @user.id)).page(params[:page].present? ? params[:page] : 1).per(20).order('created_at desc')
+    @liked_posts = @user.likes.where(likeable_type: 'Post').collect(&:likeable).uniq
+    @commented_posts = @user.comments.collect(&:commentable).uniq
+    @flagged_posts = @user.flags.where(flagable_type: 'Flag').collect(&:flagable).uniq
     @shared_posts = @user.shares.collect(&:shareable)
   end
 
@@ -144,8 +146,9 @@ class ProfileController < ApplicationController
     # @activities = PublicActivity::Activity.includes(:owner, trackable: [:flags, :likes, :comments, :shares, :post_tokens, :notifications, images_attachment: :blob]).order('created_at DESC').limit(50)
       # @activities = PublicActivity::Activity.order('created_at DESC')
       # @activities = @activities.select { |p| p.trackable&.private == false }
-      @f = Post.posts_feed.ransack(params[:q])
-      posts = @f.result.where(user_id: @user.links.pluck(:id), private: false, disabled: false)
+      blocked_user_ids = params[:uuid].present? ? [] : current_user.blocked_users.pluck(:block_user_id)
+      @f = Post.posts_feed.where.not(user_id: blocked_user_ids).ransack(params[:q])
+      posts = @f.result.where(user_id: @user.links.pluck(:id), private: false, disabled: false).order('created_at desc')
       @posts = Kaminari.paginate_array(posts).page(params[:page]).per 10
       respond_to do |format|
         format.html
@@ -164,6 +167,20 @@ class ProfileController < ApplicationController
     respond_to do |format|
       format.json { render json: @users }
     end
+  end
+
+  def block_user
+    block_user = current_user.blocked_users.create(block_user_id: @user.id)
+    redirect_to wall_path(uuid: params[:uuid]), notice: 'User blocked successfully.' if block_user.present?
+  end
+
+  def unblock_user
+    blocked_user = current_user.blocked_users.where(block_user_id: @user.id).last
+    redirect_to wall_path(uuid: params[:uuid]), notice: 'User unblocked successfully.' if blocked_user && blocked_user.destroy
+  end
+
+  def tutorials
+    @user_tutorials = current_user.user_tutorials
   end
 
   private
@@ -190,4 +207,8 @@ class ProfileController < ApplicationController
     @connection_requests_count = ConnectionRequest.where(to: @user.uuid, status: 'pending')
   end
 
+  def set_tutorial
+    @url = "#{params[:action]}"
+    @user_tutorial = current_user.user_tutorials.where(link: @url).last if current_user.present?
+  end
 end

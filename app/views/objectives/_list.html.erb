@@ -1,0 +1,48 @@
+<% objectives.each do |objective| %>
+  <% unless objective.parent_id.present? %>
+    <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 border">
+      <div class="media">
+        <div class="media-body">
+          <h5 class="media-heading"><%= objective.user.name %></h5>
+          <div id="comment-form-<%= objective.id %>"></div>
+          <p id="comment-body-<%= objective.id %>">
+            <% if objective.body.length > Objective::MAX_BODY_LENGTH %>
+              <span class="comment-truncated-content">
+                <%= truncate(objective.body, length: Objective::MAX_BODY_LENGTH, separator: ' ', omission: '...') %>
+              </span>
+              <span class="comment-full-content" style="display: none;"><%= objective.body %></span>
+              <a href="#" class="see-more-link">See more</a>
+            <% else %>
+              <%= objective.body.blank? ? 'No details provided' : objective.body %>
+            <% end %>
+          </p>
+          <ul class="list-unstyled list-inline media-detail pull-left">
+            <li><i class="fa fa-calendar"></i> <%= time_ago_in_words(objective.created_at) %> ago</li>
+            <% if objective.created_at != objective.updated_at %>
+              <li class="mt-2">
+                <span class='font-italic mt-2 text-secondary'>Edited: <%= objective.created_at.strftime('%d-%m-%Y') %></span>
+              </li>
+            <% end %>
+            <% if current_user %>
+              <li class="mt-2">
+                <% if objective.user_id == current_user.id %>
+                  <%= link_to 'Edit', edit_post_objective_path(post, objective.id), remote: true, class: 'mr-1' %>
+                  <%= link_to 'Delete', post_objective_remove_objective_path(post.id, objective.id), method: :delete, class: 'mr-1' %>
+                  <%= link_to 'Reply', new_post_objective_path(post, parent_id: objective.id), remote: true, class: 'mr-1' %>
+                <% else %>
+                  <%= link_to 'Reply', new_post_objective_path(post, parent_id: objective.id), remote: true, class: 'mr-1' %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+      <div class="reply_container_<%= objective.id %>">
+        <% if objective.replies.any? %>
+          <%= render partial: 'objectives/replies', locals: {replies: objective.replies, post: post} %>
+        <% end %>
+      </div>
+      <div id="objectives-reply-form-<%= objective.id %>"></div>
+    </div>
+  <% end %>
+<% end %>

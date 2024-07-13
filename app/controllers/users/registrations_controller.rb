@@ -1,6 +1,9 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   # prepend_before_action :check_captcha, only: [:create] # Change this to be any actions you want to protect.
+  before_action :check_gibberish, only: [:create]
+  before_action :check_account_status, only: [:new, :create]
   prepend_after_action :save_questionnaire_data, only: [:create]
+  include GibberishHelper
 
   def update
     time = params[:daily_notification_time]
@@ -10,6 +13,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
     super
   end
+
   private
 
   def check_captcha
@@ -30,4 +34,30 @@ class Users::RegistrationsController < Devise::RegistrationsController
       q.answers.create(body: params["answer_#{q.id}"], user_id: resource.id)
     end
   end
+
+  def check_account_status
+    redirect_to root_path, alert: "Can't perform this action right now sorry for the inconvenience." and return if Setting.accounts_freezed
+  end
+
+  def build_resource(hash = {})
+    self.resource = resource_class.new_with_session(hash, session)
+    questionnaire = Questionnaire.first
+
+    # Jumpstart: Skip email confirmation on registration.
+    #   Require confirmation when user changes their email only
+    resource.skip_confirmation_notification! if questionnaire&.active?
+  end
+
+  def check_gibberish
+    return unless params[:questionnaire_id].present?
+
+    questionnaire = Questionnaire.find(params[:questionnaire_id])
+    questionnaire.questions.each do |q|
+      if gibberish?(params["answer_#{q.id}"])
+        redirect_to root_path, alert: 'Sorry, we are not satisfied with the information you provided.' and return
+      end
+    end
+
+  end
+
 end

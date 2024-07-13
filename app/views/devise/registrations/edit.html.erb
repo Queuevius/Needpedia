@@ -1,38 +1,41 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
 <div class="row">
   <div class="col-lg-4 col-md-6 ml-auto mr-auto">
-
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
       <%= devise_error_messages! %>
 
       <h1 class="text-center">Notification</h1>
+      <table class="table table-borderless">
+        <thead>
+          <tr>
+            <th scope="col">None</th>
+            <th scope="col">Daily</th>
+            <th scope="col">Instant</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="pl-4 text-center"><%= f.radio_button :message_notifications, Notification::NOTIFICATION_TYPE_NONE, class: "form-check-input" %></td>
+            <td class="pl-4 text-center"><%= f.radio_button :message_notifications, Notification::NOTIFICATION_TYPE_DAILY, class: "form-check-input" %></td>
+            <td class="pl-4 text-center"><%= f.radio_button :message_notifications, Notification::NOTIFICATION_TYPE_INSTANT, class: "form-check-input" %></td>
+            <td>Message Notifications</td>
+          </tr>
+          <tr>
+            <td class="pl-4 text-center"><%= f.radio_button :track_notifications, Notification::NOTIFICATION_TYPE_NONE, class: "form-check-input" %></td>
+            <td class="pl-4 text-center"><%= f.radio_button :track_notifications, Notification::NOTIFICATION_TYPE_DAILY, class: "form-check-input" %></td>
+            <td class="pl-4 text-center"><%= f.radio_button :track_notifications, Notification::NOTIFICATION_TYPE_INSTANT, class: "form-check-input" %></td>
+            <td>Post you're tracking</td>
+          </tr>
+        </tbody>
+      </table>
 
-      <div class="ml-5">
-        <div class="form-group">
-          <p class="form-check-input mb-4"> Email </p><br>
-          <%= f.check_box :message_notifications, class: "form-check-input mt-2 mr-3" %>
-          <h5 class="ml-3">Message Notifications</h5>
-        </div>
-
-        <div class="form-group">
-          <%= f.check_box :track_notifications, class: "form-check-input mt-2 mr-3" %>
-          <h5 class="ml-3">Post you're tracking</h5>
-        </div>
-
-        <div class="form-group">
-          <%= f.check_box :daily_notifications, class: "form-check-input mt-2 mr-3" %>
-          <h5 class="ml-3">
-            <div class="row">
-              <div class="col-md-4">Daily @ </div>
-              <div class="col-md-4"><%= text_field_tag 'daily_notification_time', resource&.daily_notification_time.present? ? resource&.daily_notification_time&.strftime('%l:%M %P') : nil, class: 'timepicker', style: 'width: 140%' %></div>
-            </div>
-          </h5>
-        </div>
-
-        <div class="form-group">
-          <%= f.check_box :all_notifications, class: "form-check-input mt-2 mr-3" %>
-          <h5 class="ml-3">All Notifications</h5>
-        </div>
+      <div class="form-group">
+        <h5 class="ml-3">
+          <div class="row">
+            <div class="col-md-4">Daily @</div>
+            <div class="col-md-4"><%= text_field_tag 'daily_notification_time', resource&.daily_notification_time.present? ? resource&.daily_notification_time&.strftime('%l:%M %P') : nil, class: 'timepicker', style: 'width: 140%' %></div>
+          </div>
+        </h5>
       </div>
 
       <h1 class="text-center">Account</h1>
@@ -62,16 +65,15 @@
 <!--      <div class="form-group">-->
         <%#= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control', placeholder: 'Confirm Password'  %>
 <!--      </div>-->
-
       <div class="form-group">
         <%= f.submit "Save Changes", class: 'btn btn-lg btn-block btn-primary' %>
       </div>
     <% end %>
     <hr>
-
-      <%= link_to registration_path(resource_name), data: { confirm: "Are you sure? You cannot undo this." }, method: :delete do %>
-        <p class="text-danger text-center">Deactivate my account</p>
-      <% end %>
+    <%= link_to 'Provide Feedback', new_feedback_path, class: 'btn btn-lg btn-block btn-primary mb-2' %>
+    <%= link_to registration_path(resource_name), data: { confirm: "Are you sure? You cannot undo this." }, method: :delete do %>
+      <p class="text-danger text-center">Deactivate my account</p>
+    <% end %>
   </div>
 </div>
 <script>
@@ -84,3 +86,38 @@
         scrollbar: true
     });
 </script>
+<style>
+  label{
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  input[type=radio] {
+    appearance: none;
+    background-color: #fff;
+    width: 15px;
+    height: 15px;
+    border: 2px solid #ccc;
+    border-radius: 2px;
+    display: inline-grid;
+    place-content: center;
+  }
+
+  input[type=radio]::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    transform: scale(0);
+    transform-origin: bottom left;
+    background-color: #fff;
+    clip-path: polygon(13% 50%, 34% 66%, 81% 2%, 100% 18%, 39% 100%, 0 71%);
+  }
+
+  input[type=radio]:checked::before {
+    transform: scale(1);
+  }
+  input[type=radio]:checked{
+    background-color:   #0075FF;
+    border: 2px solid #0075FF;
+  }
+</style>

@@ -1,7 +1,8 @@
 <% if user_masquerade? %>
   <div class="alert alert-warning text-center">
     You're logged in as <b><%= current_user.name %> (<%= current_user.email %>)</b>
-    <%= link_to back_masquerade_path(current_user) do %><%= icon("fas", "times") %> Logout <% end %>
+    <%= link_to back_masquerade_path(current_user) do %><%= icon("fas", "times") %> Logout
+    <% end %>
   </div>
 <% end %>
 
@@ -30,13 +31,6 @@
           <% end %>
         </div>
       </li>
-      <li>
-        <%= link_to feed_path do %>
-          <span><i class="fa fa-rss" style="font-size: x-large" aria-hidden="true"></i></span>
-        <% end %>
-      </li>
-
-
       <li class="nav-item dropdown" id="user-chat-icon" data-user-id="<%= current_user&.id %>">
         <a class="nav-link <%= unread_messages(current_user) %>" href="#" id="<%= set_id_for_icon(current_user, params) %>" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="fa fa-comment-dots" style="font-size: x-large; aria-hidden:true"></i>
@@ -44,6 +38,12 @@
         <div class="dropdown-menu chat-dropdown" aria-labelledby="navbarDropdown">
           <%= render 'conversations/chat_menu_section', conversations: @conversations %>
         </div>
+      </li>
+
+      <li>
+        <%= link_to geo_maxing_posts_posts_path, data: { turbolinks: false } do %>
+          <%= image_tag('map-small.png', height: "60%", width: "60%") %>
+        <% end %>
       </li>
 
       <li>
@@ -56,25 +56,45 @@
           <span><i class="far fa-bell" aria-hidden="true" style="font-size: x-large"></i></span>
         <% end %>
       </li>
+      <li data-toggle="tooltip" data-placement="bottom" title="Groups">
+        <%= link_to groups_path do %>
+          <span><i class="fas fa-users" aria-hidden="true" style="font-size: x-large" ></i></span>
+        <% end %>
+      </li>
+      <li>
+        <%= link_to ai_path do %>
+          <%= image_tag('buttler.png', height: "70%", width: "70%") %>
+        <% end %>
+      </li>
       <li>
         <%= link_to "#", id: "navbar-dropdown", class: "dropdown-toggle", data: {target: "nav-account-dropdown", toggle: "dropdown"}, aria: {haspopup: true, expanded: false} do %>
-          <i class="fa fa-user" style="font-size: x-large; aria-hidden:true"></i>
-          <% if current_user.admin? %>
-            <span class="logged-in">●</span>
-          <% end  %>
+          <i class="fa fa-rss" style="font-size: x-large" aria-hidden="true"></i>
         <% end %>
         <div id="nav-account-dropdown" class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar-dropdown">
+          <% if current_user.master_admin? %>
+            <%= link_to "Master Admin Area", master_admin_root_path, class: "dropdown-item" %>
+          <% end %>
           <% if current_user.admin? %>
             <%= link_to "Admin Area", admin_root_path, class: "dropdown-item" %>
           <% end %>
-          <%= link_to current_user ? current_user&.name : 'Profile', wall_path, class: "dropdown-item" %>
+          <%= link_to current_user ? current_user&.name : 'Profile', feed_path, class: "dropdown-item" %>
           <div class="dropdown-divider"></div>
           <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
         </div>
       </li>
+      <% if current_user.default_group_id&.positive? %>
+        <li class="align-items-md-end">
+          <%= select_tag 'current_group', options_for_select(options_for_active_group_select(current_user), current_user.default_group_id), id: 'groupSelectNavbar', class: 'form-select p-3 px-0 border-0 bg-transparent' %>
+        </li>
+      <% end %>
     <% else %>
       <li class="nav-item"><%= link_to "Sign Up", new_user_registration_path, class: 'mt-2' %></li>
       <li class="nav-item"><%= link_to "Login", new_user_session_path, class: 'mt-2' %></li>
+      <li class="map-icon">
+        <%= link_to geo_maxing_posts_posts_path do %>
+          <%= image_tag('map-small.png', height: "60%", width: "60%") %>
+        <% end %>
+      </li>
     <% end %>
   </ul>
 </div>
@@ -85,4 +105,26 @@
       multiple: true,
       minimumInputLength: 2
   })
+  $(document).on('change', '#groupSelectNavbar', function() {
+      var selectedOption = $(this).val();
+      $.ajax({
+          url: '/groups/update_default_group',
+          type: 'PATCH',
+          data: { group_id: selectedOption }
+      });
+  });
 </script>
+<style>
+  @media (max-width: 635px) {
+    .align-items-md-end {
+      margin-top: 3%;
+      margin-left: 20%;
+    }
+  }
+  @media (max-width: 392px) {
+    .align-items-md-end {
+      margin-top: 3%;
+      margin-left: 5%;
+    }
+  }
+</style>

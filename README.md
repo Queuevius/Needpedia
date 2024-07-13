@@ -1,86 +1,14 @@
-<b>Note from founder to dev community:</b><br>
-Needpedia's goal is to create a community of devs who use it's "Layer System" and other tools to collaborate directly with users, to optimize Needpedia, and to optimize the world. It can be used to work on anything from random volunteer organizations halfway accross the world, to exposing all known problems with giant evil corporations in your own backyard. Which is why it needs to be an Open Source community instead of a business. (Most sponsors aren't going to like that)
+Always remember, it is devs like you that are the reason Needpedia doesn't have to sell out to corporate sponsors. You are the reason our entire community will always be free to speak critically of any corporation or government they wish, you are the backbone of this community. And if there is anything we can do to support you or improve our environment, we want to know about it. <br><br>
 
-That said, the tools we're making for activists and scientists can also be used for respectable/ethical businesses, (to profit), so once Needpedia's doing well we plan on creating a separate, worker-owned business that specializes in using the tools we've made here to serve respectable businesses, and generate funding for legal defense trust fund, (for Needpedia.
+Below we have a flowchart for volunteer devs.<br>
+We also have a growing number of other resources available on our Discord space here:
+https://discord.gg/B7VNVQmHwG<br><br>
 
- Needpedia has an FAQ section here: https://needpedia.org/faq
- and a 'how to' section on the homepage at Needpedia.org
-
-*Please also remember that Needpedia's dev community is the backbone of this entire operation, so if there is Anything I can do to support you, or that we can add to this project to make it work better, I definitely want to know. My personal email address is Anthonydunn97202@gmail.com - Even if I can't answer your question pesonally I'm happy to find someone who can.
-      -Anthony Brasher<br><br>
+Startup and troubleshooting instructions are posted to Discord. In a nutshell we use docker to run locally and test PRs, just be sure to get approval for milestones from me at Anthonydunn97202@gmail.com before beginning work on things. <br><br><br>
 
 
+^Unless you want to make an app that accesses Needpedia and loads it in a new and creative way, then all I ask is that you keep it constructive and avoid 'gamification'. (Because once the rewards become the purpose, the incentive stops being to help people. Our actual goal must always be to help people. That's our bottom line) In the larger picture we'll need apps that let people test new and creative ideas for how 'humanity's archive for all solutions to all problems' can look or operate. We're basically pioneers, viewing a vast and uncharted expanse. As the ones working on this project we are forced to ask not only what is possible for the individual, but also what is possible for the presentation of such 'possibilities' to individuals. Or in other words, where others will see a map of potential-space, we'll be mapping out the different ways that their maps can even look. -Or in more practical language: changing Needpedia itself will require consensus, which would limit devs who want to be more creative. So we believe the answer to this, in the long run, will be to encourage devs to make apps that access Needpedia.org and let users experiment with new and creative features (in app), without separating users into different websites where they no longer see everyone's ideas, (without looking through all the different idea archives).<br><br>
 
+But that's the longterm vision, for now we need help getting our own app working. There's countless little bugs and design flaws throughout the site, and you're always free to create your own ideas for improving the site too. Thanks for tuning in, we hope you have fun with this and encounter countless new and interesting ideas. Thanks again for joining us!
 
-
-<b>Setting up locally with Docker (Recommended):</b><br>
-1. Follow this link to install docker https://docs.docker.com/engine/install/ubuntu/
-   (Devs running Ubuntu Hirsute can instead use the terminal command `sudo snap install docker`)
-2. Follow this link to install docker compose https://docs.docker.com/compose/install/
-3. Stop your local running postgresql service by command `sudo service postgresql stop`
-4. Go to project directory, left click: "Open in terminal" and run command `sudo docker-compose build` (NOTE: Its only for first time)
-5. After successfully build run command `sudo docker-compose up`
- You project will be running on `localhost:3000` (as a URL)<br><br>
-
-
-<b>Setting up locally without Docker:</b><br>
-
-Before starting, it is important you have the desired environment, you'll need to install
-- Ruby (instructions for your operating system can be found here https://www.ruby-lang.org/en/documentation/installation/)
-- PostgresQL (download instructions are here https://www.postgresql.org/)
-- Node.js (Find the installation instructions at the Node.js website https://nodejs.org/en/download/)
-- Yarn (To install Yarn, follow the installation instructions at the Yarn website https://classic.yarnpkg.com/en/docs/install)
-
-Once you have all these installed on your local machine, you can follow the bellow steps to setup this project locally
-
-- clone the repo
-- bundle install
-- create DB, run command rails db:create
-- run migrations, run command: rails db:migrate
-
-<b>Environment variables for for development</b><br>
-RECAPTCHA_SECRET_KEY=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
-RECAPTCHA_SITE_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
-
-
-Optional:
-
-GENERAL_AREA_ID=1 (where 1 is the DB id of any Area post)
-
-GENERAL_PROBLEM_ID=2 (where 2 is the DB id of any Area post)
-<br><br>
-
-
-
-
-<b>Server/Devops documentation:</b><br>
-See file named: Devops Documentation
-https://github.com/Queuevius/Needpedia2/blob/master/Devops%20Documentation
-<br><br>
-
-
-
-
-
-<b>Milestone Documentation</b><br>
-
----Milestone 105: Create Curated Posts and Upgrade Search Page
--Milestone description: https://docs.google.com/document/d/1DZJTUHFfsIuhQ6LlNM6HXx6WjZq5jSsQaO7wQseWMs8/edit?usp=sharing
--Milestone documentation: https://docs.google.com/document/d/1lp530HkuAmWH5P2A5-nVEeg66fLvoQtlT7bUJFlxVnQ/edit?usp=sharing
-
----M106: Create [wiki post] Buttons and Limit Size of Wiki Posts in Lists
--Milestone description: https://docs.google.com/document/d/1JiPESiUPhGrHMQJRTc0LXsB2k9mAp884s_rgzn_J51c/edit?usp=sharing
--Milestone documentation: https://docs.google.com/document/d/1SN7N7ETLNs0nIISQPwhB0E0DrYMbEICVm_adWo8GjSc/edit?usp=sharing
-
-
-Docker Setup Steps:
-1. Follow this link to install docker https://docs.docker.com/engine/install/ubuntu/
-2. Follow this link to install docker compose https://docs.docker.com/compose/install/
-3. Stop your local running postgresql service by command `sudo service postgresql stop`
-4. Go to project directory and run command `sudo docker-compose build` (NOTE: Its only for first time)
-5. After successfully build run command `sudo docker-compose up`
- You project will be running on `localhost:3000`
-
-Local Mails:
-
-All emails from the system can be checked locally on `http://localhost:3000/letter_opener`
+![Volunteer Dev Flow Chart](Volunteer%20Dev%20Flow%20Chart.png)

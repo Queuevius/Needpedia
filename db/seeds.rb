@@ -19,3 +19,4 @@
   )
   u.save!
 end
+Rake::Task['populate_feeback_data:process'].invoke

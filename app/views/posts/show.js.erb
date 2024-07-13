@@ -1,4 +1,4 @@
-$(".comments_container").append("<%= j(render(partial: '/comments/list')) %>");
+$(".comments_container_<%= @post.id %>").append("<%= j(render(partial: '/comments/list', locals: { comments: @comments, post: @post })) %>");
 
 <% if @comments.last_page? %>
   $("#load-more-posts").addClass('invisible');

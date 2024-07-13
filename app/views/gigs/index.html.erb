@@ -1,6 +1,7 @@
 <%= render 'shared/offer_buttons' %>
+<%= render "shared/tutorial" %>
 
-<div class="container mb-5">
+<div class="container mb-5" style="margin-bottom: 25rem !important;">
   <div class="row mt-3">
     <div class="col-md-12 text-center mb-2">
       <h1><b>My Gigs</b></h1>
@@ -20,8 +21,7 @@
           <% end %>
         </div>
       </div>
-      <%= render 'list', { gigs: @gigs, search: true } %>
-    </div>
+      <%= render 'list', {gigs: @gigs, search: true} %>
     </div>
   </div>
 </div>

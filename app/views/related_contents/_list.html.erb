@@ -1,0 +1,48 @@
+<% related_contents.each do |content| %>
+  <% unless content.parent_id.present? %>
+    <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 border">
+      <div class="media">
+        <div class="media-body">
+          <h5 class="media-heading"><%= content.user.name %></h5>
+          <div id="comment-form-<%= content.id %>"></div>
+          <p id="comment-body-<%= content.id %>">
+            <% if content.body.length > RelatedContent::MAX_BODY_LENGTH %>
+              <span class="comment-truncated-content">
+                <%= truncate(content.body, length: RelatedContent::MAX_BODY_LENGTH, separator: ' ', omission: '...') %>
+              </span>
+              <span class="comment-full-content" style="display: none;"><%= content.body %></span>
+              <a href="#" class="see-more-link">See more</a>
+            <% else %>
+              <%= content.body.blank? ? 'No details provided' : content.body %>
+            <% end %>
+          </p>
+          <ul class="list-unstyled list-inline media-detail pull-left">
+            <li><i class="fa fa-calendar"></i> <%= time_ago_in_words(content.created_at) %> ago</li>
+            <% if content.created_at != content.updated_at %>
+              <li class="mt-2">
+                <span class='font-italic mt-2 text-secondary'>Edited: <%= content.created_at.strftime('%d-%m-%Y') %></span>
+              </li>
+            <% end %>
+            <% if current_user %>
+              <li class="mt-2">
+                <% if content.user_id == current_user.id %>
+                  <%= link_to 'Edit', edit_post_related_content_path(post, content.id), remote: true, class: 'mr-1' %>
+                  <%= link_to 'Delete', post_related_content_remove_content_path(post.id, content.id), method: :delete, class: 'mr-1' %>
+                  <%= link_to 'Reply', new_post_related_content_path(post, parent_id: content.id), remote: true, class: 'mr-1' %>
+                <% else %>
+                  <%= link_to 'Reply', new_post_related_content_path(post, parent_id: content.id), remote: true, class: 'mr-1' %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+      <div class="reply_container_<%= content.id %>">
+        <% if content.replies.any? %>
+          <%= render partial: 'related_contents/replies', locals: {replies: content.replies, post: post} %>
+        <% end %>
+      </div>
+      <div id="related-contents-reply-form-<%= content.id %>"></div>
+    </div>
+  <% end %>
+<% end %>

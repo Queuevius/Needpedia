@@ -1,4 +1,5 @@
 <div class="container mb-5">
+  <%= render "shared/tutorial" %>
   <div class="row mt-3">
     <div class="col-md-12 text-center mb-2">
       <h1><b>Search results</b></h1>
@@ -14,8 +15,8 @@
             <div class="col-lg-12 col-md-12">
               <div class="ui-block shadow-lg rounded">
                 <div class="ui-block-content">
-                  <%= link_to new_post_path(post_type: Post::POST_TYPE_SUBJECT), class: 'btn btn-primary' do %>
-                    Create Subject Post
+                  <%= link_to new_post_path(post_type: Post::POST_TYPE_SUBJECT), class: 'btn btn-primary', id: 'new_button' do %>
+                    Create Post
                   <% end %>
                 </div>
               </div>
@@ -60,7 +61,7 @@
                         <div class="row no-gutters align-items-center">
                           <div class="col-6">
                             <div class="form-group row">
-                              <label for="inputPassword" class="col-sm-3 col-form-label">Keyword</label>
+                              <label for="inputPassword" class="col-sm-2 text-sm-center col-form-label" style="white-space: nowrap;">Keyword</label>
                               <div class="col-sm-8">
                                 <%= f.text_field :title_cont, class: 'form-control' %>
                               </div>
@@ -69,7 +70,7 @@
 
                           <div class="col-6">
                             <div class="form-group row">
-                              <label for="inputPassword" class="col-sm-3 col-form-label">Author</label>
+                              <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Author</label>
                               <div class="col-sm-8">
                                 <%= f.text_field :user_first_name_cont, class: 'form-control' %>
                               </div>
@@ -78,7 +79,7 @@
 
                           <div class="col-6">
                             <div class="form-group row">
-                              <label for="inputPassword" class="col-sm-3 col-form-label">Post Type</label>
+                              <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Post Type</label>
                               <div class="col-sm-8">
                                 <%#= f.select(:post_type_cont , options_for_select(Post::TYPES_FOR_SEARCH.map { |r| [r.titleize, r] }, @post_type), { include_blank: false }, {class: 'selectpicker form-control', autofocus: false })%>
                                 <%= select_tag 'post_type', options_for_select(Post::TYPES_FOR_SEARCH.map { |r| [r.titleize, r] }, @post_type), include_blank: false , class: "form form-group form-control" %>
@@ -88,7 +89,7 @@
 
                           <div class="col-6">
                             <div class="form-group row">
-                              <label for="inputPassword" class="col-sm-3 col-form-label">Sorted By</label>
+                              <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Sorted By</label>
                               <div class="col-sm-8">
                                 <%= select_tag "sorted_by", options_for_select(%w[Highest-Rated Highest-Rated/View New Random], @sorted_by), include_blank: false, class: "form form-group form-control" %>
                               </div>
@@ -97,25 +98,30 @@
                         </div>
                       </div>
                     </div>
+<!--                    <div class="row pb-4">-->
+                      <%#= render 'searchable_tag_section', heading_text: 'Subject', main_section_id: 'subject-tag-section', searched_title: @subject_input_field, modal_section_id: 'subject_input_modal', input_field_name: 'subject_input_field', input_field_value: @subject_input_field %>
+                      <%#= render 'searchable_tag_section', heading_text: 'Problem', main_section_id: 'problem-tag-section', searched_title: @problem_input_field, modal_section_id: 'problem_input_modal', input_field_name: 'problem_input_field', input_field_value: @problem_input_field %>
+                      <%#= render 'searchable_tag_section', heading_text: 'Idea', main_section_id: 'idea-tag-section', searched_title: @idea_input_field, modal_section_id: 'idea_input_modal', input_field_name: 'idea_input_field', input_field_value: @idea_input_field %>
+<!--                    </div>-->
                     <div class="row">
                       <div class="col-md-12">
                         <button class="btn btn-sm btn-secondary mb-3" type="button" data-toggle="collapse" data-target="#collapseAdvanceFilters" aria-expanded="false" aria-controls="collapseExample">
                           Advance Filters <i class="fa fa-sliders" aria-hidden="true"></i>
                         </button>
-                        <div class="collapse" id="collapseAdvanceFilters">
+                        <div class="collapse <%= 'show' if @open_advance_filters %>" id="collapseAdvanceFilters">
                           <div class="row no-gutters align-items-center">
                             <div class="col-6">
                               <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Access Type</label>
+                                <label for="inputPassword" class="col-sm-3 col-form-label " style="white-space: nowrap;">Access Type</label>
                                 <div class="col-sm-8">
-                                  <%= select_tag 'access_type', options_for_select(%w[Public All Curated], @access_type), include_blank: false , class: "form form-group form-control" %>
+                                  <%= select_tag 'access_type', options_for_select(%w[Public All Curated], @access_type), include_blank: false, class: "form form-group form-control" %>
                                 </div>
                               </div>
                             </div>
 
                             <div class="col-6">
                               <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Subject</label>
+                                <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Subject</label>
                                 <div class="col-sm-8">
                                   <%= text_field_tag 'subject', @subject, class: 'form-control' %>
                                 </div>
@@ -124,7 +130,16 @@
 
                             <div class="col-6">
                               <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Problem</label>
+                                <label for="inputPassword" class="col-sm-3 pr-2 col-form-label " style="white-space: nowrap; ">Resource Tags</label>
+                                <div class="col-sm-8">
+                                  <%= text_field_tag 'resource_tags', @resource_tags, class: 'form-control' %>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-6">
+                              <div class="form-group row">
+                                <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Problem</label>
                                 <div class="col-sm-8">
                                   <%= text_field_tag 'problem', @problem, class: 'form-control' %>
                                 </div>
@@ -133,16 +148,7 @@
 
                             <div class="col-6">
                               <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Idea</label>
-                                <div class="col-sm-8">
-                                  <%= text_field_tag 'idea', @idea, class: 'form-control' %>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div class="col-6">
-                              <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Location Tags</label>
+                                <label for="inputPassword" class="col-sm-3 col-form-label " style="white-space: nowrap;">Location Tags</label>
                                 <div class="col-sm-8">
                                   <%= text_field_tag 'location_tags', @location_tags, class: 'form-control' %>
                                 </div>
@@ -151,9 +157,9 @@
 
                             <div class="col-6">
                               <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label">Resource Tags</label>
+                                <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Idea</label>
                                 <div class="col-sm-8">
-                                  <%= text_field_tag 'resource_tags', @resource_tags, class: 'form-control' %>
+                                  <%= text_field_tag 'idea', @idea, class: 'form-control' %>
                                 </div>
                               </div>
                             </div>
@@ -275,8 +281,25 @@
 <script>
   var post_type = $('#q_post_type_cont').val();
   if (post_type == 'social_media') {
-      console.log('post_type q', post_type);
       $('#access_type').val('');
       $('#access_type').parent('div').parent('div').toggle('hidden');
   }
+
+  setUpNewButton();
+  $(document).on("input", "#subject, #problem, #idea, #post_type", function () {
+      setUpNewButton();
+  });
+
+  function setUpNewButton() {
+      var post_type = $('#post_type').val();
+      var subject_field = $('#subject');
+      var problem_field = $('#problem');
+      var idea_field = $('#idea');
+      $('#new_button').attr('href', `/posts/new?subject_title=${subject_field.val()}&problem_title=${problem_field.val()}&idea_title=${idea_field.val()}&post_type=${post_type}`);
+  }
+  <%# just removing tag functionality, keeping the commented code for awhile in case its required again  %>
+  // $('#post_type').change(function (e) {
+  //     $(`#${e.target.value}-tag-section`).removeClass('hidden');
+  // })
+
 </script>

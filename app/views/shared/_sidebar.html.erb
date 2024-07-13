@@ -25,7 +25,7 @@
           <% elsif @user.connection_status(current_user)[:status] == 'request_received' || request_recieved?(@user.id, current_user.uuid) %>
             <%= link_to 'Accept', accept_invitation_path(:uuid => @user.connection_status(current_user)[:request_uuid]), class: 'btn btn-sm btn-rounded btn-primary' %>
           <% elsif @user.connection_status(current_user)[:status] == 'connected' %>
-            <%= link_to 'Unfriend', un_friend_path(uuid: @user.uuid, redirect: 'friend'), method: :delete, class: 'btn btn-sm btn-rounded btn-primary ml-2', data: { confirm: "Are you sure?" } %>
+            <%= link_to 'Unfriend', un_friend_path(uuid: @user.uuid, redirect: 'friend'), method: :delete, class: 'btn btn-sm btn-rounded btn-primary', data: { confirm: "Are you sure?" } %>
           <% else %>
             <%= link_to 'Add Friend', new_connection_request_path(:uuid => @user.uuid), class: 'btn btn-sm btn-rounded btn-primary' %>
           <% end %>
@@ -37,18 +37,20 @@
 
       <% if current_user != @user %>
         <%= link_to 'Message', conversations_path(receiver_id: @user.id), method: :post, class: 'btn btn-rounded btn-secondary btn-sm' %>
+        <% if current_user.blocked_users.where(block_user_id: @user.id).exists? %>
+          <%= link_to 'Unblock Account', unblock_user_path(uuid: @user.uuid), method: :delete, class: 'btn btn-rounded btn-secondary btn-sm mt-1 ml-1' %>
+        <% else %>
+          <%= link_to 'Block Account', block_user_path(uuid: @user.uuid), method: :post, class: 'btn btn-rounded btn-secondary btn-sm mt-1 ml-1' %>
+        <% end %>
       <% end %>
 
     </div>
     <ul class="list-unstyled components mb-5">
       <li>
-        <%= link_to 'Wall', wall_path(uuid: @uuid) %>
-      </li>
-      <li>
         <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Friends</a>
         <ul class="collapse list-unstyled" id="pageSubmenu">
           <li>
-            <%= link_to "Friends (#{@friends_count.count})", friends_path(uuid: @uuid) %>
+            <%= link_to "Friends (#{@friends_count.total_count})", friends_path(uuid: @uuid) %>
           </li>
           <% if current_user.uuid == @user.uuid %>
             <li>
@@ -62,6 +64,17 @@
       </li>
       <li>
         <%= link_to 'About', about_path(uuid: @uuid) %>
+      </li>
+      <% if current_user.features["invitable"] %>
+        <li>
+          <%= link_to 'Invite Friend', new_user_invitation_path%>
+        </li>
+      <% end %>
+      <li>
+        <%= link_to 'Have', have_posts_path(uuid: params[:uuid]) %>
+      </li>
+      <li>
+        <%= link_to 'Want', want_posts_path(uuid: params[:uuid]) %>
       </li>
       <li>
         <%= link_to 'Tracking', tracking_path(uuid: @uuid) %>
@@ -77,6 +90,9 @@
       </li>
       <li>
         <%= link_to 'Settings', edit_user_registration_path, data: {turbolinks: false} %>
+      </li>
+      <li>
+        <%= link_to "Tutorials", user_tutorials_path(uuid: @uuid) %>
       </li>
 
       <% if current_user == @user %>

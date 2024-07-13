@@ -1,10 +1,11 @@
 class User < ApplicationRecord
+  include DeviseTokenAuth::Concerns::User
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :masqueradable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :confirmable
+  devise :invitable, :masqueradable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :confirmable
 
 
-  after_create :add_default_credit, :create_admin_notifications
+  after_create :add_default_credit, :create_admin_notifications, :make_friend_with_mascot, :create_user_tutorials
   before_destroy :delete_notifications
   # before_create :skip_confirmation_notification!
 
@@ -13,6 +14,9 @@ class User < ApplicationRecord
   has_rich_text :about
 
   has_person_name
+  has_many :memberships, dependent: :destroy
+  has_many :groups, through: :memberships, dependent: :destroy
+  has_many :requests, dependent: :destroy
 
   has_many :notifications, foreign_key: :recipient_id
   has_many :services, dependent: :destroy
@@ -29,6 +33,8 @@ class User < ApplicationRecord
   has_many :gigs, through: :user_gigs, dependent: :destroy
 
   has_many :comments, dependent: :destroy
+  has_many :objectives, dependent: :destroy
+  has_many :related_contents, dependent: :destroy
 
   has_many :flags, dependent: :destroy
 
@@ -62,6 +68,16 @@ class User < ApplicationRecord
 
   has_many :answers, dependent: :destroy
 
+  has_many :blocked_users, dependent: :destroy
+  has_many :notification_settings, dependent: :destroy
+
+  has_many :feedbacks, dependent: :destroy
+  has_many :deletions, dependent: :destroy
+  has_many :devices, dependent: :destroy
+
+  has_many :user_tutorials, dependent: :destroy
+  has_many :topics, dependent: :destroy
+
   def credit_hours
     active_gigs_amount = posted_gigs.active_progress.sum(:amount)
     sum = (received_transactions&.sum(:amount) - transferred_transactions&.sum(:amount) - active_gigs_amount).round(1)
@@ -80,6 +96,16 @@ class User < ApplicationRecord
     notifications.each do |notification|
       Notification.post(from: admin, notifiable: admin, to: self, action: Notification::NOTIFICATION_TYPE_ADMIN_NOTIFICATION, admin_notification_id: notification.id)
     end
+  end
+
+  def make_friend_with_mascot
+    return if mascot.blank?
+
+    Connection.create(user_id: id, friend_id: mascot.id)
+  end
+
+  def mascot
+    User.find_by(email: 'mascotaccount@needpedia.com')
   end
 
   def connection_status(current_user)
@@ -113,7 +139,7 @@ class User < ApplicationRecord
   end
 
   def password_complexity
-    return if password.blank? || password =~ /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])/
+    return if password.blank? || password =~ /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*_-])/
 
     errors.add :password, 'Complexity requirement not met. Please use: 1 uppercase, 1 lowercase, 1 digit and 1 special character'
   end
@@ -122,5 +148,19 @@ class User < ApplicationRecord
     Arel::Nodes::NamedFunction.new('LOWER',
                                    [Arel::Nodes::NamedFunction.new('concat_ws',
                                                                    [Arel::Nodes::SqlLiteral.new("' '"), parent.table[:first_name], parent.table[:last_name]])])
+  end
+
+  def create_user_tutorials
+    Tutorial.all.each do |tutorial|
+      self.user_tutorials.create(link: tutorial.link, content: tutorial.content)
+    end
+  end
+
+  def self.features
+    ENV['FEATURES'].split(',').map(&:strip)
+  end
+
+  def feature_enabled?(feature)
+    features[feature.to_s] == true
   end
 end

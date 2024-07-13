@@ -13,8 +13,9 @@ consumer.subscriptions.create("MessageChannel", {
     let current_user_id = $('#user-chat-icon').data('user-id');
     if (current_user_id == data.sender_id) {
       $('.chatContainerScroll > li').last().after(data.sender_html);
-    } else {
+    } else if (data.sender_blocked != true) {
       $('.chatContainerScroll > li').last().after(data.reciever_html);
+      $('#chat_icon_' + data.reciever_id).addClass('unread-notificatios');
     }
     let reciever_convo = $('.conversation-' + data.reciever_id);
     let sender_convo = $('.conversation-' + data.sender_id);
@@ -25,7 +26,7 @@ consumer.subscriptions.create("MessageChannel", {
     sender_convo.remove();
     reciever_convo.remove();
     console.log('data.conversation', data.conversation);
-    $('#chat_icon_' + data.reciever_id).addClass('unread-notificatios');
+
 
     $('.chatContainerScroll').animate({scrollTop: $('.chatContainerScroll .chat-hour:last').position().bottom});
   },

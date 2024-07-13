@@ -1,0 +1,7 @@
+<% if @objective.parent_id.present? %>
+  $(".reply_container_<%= @objective.parent_id %>").append("<%= j(render(partial: '/objectives/replies', locals: { replies: [@objective], post: @objective })) %>")
+  $('.reply_body').val('');
+<% else %>
+  $(".objectives_container_<%= @post.id %>").prepend("<%= j(render(partial: 'objectives/list', locals: { objectives: [@objective], post: @post })) %>")
+  $('#objective_body').val('');
+<% end %>

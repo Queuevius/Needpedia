@@ -1,0 +1,37 @@
+<div class="card mb-1">
+  <div class="card-body">
+    <h5>
+      <%= actor == current_user ? 'You' : link_to(actor.name, wall_path(uuid: actor.uuid)) %>
+      requested to join <%= link_to notification.notifiable&.name, group_path(notifiable.id) if notification.notifiable.present? %> group
+      <% request_group = group_request(notifiable.id, notification.actor) %>
+      <% if request_group&.status == "pending" && notifiable.members.exists?(id: current_user.id)  %>
+        <p>
+          <span class="badge badge-outline badge-sm badge-info badge-pill"data-toggle="tooltip" data-placement="bottom" title="Accept Request">
+            <%= link_to accept_request_group_path(notifiable, group_request(notifiable.id, notification.actor).id), method: :post do %>
+                <i class="fas fa-check"></i>
+            <% end %>
+          </span>
+          <span class="badge badge-outline badge-sm badge-danger badge-pill " data-toggle="tooltip" data-placement="bottom" title="Reject Request">
+            <%= link_to reject_request_group_path(notifiable, group_request(notifiable.id, notification.actor).id), method: :delete, data: {confirm: 'Are you sure?'}, class: "text-danger" do %>
+              <i class="far fa-trash-alt"></i>
+            <% end %>
+          </span>
+        </p>
+      <% end %>
+    </h5>
+    <p><%= request_group&.status %></p>
+    <em class="text-muted"><%= notification.created_at.strftime('%e %b %Y %H:%M %p') %></em>
+  </div>
+</div>
+<style>
+  .badge.badge-outline.badge-info {
+    border: 1px solid #0288d1;
+    background-color: transparent;
+    color: #0288d1;
+  }
+  .badge.badge-outline.badge-danger {
+    border: 1px solid #d32f2f;
+    background-color: transparent;
+    color: #d32f2f;
+  }
+</style>

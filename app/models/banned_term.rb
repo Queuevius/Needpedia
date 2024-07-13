@@ -1,0 +1,2 @@
+class BannedTerm < ApplicationRecord
+end

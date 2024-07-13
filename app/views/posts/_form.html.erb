@@ -1,25 +1,43 @@
 <%= form_with(model: post, local: true) do |form| %>
-
   <% if !@post.persisted? %>
     <%= form.hidden_field :user_id, value: current_user.id %>
     <%= form.hidden_field :post_id, value: @post_id %>
-    <%= form.hidden_field :posted_to_id, value: @posted_to.id %>
+    <%= form.hidden_field :posted_to_id, value: @posted_to&.id %>
+  <% end %>
+  <% if current_user.default_group_id.to_i.positive? %>
+    <%= form.hidden_field :group_id, value: current_user.default_group_id %>
   <% end %>
   <div class="form-group">
     <%= form.text_field :title, autofocus: true, class: 'form-control', placeholder: "Title" %>
   </div>
-
-  <% unless @post.persisted? %>
+  <% if !@post.persisted? && @type == Post::POST_TYPE_LAYER %>
+    <%= form.hidden_field :post_type, value: Post::POST_TYPE_LAYER %>
+  <% elsif !@post.persisted? && (@type == Post::POST_TYPE_SOCIAL_MEDIA || @type == Post::POST_TYPE_HAVE || @type == Post::POST_TYPE_WANT) %>
+    <%= form.hidden_field :post_type, value: @type %>
+  <% elsif !@post.persisted? %>
     <div class="form-group">
-      <%= form.select :post_type, Post::CORE_POST_TYPES.map { |r| [r.titleize, r] } , {include_blank: false},  { class: "form-control"} %>
+      <div class="row">
+        <div class="col-2 pt-2">This post is about:</div>
+        <div class="col-6">
+          <%= form.select :post_type, Post::CORE_POST_TYPES.map {|r| [r.titleize, r]}, {include_blank: false}, {class: "form-control"} %>
+        </div>
+      </div>
     </div>
-
-    <div class="form-group">
-      <%= form.select :subject_id, Post.where(post_type: Post::POST_TYPE_SUBJECT).map { |r| [r.title, r.id] } , {include_blank: "Select Subject"}, {  class: 'form-control', required: true } %>
+    <div class="form-group" id="problem">
+      <div class="row">
+        <div class="col-2 pt-2">Problem:</div>
+        <div class="col-6">
+          <%= form.select :problem_id, Post.where(post_type: Post::POST_TYPE_PROBLEM).map {|r| [r.title, r.id]}, {include_blank: "Select Subject"}, {class: 'form-control hide', required: true} %>
+        </div>
+      </div>
     </div>
-
-    <div class="form-group">
-      <%= form.select :problem_id, Post.where(post_type: Post::POST_TYPE_PROBLEM).map { |r| [r.title, r.id] } , {include_blank: "Select Subject"}, {  class: 'form-control hide', required: true } %>
+    <div class="form-group" id="subject">
+      <div class="row">
+        <div class="col-2 pt-2">Subject:</div>
+        <div class="col-6">
+          <%= form.select :subject_id, Post.where(post_type: Post::POST_TYPE_SUBJECT).map {|r| [r.title, r.id]}, {include_blank: "Select Subject"}, {class: 'form-control', required: true} %>
+        </div>
+      </div>
     </div>
   <% end %>
   <div class="form-group">
@@ -33,15 +51,15 @@
         <%= form.file_field :images, multiple: true, accept: 'image/jpeg, image/png' %>
       </div>
     </div>
-    <% if @post.post_type == Post::POST_TYPE_SUBJECT && !@post.persisted? %>
+    <% if @post.post_type.in?(Post::CORE_POST_TYPES + [Post::POST_TYPE_WIKI_POSTS_ONLY] + ['All']) && !@post.persisted? %>
       <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12">
         <div class="input-group mb-3">
-          <div class="input-group-prepend">
+          <div class="input-group-prepend" id="private">
             <div class="input-group-text private-checkbox">
               <%= form.check_box :private, onchange: 'togglePrivateSection()' %>
             </div>
             <label class="form-check-label pl-2 pt-1">
-              Make this area private?
+              Make this subject private?
             </label>
           </div>
         </div>
@@ -49,24 +67,34 @@
 
       <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12">
         <div class="input-group mb-3">
-          <div class="input-group-prepend">
+          <div class="input-group-prepend" id="curated">
             <div class="input-group-text private-checkbox">
               <%= form.check_box :curated, onchange: 'toggleCuratedSection()' %>
             </div>
             <label class="form-check-label pl-2 pt-1">
-              Make this area curated?
+              Make this subject curated?
             </label>
           </div>
         </div>
       </div>
     <% end %>
   </div>
-
+  <div id="geo_maxing">
+    <% unless [Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT, Post::POST_TYPE_LAYER].include?(@post.post_type) %>
+      <% if !@post.persisted? %>
+        <%= render 'geo_maxing_form_section', form: form, post: @post %>
+      <% end %>
+    <% end %>
+  </div>
   <% if @post.images.present? %>
     <div class="col-lg-12 col-md-12 ml-auto mr-auto">
       <% @post.images.each do |image| %>
-        <div class="col-md-3">
-          <%= image_tag(image, :class => "img-responsive", width: "250") %>
+        <div class="card bg-white" style="width: 18rem;">
+          <%= link_to post_delete_image_attachment_path(image.id), method: :delete, data: {confirm: 'Are you sure to remove this image?'} do %>
+            <h5 class="float-right text-danger bg-white" data-toggle="tooltip" data-placement="right" title="Remove Image">
+              <i class="fa fa-window-close" aria-hidden="true"></i></h5>
+          <% end %>
+          <%= image_tag(image, :class => "img-responsive card-img-top") %>
         </div>
       <% end %>
     </div>
@@ -75,10 +103,22 @@
   <div class="form-group">
     <%= form.text_field :tag_list, class: 'form-control', placeholder: "Tags (separated by commas)" %>
   </div>
-
-  <div class="form-group" id="resource_tags">
-    <%= form.text_field :resource_tag_list, class: 'form-control', placeholder: "Resource Tags (separated by commas)" %>
-  </div>
+  <% unless [Post::POST_TYPE_HAVE, Post::POST_TYPE_WANT].include?(@post.post_type) %>
+    <div id="resource_tags">
+      <p>
+      <div class="card-header" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        <h5>
+          <h1 class="font-weight-bold"><i class="fas fa-caret-right"></i> Resources:</h1>
+        </h5>
+      </div>
+      </p>
+      <div class="collapse" id="collapseExample">
+        <div class="card card-body">
+          <%= form.text_field :resource_tag_list, class: 'form-control', placeholder: "Resource Tags (separated by commas)" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 
   <div id="private-users-section">
     <% if @post.post_type == Post::POST_TYPE_SUBJECT %>
@@ -103,23 +143,67 @@
   </div>
 
   <div class="form-group">
-
+    <%= form.hidden_field :uuid, value: params[:uuid] %>
     <%= form.submit class: 'btn btn-primary' %>
 
     <%= link_to "Cancel", :back, class: "btn btn-link" %>
+
+    <% if @post.persisted? %>
+      <% if @post&.user == current_user %>
+        <%= link_to post_path(@post, redirect_to: "/posts/search_result?q%5Btitle_cont%5D="), class: 'btn btn-default', method: :delete, data: {confirm: 'All comments and other activity related to this post will be deleted'} do %>
+          <i class="fa fa-trash-alt" style="font-size: 18px" title="Delete this post"></i>
+        <% end %>
+      <% end %>
+    <% end %>
   </div>
+<% end %>
+<% if @found_term %>
+  <div class="modal  fade" id="warningModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-warning">Warning !</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>We apologize for the inconvenience but in order to keep Needpedia a productive and enjoyable place to be
+            we've created a program that prevents the posting of certain content.
+            If this has happened in error or was simply unhelpful to the community we encourage you to provide feedback
+            here below, or in the part of Needpedia's wiki section. devoted to discussing the site itself.
+          </p>
+          <br>
+          <p>*What does our program want you to edit? </p>
+          <p>"<strong><%= @found_term %> </strong>"</p>
+          <div class="text-center">
+            <%= link_to 'Provide Feedback', new_feedback_path, class: 'btn btn-sm btn-primary' %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+      $(document).ready(function () {
+          $('#warningModal').modal('show');
+      });
+  </script>
 <% end %>
 
 <script>
 
-    if($('#post_private').is(":checked")) {
+    if ($('#post_private').is(":checked")) {
         $('#private-users-section').show();
         formulateSelectField('.select2', 'private');
     } else {
         $('#private-users-section').hide();
     }
 
-    if($('#post_curated').is(":checked")) {
+    if ($('#post_curated').is(":checked")) {
         $('#curated-users-section').show();
         formulateSelectField('.select2', 'curated');
     } else {
@@ -127,7 +211,7 @@
     }
 
     function togglePrivateSection() {
-        if($('#post_private').is(":checked")) {
+        if ($('#post_private').is(":checked")) {
             $('#private-users-section').show();
             formulateSelectField('.select2', 'private');
         } else {
@@ -136,7 +220,7 @@
     }
 
     function toggleCuratedSection() {
-        if($('#post_curated').is(":checked")) {
+        if ($('#post_curated').is(":checked")) {
             $('#curated-users-section').show();
             formulateSelectField('.select2', 'curated');
         } else {
@@ -144,12 +228,12 @@
         }
     }
 
-  <% if @post.persisted? %>
+    <% if @post.persisted? %>
 
     <% if @post.post_type == Post::POST_TYPE_IDEA %>
-      $('#resource_tags').show();
-      initSelect2('#post_subject_id', false, 'Select Subject');
-      initSelect2('#post_problem_id', false, 'Select Problem');
+    $('#resource_tags').show();
+    initSelect2('#post_subject_id', false, 'Select Subject');
+    initSelect2('#post_problem_id', false, 'Select Problem');
     <% end %>
 
     $('#private-users-section').show();
@@ -214,10 +298,10 @@
             },
             success: function (data) {
 
-                if (data.post_token_type == 'note') {
+                if (data.post_token_type === 'note') {
                     var noteHTML = '<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('note.png', width: "20") %>';
                     editor.invoke('editor.pasteHTML', noteHTML);
-                } else if (data.post_token_type == 'debate') {
+                } else if (data.post_token_type === 'debate') {
                     var debateHTML = '<a href="/post_tokens/' + data.post_token_type + '?id=' + data.id + '"><%= image_tag('debate.png', width: "20") %>';
                     editor.invoke('editor.pasteHTML', debateHTML);
                 } else {
@@ -247,7 +331,8 @@
             ['font', ['strikethrough', 'fontsize']],
             ['para', ['ul', 'ol', 'paragraph']],
             ['tokens', ['note', 'question', 'debate']],
-            ['misc', ['undo', 'redo']]
+            ['misc', ['undo', 'redo']],
+            ['insert', ['picture']]
         ],
         popover: {
             image: [
@@ -262,43 +347,108 @@
         }
     });
 
-  <% else %>
+    <% else %>
+    <% if @post.post_type == Post::POST_TYPE_IDEA %>
+    $('#resource_tags').show();
+    $('#subject').show();
+    $('#problem').show();
+    initSelect2('#post_subject_id', false, 'Select Subject');
+    initSelect2('#post_problem_id', false, 'Select Problem');
+    <% elsif @post.post_type == Post::POST_TYPE_PROBLEM %>
+    $('#subject').show();
+    $('#problem').hide();
+    initSelect2('#post_subject_id', false, 'Select Subject');
+    initSelect2('#post_problem_id', true, 'Select Problem');
+    <% else %>
     $('#resource_tags').hide();
+    $('#subject').hide();
+    $('#problem').hide();
     initSelect2('#post_subject_id', true, 'Select Subject');
     initSelect2('#post_problem_id', true, 'Select Problem');
-  $('#summernote').summernote({
-      height: 150,
-      disableDragAndDrop: true,
-      toolbar: [
-          // [groupName, [list of button]]
-          ['style', ['bold', 'italic', 'underline', 'link']],
-          ['font', ['strikethrough', 'fontsize']],
-          ['para', ['ul', 'ol', 'paragraph']],
-          ['misc', ['undo', 'redo']]
-      ],
-      popover: {
-          image: [
-              ['remove', ['removeMedia']]
-          ],
-          link: []
-      }
-  });
-  <% end %>
+    <% end %>
+    $('#summernote').summernote({
+        height: 150,
+        disableDragAndDrop: true,
+        toolbar: [
+            // [groupName, [list of button]]
+            ['style', ['bold', 'italic', 'underline', 'link']],
+            ['font', ['strikethrough', 'fontsize']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['misc', ['undo', 'redo']]
+        ],
+        popover: {
+            image: [
+                ['remove', ['removeMedia']]
+            ],
+            link: []
+        }
+    });
+    <% end %>
 
-    $('#post_post_type').change(function(e) {
+    $('#post_post_type').change(function (e) {
         if (e.target.value == 'problem') {
+            $("#geo_maxing_checkbox").prop("checked", false);
+            $('#geo_maxing').hide();
+            $('#private').show();
+            $('#curated').show();
+            $('#subject').show();
+            $('#problem').hide();
+            $('#resource_tags').hide();
             initSelect2('#post_subject_id', false, 'Select Subject');
             initSelect2('#post_problem_id', true, 'Select Problem');
-            $('#resource_tags').hide();
         } else if (e.target.value == 'idea') {
-            initSelect2('#post_subject_id', false, 'Select Subject');
-            initSelect2('#post_problem_id', false, 'Select Problem');
+            $("#geo_maxing_checkbox").prop("checked", false);
+            $('#geo_maxing').hide();
+            $('#private').show();
+            $('#curated').show();
+            $('#subject').show();
+            $('#problem').show();
             $('#summernote').summernote('code', '<b><%= PreformattedMessage.where(for_post_type: 'idea')&.last&.body %></b><br><br>');
             $('#resource_tags').show();
-        } else {
+            initSelect2('#post_subject_id', false, 'Select Subject');
+            initSelect2('#post_problem_id', false, 'Select Problem');
+        } else if (e.target.value == 'quick_share') {
+            $("#geo_maxing_checkbox").prop("checked", false);
+            $('#geo_maxing').hide();
+            $('#private').hide();
+            $('#curated').hide();
+            $('#subject').hide();
+            $('#problem').hide();
+            $('#resource_tags').show();
             initSelect2('#post_subject_id', true, 'Select Subject');
             initSelect2('#post_problem_id', true, 'Select Problem');
+        } else if (e.target.value == 'subject') {
+            $("#geo_maxing_checkbox").prop("checked", false);
+            $('#geo_maxing').show();
+            $('#curated').show();
+            $('#private').show();
+            $('#subject').hide();
+            $('#problem').hide();
             $('#resource_tags').hide();
+            initSelect2('#post_subject_id', true, 'Select Subject');
+            initSelect2('#post_problem_id', true, 'Select Problem');
+            toggleMapSection();
+        } else if (e.target.value == 'geomaxing') {
+            $("#geo_maxing_checkbox").prop("checked", true);
+            $('#mapSection').hide();
+            $('#geo_maxing').show();
+            $('#curated').hide();
+            $('#private').hide();
+            $('#subject').hide();
+            $('#problem').hide();
+            $('#resource_tags').hide();
+            initSelect2('#post_subject_id', true, 'Select Subject');
+            initSelect2('#post_problem_id', true, 'Select Problem');
+            toggleMapSection();
+        } else {
+            $("#geo_maxing_checkbox").prop("checked", false);
+            $('#curated').show();
+            $('#private').show();
+            $('#subject').hide();
+            $('#problem').hide();
+            $('#resource_tags').hide();
+            initSelect2('#post_subject_id', true, 'Select Subject');
+            initSelect2('#post_problem_id', true, 'Select Problem');
         }
     });
 
@@ -317,12 +467,13 @@
         var exclude_ids;
         if (type == 'private') {
             <% @post.private_users.each do |user| %>
-              results.push({
-                  id: '<%= user.id %>',
-                  text: '<%= user.name %>'
-              });
+            results.push({
+                id: '<%= user.id %>',
+                text: '<%= user.name %>'
+            });
             <% end %>
-            exclude_ids = <%= @post.private_users.ids %>
+            exclude_ids =
+            <%= @post.private_users.ids %>
         } else {
             <% @post.curated_users.each do |user| %>
             results.push({
@@ -330,7 +481,8 @@
                 text: '<%= user.name %>'
             });
             <% end %>
-            exclude_ids = <%= @post.curated_users.ids %>
+            exclude_ids =
+            <%= @post.curated_users.ids %>
         }
         agent = $(selector).select2({
             placeholder: 'Search',
@@ -371,16 +523,46 @@
         agent.trigger('change');
     }
 
-  function formatRepo (user) {
-      if (user.loading) return user.text;
-      console.log('user', user);
+    function formatRepo(user) {
+        if (user.loading) return user.text;
+        console.log('user', user);
 
-      var $span = $("<span><img src=" + user.profile_picture + " style=\"width: 20px; height: 20px\" /> "+ user.text + "</span>");
-      return $span;
-  }
+        var $span = $("<span><img src=" + user.profile_picture + " style=\"width: 20px; height: 20px\" /> " + user.text + "</span>");
+        return $span;
+    }
 
-  function formatRepoSelection (user) {
-      return user.text;
-  }
+    function formatRepoSelection(user) {
+        return user.text;
+    }
 
+    $('.card-header').click(function () {
+        $(this).find('i').toggleClass('fas fa-caret-right fas fa-caret-down');
+    });
+    <% if @post.post_type == Post::POST_TYPE_QUICK_SHARE %>
+    $('#resource_tags').show();
+    $('#geo_maxing').hide();
+    $('#private').hide();
+    $('#curated').hide();
+    <% end %>
+    <% if @post.post_type == Post::POST_TYPE_SOCIAL_MEDIA %>
+    $('#geo_maxing').hide();
+    <% end %>
+    <% if @post.post_type == Post::POST_TYPE_GEOMAXING %>
+    $("#geo_maxing_checkbox").prop("checked", true);
+    $('#resource_tags').hide();
+    $('#mapSection').hide();
+    $('#geo_maxing').show();
+    $('#private').hide();
+    $('#curated').hide();
+    toggleMapSection();
+    <% end %>
+    <% if @post.post_type == Post::POST_TYPE_PROBLEM  %>
+    $("#geo_maxing_checkbox").prop("checked", false);
+    $('#geo_maxing').hide();
+    $('#private').show();
+    $('#curated').show();
+    $('#subject').show();
+    $('#problem').hide();
+    $('#resource_tags').hide();
+    <% end %>
 </script>
