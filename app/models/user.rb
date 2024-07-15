@@ -2,7 +2,7 @@ class User < ApplicationRecord
   include DeviseTokenAuth::Concerns::User
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :invitable, :masqueradable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :confirmable
+  devise :invitable, :masqueradable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :confirmable, :lockable
 
 
   after_create :add_default_credit, :create_admin_notifications, :make_friend_with_mascot, :create_user_tutorials
