@@ -138,6 +138,7 @@ Rails.application.routes.draw do
 
     root to: "users#index"
   end
+  get '/otp', to: 'profile#otp'
   get '/ai', to: 'home#chatbot'
   get '/user_tutorials', to: 'profile#tutorials'
   get '/nuclear_note', to: 'nuclear_note#index'
@@ -294,7 +295,7 @@ Rails.application.routes.draw do
   resources :messages do
     patch 'read'
   end
-
+  post 'disable_otp', to: 'users#disable_otp', as: :disable_otp
   get 'enable_otp_show_qr', to: 'users#enable_otp_show_qr', as: 'enable_otp_show_qr'
   post 'enable_otp_verify', to: 'users#enable_otp_verify', as: 'enable_otp_verify'
 

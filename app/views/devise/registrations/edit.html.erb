@@ -65,15 +65,6 @@
 <!--      <div class="form-group">-->
         <%#= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control', placeholder: 'Confirm Password'  %>
 <!--      </div>-->
-      <!-- Disable 2FA with OTP -->
-      <% if resource.otp_required_for_login %>
-        <div class="field" style="margin: 1em">
-          <i>Enter OTP to disable Two Factor Authentication</i><br />
-          <div class="form-group">
-            <%= f.text_field :otp_attempt %>
-          </div>
-        </div>
-      <% end %>
       <div class="form-group">
         <%= f.submit "Save Changes", class: 'btn btn-lg btn-block btn-primary' %>
       </div>

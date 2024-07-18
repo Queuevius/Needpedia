@@ -5,7 +5,7 @@ class UsersController < ApplicationController
     if current_user.validate_and_consume_otp!(params[:otp_attempt])
       current_user.otp_required_for_login = false
       current_user.save!
-      redirect_to root_path, notice: 'Two-factor authentication disabled successfully.'
+      redirect_to request.referrer || root_path, notice: 'Two-factor authentication disabled successfully.'
     else
       flash[:alert] = 'Invalid OTP code.'
       redirect_back(fallback_location: root_path)
@@ -36,7 +36,6 @@ class UsersController < ApplicationController
       redirect_to edit_user_registration_path, alert: '2FA is already enabled.'
     else
       current_user.update(
-          otp_secret: User.generate_otp_secret,
           otp_required_for_login: true
       )
       current_user.save!
@@ -47,9 +46,9 @@ class UsersController < ApplicationController
     if current_user.validate_and_consume_otp!(params[:otp_attempt])
       current_user.otp_required_for_login = true
       current_user.save!
-      redirect_to edit_user_registration_path, notice: '2FA enabled successfully.'
+      redirect_to request.referrer || root_path, notice: '2FA enabled successfully.'
     else
-      redirect_to enable_otp_show_qr_users_path, alert: 'Invalid OTP code.'
+      redirect_to request.referrer || root_path, alert: 'Invalid OTP code.'
     end
   end
 end

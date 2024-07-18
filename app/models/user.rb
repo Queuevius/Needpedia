@@ -160,6 +160,7 @@ class User < ApplicationRecord
   end
 
   def otp_qr_code
+    self.update(otp_secret: User.generate_otp_secret) unless otp_secret.present?
     issuer = "#{Rails.application.class.module_parent_name}-#{Rails.env}"
     label = "#{issuer}:#{email}"
     qrcode = RQRCode::QRCode.new(otp_provisioning_uri(label, issuer: issuer))

@@ -1,0 +1,59 @@
+<div class="row">
+  <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12"><%= render 'shared/sidebar' %></div>
+  <div class="col-md-9 col-lg-9 col-xl-9 col-sm-12">
+    <!-- Page Content  -->
+    <div id="content" class="pl-2">
+
+      <div class="row">
+        <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+          <div class="ui-block shadow-lg rounded">
+            <div class="ui-block-content">
+              <div class="container">
+                <div id="about_location">
+                  <div class="row mb-2">
+                    <div class="col-lg-6 col-md-6 text-left">
+                      <h4 class="pl-0">Two Factor Authentication</h4>
+                    </div>
+                  </div>
+                  <!-- Disable 2FA with OTP -->
+                  <% if @user.otp_required_for_login %>
+                    <!-- app/views/users/disable_otp.html.erb -->
+
+
+
+                    <div class="row">
+                      <div class="col-6">
+                        <p class="mt-2" >Disable Two-Factor Authentication</p>
+                      </div>
+
+                      <div class="col-6 text-center">
+                      </div>
+
+                      <div class="col-6 mt-3">
+                        <%= form_with(url: url_for(controller: 'users', action: 'disable_otp'), method: :post, class: "form-inline") do |f| %>                      <% if flash[:alert] %>
+                            <div class="alert alert-danger">
+                              <%= flash[:alert] %>
+                            </div>
+                          <% end %>
+                          <div class="form-group mb-2">
+                            <%= label_tag "otp_attempt", "Enter OTP Code to Disable Two-Factor Authentication", class: "sr-only" %>
+                            <%= f.text_field :otp_attempt, class: "form-control" %>
+                          </div>
+                          <%= f.submit 'Disable 2FA', class: 'btn btn-primary mb-2 ml-2' %>
+                        <% end %>
+                      </div>
+                    </div>
+
+
+                  <% else %>
+                    <%= render 'users/qr' %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

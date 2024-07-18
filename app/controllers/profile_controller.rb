@@ -63,6 +63,12 @@ class ProfileController < ApplicationController
     end
   end
 
+  def otp
+   @user = current_user
+   @friends_count = Kaminari.paginate_array(@user.links)
+   @connection_requests_count = ConnectionRequest.where(to: @user.uuid, status: 'pending')
+  end
+
   def add_details
     @user = current_user
   end
