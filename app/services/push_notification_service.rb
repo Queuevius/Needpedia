@@ -24,8 +24,6 @@ class PushNotificationService
 
   private
 
-
-
   def send(registration_ids, options)
     fcm = FCM.new(ENV['FCM_API_KEY'], Rails.root.join('config', 'credentials', 'firebase_service.json'), 'needpedia-phone-app')
     message = {
