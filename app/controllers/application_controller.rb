@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :masquerade_user!
   before_action :set_ransack, :conversations
+  before_action :check_otp, unless: :devise_controller?
 
   protected
 
@@ -24,5 +25,14 @@ class ApplicationController < ActionController::Base
 
   def check_nuclear_note
     redirect_to nuclear_note_path if Setting.nuclear_note_active?
+  end
+
+  def check_otp
+    if !current_user&.otp_required_for_login
+      return if controller_name == "profile" && action_name == "otp" || controller_name == "users"
+
+      flash[:alert] = "Please complete the two-factor authentication setup to continue."
+      redirect_to otp_path
+    end
   end
 end

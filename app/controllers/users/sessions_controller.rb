@@ -36,7 +36,7 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def after_sign_in_path_for(resource)
-    resource.last_login_at.nil? ? (resource.update(last_login_at: Time.now); chatbot_path) : super
+    resource.last_login_at.nil? ? (resource.update(last_login_at: Time.now); ai_path) : super
   end
 
   private

@@ -1,5 +1,6 @@
 class User < ApplicationRecord
-  devise :two_factor_authenticatable,
+  devise :two_factor_authenticatable, :two_factor_backupable,
+         otp_backup_code_length: 6, otp_number_of_backup_codes: 6,
          :otp_secret_encryption_key => ENV['OTP_KEY']
 
   include DeviseTokenAuth::Concerns::User

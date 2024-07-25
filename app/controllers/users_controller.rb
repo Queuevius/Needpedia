@@ -1,16 +1,6 @@
 class UsersController < ApplicationController
-  before_action :authenticate_user!, except: %i[show_otp verify_otp]
+  before_action :authenticate_user!, except: %i[show_otp verify_otp verify_backup_code]
 
-  def disable_otp
-    if current_user.validate_and_consume_otp!(params[:otp_attempt])
-      current_user.otp_required_for_login = false
-      current_user.save!
-      redirect_to request.referrer || root_path, notice: 'Two-factor authentication disabled successfully.'
-    else
-      flash[:alert] = 'Invalid OTP code.'
-      redirect_back(fallback_location: root_path)
-    end
-  end
 
   def show_otp
     # Render the OTP entry page
@@ -49,6 +39,34 @@ class UsersController < ApplicationController
       redirect_to request.referrer || root_path, notice: '2FA enabled successfully.'
     else
       redirect_to request.referrer || root_path, alert: 'Invalid OTP code.'
+    end
+  end
+
+  #This verifies the backup codes and displays the QR code.
+  def verify_backup_code_show_qrcode
+    user = current_user
+    code = params[:backup_code]
+    if user.otp_backup_codes.any? { |stored_code| BCrypt::Password.new(stored_code).is_password?(code) }
+      session[:backup_codes_verified] = Time.current + 20.minutes
+      redirect_to request.referrer || root_path, notice: 'Verify successfully.'
+    else
+      redirect_to request.referrer || root_path, alert: 'Invalid backup code.'
+    end
+  end
+
+  #verify the backup code for login
+  def verify_backup_code
+    verifier = Rails.application.message_verifier(:otp_session)
+    user_id = verifier.verify(session[:otp_token])
+    user = User.find(user_id)
+    code = params[:backup_code]
+    s = "865b1a,1e985e,fd4871,f5c344,8ec07c,d93e59"
+    if user.otp_backup_codes.any? { |stored_code| BCrypt::Password.new(stored_code).is_password?(code) }
+      sign_in(:user, user)
+      redirect_to root_path, notice: 'Successfully logged in with backup code!'
+    else
+      flash.now[:alert] = 'Invalid backup code.'
+      redirect_to new_user_session_path
     end
   end
 end
