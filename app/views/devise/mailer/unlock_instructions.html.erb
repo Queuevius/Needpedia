@@ -1,2 +1,12 @@
-<%= ApplicationController.helpers.liquid_template("unlock_instructions", arguments: {user: {name: @resource.name}}).html_safe %>
-<p><%= link_to 'Unlock my account', unlock_url(@resource, unlock_token: @token) %></p>
+<% email_template = EmailTemplate.find_by(name: 'unlock_instructions') %>
+
+<% if email_template.present? %>
+  <%= ApplicationController.helpers.liquid_template("unlock_instructions", arguments: {user: {name: @resource.name}}).html_safe %>
+<% else %>
+  <p>Hello <%= @resource.email %>!</p>
+
+  <p>Your account has been locked due to an excessive number of unsuccessful sign in attempts.</p>
+
+  <p>Click the link below to unlock your account:</p>
+  <p><%= link_to 'Unlock my account', unlock_url(@resource, unlock_token: @token) %></p>
+<% end %>
