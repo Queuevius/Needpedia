@@ -1,0 +1,41 @@
+<div class="row mb-5">
+  <div class="col-lg-8 col-md-8 ml-auto mr-auto">
+    <div class="ui-block shadow-lg rounded">
+      <div class="ui-block-content mb-5 py-4">
+        <h1 class="text-center mb-4">Two Factor Authentication</h1>
+        <nav>
+          <div class="nav nav-pills" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-home-tab" data-toggle="tab" data-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true" style="font-size: 1.2rem;">OTP</button>
+            <button class="nav-link mx-2" id="nav-profile-tab" data-toggle="tab" data-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false" style="font-size: 1.2rem;">Backup Code</button>
+          </div>
+          <hr class="hr" />
+        </nav>
+        <div class="tab-content mt-5" id="nav-tabContent">
+          <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+            <p class="text-small">Enter the OTP from your phone authentication app, or you can log in with your backup code by switching to the "Backup Code" tab.</p>
+            <div class="mt-2">
+              <%= form_tag(verify_user_otp_path, method: :post, class: 'form-inline') do %>
+                <div class="form-group mb-2">
+                  <%= text_field_tag :otp_attempt, nil, class: 'form-control', placeholder: 'Enter OTP' %>
+                </div>
+                <%= submit_tag 'Verify', class: 'btn btn-primary ml-2 mb-2' %>
+              <% end %>
+            </div>
+          </div>
+          <div class="tab-pane fade mt-5" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+            <p class="text-small">Enter your backup code, which was shown to you when activating two-factor
+              authentication (2FA).</p>
+            <div class="mt-2">
+              <%= form_tag verify_backup_code_path, method: :post, class: "form-inline" do %>
+                <div class="form-group mb-2">
+                  <%= text_field_tag :backup_code, nil, class: 'form-control', placeholder: 'Enter Backup Code' %>
+                </div>
+                <%= submit_tag 'Verify', class: 'btn btn-primary ml-2 mb-2' %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
