@@ -35,7 +35,6 @@ class UserAssistantDocumentsController < ApplicationController
   end
 
   def pdf_link(document)
-    domain = ENV['DOMAIN']
-    { id: document.id, url: "#{domain}#{url_for(document.file)}" }
+    { id: document.id, url: "#{url_for(document.file)}" }
   end
 end
