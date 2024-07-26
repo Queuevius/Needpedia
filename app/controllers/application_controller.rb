@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
 
   def check_otp
     if !current_user&.otp_required_for_login
-      return if controller_name == "profile" && action_name == "otp" || controller_name == "users"
+      return if controller_name == "profile" && action_name == "otp" || controller_name == "users" || controller_name == "user_assistant_documents"
 
       flash[:alert] = "Please complete the two-factor authentication setup to continue."
       redirect_to otp_path
