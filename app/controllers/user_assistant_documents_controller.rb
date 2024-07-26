@@ -24,7 +24,7 @@ class UserAssistantDocumentsController < ApplicationController
   private
 
   def authenticate_token
-    unless ENV['PDF_TOKEN'].present? && ENV['PDF_TOKEN'] == request.headers["HTTP_PDF_TOKEN"]
+    unless ENV['PDF_TOKEN'].present? && ENV['PDF_TOKEN'] == request.headers["Authorization"]&.split(" ")&.last
       render json: {error: 'The provided authorization token is not valid'}, status: :unauthorized
     end
   end
