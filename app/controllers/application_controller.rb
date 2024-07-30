@@ -28,9 +28,11 @@ class ApplicationController < ActionController::Base
   end
 
   def check_otp
+    return if controller_path.include?("api/")
+
     return unless current_user && !current_user.otp_required_for_login
 
-    return if controller_name.in?(%w[profile users user_assistant_documents]) && action_name == "otp"
+    return if controller_name.in?(%w[profile users user_assistant_documents]) && action_name.in?(%w[otp enable_otp_verify])
 
     flash[:alert] = "Please complete the two-factor authentication setup to continue."
     redirect_to otp_path
