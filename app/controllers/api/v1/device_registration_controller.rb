@@ -1,7 +1,7 @@
 class Api::V1::DeviceRegistrationController < ApplicationController
   def register_device
     user = User.find_by(uuid: params[:uuid])
-    device = user.devices.create(registration_id: params[:registration_id])
+    device = user.devices.find_or_create_by(registration_id: params[:registration_id])
     if device.save
       render json: {message: 'The device has been Successfully Registered.', success: true, status: 200, user: user}
     else

@@ -1,0 +1,28 @@
+<div class="row">
+  <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12"><%= render 'shared/sidebar' %></div>
+  <div class="col-md-9 col-lg-9 col-xl-9 col-sm-12">
+    <!-- Page Content  -->
+    <div id="content" class="pl-2">
+      <div class="row">
+        <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+          <div class="ui-block shadow-lg rounded">
+            <div class="ui-block-content">
+              <div class="container">
+                <div id="about_location">
+                  <div class="row mb-2">
+                    <div class="col-lg-6 col-md-6 text-left">
+                      <h4 class="pl-0">Two Factor Authentication</h4>
+                    </div>
+                  </div>
+                    <%= render 'users/qr' %>
+                  <hr>
+                  <p>If you cannot complete the 2FA setup, please contact us at <a href="mailto:needpedia@gmail.com">needpedia@gmail.com</a>.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

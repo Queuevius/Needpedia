@@ -1,0 +1,47 @@
+<div class="row">
+  <% if session[:backup_codes_verified] && session[:backup_codes_verified] > Time.current || !current_user&.otp_required_for_login %>
+    <div class="col-6">
+      <ol class="mt-5">
+        <li>
+          Install Google Authenticator:
+          <%= link_to "Android", "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en", target: :blank %>
+          or
+          <%= link_to "iOS", "https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8", target: :blank %>
+        </li>
+        <li>In the app, select "Set up account" or the Plus (+) sign.</li>
+        <li>Choose "Scan barcode"</li>
+        <% if @codes %>
+          <hr>
+          <p><strong class="badge badge-danger">Important!</strong> Write these backups codes down in a safe place. They can be used once to login to your account if your 2FA device is unavailable. They will never be displayed again for security.</p>
+          <% @codes&.each do |code| %>
+            <div><strong><%= code %></strong></div>
+          <% end %>
+        <% end %>
+      </ol>
+    </div>
+    <div class="col-6 text-center">
+      <%= current_user.otp_qr_code.html_safe %>
+    </div>
+    <div class="col-12 mt-3">
+      <%= form_tag(enable_otp_verify_path, method: :post, class: "form-inline") do %>
+        <div class="form-group mb-2">
+          <%= label_tag "otp_attempt", "Enter OTP", class: "sr-only" %>
+          <%= text_field_tag :otp_attempt, nil, class: "form-control", placeholder: "Enter OTP" %>
+        </div>
+        <%= submit_tag "Verify and Enable", class: "btn btn-primary ml-2 mb-2" %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="col-12 mt-3">
+      <%= form_tag verify_backup_code_show_qrcode_path, method: :post, class: "form-inline" do %>
+        <div class="form-group mb-2">
+          <%= label_tag "backup_code", "Enter Backup Code", class: "sr-only" %>
+          <%= text_field_tag :backup_code, nil, class: 'form-control', placeholder: "Enter Backup code" %>
+        </div>
+        <div class="form-group">
+          <%= submit_tag "Verify", class: 'btn btn-primary ml-2 mb-2' %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
