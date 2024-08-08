@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   before_action :masquerade_user!
   before_action :set_ransack, :conversations
   before_action :check_otp, unless: :devise_controller?
+  before_action :check_blocked_ip
 
   protected
 
@@ -38,4 +39,10 @@ class ApplicationController < ActionController::Base
     redirect_to otp_path
   end
 
+  def check_blocked_ip
+    ip = request.remote_ip
+    if ip && BlockedIp.exists?(ip: ip)
+      render plain: "Access Denied", status: :forbidden
+    end
+  end
 end

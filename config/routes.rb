@@ -84,6 +84,11 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
+    resources :blocked_ips do
+      member do
+        delete :unblock
+      end
+    end
     resources :button_images
     resources :email_templates
     resources :post_tokens

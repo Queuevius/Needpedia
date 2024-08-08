@@ -1,0 +1,2 @@
+class LoginAttempt < ApplicationRecord
+end

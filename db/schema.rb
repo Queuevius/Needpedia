@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_07_22_093256) do
+ActiveRecord::Schema.define(version: 2024_08_06_060518) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -106,6 +106,12 @@ ActiveRecord::Schema.define(version: 2024_07_22_093256) do
 
   create_table "banned_terms", force: :cascade do |t|
     t.string "term"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "blocked_ips", force: :cascade do |t|
+    t.string "ip"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -323,6 +329,15 @@ ActiveRecord::Schema.define(version: 2024_07_22_093256) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_likes_on_user_id"
+  end
+
+  create_table "login_attempts", force: :cascade do |t|
+    t.string "ip_address"
+    t.datetime "attempted_at"
+    t.boolean "success"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["ip_address", "attempted_at"], name: "index_login_attempts_on_ip_address_and_attempted_at"
   end
 
   create_table "memberships", force: :cascade do |t|
