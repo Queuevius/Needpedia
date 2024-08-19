@@ -1,6 +1,9 @@
 class GigsController < ApplicationController
+  include OtpVerifiable
+
   before_action :authenticate_user!
   before_action :set_tutorial, except: [:destroy, :create, :disable]
+  before_action :check_otp
 
   # GET /gigs
   # GET /gigs.json
