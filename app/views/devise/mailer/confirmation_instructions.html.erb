@@ -1,2 +1,11 @@
-<%= ApplicationController.helpers.liquid_template("confirmation_instructions", arguments: {user: {name: @user.name}}).html_safe %>
+<% email_template = EmailTemplate.find_by(name: 'confirmation_instructions') %>
+
+<% if email_template.present? %>
+  <%= ApplicationController.helpers.liquid_template("confirmation_instructions", arguments: {user: {name: @user.name}}).html_safe %>
+<% else %>
+
+  <p>Welcome <%= @email %>!</p>
+
+  <p>You can confirm your account email through the link below:</p>
+<% end %>
 <p><%= link_to 'Confirm my account', "#{ENV['HOST_URL']}/users/confirmation?confirmation_token=#{@token}", target: :_blank %></p>

@@ -3,6 +3,7 @@ class ProfileController < ApplicationController
   before_action :friend_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed, :tutorials]
   before_action :connection_requests_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed, :tutorials]
   before_action :set_tutorial, except: [:update_details, :update_profile_image, :create_pictures]
+  before_action :authenticate_user!, only: [:otp]
 
   def wall
     blocked_user_ids = params[:uuid].present? ? [] : current_user.blocked_users.pluck(:block_user_id)
@@ -61,6 +62,16 @@ class ProfileController < ApplicationController
       format.html
       format.js
     end
+  end
+
+  def otp
+   @user = current_user
+    unless @user&.otp_required_for_login == true
+       @codes = @user&.generate_otp_backup_codes!
+       @user.save!
+    end
+   @friends_count = Kaminari.paginate_array(@user.links)
+   @connection_requests_count = ConnectionRequest.where(to: @user.uuid, status: 'pending')
   end
 
   def add_details
