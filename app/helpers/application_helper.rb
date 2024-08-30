@@ -105,4 +105,8 @@ module ApplicationHelper
     end
     options_for_select
   end
+
+  def editable_content(key)
+    content_block = AdminNotice.find_by(key: key)
+  end
 end
