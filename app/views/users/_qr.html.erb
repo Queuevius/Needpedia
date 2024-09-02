@@ -30,10 +30,10 @@
             </div>
           <% end %>
         </div>
+        <div class="mt-3">
+          <button type="button" onclick="downloadCodes(event)" class="btn btn-link">Download Codes (as a txt)</button>
+        </div>
       <% end %>
-      <div class="mt-3">
-        <a href="#" onclick="downloadCodes()" class="btn btn-link">Download Codes (as a txt)</a>
-      </div>
     </div>
     <div class="col-12 mt-3">
       <%= form_tag(enable_otp_verify_path, method: :post, class: "form-inline") do %>
@@ -60,8 +60,9 @@
 </div>
 
 <script>
-    function downloadCodes() {
-        const codes = `<%= @codes.join("\n") %>`;
+    function downloadCodes(event) {
+        event.preventDefault();
+        const codes = `<%= @codes&.join("\n") %>`;
         const blob = new Blob([codes], {type: 'text/plain'});
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
