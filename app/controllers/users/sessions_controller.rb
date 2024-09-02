@@ -1,7 +1,5 @@
 class Users::SessionsController < Devise::SessionsController
   prepend_before_action :check_captcha, only: [:create]
-  before_action :log_failed_login_attempt, only: [:create]
-
   def create
     email = params[:user][:email]
     user = User.find_by_email(email)
@@ -49,30 +47,4 @@ class Users::SessionsController < Devise::SessionsController
       respond_with_navigational(resource) {render :new}
     end
   end
-
-  def log_failed_login_attempt
-    ip = request.remote_ip
-    return if BlockedIp.exists?(ip: ip)
-
-    return unless request.post? && params[:user][:email].present?
-
-    user = User.find_by(email: params[:user][:email])
-    return if user&.valid_password?(params[:user][:password])
-
-    LoginAttempt.create(
-        ip_address: request.remote_ip,
-        attempted_at: Time.current,
-        success: false
-    )
-
-    failed_attempts_count = LoginAttempt.where(ip_address: request.remote_ip, success: false )
-                                .where('created_at >= ?', 1.hour.ago)
-                                .count
-    if failed_attempts_count > 5
-      BlockedIp.find_or_create_by(ip: request.remote_ip)
-      AdminMailer.ip_blacklisted(request.remote_ip).deliver_later
-      render json: { error: 'Too many failed login attempts. Please try again later.' }, status: :too_many_requests
-    end
-  end
-
 end

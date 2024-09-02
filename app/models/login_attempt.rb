@@ -1,2 +1,0 @@
-class LoginAttempt < ApplicationRecord
-end

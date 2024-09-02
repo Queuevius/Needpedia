@@ -36,7 +36,6 @@ Rails.application.routes.draw do
   get 'how_tos/index'
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :master_admin do
-    resources :admin_notices
     resources :user_assistant_documents
     resources :settings
     resources :admin_histories
@@ -85,11 +84,6 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
-    resources :blocked_ips do
-      member do
-        delete :unblock
-      end
-    end
     resources :button_images
     resources :email_templates
     resources :post_tokens

@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :masquerade_user!
   before_action :set_ransack, :conversations
-  before_action :check_blocked_ip
+  before_action :check_otp, unless: :devise_controller?
 
   protected
 
@@ -27,10 +27,15 @@ class ApplicationController < ActionController::Base
     redirect_to nuclear_note_path if Setting.nuclear_note_active?
   end
 
-  def check_blocked_ip
-    ip = request.remote_ip
-    if ip && BlockedIp.exists?(ip: ip)
-      render plain: "Access Denied", status: :forbidden
-    end
+  def check_otp
+    return if controller_path.include?("api/")
+
+    return unless current_user && !current_user.otp_required_for_login
+
+    return if controller_name.in?(%w[profile users user_assistant_documents]) && action_name.in?(%w[otp enable_otp_verify])
+
+    flash[:alert] = "Please complete the two-factor authentication setup to continue."
+    redirect_to otp_path
   end
+
 end
