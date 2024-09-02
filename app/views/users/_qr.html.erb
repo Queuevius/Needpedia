@@ -1,39 +1,26 @@
 <div class="row">
-  <%= render 'users/otp_message' %>
   <% if session[:backup_codes_verified] && session[:backup_codes_verified] > Time.current || !current_user&.otp_required_for_login %>
-    <div class="col-12 mb-xl-2">
-      <%= current_user.otp_qr_code.html_safe %>
-    </div>
-
-    <div class="col-12 col-md-8 col-lg-6 mt-5 mt-md-0 mx-auto mx-md-0">
-      <li class="mt-xl-2">
-        Install Google Authenticator:
-        <%= link_to "Android", "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en", target: :blank %>
-        or
-        <%= link_to "iOS", "https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8", target: :blank %>
-      </li>
-      <li>In the app, select "Set up account" or the Plus (+) sign.</li>
-      <li>Choose "Scan barcode"</li>
-      <% if @codes %>
-        <hr>
-        <p class="mt-3"><strong class="badge badge-danger">Important!</strong> Write these backup codes down in a safe
-          place. They can be used once to log in to your account if your 2FA device is unavailable. They will never be
-          displayed again for security.</p>
-        <div class="row">
-          <% @codes.each_slice((@codes.size / 2.0).round) do |code_slice| %>
-            <div class="col-12 col-sm-6">
-              <ul class="list-unstyled">
-                <% code_slice.each do |code| %>
-                  <li><strong><%= code %></strong></li>
-                <% end %>
-              </ul>
-            </div>
+    <div class="col-6">
+      <ol class="mt-5">
+        <li>
+          Install Google Authenticator:
+          <%= link_to "Android", "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en", target: :blank %>
+          or
+          <%= link_to "iOS", "https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8", target: :blank %>
+        </li>
+        <li>In the app, select "Set up account" or the Plus (+) sign.</li>
+        <li>Choose "Scan barcode"</li>
+        <% if @codes %>
+          <hr>
+          <p><strong class="badge badge-danger">Important!</strong> Write these backups codes down in a safe place. They can be used once to login to your account if your 2FA device is unavailable. They will never be displayed again for security.</p>
+          <% @codes&.each do |code| %>
+            <div><strong><%= code %></strong></div>
           <% end %>
-        </div>
-      <% end %>
-      <div class="mt-3">
-        <a href="#" onclick="downloadCodes()" class="btn btn-link">Download Codes (as a txt)</a>
-      </div>
+        <% end %>
+      </ol>
+    </div>
+    <div class="col-6 text-center">
+      <%= current_user.otp_qr_code.html_safe %>
     </div>
     <div class="col-12 mt-3">
       <%= form_tag(enable_otp_verify_path, method: :post, class: "form-inline") do %>
@@ -58,18 +45,3 @@
     </div>
   <% end %>
 </div>
-
-<script>
-    function downloadCodes() {
-        const codes = `<%= @codes.join("\n") %>`;
-        const blob = new Blob([codes], {type: 'text/plain'});
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = 'backup_codes.txt';
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-    }
-</script>

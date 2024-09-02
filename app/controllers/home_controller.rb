@@ -1,11 +1,7 @@
 class HomeController < ApplicationController
-  include OtpVerifiable
-
   after_action :read_new_comers_message, only: [:index]
   before_action :set_tutorial
   before_action :authenticate_user!, only: [:chatbot]
-  before_action :check_otp, only: [:time_bank]
-
   def index
     # @q = Post.ransack(params[:q])
     @messages_for_guests = AdminNotification.for_guests

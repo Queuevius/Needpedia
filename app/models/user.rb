@@ -13,10 +13,6 @@ class User < ApplicationRecord
   before_destroy :delete_notifications
   # before_create :skip_confirmation_notification!
 
-  before_create :initialize_reset_password_tracking
-
-  after_update :clear_reset_password_attempts, if: :encrypted_password_changed?
-
   validate :password_complexity
 
   has_rich_text :about
@@ -85,9 +81,6 @@ class User < ApplicationRecord
 
   has_many :user_tutorials, dependent: :destroy
   has_many :topics, dependent: :destroy
-
-  MAX_RESET_PASSWORD_ATTEMPTS = 5
-  RESET_ATTEMPT_WINDOW = 24.hours
 
   def credit_hours
     active_gigs_amount = posted_gigs.active_progress.sum(:amount)
@@ -181,42 +174,5 @@ class User < ApplicationRecord
 
   def feature_enabled?(feature)
     features[feature.to_s] == true
-  end
-
-  def send_reset_password_instructions
-    if reset_password_attempts_exceeded?
-      errors.add(:base, "You have reached the maximum number of password reset attempts for today. Please try again later.")
-      return false
-    end
-
-    update_reset_password_tracking
-    super
-  end
-
-  private
-
-  def initialize_reset_password_tracking
-    self.reset_password_attempts = 0
-    self.last_reset_attempt_at = nil
-  end
-
-  def reset_password_attempts_exceeded?
-    if last_reset_attempt_at.nil? || last_reset_attempt_at < RESET_ATTEMPT_WINDOW.ago
-      self.reset_password_attempts = 0
-    end
-
-    reset_password_attempts >= MAX_RESET_PASSWORD_ATTEMPTS
-  end
-
-  def update_reset_password_tracking
-    self.reset_password_attempts ||= 0
-    self.reset_password_attempts += 1
-    self.last_reset_attempt_at = Time.current
-    save(validate: false)
-  end
-
-
-  def clear_reset_password_attempts
-    update_columns(reset_password_attempts: 0, last_reset_attempt_at: nil)
   end
 end

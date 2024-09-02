@@ -1,6 +1,4 @@
 class PostsController < ApplicationController
-  include OtpVerifiable
-
   before_action :check_account_status, only: [:update, :create, :edit, :new]
   before_action :authenticate_user!, only: [:new, :update, :create, :edit]
   before_action :set_post, only: [:show, :edit, :update, :destroy]
@@ -9,7 +7,6 @@ class PostsController < ApplicationController
   before_action :set_user, only: [:new, :have, :want]
   after_action :send_update_email, only: [:update]
   before_action :set_tutorial, except: [:update, :create, :destroy, :delete_image_attachment, :destroy_activity, :modal, :remove_curated_user, :track_post]
-  before_action :check_otp, only: [:have, :want]
 
   # GET /posts
   # GET /posts.json
@@ -79,7 +76,6 @@ class PostsController < ApplicationController
   # GET /posts/1
   # GET /posts/1.json
   def show
-    check_otp if @post.post_type == Post::POST_TYPE_GEOMAXING
     unless @post.present?
       redirect_to root_path, notice: 'Post you are accessing in not available'
       return
@@ -132,7 +128,6 @@ class PostsController < ApplicationController
   # POST /posts
   # POST /posts.json
   def create
-    return if handle_otp_redirect
     respond_to do |format|
       group_id = current_user.default_group_id&.positive? ? current_user.default_group_id : nil
       @post = Post.new(post_params.merge(group_id: group_id))
@@ -155,7 +150,6 @@ class PostsController < ApplicationController
   # PATCH/PUT /posts/1
   # PATCH/PUT /posts/1.json
   def update
-    check_otp if @post.post_type == Post::POST_TYPE_GEOMAXING
     respond_to do |format|
       content = post_params[:content]
       banned_term = BannedTerm.last
@@ -293,12 +287,6 @@ class PostsController < ApplicationController
   end
 
   private
-
-  def handle_otp_redirect
-    if post_params[:post_type] == Post::POST_TYPE_GEOMAXING || post_params[:private] == "1"
-      check_otp
-    end
-  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_user
