@@ -66,9 +66,9 @@ class Users::SessionsController < Devise::SessionsController
     )
 
     failed_attempts_count = LoginAttempt.where(ip_address: request.remote_ip, success: false )
-                                .where('created_at >= ?', 1.hour.ago)
+                                .where('created_at >= ?', 24.hour.ago)
                                 .count
-    if failed_attempts_count > 5
+    if failed_attempts_count > 10
       BlockedIp.find_or_create_by(ip: request.remote_ip)
       AdminMailer.ip_blacklisted(request.remote_ip).deliver_later
       render json: { error: 'Too many failed login attempts. Please try again later.' }, status: :too_many_requests

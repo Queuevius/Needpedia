@@ -324,6 +324,9 @@ Rails.application.routes.draw do
   #   end
   # end
 
+  get 'otp_verifications/new', to: 'otp_verifications#new', as: :new_otp_verification
+  post 'otp_verifications', to: 'otp_verifications#create', as: :verify_otp
+
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", :sessions => "users/sessions", registrations: 'users/registrations'}
   root to: 'home#index'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
