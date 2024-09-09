@@ -77,6 +77,6 @@ module OtpVerifiable
 
   def otp_verified?
     verified_at = session[:otp_verified_at].present? ? Time.parse(session[:otp_verified_at]) : nil
-    verified_at && Time.current < verified_at + 5.minutes
+    verified_at && Time.current < verified_at + 1.week
   end
 end
