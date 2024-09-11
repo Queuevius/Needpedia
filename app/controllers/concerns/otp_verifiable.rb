@@ -37,7 +37,7 @@ module OtpVerifiable
   end
 
   def verify_otp
-    user = find_user_from_otp_token
+    user = current_user
 
     if user&.validate_and_consume_otp!(params[:otp_attempt])
       complete_otp_verification(user)
@@ -54,14 +54,6 @@ module OtpVerifiable
       flash[:alert] = 'Invalid backup code.'
       redirect_to new_otp_verification_path
     end
-  end
-
-  def find_user_from_otp_token
-    verifier = Rails.application.message_verifier(:otp_session)
-    user_id = verifier.verify(session[:otp_token])
-    User.find_by(id: user_id)
-  rescue
-    nil
   end
 
   def backup_code_valid?(code)
