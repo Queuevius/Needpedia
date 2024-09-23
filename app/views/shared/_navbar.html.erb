@@ -88,8 +88,8 @@
         </li>
       <% end %>
     <% else %>
-      <li class="nav-item"><%= link_to "Sign Up", new_user_registration_path, class: 'mt-2' %></li>
-      <li class="nav-item"><%= link_to "Login", new_user_session_path, class: 'mt-2' %></li>
+      <li class="nav-item"><%= link_to "Sign Up", new_user_registration_path, class: 'mt-2', data: { turbolinks: false } %></li>
+      <li class="nav-item"><%= link_to "Login", new_user_session_path, class: 'mt-2', data: { turbolinks: false } %></li>
       <li class="map-icon">
         <%= link_to geo_maxing_posts_posts_path do %>
           <%= image_tag('map-small.png', height: "60%", width: "60%") %>
