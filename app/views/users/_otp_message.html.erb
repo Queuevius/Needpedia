@@ -1,0 +1,5 @@
+<% message = editable_content(:OTP_message) %>
+
+<div class="col-12 mb-2 alert alert-<%= message&.color %>">
+  <%= message&.content %>
+</div>

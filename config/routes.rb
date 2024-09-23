@@ -36,6 +36,7 @@ Rails.application.routes.draw do
   get 'how_tos/index'
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :master_admin do
+    resources :admin_notices
     resources :user_assistant_documents
     resources :settings
     resources :admin_histories
@@ -84,6 +85,11 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
+    resources :blocked_ips do
+      member do
+        delete :unblock
+      end
+    end
     resources :button_images
     resources :email_templates
     resources :post_tokens
@@ -317,6 +323,9 @@ Rails.application.routes.draw do
   #     patch 'update_details'
   #   end
   # end
+
+  get 'otp_verifications/new', to: 'otp_verifications#new', as: :new_otp_verification
+  post 'otp_verifications', to: 'otp_verifications#create', as: :verify_otp
 
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", :sessions => "users/sessions", registrations: 'users/registrations'}
   root to: 'home#index'

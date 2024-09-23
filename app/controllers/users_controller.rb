@@ -36,7 +36,7 @@ class UsersController < ApplicationController
     if current_user.validate_and_consume_otp!(params[:otp_attempt])
       current_user.otp_required_for_login = true
       current_user.save!
-      redirect_to request.referrer || root_path, notice: '2FA enabled successfully.'
+      redirect_to session.delete(:user_return_to) || root_path, notice: '2FA enabled successfully.'
     else
       redirect_to request.referrer || root_path, alert: 'Invalid OTP code.'
     end
@@ -60,7 +60,6 @@ class UsersController < ApplicationController
     user_id = verifier.verify(session[:otp_token])
     user = User.find(user_id)
     code = params[:backup_code]
-    s = "865b1a,1e985e,fd4871,f5c344,8ec07c,d93e59"
     if user.otp_backup_codes.any? { |stored_code| BCrypt::Password.new(stored_code).is_password?(code) }
       sign_in(:user, user)
       redirect_to root_path, notice: 'Successfully logged in with backup code!'
