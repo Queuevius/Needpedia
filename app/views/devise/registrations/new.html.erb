@@ -26,11 +26,7 @@
           <div class="form-group">
             <%= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control', placeholder: 'Confirm Password' %>
           </div>
-
-          <div class="form-group">
-            <%= recaptcha_tags %>
-          </div>
-
+          <div class="cf-turnstile mt-1 mb-1" data-sitekey="<%= ENV['CLOUDFLARE_SITE_KEY'] %>" data-theme="light"></div>
           <div class="form-group">
             <% if questionnaire&.active? %>
               <button type="button" class="btn btn-primary btn-block btn-lg" data-toggle="modal" data-target="#signUpQuestionnaire">

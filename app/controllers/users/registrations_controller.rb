@@ -1,5 +1,5 @@
 class Users::RegistrationsController < Devise::RegistrationsController
-  # prepend_before_action :check_captcha, only: [:create] # Change this to be any actions you want to protect.
+  prepend_before_action :check_captcha, only: [:create]
   before_action :check_gibberish, only: [:create]
   before_action :check_account_status, only: [:new, :create]
   prepend_after_action :save_questionnaire_data, only: [:create]
@@ -21,9 +21,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
   private
 
   def check_captcha
-    unless verify_recaptcha
+    unless validate_turnstile(params['cf-turnstile-response'], request.remote_ip)
       self.resource = resource_class.new sign_up_params
       resource.validate # Look for any other validation errors besides reCAPTCHA
+      resource.errors.add(:base, "Something went wrong with CAPTCHA validation. Please try again.") if resource.errors.empty?
       set_minimum_password_length
       respond_with_navigational(resource) { render :new }
     end
@@ -104,6 +105,18 @@ class Users::RegistrationsController < Devise::RegistrationsController
       set_minimum_password_length
       respond_with resource
     end
+  end
+
+  def validate_turnstile(token, ip)
+    uri = URI.parse("https://challenges.cloudflare.com/turnstile/v0/siteverify")
+    response = Net::HTTP.post_form(uri, {
+        'secret' => ENV['CLOUDFLARE_SECRET_KEY'],
+        'response' => token,
+        'remoteip' => ip
+    })
+
+    outcome = JSON.parse(response.body)
+    outcome['success']
   end
 
 end
