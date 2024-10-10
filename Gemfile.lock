@@ -203,7 +203,7 @@ GEM
     fcm (2.0.0)
       faraday (>= 1.0.0, < 3.0)
       googleauth (~> 1)
-    ffi (1.17.0)
+    ffi (1.15.5)
     file_validators (3.0.0)
       activemodel (>= 3.2)
       mime-types (>= 1.0)
