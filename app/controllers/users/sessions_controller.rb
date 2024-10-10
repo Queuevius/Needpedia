@@ -45,8 +45,10 @@ class Users::SessionsController < Devise::SessionsController
   private
 
   def check_captcha
-    unless verify_recaptcha
+    unless validate_turnstile(params['cf-turnstile-response'], request.remote_ip)
       self.resource = resource_class.new sign_in_params
+      resource.validate # Look for any other validation errors besides reCAPTCHA
+      resource.errors.add(:base, "Something went wrong with CAPTCHA validation. Please try again.") if resource.errors.empty?
       respond_with_navigational(resource) {render :new}
     end
   end
@@ -74,6 +76,18 @@ class Users::SessionsController < Devise::SessionsController
       AdminMailer.ip_blacklisted(request.remote_ip).deliver_later
       render json: { error: 'Too many failed login attempts. Please try again later.' }, status: :too_many_requests
     end
+  end
+
+  def validate_turnstile(token, ip)
+    uri = URI.parse("https://challenges.cloudflare.com/turnstile/v0/siteverify")
+    response = Net::HTTP.post_form(uri, {
+        'secret' => ENV['CLOUDFLARE_SECRET_KEY'],
+        'response' => token,
+        'remoteip' => ip
+    })
+
+    outcome = JSON.parse(response.body)
+    outcome['success']
   end
 
 end
