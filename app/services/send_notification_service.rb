@@ -12,7 +12,7 @@ class SendNotificationService
 
       posts = []
       if user&.track_notifications == Notification::NOTIFICATION_TYPE_DAILY
-        tracking_posts = user.tracking_posts.collect(&:post).flatten.uniq
+        tracking_posts = user.tracking_posts.collect(&:post).flatten.compact.uniq
         tracking_posts.each do |post|
           with_new_likes = post.likes.where(created_at: 24.hours.ago..Time.now.utc)
           with_new_shares = post.shares.where(created_at: 24.hours.ago..Time.now.utc)
@@ -34,7 +34,7 @@ class SendNotificationService
       p 'sending email'
       if posts.present? || messages.present?
         UserMailer.send_daily_email(user, posts, messages).deliver
-        push_notification = PushNotificationService.new(user, posts.count, messages.count)
+        push_notification = PushNotificationService.new(user, posts&.count || 0, messages&.count || 0)
         push_notification.send_push_notification
       end
       p 'updating user'
