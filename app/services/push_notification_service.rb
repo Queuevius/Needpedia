@@ -18,7 +18,7 @@ class PushNotificationService
                 "You have #{notifications_count} notifications about posts and #{messages_count} new messages"
               end
 
-    options = {title: 'Daily Notification', body: message}
+    options = {title: 'Needpedia', body: message}
     send(registration_ids, options)
   end
 
