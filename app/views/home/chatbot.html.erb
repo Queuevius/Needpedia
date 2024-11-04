@@ -1,27 +1,19 @@
-<div class="chatbot text-center">
-  <div class="chatbot-container">
-    <iframe class="chatbot-frame" src="https://needpedia-nextjs.vercel.app/?user_token=<%= @token %>"></iframe>
-  </div>
+<div class="chatbot my-4 bg-white">
+  <iframe
+    class="chatbot-frame"
+    src="<%= "#{ENV['CHATBOT_URL']}?user_token=#{@token}" %>">
+  </iframe>
 </div>
 <style>
   .chatbot {
+    padding-bottom: 2rem;
+    padding-top: 1.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
+    height: 80vh;
     color: white;
     font-family: Arial, sans-serif;
-  }
-
-  .chatbot-container {
-    max-width: 90%;
-    width: 50vw;
-    height: 80%;
-    background-color: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
   }
 
   .chatbot-frame {
@@ -30,19 +22,5 @@
     border: none;
   }
 
-  @media only screen and (max-width: 768px) {
-    .chatbot-container {
-      width: 90%;
-      height: 70vh;
-    }
-  }
-
-  @media only screen and (max-width: 480px) {
-    .chatbot-container {
-      height: 60vh;
-      width: 100%;
-      padding: 0;
-    }
-  }
 
 </style>
