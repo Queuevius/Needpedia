@@ -25,26 +25,19 @@ class PushNotificationService
   private
 
   def send(registration_ids, options)
-    fcm = FCM.new(ENV['FCM_API_KEY'], Rails.root.join('config', 'credentials', 'firebase_service.json'), 'needpedia-phone-app')
-    message = {
-      notification: {
-        title: options[:title],
-        body: options[:body],
-      },
-      apns: {
-        payload: {
-          aps: {
-            sound: "default",
-            category: "#{Time.zone.now.to_i}"
-          }
-        }
-      }
-    }
-
     registration_ids.each do |token|
-      message[:token] = token
-      response = fcm.send_v1(message)
-      puts response
+      message= {
+          "message":{
+              "token":token,
+              "notification":{
+                  "body":options[:body],
+                  "title":options[:title]
+              }
+          }
+      }
+
+      fcm_service = FcmService.new
+      fcm_service.send_notification(message)
     end
   end
 end
