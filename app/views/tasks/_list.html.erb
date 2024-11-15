@@ -1,0 +1,35 @@
+<div class="container">
+  <div class="row g-4">
+    <% tasks.each do |task| %>
+      <div class="col-12 col-md-6 col-lg-4 mb-3">
+        <div class="card h-100 text-center border-2 shadow-sm" style="border: 0.125rem solid #000; border-radius: 0.5rem;">
+          <div class="card-body">
+            <!-- Task title as a link to the task's show page -->
+            <h5 class="card-title mb-3 ">
+                <strong>
+                  <%= link_to task.title, task_path(task), class: "text-dark" %>
+                </strong>
+            </h5>
+
+            <!-- Display the task's image if it is attached -->
+            <% if task.image.attached? %>
+              <%= image_tag task.image, class: "mx-auto", alt: "#{task.title} Image", style: "width: 12rem; height: 12rem; border: 0.150rem solid #000;" %>
+            <% end %>
+
+            <!-- Task description with a "Read More" link to the task's show page -->
+            <p class="card-text mt-3">
+              <%= truncate(task.description, length: 100) %>
+              <%= link_to 'Read More', task_path(task), class: 'text-primary' %>
+            </p>
+
+            <!-- Task time and rating placeholders -->
+            <div class="flex-row">
+              <strong class="col ms-0 m-3">Time: 1 hr</strong>
+              <strong class="col">Rating: medium</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

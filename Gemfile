@@ -103,3 +103,4 @@ gem 'rqrcode'
 gem 'devise_invitable', '~> 2.0.0'
 gem 'rest-client'
 gem 'google-cloud-firestore'
+

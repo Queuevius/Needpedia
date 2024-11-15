@@ -1,0 +1,45 @@
+<%= form_with(model: task, remote: true) do |form| %>
+  <% if task.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(task.errors.count, "error") %> prohibited this task from being saved:</h2>
+      <ul>
+        <% task.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Hidden fields -->
+  <% if !task.persisted? %>
+    <%= form.hidden_field :user_id, value: current_user.id %>
+    <%= form.hidden_field :group_id, value: @group.id if @group.present? %>
+  <% end %>
+
+  <div class="form-group">
+    <%= form.label :title, class: 'col-form-label' %>
+    <%= form.text_field :title, autofocus: true, class: 'form-control', placeholder: "Title" %>
+  </div>
+
+<!-- Image upload field -->
+  <div class="form-group">
+    <%= form.label :image, "Upload Image", class: 'col-form-label' %>
+    <%= form.file_field :image, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :description, class: 'col-form-label' %>
+    <%= form.text_area :description, rows: 5, class: 'form-control', placeholder: "Task Description" %>
+  </div>
+
+  <!-- Cancel/Submit Buttons -->
+  <div class="form-group">
+    <%= form.submit class: 'btn btn-primary' %>
+    <% if task.persisted? %>
+      <div class="float-right">
+        <%= link_to 'Destroy', task, method: :delete, class: "text-danger", data: { confirm: 'Are you sure?' } %>
+      </div>
+    <% end %>
+  </div>
+
+<% end %>
