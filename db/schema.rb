@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_08_29_114858) do
+ActiveRecord::Schema.define(version: 2024_11_10_175757) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -568,6 +568,17 @@ ActiveRecord::Schema.define(version: 2024_08_29_114858) do
     t.index ["name"], name: "index_tags_on_name", unique: true
   end
 
+  create_table "tasks", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.bigint "group_id"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["group_id"], name: "index_tasks_on_group_id"
+    t.index ["user_id"], name: "index_tasks_on_user_id"
+  end
+
   create_table "token_ans_debates", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "post_id", null: false
@@ -718,11 +729,6 @@ ActiveRecord::Schema.define(version: 2024_08_29_114858) do
     t.text "tokens"
     t.string "comment"
     t.integer "default_group_id"
-    t.string "encrypted_otp_secret"
-    t.string "encrypted_otp_secret_iv"
-    t.string "encrypted_otp_secret_salt"
-    t.integer "consumed_timestep"
-    t.boolean "otp_required_for_login"
     t.string "invitation_token"
     t.datetime "invitation_created_at"
     t.datetime "invitation_sent_at"
@@ -732,6 +738,11 @@ ActiveRecord::Schema.define(version: 2024_08_29_114858) do
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
     t.jsonb "features", default: {}, null: false
+    t.string "encrypted_otp_secret"
+    t.string "encrypted_otp_secret_iv"
+    t.string "encrypted_otp_secret_salt"
+    t.integer "consumed_timestep"
+    t.boolean "otp_required_for_login"
     t.integer "failed_attempts"
     t.string "unlock_token"
     t.datetime "locked_at"
@@ -783,6 +794,7 @@ ActiveRecord::Schema.define(version: 2024_08_29_114858) do
   add_foreign_key "services", "users"
   add_foreign_key "shares", "users"
   add_foreign_key "taggings", "tags"
+  add_foreign_key "tasks", "users"
   add_foreign_key "token_ans_debates", "post_tokens"
   add_foreign_key "token_ans_debates", "posts"
   add_foreign_key "token_ans_debates", "users"

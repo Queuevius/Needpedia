@@ -1,0 +1,57 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-lg-8 offset-lg-2">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white text-white d-flex justify-content-between align-items-center">
+          <h1 class="h4 mb-0"><i class="bi bi-clipboard-check"></i> Task Details</h1>
+          <div>
+            <%= link_to group_path(@task.group), class: 'btn btn-sm btn-outline-light me-2' do %>
+              <i class="bi bi-arrow-left"></i> Back to Group
+            <% end %>
+            <%= link_to edit_task_path(@task), class: 'btn btn-sm btn-light p-2' do %>
+              <i class="bi bi-pencil"></i> Edit
+            <% end %>
+          </div>
+        </div>
+
+        <% if @task.image.present? %>
+          <div class="card-img-top">
+            <%= image_tag @task.image, class: 'img-fluid w-100', style: 'max-height: 300px; object-fit: cover;', alt: @task.title %>
+          </div>
+        <% end %>
+        <div class="card-body">
+          <h2 class="card-title h5 mb-3">
+            <i class="bi bi-tag text-primary"></i> <%= @task.title %>
+          </h2>
+          <div class="card bg-light mb-4">
+            <div class="card-body">
+              <h3 class="h6 mb-3"><i class="bi bi-file-text text-primary"></i> Description:</h3>
+              <p class="card-text"><%= simple_format(@task.description) %></p>
+            </div>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h3 class="h6 mb-3"><i class="bi bi-calendar-event text-primary"></i> Created:</h3>
+                  <p class="card-text"><%= @task.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h3 class="h6 mb-3"><i class="bi bi-person text-primary"></i> Created by:</h3>
+                  <p class="card-text"><%= @task.user.name %></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-white">
+          <small class="text-muted">Last updated: <%= time_ago_in_words(@task.updated_at) %> ago</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
