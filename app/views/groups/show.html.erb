@@ -1,6 +1,5 @@
 <div class="page-header">
-
-  <div class="row bg-white p-4">
+  <div class="row bg-white p-4 mx-0">
     <div class="col mb-2">
       <% unless @group.group_type == Group::GROUP_TYPE_LAYER %>
         <%= link_to groups_path, class: 'btn btn-default' do %>
@@ -81,7 +80,7 @@
     </div>
   </div>
   <h1 class="text-center mt-3"> <%= @group.group_type == Group::GROUP_TYPE_LAYER ? 'Layer' : 'Show group' %></h1>
-  <div class="row bg-white mb-2">
+  <div class="row bg-white mb-2 mx-0">
     <div class="bg-white mt-2 col">
       <% if @group.group_type == Group::GROUP_TYPE_LAYER %>
         <%= link_to edit_group_path(@group), class: 'btn btn-primary float-right mt-2' do %>
@@ -126,6 +125,44 @@
           <div class="row topics_container_<%= @group.id %>">
             <%= render 'topics/list', {group: @group, topics: @topics} %>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card ">
+    <div class="text-dark ">
+      <div class="card-header border-bottom-0">
+        <div class="d-flex justify-content-between align-items-center">
+          <h1 class="font-weight-bold mb-0" data-toggle="collapse" href="#collapseTask" role="button" aria-expanded="false" aria-controls="collapseExample" >Tasks:</h1>
+          <button type="button" class="btn  new-task  <%= 'd-none' if !@topics.present? %>" data-toggle="modal" data-target="#newTaskModal">
+            Add New
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="collapse bg-white <%= 'show' if @tasks.present? %>" id="collapseTask">
+      <div class="card card-body bg-white ">
+        <div class="mr-sm-5">
+          <% if current_user.present? %>
+            <div class="modal fade" id="newTaskModal" tabindex="-1" role="dialog" aria-labelledby="newTaskModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="newTaskModalLabel">New task</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <%= render 'tasks/form', group: @group, task: Task.new %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div class="row tasks_container_<%= @group.id %>">
+          <%=render 'tasks/list', {group: @group, tasks: @tasks} %>
         </div>
       </div>
     </div>
@@ -697,5 +734,11 @@
                 }
             });
         }
+    });
+    $('#collapseTask').on('show.bs.collapse', function () {
+     $('.new-task').removeClass('d-none');
+    });
+    $('#collapseTask').on('hide.bs.collapse', function () {
+      $('.new-task').addClass('d-none');
     });
 </script>

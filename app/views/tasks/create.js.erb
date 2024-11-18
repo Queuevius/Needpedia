@@ -1,0 +1,2 @@
+$('.tasks_container_<%= @group.id %>').html('<%= escape_javascript(render 'tasks/list', {group: @group, tasks: @group.tasks}) %>');
+$('#newTaskModal').modal('hide');

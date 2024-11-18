@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       resources :posts, only: [:index, :create]
     end
   end
+  resources :tasks
   resources :topics
   get '/search_users_modal', to: 'groups#search_users_modal'
   resources :groups do
