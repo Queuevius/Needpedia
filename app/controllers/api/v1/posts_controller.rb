@@ -7,13 +7,14 @@ class Api::V1::PostsController < ApplicationController
     token = ENV['POST_TOKEN']
     unless header_token.present? && token.present? && header_token == token
       render json: {status: 401, message: 'Not authenticated', content: {}}
-    else
-      @subjects = Post.where(post_type: Post::POST_TYPE_SUBJECT, post_id: nil, disabled: false, private: false).includes(:ideas, :child_posts).uniq
+      return
     end
+    @q = Post.ransack(params[:q])
+    @subjects = @q.result.includes(:ideas, :child_posts).where(post_type: params[:type], post_id: nil, disabled: false, private: false).uniq
   end
 
   def create
-    @post = Post.new(post_params.merge(user_id: current_user.id))
+    @post = Post.new(post_params.merge(user_id: current_user.id, content: post_params[:content][:body] ))
     if @post.save
       render_success_response
     else
@@ -78,11 +79,11 @@ class Api::V1::PostsController < ApplicationController
   end
 
   def post_params
-    params.permit(:title, :content, :post_type, :subject_id, :problem_id)
+    params[:post].permit(:title, :post_type, :subject_id, :problem_id, :parent_id, content: [:body])
   end
 
   def current_user
-    @current_user ||= User.find_by(uuid: extract_token_from_header)
+    @current_user ||= User.find_by(uuid: request.headers['token'])
   end
 
   def valid_subject_post?(id)
