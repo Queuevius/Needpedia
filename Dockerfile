@@ -19,6 +19,9 @@ RUN apt install shared-mime-info
 RUN gem install nokogiri -v 1.13.10
 RUN gem install mimemagic -v '0.3.10' --source 'https://rubygems.org/'
 RUN gem install bundler -v 2.4.4
+RUN gem install zeitwerk -v 2.6.18
+RUN gem install nokogiri -v 1.15.6
+RUN gem install net-imap -v 0.3.7
 RUN gem install rails -v 6.0.4
 RUN bundle install
 

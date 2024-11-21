@@ -22,7 +22,7 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
-/config/credentials/firebase_service.json
+/config/credentials/google-services.json
 
 /public/packs
 /public/packs-test
