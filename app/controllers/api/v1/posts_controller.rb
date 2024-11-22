@@ -24,7 +24,6 @@ class Api::V1::PostsController < ApplicationController
   end
 
   def update
-    binding.pry
     if @post.update(post_params.merge(content: post_params[:content][:body] ))
       render_success_response(@post, 'Post was successfully updated.')
     else

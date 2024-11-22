@@ -5,6 +5,7 @@ services:
     image: redis:latest
     ports:
       - "6380:6379"
+
   need_pedia:
     build:
       context: .
@@ -22,10 +23,12 @@ services:
     volumes:
       - ./:/workspace
       - ./docker/database.yml:/workspace/config/database.yml
+      - ./config/credentials/google-services.json:/workspace/config/credentials/google-services.json:ro
     links:
       - db
     depends_on:
       - db
+
   db:
     image: postgres:11.6
     environment:

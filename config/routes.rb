@@ -9,8 +9,13 @@ Rails.application.routes.draw do
       match '/register_device', to: 'device_registration#register_device', via: [:post]
       resources :faqs, only: [:index]
       resources :how_to, only: [:index]
-      resources :posts
-      
+      resources :posts, only: [:index, :create]
+      resources :chat_threads do
+        collection do
+          get :current
+          post :set_current
+        end
+      end
     end
   end
   resources :topics
