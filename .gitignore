@@ -22,7 +22,7 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
-/config/credentials/firebase_service.json
+/config/credentials/google-services.json
 
 /public/packs
 /public/packs-test
@@ -33,6 +33,7 @@ yarn-debug.log*
 .idea/
 .idea/workspace.xml
 /config/credentials/development.key
+config/credentials/google-services.json
 .env*
 !.env.sample
 config/credentials/google-services.json
