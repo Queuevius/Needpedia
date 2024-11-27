@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_11_10_175757) do
+ActiveRecord::Schema.define(version: 2024_11_22_125334) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -575,6 +575,10 @@ ActiveRecord::Schema.define(version: 2024_11_10_175757) do
     t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.text "skills", default: [], array: true
+    t.string "city"
+    t.string "status", default: "Casual", null: false
+    t.decimal "hours", precision: 5, scale: 2, default: "1.0", null: false
     t.index ["group_id"], name: "index_tasks_on_group_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
