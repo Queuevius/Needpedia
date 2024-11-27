@@ -21,10 +21,34 @@
     <%= form.text_field :title, autofocus: true, class: 'form-control', placeholder: "Title" %>
   </div>
 
-<!-- Image upload field -->
+  <!-- Image upload field -->
   <div class="form-group">
-    <%= form.label :image, "Upload Image", class: 'col-form-label' %>
-    <%= form.file_field :image, class: 'form-control' %>
+    <%= form.label :images, "Upload Images", class: 'col-form-label' %>
+    <%= form.file_field :images, multiple: true, accept: 'image/jpeg, image/png' %>
+  </div>
+
+  <!-- Skills field -->
+  <div class="form-group">
+    <%= form.label :skills, "Skills (comma separated)" %>
+    <%= form.text_field :skills, class: 'form-control', placeholder: "Enter skills like: JavaScript, Ruby, UI/UX" %>
+  </div>
+
+  <!-- status field -->
+  <div class="form-group mb-3">
+    <%= form.label :status, "Task Status", class: "form-label" %>
+    <%= form.select :status, Task::STATUSES, {}, class: "form-control custom-select" %>
+  </div>
+
+  <!-- status field -->
+  <div class="form-group mb-3">
+    <%= form.label :hours, "Estimated Hours", class: "form-label" %>
+    <%= form.number_field :hours, step: 0.1, min: 0.1, max: 999.99, class: "form-control", placeholder: "Enter hours (e.g., 1.5)" %>
+  </div>
+
+  <!-- City field -->
+  <div class="form-group">
+    <%= form.label :city %>
+    <%= form.text_field :city, class: "form-control", placeholder: "Enter city" %>
   </div>
 
   <div class="form-group">

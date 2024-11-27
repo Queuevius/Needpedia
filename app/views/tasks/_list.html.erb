@@ -2,32 +2,62 @@
   <div class="row g-4">
     <% tasks.each do |task| %>
       <div class="col-12 col-md-6 col-lg-4 mb-3">
-        <div class="card h-100 text-center border-2 shadow-sm" style="border: 0.125rem solid #000; border-radius: 0.5rem;">
-          <div class="card-body">
-            <!-- Task title as a link to the task's show page -->
-            <h5 class="card-title mb-3 ">
-                <strong>
-                  <%= link_to task.title, task_path(task), class: "text-dark" %>
-                </strong>
-            </h5>
+        <div class="card h-100 text-center  shadow" style="border: 0.125rem solid #000; border-radius: 1rem;">
+          <%= link_to  task_path(task) do %>
+            <div class="card-body p-3" style="cursor: pointer;" onclick="window.location='<%= task_path(task) %>';">
+              <!-- Task title as a link to the task's show page -->
+              <h5 class="card-title mb-2 text-truncate" title="<%= task.title %>">
+                <strong><%= task.title %></strong>
+              </h5>
+              <!-- Display the task's image carousel if images are attached -->
+              <div id="carouselExampleIndicators<%= task.id %>" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                  <% if task.images.attached? %>
+                    <% task.images.each_with_index do |image, index| %>
+                      <div class="carousel-item <%= 'active' if index == 0 %>">
+                        <%= image_tag image, class: "mx-auto d-block", alt: "#{task.title} Image", style: "width: 18rem; height: 12rem; object-fit: cover;", alt: "Card Image #{index + 1}" %>
+                      </div>
+                    <% end %>
+                  <% end %>
+                </div>
+                <!-- Carousel controls for navigation -->
+                <a class="carousel-control-prev" href="#carouselExampleIndicators<%= task.id %>" role="button" data-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleIndicators<%= task.id %>" role="button" data-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="sr-only">Next</span>
+                </a>
+              </div>
+              <!-- Status (Urgent/Casual/Pressing) and hours -->
+              <h5 class="d-flex flex-wrap justify-content-between align-items-center mb-2 mt-2 border-top border-bottom border-dark p-2">
+                <!-- Task Status -->
+                <span class="col-auto text-truncate">
+                  <strong>
+                    <%= task.status %>
+                  </strong>
+                </span>
 
-            <!-- Display the task's image if it is attached -->
-            <% if task.image.attached? %>
-              <%= image_tag task.image, class: "mx-auto", alt: "#{task.title} Image", style: "width: 12rem; height: 12rem; border: 0.150rem solid #000;" %>
-            <% end %>
+                <!-- Task Hours -->
+                <span class="col-auto text-truncate">
+                  <strong><%= number_with_precision(task.hours, precision: 1) %> hrs</strong>
+                </span>
 
-            <!-- Task description with a "Read More" link to the task's show page -->
-            <p class="card-text mt-3">
-              <%= truncate(task.description, length: 100) %>
-              <%= link_to 'Read More', task_path(task), class: 'text-primary' %>
-            </p>
-
-            <!-- Task time and rating placeholders -->
-            <div class="flex-row">
-              <strong class="col ms-0 m-3">Time: 1 hr</strong>
-              <strong class="col">Rating: medium</strong>
+                <!-- Task Skills -->
+                <span class="col text-truncate">
+                  <strong>Skills:</strong>
+                  <%= task.skills.join(', ')[0..47] %>
+                  <% if task.skills.join(', ').length > 50 %>...<% end %>
+                </span>
+              </h5>
+              <!-- Task description with a "Read More" link to the task's show page -->
+              <p class="card-text mt-3" title="<%= task.description %>">
+                <%= truncate(task.description, length: 200, class:"text-dark") %>
+                <%= link_to 'Read More', task_path(task), class: 'text-primary' %>
+              </p>
             </div>
-          </div>
+          <% end %>
         </div>
       </div>
     <% end %>
