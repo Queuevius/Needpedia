@@ -1,6 +1,6 @@
 class Api::V1::PostsController < ApplicationController
-  # before_action :authenticate_token, except: [:index]
-  # before_action :validate_post_type_presence, only: [:create]
+  before_action :authenticate_token, except: [:index]
+  before_action :validate_post_type_presence, only: [:create]
   before_action :set_post, only: [:update]
 
   def index
