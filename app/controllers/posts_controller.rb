@@ -291,8 +291,60 @@ class PostsController < ApplicationController
     @post_image.purge
     redirect_back(fallback_location: request.referer)
   end
+  #todo
+  # this is workarrouund need to be updated
+  def api_update_post
+    unless params[:token].present?
+      render json: {status: 401, message: 'User must be present', content: {}}
+      return
+    end
+
+    @post = Post.find(params[:id])
+    current_user = User.find_by(uuid: params[:uuid])
+    updated_params = post_params.merge(title: post_params[:title].presence || @post.title, content: post_params[:content].presence || @post.content)
+
+    if @post.update(updated_params)
+      new_content = @post.content
+      active_versions = @post.post_versions.where(active: true)
+      if params[:post][:images].present?
+        @post.images.attach(params[:post][:images]) unless @post.images == params[:post][:images]
+      end
+      create_private_users
+      create_curated_users
+      active_versions.update(active: false) if active_versions.present?
+      @post.post_versions.create(content: new_content, user: current_user, active: true)
+      # @post.clean_froala_link
+      Notification.post(from: current_user, notifiable: current_user, to: @post.users, action: Notification::NOTIFICATION_TYPE_POST_UPDATED, post_id: @post.id)
+      create_activity(@post, 'post.update')
+      offsite_notification(@post)
+      render_success_response(@post, 'Post was successfully updated.')
+    else
+      render json: { status: 422, message: @post.errors.full_messages, content: {} }
+    end
+  end
 
   private
+
+  def render_success_response(post, message)
+    render json: {
+        status: 200,
+        message: message,
+        content: {
+            post: {
+                link: post_url(post),
+                title: post.title,
+                content: post.content.body,
+                post_type: post.post_type,
+                curated: post.curated,
+                group_id: post.group_id,
+                disabled: post.disabled,
+                private: post.private,
+                problem: post.problem_id.present? ? post_url(Post.find(post.problem_id)) : nil,
+                subject: post.subject_id.present? ? post_url(Post.find(post.subject_id)) : nil
+            }
+        }
+    }
+  end
 
   def handle_otp_redirect
     if post_params[:post_type] == Post::POST_TYPE_GEOMAXING || post_params[:private] == "1"
