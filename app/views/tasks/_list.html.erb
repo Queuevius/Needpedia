@@ -44,17 +44,15 @@
                   <strong><%= number_with_precision(task.hours, precision: 1) %> hrs</strong>
                 </span>
 
-                <!-- Task Skills -->
-                <span class="col text-truncate">
-                  <strong>Skills:</strong>
-                  <%= task.skills.join(', ')[0..47] %>
-                  <% if task.skills.join(', ').length > 50 %>...<% end %>
-                </span>
               </h5>
               <!-- Task description with a "Read More" link to the task's show page -->
               <p class="card-text mt-3" title="<%= task.description %>">
-                <%= truncate(task.description, length: 200, class:"text-dark") %>
-                <%= link_to 'Read More', task_path(task), class: 'text-primary' %>
+                <% if task.description.length > 200 %>
+                  <%= truncate(task.description, length: 200, class: "text-dark") %>
+                  <%= link_to 'Read More', task_path(task), class: 'text-primary' %>
+                <% else %>
+                  <%= task.description %>
+                <% end %>
               </p>
             </div>
           <% end %>
