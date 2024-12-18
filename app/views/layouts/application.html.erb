@@ -7,10 +7,30 @@
     <%= render 'shared/navbar' %>
     <%= render 'shared/notices' %>
 
-    <div class="container">
+    <div class="container content-wrapper">
       <%= yield %>
     </div>
 
     <%= render 'shared/footer' %>
   </body>
 </html>
+<style>
+  /* Ensure the whole page takes up at least 100% of the viewport height */
+  html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Main content wrapper should take up all available space */
+  .content-wrapper {
+    flex: 1;
+  }
+
+  /* Footer styling */
+  .footer {
+    background-color: #f8f9fa;
+  }
+
+</style>
