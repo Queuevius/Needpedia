@@ -23,6 +23,7 @@ class GroupsController < ApplicationController
     @current_user_invitation = @invitations.where(user_id: current_user.id).first
     @topic = Topic.new(parent_id: params[:parent_id])
     @topics = @group.topics.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('topics.created_at DESC')
+    @tasks = @group.tasks.order(created_at: :desc)
   end
 
   def layers
