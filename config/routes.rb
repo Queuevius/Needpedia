@@ -18,6 +18,7 @@ Rails.application.routes.draw do
       end
     end
   end
+  resources :tasks
   put 'posts/:id/api_update', to: 'posts#api_update_post', as: 'api_update_post'
   resources :topics
   get '/search_users_modal', to: 'groups#search_users_modal'

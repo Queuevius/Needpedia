@@ -36,3 +36,4 @@ yarn-debug.log*
 config/credentials/google-services.json
 .env*
 !.env.sample
+config/credentials/google-services.json
