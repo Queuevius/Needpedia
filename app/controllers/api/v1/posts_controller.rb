@@ -1,21 +1,31 @@
 class Api::V1::PostsController < ApplicationController
   before_action :authenticate_token, except: [:index]
   before_action :validate_post_type_presence, only: [:create]
+  before_action :set_post, only: [:update]
 
   def index
     header_token = extract_token_from_header
     token = ENV['POST_TOKEN']
     unless header_token.present? && token.present? && header_token == token
       render json: {status: 401, message: 'Not authenticated', content: {}}
-    else
-      @subjects = Post.where(post_type: Post::POST_TYPE_SUBJECT, post_id: nil, disabled: false, private: false).includes(:ideas, :child_posts).uniq
+      return
     end
+    @q = Post.ransack(params[:q])
+    @subjects = @q.result.includes(:ideas, :child_posts).where(post_type: params[:type], post_id: nil, disabled: false, private: false).uniq
   end
 
   def create
-    @post = Post.new(post_params.merge(user_id: current_user.id))
+    @post = Post.new(post_params.merge(user_id: current_user.id, content: post_params[:content][:body] ))
     if @post.save
-      render_success_response
+      render_success_response(@post, 'Post was successfully created.')
+    else
+      render json: { status: 422, message: @post.errors.full_messages, content: {} }
+    end
+  end
+
+  def update
+    if @post.update(post_params.merge(content: post_params[:content][:body] ))
+      render_success_response(@post, 'Post was successfully updated.')
     else
       render json: { status: 422, message: @post.errors.full_messages, content: {} }
     end
@@ -36,25 +46,22 @@ class Api::V1::PostsController < ApplicationController
     end
   end
 
-
-  def render_success_response
+  def render_success_response(post, message)
     render json: {
         status: 200,
-        message: 'Post was successfully created.',
+        message: message,
         content: {
             post: {
-                link: post_url(@post),
-                title: @post.title,
-                content: @post.content.body,
-                post_type: @post.post_type,
-                curated: @post.curated,
-                group_id: @post.group_id,
-                disabled: @post.disabled,
-                private: @post.
-
-                private,
-                problem: @post.problem_id.present? ? post_url(Post.find(@post.problem_id)) : nil,
-                subject: @post.subject_id.present? ? post_url(Post.find(@post.subject_id)) : nil
+                link: post_url(post),
+                title: post.title,
+                content: post.content.body,
+                post_type: post.post_type,
+                curated: post.curated,
+                group_id: post.group_id,
+                disabled: post.disabled,
+                private: post.private,
+                problem: post.problem_id.present? ? post_url(Post.find(post.problem_id)) : nil,
+                subject: post.subject_id.present? ? post_url(Post.find(post.subject_id)) : nil
             }
         }
     }
@@ -78,11 +85,17 @@ class Api::V1::PostsController < ApplicationController
   end
 
   def post_params
-    params.permit(:title, :content, :post_type, :subject_id, :problem_id)
+    params[:post].permit(:title, :post_type, :subject_id, :problem_id, :parent_id, content: [:body])
   end
 
   def current_user
-    @current_user ||= User.find_by(uuid: extract_token_from_header)
+    @current_user ||= User.find_by(uuid: request.headers['token'])
+  end
+
+  def set_post
+    @post = Post.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { status: 404, message: 'Post not found', content: {} }
   end
 
   def valid_subject_post?(id)

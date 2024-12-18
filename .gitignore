@@ -33,6 +33,7 @@ yarn-debug.log*
 .idea/
 .idea/workspace.xml
 /config/credentials/development.key
+config/credentials/google-services.json
 .env*
 !.env.sample
 config/credentials/google-services.json

@@ -10,9 +10,16 @@ Rails.application.routes.draw do
       resources :faqs, only: [:index]
       resources :how_to, only: [:index]
       resources :posts, only: [:index, :create]
+      resources :chat_threads do
+        collection do
+          get :current
+          post :set_current
+        end
+      end
     end
   end
   resources :tasks
+  put 'posts/:id/api_update', to: 'posts#api_update_post', as: 'api_update_post'
   resources :topics
   get '/search_users_modal', to: 'groups#search_users_modal'
   resources :groups do
