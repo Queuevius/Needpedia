@@ -3,7 +3,7 @@ require 'uri'
 require 'json'
 
 class FcmService
-  FCM_URL = 'https://fcm.googleapis.com/v1/projects/update-needpedia/messages:send'
+  FCM_URL = ENV['FCM_URL']
 
   def initialize
     @auth_token = fetch_auth_token
