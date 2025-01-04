@@ -148,12 +148,14 @@
           <div class="col-auto">
             <button
               type="button"
-              class="btn new-task <%= 'd-none' unless @topics.present? %>"
+              class="btn new-task"
               data-toggle="modal"
-              data-target="#newTaskModal">
+              data-target="#newTaskModal"
+              data-tasks-present="<%= @tasks.present? %>">
               Add New
             </button>
           </div>
+
         </div>
       </div>
     </div>
@@ -730,6 +732,27 @@
   }
 </style>
 <script>
+    $(document).ready(function () {
+        function toggleAddNewButton() {
+            const tasksPresent = $('#tasksContainer').children().length > 0; // Check if tasks exist
+            const $button = $('.new-task');
+
+            if (tasksPresent) {
+                $button.removeClass('d-none');
+            } else {
+                $button.addClass('d-none');
+            }
+        }
+
+        if ($('.new-task').data('tasks-present') === false) {
+            $('.new-task').addClass('d-none');
+        }
+
+        $(document).on('taskUpdated', function () {
+            toggleAddNewButton();
+        });
+    });
+
     $(document).ready(function() {
         $('#searchInputModal').on('input', function() {
             var q = $(this).val();
@@ -751,11 +774,18 @@
                 }
             });
         }
-    });
-    $('#collapseTask').on('show.bs.collapse', function () {
-     $('.new-task').removeClass('d-none');
-    });
-    $('#collapseTask').on('hide.bs.collapse', function () {
-      $('.new-task').addClass('d-none');
+
+        $('#collapseTask').on('show.bs.collapse', function () {
+            $('.new-task').removeClass('d-none');
+        });
+
+        $('#collapseTask').on('hide.bs.collapse', function () {
+            $('.new-task').addClass('d-none');
+        });
+
+        $(document).on('submit', '#taskForm', function(e) {
+            e.preventDefault();
+            $('.new-task').removeClass('d-none');
+        });
     });
 </script>

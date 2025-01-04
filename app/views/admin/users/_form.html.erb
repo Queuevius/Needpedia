@@ -19,10 +19,10 @@ and renders all form fields for a resource's editable attributes.
     <div id="error_explanation">
       <h2>
         <%= t(
-          "administrate.form.errors",
-          pluralized_errors: pluralize(page.resource.errors.count, t("administrate.form.error")),
-          resource_name: display_resource_name(page.resource_name)
-        ) %>
+                "administrate.form.errors",
+                pluralized_errors: pluralize(page.resource.errors.count, t("administrate.form.error")),
+                resource_name: display_resource_name(page.resource_name, singular: true)
+            ) %>
       </h2>
 
       <ul>
@@ -33,15 +33,29 @@ and renders all form fields for a resource's editable attributes.
     </div>
   <% end %>
 
-  <% page.attributes.delete_if { |x| x.attribute == :master_admin }.each do |attribute| -%>
-    <div class="field-unit field-unit--<%= attribute.html_class %> field-unit--<%= requireness(attribute) %> <%= "mb-0" if attribute.attribute == :password %>">
-      <%= render_field attribute, f: f %>
-    </div>
-    <% if attribute.attribute == :password %>
-      <small class="form-text text-muted form-actions mt-0">
-        Password must include at least one uppercase letter, one lowercase letter, one digit, and one special character from these (#?!@$%^&*_-).
-      </small>
-    <% end %>
+  <% page.attributes(controller.action_name).each do |title, attributes| -%>
+    <fieldset class="<%= "field-unit--nested" if title.present? %>">
+      <% if title.present? %>
+        <legend><%= t "helpers.label.#{f.object_name}.#{title}", default: title %></legend>
+      <% end %>
+
+      <% attributes.each do |attribute| %>
+        <div class="field-unit field-unit--<%= attribute.html_class %> field-unit--<%= requireness(attribute) %>">
+          <%= render_field attribute, f: f %>
+          <% hint_key = "administrate.field_hints.#{page.resource_name}.#{attribute.name}" %>
+          <% if I18n.exists?(hint_key) -%>
+            <div class="field-unit__hint">
+              <%= I18n.t(hint_key) %>
+            </div>
+          <% end -%>
+        </div>
+        <% if attribute.attribute == :password %>
+          <small class="form-text text-muted form-actions mt-0">
+            Password must include at least one uppercase letter, one lowercase letter, one digit, and one special character from these (#?!@$%^&*_-).
+          </small>
+        <% end %>
+      <% end %>
+    </fieldset>
   <% end -%>
 
   <div class="form-actions">

@@ -43,7 +43,13 @@ as well as a link to its edit page.
 
 <section class="main-content__body">
   <dl>
-    <% page.attributes.each do |attribute| %>
+    <% page.attributes.each do |title, attributes| %>
+      <fieldset class="<%= "field-unit--nested" if title.present? %>">
+        <% if title.present? %>
+          <legend><%= t "helpers.label.#{page.resource_name}.#{title}", default: title %></legend>
+        <% end %>
+
+        <% attributes.each do |attribute| %>
       <dt class="attribute-label" id="<%= attribute.name %>">
       <%= t(
         "helpers.label.#{resource_name}.#{attribute.name}",
@@ -53,6 +59,8 @@ as well as a link to its edit page.
 
       <dd class="attribute-data attribute-data--<%=attribute.html_class%>"
           ><%= render_field attribute, page: page %></dd>
+          <% end %>
+      </fieldset>
     <% end %>
   </dl>
 </section>
