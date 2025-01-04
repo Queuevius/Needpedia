@@ -1,0 +1,40 @@
+<header class="main-content__header">
+  <h1 class="main-content__page-title">
+   <%= @user.name  %> AI Chat History
+  </h1>
+
+  <div>
+    <%=link_to(
+           "Back to User Show Page",
+           master_admin_user_path(id: @user.id),
+           class: "button"
+       ) %>
+  </div>
+</header>
+
+<section class="main-content__body">
+  <dl>
+    <div class="chatbot my-4 bg-white">
+      <iframe
+        class="chatbot-frame"
+        src="<%= "#{ENV['CHATBOT_URL']}?user_token=#{@uuid}" %>">
+      </iframe>
+    </div>
+
+    <style>
+      .chatbot {
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: white;
+        font-family: Arial, sans-serif;
+      }
+
+      .chatbot-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+    </style>
+  </dl>
+</section>
