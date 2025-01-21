@@ -44,6 +44,7 @@ Rails.application.routes.draw do
   get 'how_tos/index'
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :master_admin do
+    get 'user_ai_histories/show'
     resources :admin_notices
     resources :user_assistant_documents
     resources :settings
