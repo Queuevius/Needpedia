@@ -163,6 +163,7 @@ Rails.application.routes.draw do
   get '/about_us', to: 'home#about_us'
   get '/contact_us', to: 'home#contact_us'
   get '/faq', to: 'home#faq'
+  get '/careers', to: 'home#careers'
   get '/pdf', to: 'user_assistant_documents#pdf_file'
   get '/pdf_links', to: 'user_assistant_documents#pdf_links'
   get '/chat', to: 'home#chat'
