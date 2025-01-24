@@ -1,6 +1,6 @@
 class Guest < ApplicationRecord
   has_many :chat_threads, dependent: :destroy
-  has_many :ai_tokens
+  has_many :ai_tokens, dependent: :destroy
 
   validates :uuid, presence: true, uniqueness: true
   validates :fingerprint, presence: true

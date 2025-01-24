@@ -58,8 +58,15 @@ class HomeController < ApplicationController
     return if current_user
     return if BlockedIp.exists?(ip: request.remote_ip)
 
-    @current_guest = find_or_create_guest
-    track_guest_changes if @current_guest
+    guest = Guest.find_or_create_by(ip: request.remote_ip) do |new_guest|
+      new_guest.uuid = SecureRandom.uuid
+      new_guest.fingerprint = SecureRandom.hex(16)
+
+    end
+    @current_guest = guest
+
+    # @current_guest = find_or_create_guest
+    # track_guest_changes if @current_guest
   end
 
   def find_or_create_guest
