@@ -1,14 +1,14 @@
 <header class="main-content__header">
   <h1 class="main-content__page-title">
-   <%= @user.name  %> AI Chat History
+    <%= @user&.name %> AI Chat History
   </h1>
 
   <div>
-    <%=link_to(
-           "Back to User Show Page",
-           master_admin_user_path(id: @user.id),
-           class: "button"
-       ) %>
+    <%= link_to(
+            @user.present? ? "Back to User Show Page" : "Back to Guest Show Page",
+            @user.present? ? master_admin_user_path(id: @user.id) : master_admin_guest_path(id: @guest.id),
+            class: "button"
+        ) %>
   </div>
 </header>
 

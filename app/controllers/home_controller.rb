@@ -3,8 +3,8 @@ class HomeController < ApplicationController
 
   after_action :read_new_comers_message, only: [:index]
   before_action :set_tutorial
-  before_action :authenticate_user!, only: [:chatbot]
   before_action :check_otp, only: [:time_bank]
+  before_action :track_guest, only: [:chatbot]
 
   def index
     # @q = Post.ransack(params[:q])
@@ -36,7 +36,8 @@ class HomeController < ApplicationController
   end
 
   def chatbot
-    @token = current_user.uuid
+    @token = current_user&.uuid || current_guest.uuid
+    @chatbot_url = current_user.present? ? ENV['CHATBOT_URL'] : ENV['GUEST_CHATBOT_URL']
   end
 
   private
@@ -52,4 +53,88 @@ class HomeController < ApplicationController
     @url += "/#{params[:action]}" if params[:action] != "index"
     @user_tutorial = current_user.user_tutorials.where(link: @url).last if current_user.present?
   end
+
+  def track_guest
+    return if current_user
+    return if BlockedIp.exists?(ip: request.remote_ip)
+
+    @current_guest = find_or_create_guest
+    track_guest_changes if @current_guest
+  end
+
+  def find_or_create_guest
+    guest = find_guest_by_cookie || find_guest_by_identity || create_new_guest
+    update_guest_cookie(guest) if guest
+    guest
+  end
+
+  def find_guest_by_cookie
+    return nil unless cookies[:guest_uuid]
+    Guest.find_by(uuid: cookies[:guest_uuid])
+  end
+
+  def find_guest_by_identity
+    return nil unless request.remote_ip.present? && request.user_agent.present?
+
+    temp_fingerprint = generate_temp_fingerprint
+    Guest.where("ip = ? OR last_ip = ? OR fingerprint = ?",
+                request.remote_ip, request.remote_ip, temp_fingerprint)
+        .first
+  end
+
+  def create_new_guest
+    Guest.create(
+        ip: request.remote_ip,
+        last_ip: request.remote_ip,
+        user_agent: request.user_agent
+    )
+  end
+
+  def track_guest_changes
+    return unless @current_guest.last_ip != request.remote_ip ||
+        @current_guest.user_agent != request.user_agent
+
+    @current_guest.update(
+        last_ip: request.remote_ip,
+        user_agent: request.user_agent
+    )
+  end
+
+  def generate_temp_fingerprint
+    data = [
+        request.remote_ip,
+        request.user_agent,
+        request.headers['Accept-Language'],
+        Time.current.to_date.to_s
+    ].compact
+
+    Digest::SHA256.hexdigest(data.join('-'))
+  end
+
+  def update_guest_cookie(guest)
+    return unless guest&.uuid
+
+    if private_browsing?
+      cookies[:guest_uuid] = guest.uuid
+    else
+      cookies.permanent[:guest_uuid] = guest.uuid
+    end
+  end
+
+  def private_browsing?
+    begin
+      cookies.permanent[:private_test] = true
+      cookies.delete(:private_test)
+      false
+    rescue StandardError
+      true
+    end
+  end
+
+  def current_guest
+    @current_guest
+  end
+
+  helper_method :current_guest
+
 end
