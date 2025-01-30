@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_11_22_125334) do
+ActiveRecord::Schema.define(version: 2025_01_29_062311) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -93,6 +93,16 @@ ActiveRecord::Schema.define(version: 2024_11_22_125334) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "ai_tokens", force: :cascade do |t|
+    t.integer "tokens_count", default: 0
+    t.bigint "user_id"
+    t.bigint "guest_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["guest_id"], name: "index_ai_tokens_on_guest_id"
+    t.index ["user_id"], name: "index_ai_tokens_on_user_id"
+  end
+
   create_table "announcements", force: :cascade do |t|
     t.datetime "published_at"
     t.string "announcement_type"
@@ -137,6 +147,16 @@ ActiveRecord::Schema.define(version: 2024_11_22_125334) do
     t.string "page_name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "chat_threads", force: :cascade do |t|
+    t.string "title"
+    t.string "last_message"
+    t.string "thread_id"
+    t.bigint "user_id"
+    t.bigint "guest_id"
+    t.index ["guest_id"], name: "index_chat_threads_on_guest_id"
+    t.index ["user_id"], name: "index_chat_threads_on_user_id"
   end
 
   create_table "comments", force: :cascade do |t|
@@ -296,6 +316,16 @@ ActiveRecord::Schema.define(version: 2024_11_22_125334) do
     t.index ["user_id"], name: "index_groups_on_user_id"
   end
 
+  create_table "guests", force: :cascade do |t|
+    t.string "ip"
+    t.string "uuid"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "fingerprint"
+    t.string "last_ip"
+    t.string "user_agent"
+  end
+
   create_table "home_videos", force: :cascade do |t|
     t.string "link"
     t.datetime "created_at", precision: 6, null: false
@@ -307,6 +337,15 @@ ActiveRecord::Schema.define(version: 2024_11_22_125334) do
     t.text "answer"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "impacts", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "description"
+    t.string "badge"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_impacts_on_user_id"
   end
 
   create_table "interested_users", force: :cascade do |t|
@@ -733,6 +772,11 @@ ActiveRecord::Schema.define(version: 2024_11_22_125334) do
     t.text "tokens"
     t.string "comment"
     t.integer "default_group_id"
+    t.string "encrypted_otp_secret"
+    t.string "encrypted_otp_secret_iv"
+    t.string "encrypted_otp_secret_salt"
+    t.integer "consumed_timestep"
+    t.boolean "otp_required_for_login"
     t.string "invitation_token"
     t.datetime "invitation_created_at"
     t.datetime "invitation_sent_at"
@@ -742,11 +786,6 @@ ActiveRecord::Schema.define(version: 2024_11_22_125334) do
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
     t.jsonb "features", default: {}, null: false
-    t.string "encrypted_otp_secret"
-    t.string "encrypted_otp_secret_iv"
-    t.string "encrypted_otp_secret_salt"
-    t.integer "consumed_timestep"
-    t.boolean "otp_required_for_login"
     t.integer "failed_attempts"
     t.string "unlock_token"
     t.datetime "locked_at"
@@ -763,8 +802,12 @@ ActiveRecord::Schema.define(version: 2024_11_22_125334) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "admin_histories", "users"
+  add_foreign_key "ai_tokens", "guests"
+  add_foreign_key "ai_tokens", "users"
   add_foreign_key "answers", "questions"
   add_foreign_key "answers", "users"
+  add_foreign_key "chat_threads", "guests"
+  add_foreign_key "chat_threads", "users"
   add_foreign_key "comments", "users"
   add_foreign_key "deletion_requests", "post_versions"
   add_foreign_key "deletion_requests", "users"
@@ -774,6 +817,7 @@ ActiveRecord::Schema.define(version: 2024_11_22_125334) do
   add_foreign_key "flags", "users"
   add_foreign_key "gigs", "users"
   add_foreign_key "groups", "users"
+  add_foreign_key "impacts", "users"
   add_foreign_key "interested_users", "users"
   add_foreign_key "invitations", "groups"
   add_foreign_key "invitations", "users"

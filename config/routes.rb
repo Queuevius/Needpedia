@@ -51,6 +51,7 @@ Rails.application.routes.draw do
     resources :admin_histories
     resources :preformatted_messages
     resources :how_tos
+    resources :impacts
     resources :questions
     resources :questionnaires
     resources :faqs

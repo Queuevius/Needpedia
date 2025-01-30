@@ -224,11 +224,22 @@ class PostsController < ApplicationController
 
   def search_result
     @keywords = params[:q]
-    post_query_service = PostSearchService.new(params)
-    posts = post_query_service.filter
-    @posts = Kaminari.paginate_array(posts).page(params[:posts]).per(10)
-    @access_type = params[:access_type]
     @post_type = params[:post_type]
+
+    if @post_type == "TaskCard" && @keywords.present?
+      search_term = params.dig(:q, :title_cont).to_s.strip
+      keywords = search_term.split(",").map(&:strip)
+
+      @task_cards = Task.where(
+          "EXISTS (SELECT 1 FROM unnest(skills) AS skill WHERE skill ILIKE ANY (ARRAY[?]))",
+          keywords.map { |k| "%#{k}%" }
+      ).page(params[:page]).per(10)
+    else
+      post_query_service = PostSearchService.new(params)
+      posts = post_query_service.filter
+      @posts = Kaminari.paginate_array(posts).page(params[:posts]).per(10)
+    end
+    @access_type = params[:access_type]
     @sorted_by = params[:sorted_by]
     @subject = params[:subject]
     @problem = params[:problem]
