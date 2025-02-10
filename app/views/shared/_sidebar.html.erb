@@ -50,7 +50,7 @@
             <%= link_to friends_path(uuid: @uuid), class: 'list-group-item list-group-item-action' do %>
               <i class="bi bi-person-check mr-2"></i>All Friends <span class="badge badge-primary float-right d-flex"><%= @friends_count.total_count %></span>
             <% end %>
-            <% if current_user.uuid == @user.uuid %>
+            <% if current_user&.uuid == @user&.uuid %>
               <%= link_to friend_request_path(uuid: @uuid), class: 'list-group-item list-group-item-action' do %>
                 <i class="bi bi-person-plus mr-2"></i>Requests <span class="badge badge-primary float-right d-flex"><%= @connection_requests_count.count %></span>
               <% end %>

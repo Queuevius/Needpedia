@@ -1,5 +1,5 @@
 <%= form_with(model: comment, local: false) do |form| %>
-
+  <% return if current_user.blank? %>
   <%= form.hidden_field :user_id, value: current_user.id %>
   <% if params[:objective_id].present? %>
     <%= form.hidden_field :commentable_id, value: params[:objective_id] %>

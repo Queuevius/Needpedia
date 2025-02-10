@@ -63,7 +63,7 @@ class ImpactDashboard < Administrate::BaseDashboard
   # Overwrite this method to customize how impacts are displayed
   # across all pages of the admin dashboard.
   #
-  # def display_resource(impact)
-  #   "Impact ##{impact.id}"
-  # end
+  def display_resource(impact)
+    "Impact ##{impact.badge}"
+  end
 end

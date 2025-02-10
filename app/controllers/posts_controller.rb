@@ -226,14 +226,14 @@ class PostsController < ApplicationController
     @keywords = params[:q]
     @post_type = params[:post_type]
 
-    if @post_type == "TaskCard" && @keywords.present?
+    if @post_type == "TaskCard"
       search_term = params.dig(:q, :title_cont).to_s.strip
       keywords = search_term.split(",").map(&:strip)
-
-      @task_cards = Task.where(
-          "EXISTS (SELECT 1 FROM unnest(skills) AS skill WHERE skill ILIKE ANY (ARRAY[?]))",
-          keywords.map { |k| "%#{k}%" }
-      ).page(params[:page]).per(10)
+      if keywords.present?
+        @task_cards = Task.where("skills::text ~* ANY (array[?])", keywords.map { |k| ".*#{k}.*" }).page(params[:page]).per(10)
+      else
+        @task_cards = Task.all.page(params[:page]).per(10)
+      end
     else
       post_query_service = PostSearchService.new(params)
       posts = post_query_service.filter

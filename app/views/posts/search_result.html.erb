@@ -205,10 +205,11 @@
                 </div>
               </div>
             <% end %>
-            <%= render @task_cards ? 'task' : 'posts_list',
-                       tasks: @task_cards,
-                       posts: @sorted_by == 'Random' ? @posts.shuffle : @posts,
-                       type: @type if @task_cards || @posts.present? %>
+            <% if @task_cards.present? %>
+              <%= render 'tasks', tasks: @task_cards %>
+            <% else %>
+              <%= render 'posts_list', posts: @sorted_by == 'Random' ? @posts.shuffle : @posts, type: @type %>
+            <% end %>
           </div>
           <div class="col-md-12">
             <div class="row">

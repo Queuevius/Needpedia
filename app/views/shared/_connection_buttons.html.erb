@@ -1,32 +1,25 @@
 <div class="d-flex flex-column gap-2">
-  <% if current_user.present? %>
-    <% if current_user != user %>
-      <% case user.connection_status(current_user)[:status] %>
-  <% when 'request_sent' %>
-        <button class="btn btn-outline-secondary w-100 mt-2" disabled>
-          <i class="bi bi-hourglass-split mr-2"></i>Request Sent
-        </button>
-      <% when 'request_received' %>
-        <%= link_to accept_invitation_path(uuid: user.connection_status(current_user)[:request_uuid]), class: 'btn btn-success w-100 mt-2' do %>
-          <i class="bi bi-check-circle mr-2"></i>Accept Request
-        <% end %>
-      <% when 'connected' %>
-        <%= link_to un_friend_path(uuid: user.uuid, redirect: 'friend'), method: :delete, class: 'btn btn-danger w-100 mt-2', data: { confirm: "Are you sure?" } do %>
-          <i class="bi bi-person-dash mr-2"></i>Unfriend
-        <% end %>
-      <% else %>
-        <%= link_to new_connection_request_path(uuid: user.uuid), class: 'btn btn-primary w-100 mt-2' do %>
-          <i class="bi bi-person-plus mr-2"></i>Add Friend
-        <% end %>
+  <% if current_user.present? && current_user != user %>
+    <% connection_status = user.connection_status(current_user) %>
+    <% case connection_status[:status] %>
+    <% when 'request_sent' %>
+      <button class="btn btn-outline-secondary w-100 mt-2" disabled>
+        <i class="bi bi-hourglass-split mr-2"></i>Request Sent
+      </button>
+    <% when 'request_received' %>
+      <%= link_to accept_invitation_path(uuid: connection_status[:request_uuid]), class: 'btn btn-success w-100 mt-2' do %>
+        <i class="bi bi-check-circle mr-2"></i>Accept Request
+      <% end %>
+    <% when 'connected' %>
+      <%= link_to un_friend_path(uuid: user.uuid, redirect: 'friend'), method: :delete, class: 'btn btn-danger w-100 mt-2', data: { confirm: "Are you sure?" } do %>
+        <i class="bi bi-person-dash mr-2"></i>Unfriend
+      <% end %>
+    <% else %>
+      <%= link_to new_connection_request_path(uuid: user.uuid), class: 'btn btn-primary w-100 mt-2' do %>
+        <i class="bi bi-person-plus mr-2"></i>Add Friend
       <% end %>
     <% end %>
-  <% else %>
-    <%= link_to new_connection_request_path(uuid: user.uuid), class: 'btn btn-primary w-100 mt-2' do %>
-      <i class="bi bi-person-plus mr-2"></i>Add Friend
-    <% end %>
-  <% end %>
 
-  <% if current_user != user %>
     <%= link_to conversations_path(receiver_id: user.id), method: :post, class: 'btn btn-outline-primary w-100 mt-2' do %>
       <i class="bi bi-chat-dots mr-2"></i>Message
     <% end %>
@@ -39,6 +32,10 @@
       <%= link_to block_user_path(uuid: user.uuid), method: :post, class: 'btn btn-outline-danger w-100 mt-2' do %>
         <i class="bi bi-lock mr-2"></i>Block
       <% end %>
+    <% end %>
+  <% elsif current_user.blank? %>
+    <%= link_to new_connection_request_path(uuid: user.uuid), class: 'btn btn-primary w-100' do %>
+      <i class="bi bi-person-plus me-2"></i>Add Friend
     <% end %>
   <% end %>
 </div>
