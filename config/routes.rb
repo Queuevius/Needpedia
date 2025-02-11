@@ -49,6 +49,13 @@ Rails.application.routes.draw do
     get 'user_ai_histories/show'
 
     resources :admin_histories
+    resources :preformatted_messages
+    resources :how_tos
+    resources :impacts
+    resources :questions
+    resources :questionnaires
+    resources :faqs
+    resources :home_videos
     resources :admin_notifications
     resources :admin_notices
     resources :announcements

@@ -1,0 +1,9 @@
+<% if impacts.any? %>
+  <div class="d-flex flex-wrap gap-2 justify-content-center mt-2">
+    <% impacts.each do |impact| %>
+      <div class="badge bg-success rounded-pill px-3 py-2 mt-2 ">
+        <i class="bi bi-award me-2"></i><%= impact.badge %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
