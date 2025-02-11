@@ -64,6 +64,14 @@ as well as a link to its edit page.
 
           <dd class="attribute-data attribute-data--<%= attribute.html_class %>"
           ><%= render_field attribute, page: page %></dd>
+          <% if attribute.name == "id" %>
+            <dt class="attribute-label" id="tokens">
+              Remaining Tokens
+            </dt>
+            <dd class="attribute-data">
+              <%= page.resource&.ai_tokens&.last&.tokens_count %>
+            </dd>
+          <% end %>
         <% end %>
       </fieldset>
     <% end %>

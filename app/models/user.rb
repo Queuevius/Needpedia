@@ -19,6 +19,8 @@ class User < ApplicationRecord
 
   validate :password_complexity
 
+  after_create :create_ai_tokens
+
   has_rich_text :about
 
   has_person_name
@@ -89,6 +91,8 @@ class User < ApplicationRecord
   has_many :chat_threads
   belongs_to :current_chat_thread, class_name: 'ChatThread', optional: true
   has_many :impacts, dependent: :destroy
+
+  has_many :ai_tokens
 
   MAX_RESET_PASSWORD_ATTEMPTS = 5
   RESET_ATTEMPT_WINDOW = 24.hours
@@ -222,5 +226,9 @@ class User < ApplicationRecord
 
   def clear_reset_password_attempts
     update_columns(reset_password_attempts: 0, last_reset_attempt_at: nil)
+  end
+
+  def create_ai_tokens
+    self.ai_tokens.create
   end
 end

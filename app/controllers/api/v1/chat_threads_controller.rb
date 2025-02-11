@@ -2,7 +2,7 @@ class Api::V1::ChatThreadsController < ApplicationController
   before_action :set_chat_thread, only: [:show, :update, :destroy]
 
   def index
-    user =  User.find_by(uuid: request.headers['Authorization'])
+    user = User.find_by(uuid: request.headers['Authorization']) || Guest.find_by(uuid: request.headers['Authorization'])
     thread_ids = user.chat_threads.map(&:thread_id).uniq
 
     render json: { threads: thread_ids }
@@ -13,7 +13,7 @@ class Api::V1::ChatThreadsController < ApplicationController
   end
 
   def create
-    user =  User.find_by(uuid: request.headers['Authorization'])
+    user = User.find_by(uuid: request.headers['Authorization']) || Guest.find_by(uuid: request.headers['Authorization'])
     thread = user.chat_threads.where(thread_id: params[:thread_id])
     return if thread.present?
     @chat_thread = user.chat_threads.build(chat_thread_params)

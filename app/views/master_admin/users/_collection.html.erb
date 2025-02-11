@@ -44,6 +44,11 @@ to display a collection of resources in an HTML table.
             <% end %>
           <% end %>
         </th>
+        <% if attr_name == :approved %>
+          <th scope="col" class="cell-label">
+            Remaining Tokens
+          </th>
+        <% end %>
       <% end %>
       <% [valid_action?(:edit, collection_presenter.resource_name),
           valid_action?(:destroy, collection_presenter.resource_name)].count(true).times do %>
@@ -80,7 +85,9 @@ to display a collection of resources in an HTML table.
             <% end -%>
           </td>
         <% end %>
-
+        <td class="cell-data">
+          <%= resource&.ai_tokens&.last&.tokens_count || 'N/A' %>
+        </td>
         <% if valid_action? :edit, collection_presenter.resource_name %>
           <td><%= link_to(
             t("administrate.actions.edit"),

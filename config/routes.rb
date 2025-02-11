@@ -16,6 +16,8 @@ Rails.application.routes.draw do
           post :set_current
         end
       end
+      resources :tokens, only: [:create]
+      post 'tokens/decrease'
     end
   end
   resources :tasks
@@ -45,9 +47,7 @@ Rails.application.routes.draw do
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :master_admin do
     get 'user_ai_histories/show'
-    resources :admin_notices
-    resources :user_assistant_documents
-    resources :settings
+
     resources :admin_histories
     resources :preformatted_messages
     resources :how_tos
@@ -57,14 +57,8 @@ Rails.application.routes.draw do
     resources :faqs
     resources :home_videos
     resources :admin_notifications
-    resources :post_tokens
-    resources :token_ans_debates
-    resources :connections
-    resources :user_gigs
-    resources :flags
-    # resources :likes
-    resources :comments
-    resources :gigs
+    resources :admin_notices
+    resources :announcements
     resources :answers do
       collection do
         delete 'bulk_delete'
@@ -72,11 +66,33 @@ Rails.application.routes.draw do
       end
       get 'approve_user'
     end
+    resources :comments
+    resources :connections
+    resources :deletions
+    resources :faqs
+    resources :feedbacks
+    resources :flags
+    resources :gigs
+    resources :guests
+    resources :home_videos
+    resources :how_tos
+    # resources :likes
+    resources :notifications
     resources :posts do
       collection do
         get 'private_posts'
       end
     end
+    resources :post_tokens
+    resources :preformatted_messages
+    resources :questions
+    resources :questionnaires
+    resources :settings
+    # resources :services
+    resources :token_ans_debates
+    resources :tutorials
+    resources :user_assistant_documents
+    resources :user_gigs
     resources :users do
       collection do
         delete 'bulk_delete'
@@ -84,12 +100,6 @@ Rails.application.routes.draw do
         get 'unconfirmed_users'
       end
     end
-    resources :tutorials
-    resources :announcements
-    resources :notifications
-    resources :feedbacks
-    resources :deletions
-    # resources :services
 
     root to: "users#index"
   end
