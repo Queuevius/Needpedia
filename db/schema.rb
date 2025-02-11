@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_01_17_065001) do
+ActiveRecord::Schema.define(version: 2025_01_29_062311) do
+
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -337,6 +338,15 @@ ActiveRecord::Schema.define(version: 2025_01_17_065001) do
     t.text "answer"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "impacts", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "description"
+    t.string "badge"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_impacts_on_user_id"
   end
 
   create_table "interested_users", force: :cascade do |t|
@@ -808,6 +818,7 @@ ActiveRecord::Schema.define(version: 2025_01_17_065001) do
   add_foreign_key "flags", "users"
   add_foreign_key "gigs", "users"
   add_foreign_key "groups", "users"
+  add_foreign_key "impacts", "users"
   add_foreign_key "interested_users", "users"
   add_foreign_key "invitations", "groups"
   add_foreign_key "invitations", "users"

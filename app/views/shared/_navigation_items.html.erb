@@ -1,0 +1,32 @@
+<% navigation_items = [
+    { icon: 'images', text: 'Pictures', path: pictures_path(uuid: uuid) },
+    { icon: 'info-circle', text: 'About', path: about_path(uuid: uuid) },
+    { icon: 'box-seam', text: 'Have', path: have_posts_path(uuid: uuid) },
+    { icon: 'cart', text: 'Want', path: want_posts_path(uuid: uuid) },
+    { icon: 'pin-map', text: 'Tracking', path: tracking_path(uuid: uuid) },
+    { icon: 'chat-dots', text: 'Debate Tokens', path: debate_tokens_path(uuid: uuid) },
+    { icon: 'question-circle', text: 'Question Tokens', path: question_tokens_path(uuid: uuid) },
+    { icon: 'journal', text: 'Note Tokens', path: note_tokens_path(uuid: uuid) },
+    { icon: 'gear', text: 'Settings', path: edit_user_registration_path, no_turbolinks: true },
+    { icon: 'shield-lock', text: '2FA Settings', path: otp_path, no_turbolinks: true },
+    { icon: 'book', text: 'Tutorials', path: user_tutorials_path(uuid: uuid) }
+] %>
+
+<% if current_user.present? && current_user.features["invitable"] %>
+  <% navigation_items << { icon: 'gift', text: 'Invite Friend', path: new_user_invitation_path } %>
+<% end %>
+
+<% navigation_items.each do |item| %>
+  <%= link_to item[:path], class: "list-group-item list-group-item-action d-flex align-items-center #{'active' if current_page?(item[:path])}", data: (item[:no_turbolinks] ? { turbolinks: false } : nil) do %>
+    <i class="bi bi-<%= item[:icon] %> mr-3"></i><%= item[:text] %>
+  <% end %>
+<% end %>
+
+<% if current_user == user %>
+  <%= link_to registration_path(current_user),
+              class: 'list-group-item list-group-item-action text-danger',
+              data: { confirm: "Are you sure? You cannot undo this.", turbolinks: false },
+              method: :delete do %>
+    <i class="bi bi-trash mr-3"></i>Deactivate Account
+  <% end %>
+<% end %>

@@ -90,6 +90,7 @@ class User < ApplicationRecord
 
   has_many :chat_threads
   belongs_to :current_chat_thread, class_name: 'ChatThread', optional: true
+  has_many :impacts, dependent: :destroy
 
   has_many :ai_tokens
 

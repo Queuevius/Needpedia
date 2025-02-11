@@ -13,6 +13,7 @@ class ProfileController < ApplicationController
     @commented_posts = @user.comments.collect(&:commentable).uniq
     @flagged_posts = @user.flags.where(flagable_type: 'Flag').collect(&:flagable).uniq
     @shared_posts = @user.shares.collect(&:shareable)
+    @impacts = @user.impacts
   end
 
   def about; end
