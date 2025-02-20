@@ -1,0 +1,37 @@
+<%= render "shared/tutorial" %>
+<div class="row">
+  <div class="col-md-3 col-lg-3 col-xl-3 col-sm-12"><%= render 'shared/sidebar' %></div>
+  <div class="col-md-9 col-lg-9 col-xl-9 col-sm-12">
+    <div id="content" class="pl-2">
+      <div class="row">
+        <div class="col-lg-12 col-md-12 ml-auto mr-auto">
+          <div class="ui-block shadow-lg rounded">
+            <div class="ui-block-content">
+              <div class="container">
+                <div id="user_picture">
+                  <div class="row mb-2">
+                    <div class="col-lg-6 col-md-6 text-left">
+                      <h4><%= @user.name %>'s Impacts</h4>
+                      <div class="row">
+                        <div class="col-12">
+                          <p class="mb-4">
+                            <i class="fas fa-trophy mr-2"></i>Achievements & Badges
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <% if @user.impacts.any? %>
+                    <%= render 'user_impacts', user: @user %>
+                  <% else %>
+                    <p>No impacts or achievements to display at this time.</p>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

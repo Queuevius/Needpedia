@@ -25,9 +25,8 @@
 
       <!-- User Name and Badges -->
       <div class="mb-3">
-        <h4 class="font-weight-bold mb-2">
+        <h4 class="font-weight-bold">
           <%= @user.name %>
-          <%= render 'shared/user_badges', impacts: @impacts if @impacts&.any? %>
         </h4>
       </div>
     </div>
@@ -48,11 +47,11 @@
           </a>
           <div class="collapse mt-2" id="friendsCollapse">
             <%= link_to friends_path(uuid: @uuid), class: 'list-group-item list-group-item-action' do %>
-              <i class="bi bi-person-check mr-2"></i>All Friends <span class="badge badge-primary float-right d-flex"><%= @friends_count.total_count %></span>
+              <i class="bi bi-person-check mr-2"></i>All Friends <span class="badge badge-primary float-right d-flex"><%= @friends_count&.total_count %></span>
             <% end %>
             <% if current_user&.uuid == @user&.uuid %>
               <%= link_to friend_request_path(uuid: @uuid), class: 'list-group-item list-group-item-action' do %>
-                <i class="bi bi-person-plus mr-2"></i>Requests <span class="badge badge-primary float-right d-flex"><%= @connection_requests_count.count %></span>
+                <i class="bi bi-person-plus mr-2"></i>Requests <span class="badge badge-primary float-right d-flex"><%= @connection_requests_count&.count %></span>
               <% end %>
             <% end %>
           </div>

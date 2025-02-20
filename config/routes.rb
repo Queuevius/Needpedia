@@ -182,6 +182,7 @@ Rails.application.routes.draw do
   get '/friends', to: 'profile#friends'
   get '/feed', to: 'profile#feed'
   get '/pictures', to: 'profile#pictures'
+  get '/impacts', to: 'profile#impacts'
   get '/modal_picture', to: 'profile#modal_picture'
   get '/tracking', to: 'profile#tracking'
   get '/debate_tokens', to: 'profile#debate_tokens'
