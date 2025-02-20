@@ -1,5 +1,5 @@
 class ProfileController < ApplicationController
-  before_action :set_user, only: [:wall, :about, :friends, :friend_request, :un_friend, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed, :block_user, :unblock_user, :tutorials]
+  before_action :set_user, only: [:wall, :about, :friends, :friend_request, :un_friend, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed, :block_user, :unblock_user, :tutorials, :impacts]
   before_action :friend_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed, :tutorials]
   before_action :connection_requests_count, only: [:wall, :about, :friends, :friend_request, :pictures, :debate_tokens, :question_tokens, :note_tokens, :tracking, :feed, :tutorials]
   before_action :set_tutorial, except: [:update_details, :update_profile_image, :create_pictures]
@@ -45,6 +45,10 @@ class ProfileController < ApplicationController
   end
 
   def pictures; end
+
+  def impacts
+    @impacts = @user.impacts
+  end
 
   def modal_picture
     @picture = current_user.pictures.find_by_id(params[:id])
