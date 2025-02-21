@@ -1,7 +1,7 @@
 <div class="chatbot my-4 bg-white">
   <iframe
     class="chatbot-frame"
-    src="<%= "#{ENV['CHATBOT_URL']}?user_token=#{@token}" %>">
+    src="<%= "#{@chatbot_url}?user_token=#{@token}" %>">
   </iframe>
 </div>
 <style>
