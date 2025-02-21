@@ -1,44 +1,488 @@
 <div class="container mb-5">
   <%= render "shared/tutorial" %>
-  <div class="row mt-3">
-    <div class="col-md-12 text-center mb-2">
-      <h1><b>About Us</b></h1>
-    </div>
-    <div class="col-md-12">
-      <div class="ui-block shadow-lg rounded">
-        <div class="ui-block-content">
-          <div class="row">
-            <div class="col-sm-12">
-              <p class="mb-3">The first thing to understand about Needpedia is that it’s not a corporate site. We’re not here
-                to make money at all, we’re here to help people come together over the best ideas on Earth.</p>
+  <div class="container about-container">
+    <!-- Header Section -->
+    <header class="about-header">
+      <h1 class="animate-header">About Needpedia</h1>
+      <div class="header-accent animate-accent"></div>
+    </header>
 
-              <p class="mb-3">That’s the mission statement anyways. If you want to know about the people behind
-                Needpedia, then it really boils down to a founder, a programmer, and a handful of people
-                who’ve supported the project in various ways throughout the years.</p>
-
-              <p class="mb-3">The longterm goal for Needpedia is to transition into a fully decentralized, digital direct
-                democracy. The challenges to this will be many and unpredictable, so until those are dealt
-                with, all proposals people make on the site, about the site, will still fall within the veto power of
-                the founder. That said, if such a veto is ever made it will be explained in great detail, and
-                simply lead to further discussion and voting.</p>
-
-              <p class="mb-3">Because people are always free to just keep proposing new ideas if they don’t like the way
-                things are, the meaning of a political victory itself changes. Because on Needpedia there’s
-                actually only really 2 options:
-                -Find something that works well enough for most people, or,
-                -Continue deliberating over what that would be.</p>
-
-              <p class="mb-3">And that speaks to the heart of what Needpedia itself really is. We share all our ideas for all
-                the problems WE think really matter, and then we chip away at making agreements. All the
-                special tools and other features are really just here to faciliate that. Equality and community.</p>
-
-              <p class="mb-3">Needpedia’s founder is a conflict resolution specialist named Anthony Brasher. He’s an
-                activist from Portland Oregon who dreams of travelling the world physically and digitally, to
-                collaborate and spread cutting edge solutions.</p>
-            </div>
+    <!-- Founder Section -->
+    <section class="profile-section alternating-section">
+      <div class="profile-content animate-slide-left">
+        <div class="profile-image">
+          <div class="image-wrapper">
+            <%= image_tag 'Anthony_Brasher.png', alt: 'Anthony Brasher', class: 'profile-img' %>
           </div>
         </div>
+        <div class="profile-text">
+          <h2>Meet Our Founder<br><span class="highlight">Anthony Brasher</span></h2>
+          <blockquote>
+            "I've been an activist my entire life, and started working on Needpedia around the time of the Occupy
+            Movement. That experience made me realize that it is actually primitive and barbaric that there's no
+            official archive for solutions to problems facing humanity.
+            We can keep track of every legal mistake billions of people make in their entire lives, in perpetuity,
+            without question, but if you want to see what ideas people have for solving problems that literally kill
+            hundreds of thousands of people every year, nothing! I really think people are going to look back on that in
+            awe."
+          </blockquote>
+        </div>
       </div>
-    </div>
+    </section>
+
+    <!-- Lead Engineer Section -->
+    <section class="profile-section alternating-section reverse">
+      <div class="profile-content animate-slide-right">
+        <div class="profile-image">
+          <div class="image-wrapper">
+            <%= image_tag 'Murtaza.png', alt: 'Murtaza Zarkhwan', class: 'profile-img' %>
+          </div>
+        </div>
+        <div class="profile-text">
+          <h2>Lead Engineer<br><span class="highlight">Murtaza Zarkhwan</span></h2>
+          <blockquote>
+            "I live in a remote area in Pakistan far away from cities where I enjoy the peace and quiet and can focus on
+            my work. I prefer having few people around me who are pure rather than a crowd where nobody cares.
+            I am a problem solver and help people solve their problems using my skills in web development. I had a hard
+            background, so I now work to make sure others don't have to. I've seen too much from a very young age, I
+            have survived terrorism, wars, floods, and earthquakes. That's why I appreciate every day of my life."
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="mission-section">
+      <div class="mission-content animate-scale">
+        <div class="mission-visual">
+          <div class="logo-container">
+            <%= image_tag 'Needpedia_logo.png', alt: 'Needpedia Logo', class: 'mission-img' %>
+          </div>
+          <div class="visual-accent"></div>
+        </div>
+        <div class="mission-text">
+          <h2>Our Mission</h2>
+          <p class="lead">Creating the world's premier solution archive for humanity's greatest challenges</p>
+          <p>The world is facing extremely serious problems, and yet there's still no archive for solutions to them. We at Needpedia seek to create the finest place on Earth for citizens and experts to share ideas and collaborate.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI Section -->
+    <section class="ai-section">
+      <div class="ai-intro animate-fade-in">
+        <h2>Our Digital Librarians</h2>
+        <p class="subheading">AI systems named after heroic librarians who resisted oppression</p>
+      </div>
+
+      <div class="ai-grid">
+        <article class="ai-card animate-card">
+          <div class="ai-image">
+            <%= image_tag 'Lotte_Bergtel-Schleif.png', alt: 'Lotte Bergtel-Schleif', class: 'ai-img' %>
+          </div>
+          <div class="ai-details">
+            <h3>Lotte Bergtel-Schleif</h3>
+            <div class="ai-meta">Anti-Nazi Resister | Knowledge Protector</div>
+            <p>A German librarian and anti-Nazi resistance agent. In the early 1930s, she risked her life by aiding those persecuted by the Nazis and disseminating anti-Nazi literature. Even after being imprisoned by the Gestapo, her resolve never wavered. Her work as a librarian and a resister reminds us that protecting knowledge and fighting oppression often go hand in hand.</p>
+          </div>
+        </article>
+
+        <article class="ai-card animate-card">
+          <div class="ai-image">
+            <%= image_tag 'Florence_Mendheim.png', alt: 'Florence Mendheim', class: 'ai-img' %>
+          </div>
+          <div class="ai-details">
+            <h3>Florence Mendheim</h3>
+            <div class="ai-meta">Undercover Defender | Democracy Guardian</div>
+            <p>A Jewish librarian at the New York Public Library during the 1930s. As the Nazi movement gained traction in the United States, she infiltrated pro-Nazi organizations under the pseudonym "Gertrude Mueller," gathering intelligence and documenting their propaganda efforts. Her courage in confronting fascist ideologies on American soil highlights the vital role librarians play in defending freedom of information and democracy.</p>
+          </div>
+        </article>
+      </div>
+    </section>
   </div>
 </div>
+
+<style>
+  /* Modern Color Scheme */
+  :root {
+    --primary: #2A5C82;
+    --secondary: #F5A623;
+    --accent: #3AB795;
+    --dark: #1A2B3C;
+    --light: #F8F9FA;
+    --gradient-primary: linear-gradient(135deg, #2A5C82 0%, #3AB795 100%);
+    --gradient-secondary: linear-gradient(135deg, #F5A623 0%, #FF6F61 100%);
+  }
+
+  /* Typography */
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Open+Sans:wght@400;600&display=swap');
+
+  body {
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.7;
+    color: var(--dark);
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+  }
+
+  /* Animations */
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes scaleUp {
+    from {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes headerSlide {
+    from {
+      opacity: 0;
+      transform: translateY(-50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes gradientShift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .animate-header {
+    animation: headerSlide 1s ease-out;
+  }
+
+  .animate-accent {
+    animation: fadeIn 1s ease-out 0.3s backwards;
+  }
+
+  .animate-slide-left {
+    animation: slideInLeft 1s ease-out;
+  }
+
+  .animate-slide-right {
+    animation: slideInRight 1s ease-out;
+  }
+
+  .animate-scale {
+    animation: scaleUp 1s ease-out;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 1s ease-out;
+  }
+
+  .animate-card {
+    animation: fadeIn 0.8s ease-out;
+    transition: all 0.3s ease;
+  }
+
+  /* Header Section */
+  .about-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .about-header h1 {
+    font-size: 3.2rem;
+    margin-bottom: 1rem;
+    position: relative;
+    display: inline-block;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .header-accent {
+    width: 60px;
+    height: 4px;
+    background: var(--gradient-secondary);
+    margin: 0 auto;
+    border-radius: 2px;
+    animation: gradientShift 5s infinite;
+  }
+
+  /* Profile Sections */
+  .profile-section {
+    padding: 2rem 0;
+    margin: 2rem 0;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.8s ease-out forwards;
+  }
+
+  .profile-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .profile-image .image-wrapper {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid var(--primary);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .profile-image:hover .image-wrapper {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .profile-text {
+    flex: 1;
+  }
+
+  .profile-text h2 {
+    font-size: 2.2rem;
+    margin-bottom: 1.5rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .highlight {
+    color: var(--primary);
+  }
+
+  blockquote {
+    font-size: 1.1rem;
+    border-left: 4px solid var(--secondary);
+    padding-left: 2rem;
+    margin: 2rem 0;
+    color: var(--dark);
+    font-style: italic;
+    background: var(--light);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Mission Section */
+  .mission-section {
+    background: linear-gradient(135deg, var(--light) 0%, #ffffff 100%);
+    padding: 6rem 0;
+    margin: 6rem 0;
+    position: relative;
+  }
+
+  .mission-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .mission-visual {
+    position: relative;
+    flex: 0 0 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .logo-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 250px;
+    transition: transform 0.3s ease;
+  }
+
+  .mission-img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+  }
+
+  .visual-accent {
+    position: absolute;
+    width: calc(100% + 30px);
+    height: calc(100% + 30px);
+    background: var(--gradient-secondary);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 12px;
+    z-index: 1;
+    transition: all 0.5s ease;
+    animation: gradientShift 5s infinite;
+  }
+
+  .mission-visual:hover .visual-accent {
+    transform: translate(-50%, -50%) rotate(2deg);
+  }
+
+  .mission-text h2 {
+    font-size: 2.4rem;
+    margin-bottom: 1.5rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .lead {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 2rem;
+  }
+
+  /* AI Section */
+  .ai-section {
+    margin: 6rem 0;
+  }
+
+  .ai-intro {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .ai-intro h2 {
+    font-size: 2.4rem;
+    margin-bottom: 1rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subheading {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .ai-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .ai-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .ai-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  }
+
+  .ai-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    filter: grayscale(100%);
+    transition: filter 0.3s ease;
+  }
+
+  .ai-card:hover .ai-img {
+    filter: grayscale(0%);
+  }
+
+  .ai-details {
+    padding: 2rem;
+  }
+
+  .ai-details h3 {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .ai-meta {
+    color: var(--secondary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 768px) {
+    .profile-content,
+    .mission-content {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .mission-visual {
+      max-width: 250px;
+      margin-bottom: 2rem;
+    }
+
+    .visual-accent {
+      width: calc(100% + 20px);
+      height: calc(100% + 20px);
+    }
+
+    .about-header h1 {
+      font-size: 2.5rem;
+    }
+  }
+</style>
