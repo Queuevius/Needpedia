@@ -1,0 +1,106 @@
+<div id="impacts" class="container py-4">
+  <div class="timeline">
+    <% @user.impacts.each do |impact| %>
+      <div class="timeline-item">
+        <div class="timeline-marker">
+          <i class="fas fa-star text-warning"></i>
+        </div>
+        <div class="timeline-content">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="font-weight-bold mb-0">
+                  <%= impact.badge %>
+                </h6>
+              </div>
+              <div>
+                <%= impact.description.capitalize %>
+              </div>
+              <div class="mt-2">
+                <span class="badge badge-light">
+                  <i class="fas fa-tag mr-1 text-muted"></i>
+                  <%= time_ago_in_words(impact.created_at) %> ago
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  .timeline {
+    position: relative;
+    padding-left: 3rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 1.2rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #e9ecef 0%, #007bff 100%);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+  }
+
+  .timeline-marker {
+    position: absolute;
+    left: -3rem;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 4px #fff, 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+  }
+
+  .timeline-content {
+    margin-left: 1rem;
+  }
+
+  .card {
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .badge {
+    padding: 0.5rem 0.8rem;
+    border-radius: 20px;
+    font-weight: normal;
+    border: 1px solid #e9ecef;
+  }
+
+  /* Animation for new items */
+  .timeline-item {
+    animation: slideIn 0.5s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+</style>

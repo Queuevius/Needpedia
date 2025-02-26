@@ -185,7 +185,7 @@
           </div>
 
           <div id="post-content">
-            <% if @posts.blank? %>
+            <% if @posts.blank? && @task_cards.blank? %>
               <div class="row">
                 <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1">
                   <div class="ui-block shadow-lg rounded">
@@ -205,14 +205,18 @@
                 </div>
               </div>
             <% end %>
-            <%= render 'posts_list', posts: @sorted_by == 'Random' ? @posts.shuffle : @posts, type: @type %>
+            <% if @task_cards.present? %>
+              <%= render 'tasks', tasks: @task_cards %>
+            <% else %>
+              <%= render 'posts_list', posts: @sorted_by == 'Random' ? @posts.shuffle : @posts, type: @type %>
+            <% end %>
           </div>
           <div class="col-md-12">
             <div class="row">
               <div class="col-md-3"></div>
               <div class="col-md-6">
                 <div id="infinite-scrolling" class="justify-content-center">
-                  <%= paginate @posts, param_name: :posts %>
+                  <%= paginate @posts, param_name: :posts if @posts.present? %>
                 </div>
               </div>
             </div>

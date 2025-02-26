@@ -1,111 +1,65 @@
-<%#= Todo - please improve this, this code is very bad  %>
-<nav id="sidebar">
-  <div class="pl-4 pt-5">
-    <div class="image-part ml-3">
-      <% if @user.profile_image.attached? %>
-        <%= image_tag(@user.profile_image, class: 'img logo rounded-circle mb-2', alt: "Avatar") %>
-      <% else %>
-        <%= image_tag('img_avatar.png', class: 'img logo rounded-circle mb-2', alt: "Avatar") %>
-      <% end %>
-      <% if current_user == @user %>
-        <div class="middle">
-          <%= link_to profile_image_path, remote: true, class: 'text' do %>
-            Change
-          <% end %>
-        </div>
-      <% end %>
-    </div>
-    <h4><%= @user.name %></h4>
-    <div class="container">
-      <% if current_user.present? %>
-        <% if current_user.id != @user.id %>
-          <% if @user.connection_status(current_user)[:status] == 'request_sent' %>
-            <a href="javascript:void(0);" class="btn btn-sm btn-rounded btn-primary">Request
-              Sent</a>
-          <% elsif @user.connection_status(current_user)[:status] == 'request_received' || request_recieved?(@user.id, current_user.uuid) %>
-            <%= link_to 'Accept', accept_invitation_path(:uuid => @user.connection_status(current_user)[:request_uuid]), class: 'btn btn-sm btn-rounded btn-primary' %>
-          <% elsif @user.connection_status(current_user)[:status] == 'connected' %>
-            <%= link_to 'Unfriend', un_friend_path(uuid: @user.uuid, redirect: 'friend'), method: :delete, class: 'btn btn-sm btn-rounded btn-primary', data: { confirm: "Are you sure?" } %>
-          <% else %>
-            <%= link_to 'Add Friend', new_connection_request_path(:uuid => @user.uuid), class: 'btn btn-sm btn-rounded btn-primary' %>
+<!-- Sidebar Toggle Button (Visible on Small Screens) -->
+<div class="d-flex justify-content-end">
+  <button class="btn btn-dark d-md-none mb-2 mt-2" type="button" data-toggle="collapse" data-target="#sidebarCollapse">
+    <i class="bi bi-list"></i> Menu
+  </button>
+</div>
+
+
+<!-- Sidebar -->
+<div id="sidebarCollapse" class="collapse d-md-block bg-light h-100 shadow-sm p-3">
+  <div class="d-flex flex-column h-100">
+    <!-- Profile Section -->
+    <div class="text-center mb-4">
+      <div class="position-relative d-inline-block">
+        <!-- Profile Image -->
+        <%= render 'shared/profile_image', user: @user %>
+
+        <!-- Change Profile Image Button (Visible to Current User) -->
+        <% if current_user == @user %>
+          <%= link_to profile_image_path, remote: true, class: 'position-absolute bottom-0 end-0 btn btn-sm btn-primary rounded-circle' do %>
+            <i class="bi bi-camera"></i>
           <% end %>
         <% end %>
+      </div>
 
-      <% else %>
-        <%= link_to 'Add Friend', new_connection_request_path(:uuid => @user.uuid), class: 'btn btn-rounded btn-sm btn-primary' %>
-      <% end %>
-
-      <% if current_user != @user %>
-        <%= link_to 'Message', conversations_path(receiver_id: @user.id), method: :post, class: 'btn btn-rounded btn-secondary btn-sm' %>
-        <% if current_user.blocked_users.where(block_user_id: @user.id).exists? %>
-          <%= link_to 'Unblock Account', unblock_user_path(uuid: @user.uuid), method: :delete, class: 'btn btn-rounded btn-secondary btn-sm mt-1 ml-1' %>
-        <% else %>
-          <%= link_to 'Block Account', block_user_path(uuid: @user.uuid), method: :post, class: 'btn btn-rounded btn-secondary btn-sm mt-1 ml-1' %>
-        <% end %>
-      <% end %>
-
+      <!-- User Name and Badges -->
+      <div class="mb-3">
+        <h4 class="font-weight-bold">
+          <%= @user.name %>
+        </h4>
+      </div>
     </div>
-    <ul class="list-unstyled components mb-5">
-      <li>
-        <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Friends</a>
-        <ul class="collapse list-unstyled" id="pageSubmenu">
-          <li>
-            <%= link_to "Friends (#{@friends_count.total_count})", friends_path(uuid: @uuid) %>
-          </li>
-          <% if current_user.uuid == @user.uuid %>
-            <li>
-              <%= link_to "Request (#{@connection_requests_count.count})", friend_request_path(uuid: @uuid) %>
-            </li>
+
+    <!-- Action Buttons -->
+    <div class="d-grid gap-2 mb-4">
+      <%= render 'shared/connection_buttons', user: @user, current_user: current_user %>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="flex-grow-1 overflow-auto">
+      <div class="list-group list-group-flush">
+        <!-- Friends Section (Collapsible) -->
+        <div class="list-group-item">
+          <a href="#friendsCollapse" class="d-flex justify-content-between align-items-center " data-toggle="collapse" aria-expanded="false">
+            <span class="d-flex"><i class="bi bi-people mr-2"></i>Friends</span>
+            <i class="bi bi-chevron-down"></i>
+          </a>
+          <div class="collapse mt-2" id="friendsCollapse">
+            <%= link_to friends_path(uuid: @uuid), class: 'list-group-item list-group-item-action' do %>
+              <i class="bi bi-person-check mr-2"></i>All Friends <span class="badge badge-primary float-right d-flex"><%= @friends_count&.total_count %></span>
             <% end %>
-        </ul>
-      </li>
-      <li>
-        <%= link_to 'Pictures', pictures_path(uuid: @uuid) %>
-      </li>
-      <li>
-        <%= link_to 'About', about_path(uuid: @uuid) %>
-      </li>
-      <% if current_user.features["invitable"] %>
-        <li>
-          <%= link_to 'Invite Friend', new_user_invitation_path%>
-        </li>
-      <% end %>
-      <li>
-        <%= link_to 'Have', have_posts_path(uuid: params[:uuid]) %>
-      </li>
-      <li>
-        <%= link_to 'Want', want_posts_path(uuid: params[:uuid]) %>
-      </li>
-      <li>
-        <%= link_to 'Tracking', tracking_path(uuid: @uuid) %>
-      </li>
-      <li>
-        <%= link_to 'Debate Tokens', debate_tokens_path(uuid: @uuid) %>
-      </li>
-      <li>
-        <%= link_to 'Question Tokens', question_tokens_path(uuid: @uuid) %>
-      </li>
-      <li>
-        <%= link_to 'Note Tokens', note_tokens_path(uuid: @uuid) %>
-      </li>
-      <li>
-        <%= link_to 'Settings', edit_user_registration_path, data: {turbolinks: false} %>
-      </li>
-      <li>
-        <%= link_to '2FA Settings', otp_path, data: {turbolinks: false} %>
-      </li>
-      <li>
-        <%= link_to "Tutorials", user_tutorials_path(uuid: @uuid) %>
-      </li>
+            <% if current_user&.uuid == @user&.uuid %>
+              <%= link_to friend_request_path(uuid: @uuid), class: 'list-group-item list-group-item-action' do %>
+                <i class="bi bi-person-plus mr-2"></i>Requests <span class="badge badge-primary float-right d-flex"><%= @connection_requests_count&.count %></span>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
 
-      <% if current_user == @user %>
-        <li>
-          <%= link_to registration_path(current_user), data: { confirm: "Are you sure? You cannot undo this." }, method: :delete do %>
-            <p class="text-danger">Deactivate my account</p>
-          <% end %>
-        </li>
-      <% end %>
-
-    </ul>
+        <!-- Navigation Items -->
+        <%= render 'shared/navigation_items', user: @user, current_user: current_user, uuid: @uuid %>
+      </div>
+    </div>
   </div>
-</nav>
+</div>

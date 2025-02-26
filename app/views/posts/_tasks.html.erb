@@ -1,0 +1,71 @@
+<div class="row">
+  <% tasks.uniq.each do |task_card| %>
+    <div class="col-lg-12 col-md-12 ml-auto  pb-1">
+      <div class="ui-block shadow-lg rounded">
+        <div class="ui-block-content custom-width">
+          <div class="row">
+            <div class="col-12">
+              <div class="row">
+                <div class="col-12">
+                  <%= link_to task_path(task_card), class: 'text-decoration-none' do %>
+                    <div class="row">
+                      <!-- Image Column -->
+                      <div class="col-12 col-sm-4 col-md-3 search-result-img">
+                        <% if task_card.images.present? %>
+                          <div id="carousel-<%= task_card.id %>" class="carousel slide" data-ride="carousel">
+                            <div class="carousel-inner rounded">
+                              <% task_card.images.each_with_index do |image, index| %>
+                                <div class="carousel-item <%= 'active' if index == 0 %>">
+                                  <%= image_tag(image, class: 'img-fluid rounded w-100', style: 'max-height: 8rem; object-fit: cover;') %>
+                                </div>
+                              <% end %>
+                            </div>
+                          </div>
+                        <% else %>
+                          <%= image_tag('thumbs_for_bars.png', class: 'img-fluid rounded w-100', style: 'max-height: 8rem; object-fit: cover;') %>
+                        <% end %>
+                      </div>
+
+                      <!-- Text Column -->
+                      <div class="col-12 col-sm-8 col-md-9 text-dark text-break overflow-auto py-2 d-flex flex-column align-items-center align-items-sm-start">
+                        <h6 class="font-weight-bold mb-2 text-primary text-center text-sm-left"><%= task_card.title %></h6>
+                        <p class="text-muted small text-center text-sm-left"><%= truncate(strip_tags(task_card.description.to_s), length: 150) %></p>
+
+                        <% if task_card.skills.present? %>
+                          <div class="mt-2 w-100 text-center text-sm-left">
+                            <strong>Skills:</strong>
+                            <div class="d-flex flex-wrap justify-content-center justify-content-sm-start">
+                              <% task_card.skills.each do |skill| %>
+                                <span class="badge badge-primary mr-2 mb-2 p-2"><%= skill %></span>
+                              <% end %>
+                            </div>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+
+                <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        $('#popover-<%= task_card.id %>').popover({
+            html: true,
+            placement: 'bottom',
+            content: function () {
+                return $("#popover-content-<%= task_card.id %>").html();
+            }
+        });
+    </script>
+  <% end %>
+</div>
+<div class="row mt-4">
+  <div class="col-12 d-flex justify-content-center">
+    <%= paginate @task_cards %>
+  </div>
+</div>

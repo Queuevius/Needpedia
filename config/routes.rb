@@ -49,6 +49,13 @@ Rails.application.routes.draw do
     get 'user_ai_histories/show'
 
     resources :admin_histories
+    resources :preformatted_messages
+    resources :how_tos
+    resources :impacts
+    resources :questions
+    resources :questionnaires
+    resources :faqs
+    resources :home_videos
     resources :admin_notifications
     resources :admin_notices
     resources :announcements
@@ -175,6 +182,7 @@ Rails.application.routes.draw do
   get '/friends', to: 'profile#friends'
   get '/feed', to: 'profile#feed'
   get '/pictures', to: 'profile#pictures'
+  get '/impacts', to: 'profile#impacts'
   get '/modal_picture', to: 'profile#modal_picture'
   get '/tracking', to: 'profile#tracking'
   get '/debate_tokens', to: 'profile#debate_tokens'
