@@ -61,10 +61,24 @@
           <span><i class="fas fa-users" aria-hidden="true" style="font-size: x-large" ></i></span>
         <% end %>
       </li>
-      <li>
-        <%= link_to ai_path do %>
-          <%= image_tag('buttler.png', height: "70%", width: "70%") %>
+      <li class="nav-item dropdown">
+        <%= link_to '#', class: "nav-link dropdown-toggle pt-0 mt-2 pb-0", id: "navbarDropdown", role: "button", data: {toggle: "dropdown"}, onclick: "changeImage()" do %>
+          <%= image_tag('buttler.png', id: "toggleImage", class: "img-fluid", style: "max-height: 60%; max-width: 55%;") %>
         <% end %>
+        <div class="dropdown-menu chat-dropdown  border shadow">
+          <div class="card border-0">
+            <div class="card-body">
+              <div class="d-flex justify-content-end">
+                <%= link_to 'See All', ai_path, class: 'text-primary small' %>
+              </div>
+              <iframe
+                class="w-100"
+                src="<%= "#{@chatbot_url}?user_token=#{@token}&sidebar=false" %>"
+                frameborder="0">
+              </iframe>
+            </div>
+          </div>
+        </div>
       </li>
       <li>
         <%= link_to "#", id: "navbar-dropdown", class: "dropdown-toggle", data: {target: "nav-account-dropdown", toggle: "dropdown"}, aria: {haspopup: true, expanded: false} do %>
@@ -95,29 +109,59 @@
           <%= image_tag('map-small.png', height: "60%", width: "60%") %>
         <% end %>
       </li>
-      <li>
-        <%= link_to ai_path do %>
-          <%= image_tag('buttler.png', height: "70%", width: "70%") %>
+      <li class="nav-item dropdown <%= "show" if controller.action_name == "index" %>">
+        <%= link_to '#', class: "nav-link dropdown-toggle pt-0 mt-2 pb-0", id: "navbarDropdown", role: "button", data: {toggle: "dropdown"}, onclick: "changeImage()" do %>
+          <%= image_tag('dark_buttler.png', id: "toggleImage", class: "img-fluid", style: "max-height: 60%; max-width: 55%;") %>
         <% end %>
+
+        <div class="dropdown-menu chat-dropdown border shadow <%= "show" if controller.action_name == "index" %>">
+          <div class="card border-0">
+            <div class="card-body">
+              <iframe
+                class="w-100"
+                src="<%= "#{@chatbot_url}?user_token=#{@token}&sidebar=false" %>"
+                frameborder="0">
+              </iframe>
+            </div>
+          </div>
+        </div>
       </li>
     <% end %>
   </ul>
 </div>
 <script>
-  $('#user').select2({
-      placeholder: 'Search',
-      quietMillis: 200,
-      multiple: true,
-      minimumInputLength: 2
-  })
-  $(document).on('change', '#groupSelectNavbar', function() {
-      var selectedOption = $(this).val();
-      $.ajax({
-          url: '/groups/update_default_group',
-          type: 'PATCH',
-          data: { group_id: selectedOption }
-      });
-  });
+    function changeImage() {
+        let img = document.getElementById("toggleImage");
+        if (img.src.includes("<%= image_path('buttler.png') %>")) {
+            img.src = "<%= image_path('dark_buttler.png') %>";
+        } else {
+            img.src = "<%= image_path('buttler.png') %>";
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const chatDropdown = document.querySelector('.chat-dropdown');
+        chatDropdown.classList.add('animate-entry');
+        const toggleButton = document.getElementById('toggleImage');
+        toggleButton.classList.add('animate-pulse');
+        setTimeout(function () {
+            toggleButton.classList.remove('animate-pulse');
+        }, 2000);
+    });
+    $('#user').select2({
+        placeholder: 'Search',
+        quietMillis: 200,
+        multiple: true,
+        minimumInputLength: 2
+    });
+    $(document).on('change', '#groupSelectNavbar', function () {
+        var selectedOption = $(this).val();
+        $.ajax({
+            url: '/groups/update_default_group',
+            type: 'PATCH',
+            data: {group_id: selectedOption}
+        });
+    });
 </script>
 <style>
   @media (max-width: 635px) {
@@ -131,5 +175,126 @@
       margin-top: 3%;
       margin-left: 5%;
     }
+  }
+
+  .nav-item.dropdown {
+    position: relative;
+  }
+
+  .chat-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0 !important;
+    z-index: 1050;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-entry {
+    animation: fadeIn 0.8s ease;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .animate-pulse {
+    animation: pulse 1s ease-in-out;
+  }
+
+  @media (max-width: 36rem) {
+    .chat-dropdown {
+      position: fixed;
+      top: auto !important;
+      right: 0 !important;
+      left: 0 !important;
+      bottom: 0;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 85vh;
+      margin: 0 !important;
+      transform: none;
+    }
+
+    .chat-dropdown .card {
+      height: 100%;
+    }
+
+    .chat-dropdown iframe {
+      height: calc(85vh - 2.8rem) !important;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .animate-entry {
+      animation: slideUp 0.5s ease-out;
+    }
+  }
+
+  @media (min-width: 36rem) and (max-width: 47.9375rem) {
+    .chat-dropdown {
+      width: 25rem;
+    }
+
+    .chat-dropdown iframe {
+      height: 26rem;
+    }
+  }
+
+  @media (min-width: 48rem) and (max-width: 61.9375rem) {
+    .chat-dropdown {
+      width: 28rem;
+    }
+
+    .chat-dropdown iframe {
+      height: 31.25rem;
+    }
+  }
+
+  @media (min-width: 62rem) {
+    .chat-dropdown {
+      width: 31.25rem;
+    }
+
+    .chat-dropdown iframe {
+      height: 34.375rem;
+    }
+  }
+
+  .card-header .close {
+    opacity: 0.8;
+  }
+
+  .card-header .close:hover {
+    opacity: 1;
+  }
+
+  .chat-dropdown {
+    transition: all 0.3s ease;
   }
 </style>

@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   before_action :masquerade_user!
   before_action :set_ransack, :conversations
   before_action :check_blocked_ip
+  before_action :set_chatbot_url
 
   protected
 
@@ -28,9 +29,32 @@ class ApplicationController < ActionController::Base
   end
 
   def check_blocked_ip
-    ip = request.remote_ip
-    if ip && BlockedIp.exists?(ip: ip)
-      render plain: "Access Denied", status: :forbidden
+    return unless blocked_ip?
+    render plain: "Access Denied", status: :forbidden
+  end
+
+  def set_chatbot_url
+    track_guest
+    @token = current_user&.uuid || current_guest&.uuid
+    @chatbot_url = current_user ? ENV['CHATBOT_URL'] : ENV['GUEST_CHATBOT_URL']
+  end
+
+  def track_guest
+    return if current_user || blocked_ip?
+
+    @current_guest = Guest.find_or_create_by(ip: request.remote_ip) do |guest|
+      guest.uuid = SecureRandom.uuid
+      guest.fingerprint = SecureRandom.hex(16)
     end
+  end
+
+  def current_guest
+    @current_guest
+  end
+
+  private
+
+  def blocked_ip?
+    BlockedIp.exists?(ip: request.remote_ip)
   end
 end
