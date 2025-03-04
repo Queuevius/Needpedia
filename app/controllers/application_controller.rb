@@ -35,7 +35,8 @@ class ApplicationController < ActionController::Base
 
   def set_chatbot_url
     track_guest
-    @token = current_user&.uuid || current_guest&.uuid
+    @user = current_user || current_guest
+    @token = @user&.uuid
     @chatbot_url = current_user ? ENV['CHATBOT_URL'] : ENV['GUEST_CHATBOT_URL']
   end
 

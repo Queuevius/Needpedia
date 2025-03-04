@@ -73,7 +73,7 @@
               </div>
               <iframe
                 class="w-100"
-                src="<%= "#{@chatbot_url}?user_token=#{@token}&sidebar=false" %>"
+                src="<%= "#{@chatbot_url}?user_token=#{@token}&sidebar=false#{'&firsttime=true' if @user.chat_threads.blank?}" %>"
                 frameborder="0">
               </iframe>
             </div>
