@@ -1,7 +1,7 @@
 <div class="chatbot my-4 bg-white">
   <iframe
     class="chatbot-frame"
-    src="<%= "#{@chatbot_url}?user_token=#{@token}" %>">
+    src="<%= "#{@chatbot_url}?user_token=#{@token}#{'&firsttime=true' if current_user&.chat_threads&.blank?}" %>">
   </iframe>
 </div>
 <style>

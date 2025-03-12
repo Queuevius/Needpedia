@@ -109,12 +109,12 @@
           <%= image_tag('map-small.png', height: "60%", width: "60%") %>
         <% end %>
       </li>
-      <li class="nav-item dropdown <%= "show" if controller.action_name == "index" %>">
+      <li class="nav-item dropdown">
         <%= link_to '#', class: "nav-link dropdown-toggle pt-0 mt-2 pb-0", id: "navbarDropdown", role: "button", data: {toggle: "dropdown"}, onclick: "changeImage()" do %>
-          <%= image_tag('dark_buttler.png', id: "toggleImage", class: "img-fluid", style: "max-height: 60%; max-width: 55%;") %>
+          <%= image_tag('buttler.png', id: "toggleImage", class: "img-fluid", style: "max-height: 60%; max-width: 55%;") %>
         <% end %>
 
-        <div class="dropdown-menu chat-dropdown border shadow <%= "show" if controller.action_name == "index" %>">
+        <div class="dropdown-menu chat-dropdown border shadow">
           <div class="card border-0">
             <div class="card-body">
               <iframe
@@ -141,13 +141,45 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         const chatDropdown = document.querySelector('.chat-dropdown');
-        chatDropdown.classList.add('animate-entry');
         const toggleButton = document.getElementById('toggleImage');
+        const navbarDropdown = document.getElementById('navbarDropdown');
+        
+        chatDropdown.classList.add('animate-entry');
         toggleButton.classList.add('animate-pulse');
+        
         setTimeout(function () {
             toggleButton.classList.remove('animate-pulse');
         }, 2000);
+        
+        <% if (user_signed_in? && controller.action_name == "index") || (!user_signed_in? && controller.action_name == "index") %>
+            $(navbarDropdown).dropdown('show');
+            if (toggleButton.src.includes("<%= image_path('buttler.png') %>")) {
+                toggleButton.src = "<%= image_path('dark_buttler.png') %>";
+            }
+        <% end %>
+        
+        $(navbarDropdown).on('shown.bs.dropdown', function() {
+            if (toggleButton.src.includes("<%= image_path('buttler.png') %>")) {
+                toggleButton.src = "<%= image_path('dark_buttler.png') %>";
+            }
+        });
+        
+        $(navbarDropdown).on('hidden.bs.dropdown', function() {
+            if (toggleButton.src.includes("<%= image_path('dark_buttler.png') %>")) {
+                toggleButton.src = "<%= image_path('buttler.png') %>";
+            }
+        });
+        
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.nav-item.dropdown').length) {
+                $('.dropdown-menu.show').removeClass('show');
+                if (toggleButton.src.includes("<%= image_path('dark_buttler.png') %>")) {
+                    toggleButton.src = "<%= image_path('buttler.png') %>";
+                }
+            }
+        });
     });
+
     $('#user').select2({
         placeholder: 'Search',
         quietMillis: 200,
