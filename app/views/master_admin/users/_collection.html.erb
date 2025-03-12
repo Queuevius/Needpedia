@@ -86,7 +86,7 @@ to display a collection of resources in an HTML table.
           </td>
         <% end %>
         <td class="cell-data">
-          <%= resource&.ai_tokens&.last&.tokens_count || 'N/A' %>
+          <%= resource&.ai_tokens&.last&.tokens_count || 'N/A' if resource.is_a?(User) %>
         </td>
         <% if valid_action? :edit, collection_presenter.resource_name %>
           <td><%= link_to(
