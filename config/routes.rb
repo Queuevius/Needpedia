@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   # Wrap OmniAuth routes in devise_scope
   devise_scope :user do
     get '/omniauth/failure', to: 'users/omniauth_callbacks#failure'
-    get '/omniauth/:provider/callback', to: 'users/omniauth_callbacks#google_oauth2'
+    get '/omniauth/:provider/callback', to: 'users/omniauth_callbacks#:provider'
     post '/omniauth/:provider', to: 'users/omniauth_callbacks#passthru'
   end
 

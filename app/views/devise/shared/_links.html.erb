@@ -5,6 +5,10 @@
         <%= link_to omniauth_authorize_path(resource_name, provider), method: :post, class: "btn btn-google" do %>
           <i class="fab fa-google"></i> Sign in with Google
         <% end %><br />
+      <% elsif provider.to_s == 'facebook' %>
+        <%= link_to omniauth_authorize_path(resource_name, provider), method: :post, class: "btn btn-facebook" do %>
+          <i class="fab fa-facebook-f"></i> Sign in with Facebook
+        <% end %><br />
       <% else %>
         <%= link_to "Sign in with #{OmniAuth::Utils.camelize(provider)}", omniauth_authorize_path(resource_name, provider), method: :post %><br />
       <% end %>
@@ -71,5 +75,20 @@
 
   .fab.fa-google {
     color: #DB4437;
+  }
+  
+  .btn-facebook {
+    background-color: #3b5998;
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-facebook:hover {
+    background-color: #2d4373;
+    color: white;
+  }
+  
+  .fab.fa-facebook-f {
+    margin-right: 5px;
   }
 </style>

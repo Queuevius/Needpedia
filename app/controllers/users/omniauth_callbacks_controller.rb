@@ -2,15 +2,51 @@ module Users
   class OmniauthCallbacksController < Devise::OmniauthCallbacksController
     # Skip CSRF protection for callbacks
     protect_from_forgery except: [:google_oauth2, :facebook, :twitter, :github]
-    skip_before_action :verify_authenticity_token, only: [:google_oauth2, :failure]
+    skip_before_action :verify_authenticity_token, only: [:google_oauth2, :facebook, :failure]
 
-    before_action :set_service, except: [:google_oauth2, :failure]
-    before_action :set_user, except: [:google_oauth2, :failure]
+    before_action :set_service, except: [:google_oauth2, :facebook, :failure]
+    before_action :set_user, except: [:google_oauth2, :facebook, :failure]
 
     attr_reader :service, :user
 
     def facebook
-      handle_auth "Facebook"
+      Rails.logger.info "Facebook OAuth callback received"
+      
+      begin
+        auth = request.env["omniauth.auth"]
+        Rails.logger.info "Auth data received: #{auth.to_json}"
+        
+        @user = User.where(email: auth.info.email).first_or_initialize do |user|
+          user.email = auth.info.email
+          # Generate a complex password that meets requirements
+          user.password = generate_secure_password
+          user.provider = auth.provider
+          user.uid = auth.uid
+          user.name = auth.info.name
+          # Skip confirmation for Facebook OAuth users
+          user.skip_confirmation!
+          user.confirm if user.respond_to?(:confirm)
+        end
+
+        if @user.persisted? || @user.save
+          # Ensure existing users are also confirmed
+          unless @user.confirmed?
+            @user.skip_confirmation!
+            @user.confirm
+            @user.save
+          end
+          
+          sign_in_and_redirect @user, event: :authentication
+          set_flash_message(:notice, :success, kind: "Facebook") if is_navigational_format?
+        else
+          session["devise.facebook_data"] = auth.except(:extra)
+          redirect_to new_user_registration_url, alert: @user.errors.full_messages.join("\n")
+        end
+      rescue StandardError => e
+        Rails.logger.error "Facebook OAuth Error: #{e.class} - #{e.message}"
+        Rails.logger.error e.backtrace.join("\n")
+        redirect_to new_user_session_path, alert: "Authentication failed: #{e.message}"
+      end
     end
 
     def twitter

@@ -34,4 +34,16 @@ Rails.application.config.middleware.use OmniAuth::Builder do
              provider_ignores_state: true,
              redirect_uri: "http://localhost:3000/omniauth/google_oauth2/callback"
            }
+           
+  provider :facebook,
+           ENV['FACEBOOK_APP_ID'],
+           ENV['FACEBOOK_APP_SECRET'],
+           {
+             scope: 'email,public_profile',
+             info_fields: 'email,name',
+             image_size: 'square',
+             secure_image_url: true,
+             provider_ignores_state: true,
+             redirect_uri: "http://localhost:3000/omniauth/facebook/callback"
+           }
 end
