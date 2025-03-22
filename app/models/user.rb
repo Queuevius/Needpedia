@@ -208,7 +208,7 @@ class User < ApplicationRecord
     # Find existing user by provider and uid or email
     user = where(provider: auth.provider, uid: auth.uid).first_or_initialize do |user|
       user.email = auth.info.email
-      user.password = Devise.friendly_token[0, 20]
+      user.password = Users::OmniauthCallbacksController.new.send(:generate_secure_password)
       user.name = auth.info.name   # assuming the user model has a name
       
       # Populate any other fields from auth.info if needed

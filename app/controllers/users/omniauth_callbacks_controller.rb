@@ -156,7 +156,7 @@ module Users
     def create_user
       User.create(
         email: auth.info.email,
-        password: Devise.friendly_token[0,20]
+        password: generate_secure_password
       )
     end
 
