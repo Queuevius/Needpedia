@@ -16,13 +16,22 @@ module Users
         auth = request.env["omniauth.auth"]
         Rails.logger.info "Auth data received: #{auth.to_json}"
         
-        @user = User.where(email: auth.info.email).first_or_initialize do |user|
-          user.email = auth.info.email
+        # Check if email is present in the auth data
+        if auth.info.email.blank?
+          # Generate a temporary email using the Facebook UID if no email is provided
+          temp_email = "#{auth.uid}-#{auth.provider}@needpedia.example"
+          Rails.logger.info "No email provided by Facebook, using temporary email: #{temp_email}"
+        else
+          temp_email = auth.info.email
+        end
+        
+        @user = User.where(provider: auth.provider, uid: auth.uid).first_or_initialize do |user|
+          user.email = temp_email
           # Generate a complex password that meets requirements
           user.password = generate_secure_password
           user.provider = auth.provider
           user.uid = auth.uid
-          user.name = auth.info.name
+          user.name = auth.info.name || "#{auth.info.first_name} #{auth.info.last_name}"
           # Skip confirmation for Facebook OAuth users
           user.skip_confirmation!
           user.confirm if user.respond_to?(:confirm)
@@ -39,6 +48,7 @@ module Users
           sign_in_and_redirect @user, event: :authentication
           set_flash_message(:notice, :success, kind: "Facebook") if is_navigational_format?
         else
+          Rails.logger.error "Failed to save user: #{@user.errors.full_messages.join(', ')}"
           session["devise.facebook_data"] = auth.except(:extra)
           redirect_to new_user_registration_url, alert: @user.errors.full_messages.join("\n")
         end

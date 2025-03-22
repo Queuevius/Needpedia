@@ -205,11 +205,20 @@ class User < ApplicationRecord
     # Log the auth data received
     Rails.logger.debug "Processing auth data: #{auth.inspect}"
     
+    # Check if email is present in the auth data
+    if auth.info.email.blank?
+      # Generate a temporary email using the provider UID if no email is provided
+      temp_email = "#{auth.uid}-#{auth.provider}@needpedia.example"
+      Rails.logger.debug "No email provided by #{auth.provider}, using temporary email: #{temp_email}"
+    else
+      temp_email = auth.info.email
+    end
+    
     # Find existing user by provider and uid or email
     user = where(provider: auth.provider, uid: auth.uid).first_or_initialize do |user|
-      user.email = auth.info.email
+      user.email = temp_email
       user.password = Users::OmniauthCallbacksController.new.send(:generate_secure_password)
-      user.name = auth.info.name   # assuming the user model has a name
+      user.name = auth.info.name || "#{auth.info.first_name} #{auth.info.last_name}"
       
       # Populate any other fields from auth.info if needed
       # user.image = auth.info.image # if you have an image field
