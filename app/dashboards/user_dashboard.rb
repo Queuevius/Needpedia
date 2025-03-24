@@ -112,7 +112,7 @@ class UserDashboard < Administrate::BaseDashboard
     user.name
   end
 
-  def permitted_attributes
+  def permitted_attributes(action = nil)
     super + [{ features: {} }]
   end
 end

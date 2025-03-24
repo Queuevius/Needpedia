@@ -5,8 +5,8 @@
 <div class="field-unit__field">
   <% field.feature_keys.each do |feature| %>
     <div>
-      <%= check_box_tag "features[#{feature}]", 1, field.feature_enabled?(feature) %>
-      <%= label_tag "features[#{feature}]", feature.capitalize %>
+      <%= check_box_tag "#{f.object_name}[features][#{feature}]", 1, field.feature_enabled?(feature) %>
+      <%= label_tag "#{f.object_name}[features][#{feature}]", feature.capitalize %>
     </div>
   <% end %>
 </div>
