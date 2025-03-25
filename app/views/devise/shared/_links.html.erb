@@ -1,25 +1,94 @@
+<%- if devise_mapping.omniauthable? %>
+  <div class="social-login-buttons">
+    <%- resource_class.omniauth_providers.each do |provider| %>
+      <% if provider.to_s == 'google_oauth2' %>
+        <%= link_to omniauth_authorize_path(resource_name, provider), method: :post, class: "btn btn-google" do %>
+          <i class="fab fa-google"></i> Sign in with Google
+        <% end %><br />
+      <% elsif provider.to_s == 'facebook' %>
+        <%= link_to omniauth_authorize_path(resource_name, provider), method: :post, class: "btn btn-facebook" do %>
+          <i class="fab fa-facebook-f"></i> Sign in with Facebook
+        <% end %><br />
+      <% else %>
+        <%= link_to "Sign in with #{OmniAuth::Utils.camelize(provider)}", omniauth_authorize_path(resource_name, provider), method: :post %><br />
+      <% end %>
+    <% end %>
+  </div>
+<% end -%>
+
 <%- if controller_name != 'sessions' %>
-  <%= link_to "Log in", new_session_path(resource_name) %><br />
+  <%= link_to "Log in", new_session_path(resource_name), class: 'btn btn-link' %><br />
 <% end -%>
 
 <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
-  <%= link_to "Sign up", new_registration_path(resource_name) %><br />
+  <%= link_to "Sign up", new_registration_path(resource_name), class: 'btn btn-link' %><br />
 <% end -%>
 
 <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
-  <%= link_to "Forgot your password?", new_password_path(resource_name) %><br />
+  <%= link_to "Forgot your password?", new_password_path(resource_name), class: 'btn btn-link' %><br />
 <% end -%>
 
 <%- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
-  <%= link_to "Didn't receive confirmation instructions?", new_confirmation_path(resource_name) %><br />
+  <%= link_to "Didn't receive confirmation instructions?", new_confirmation_path(resource_name), class: 'btn btn-link' %><br />
 <% end -%>
 
 <%- if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != 'unlocks' %>
-  <%= link_to "Didn't receive unlock instructions?", new_unlock_path(resource_name) %><br />
+  <%= link_to "Didn't receive unlock instructions?", new_unlock_path(resource_name), class: 'btn btn-link' %><br />
 <% end -%>
 
-<%- if devise_mapping.omniauthable? %>
-  <%- resource_class.omniauth_providers.each do |provider| %>
-    <%= link_to "Sign in with #{OmniAuth::Utils.camelize(provider)}", omniauth_authorize_path(resource_name, provider) %><br />
-  <% end -%>
-<% end -%>
+<style>
+  .divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .divider span {
+    padding: 0 10px;
+    color: #666;
+  }
+
+  .btn-light {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    color: #444;
+    transition: all 0.3s ease;
+  }
+
+  .btn-light:hover {
+    background-color: #f8f9fa;
+    border-color: #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .social-login-section {
+    margin: 0 auto;
+  }
+
+  .fab.fa-google {
+    color: #DB4437;
+  }
+  
+  .btn-facebook {
+    background-color: #3b5998;
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-facebook:hover {
+    background-color: #2d4373;
+    color: white;
+  }
+  
+  .fab.fa-facebook-f {
+    margin-right: 5px;
+  }
+</style>
