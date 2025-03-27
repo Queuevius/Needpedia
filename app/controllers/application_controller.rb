@@ -1,5 +1,9 @@
 class ApplicationController < ActionController::Base
-  protect_from_forgery unless: -> { request.format.json? }
+  protect_from_forgery with: :exception, unless: -> { 
+    request.format.json? || 
+    request.path.start_with?('/omniauth/') || 
+    request.path.include?('callback') 
+  }
   before_action :check_nuclear_note
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :masquerade_user!
