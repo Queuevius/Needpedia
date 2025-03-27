@@ -4,59 +4,14 @@ module Users
     protect_from_forgery except: [:google_oauth2, :facebook, :twitter, :github]
     skip_before_action :verify_authenticity_token, only: [:google_oauth2, :facebook, :failure]
 
+    before_action :set_auth, only: [:facebook, :google_oauth2]
     before_action :set_service, except: [:google_oauth2, :facebook, :failure]
     before_action :set_user, except: [:google_oauth2, :facebook, :failure]
 
-    attr_reader :service, :user
+    attr_reader :service, :user, :auth
 
     def facebook
-      Rails.logger.info "Facebook OAuth callback received"
-      
-      begin
-        auth = request.env["omniauth.auth"]
-        Rails.logger.info "Auth data received: #{auth.to_json}"
-        
-        # Check if email is present in the auth data
-        if auth.info.email.blank?
-          # Generate a temporary email using the Facebook UID if no email is provided
-          temp_email = "#{auth.uid}-#{auth.provider}@needpedia.example"
-          Rails.logger.info "No email provided by Facebook, using temporary email: #{temp_email}"
-        else
-          temp_email = auth.info.email
-        end
-        
-        @user = User.where(provider: auth.provider, uid: auth.uid).first_or_initialize do |user|
-          user.email = temp_email
-          # Generate a complex password that meets requirements
-          user.password = generate_secure_password
-          user.provider = auth.provider
-          user.uid = auth.uid
-          user.name = auth.info.name || "#{auth.info.first_name} #{auth.info.last_name}"
-          # Skip confirmation for Facebook OAuth users
-          user.skip_confirmation!
-          user.confirm if user.respond_to?(:confirm)
-        end
-
-        if @user.persisted? || @user.save
-          # Ensure existing users are also confirmed
-          unless @user.confirmed?
-            @user.skip_confirmation!
-            @user.confirm
-            @user.save
-          end
-          
-          sign_in_and_redirect @user, event: :authentication
-          set_flash_message(:notice, :success, kind: "Facebook") if is_navigational_format?
-        else
-          Rails.logger.error "Failed to save user: #{@user.errors.full_messages.join(', ')}"
-          session["devise.facebook_data"] = auth.except(:extra)
-          redirect_to new_user_registration_url, alert: @user.errors.full_messages.join("\n")
-        end
-      rescue StandardError => e
-        Rails.logger.error "Facebook OAuth Error: #{e.class} - #{e.message}"
-        Rails.logger.error e.backtrace.join("\n")
-        redirect_to new_user_session_path, alert: "Authentication failed: #{e.message}"
-      end
+      handle_oauth("Facebook")
     end
 
     def twitter
@@ -68,43 +23,7 @@ module Users
     end
 
     def google_oauth2
-      Rails.logger.info "Google OAuth2 callback received"
-      
-      begin
-        auth = request.env["omniauth.auth"]
-        Rails.logger.info "Auth data received: #{auth.to_json}"
-        
-        @user = User.where(email: auth.info.email).first_or_initialize do |user|
-          user.email = auth.info.email
-          # Generate a complex password that meets requirements
-          user.password = generate_secure_password
-          user.provider = auth.provider
-          user.uid = auth.uid
-          user.name = auth.info.name
-          # Skip confirmation for Google OAuth users
-          user.skip_confirmation!
-          user.confirm if user.respond_to?(:confirm)
-        end
-
-        if @user.persisted? || @user.save
-          # Ensure existing users are also confirmed
-          unless @user.confirmed?
-            @user.skip_confirmation!
-            @user.confirm
-            @user.save
-          end
-          
-          sign_in_and_redirect @user, event: :authentication
-          set_flash_message(:notice, :success, kind: "Google") if is_navigational_format?
-        else
-          session["devise.google_data"] = auth.except(:extra)
-          redirect_to new_user_registration_url, alert: @user.errors.full_messages.join("\n")
-        end
-      rescue StandardError => e
-        Rails.logger.error "Google OAuth2 Error: #{e.class} - #{e.message}"
-        Rails.logger.error e.backtrace.join("\n")
-        redirect_to new_user_session_path, alert: "Authentication failed: #{e.message}"
-      end
+      handle_oauth("Google")
     end
 
     def failure
@@ -113,6 +32,33 @@ module Users
     end
 
     private
+
+    def handle_oauth(kind)
+      Rails.logger.info "#{kind} OAuth callback received"
+      
+      begin
+        Rails.logger.info "Auth data received: #{auth.to_json}"
+        
+        # Get or generate email
+        email = get_email_from_auth
+        
+        @user = find_or_initialize_user
+        
+        if @user.persisted? || @user.save
+          # Ensure existing users are also confirmed
+          confirm_user if @user.respond_to?(:confirm)
+          
+          sign_in_and_redirect @user, event: :authentication
+          set_flash_message(:notice, :success, kind: kind) if is_navigational_format?
+        else
+          Rails.logger.error "Failed to save user: #{@user.errors.full_messages.join(', ')}"
+          session["devise.#{auth.provider}_data"] = auth.except(:extra)
+          redirect_to new_user_registration_url, alert: @user.errors.full_messages.join("\n")
+        end
+      rescue StandardError => e
+        handle_oauth_error(e, kind)
+      end
+    end
 
     def handle_auth(kind)
       if service.present?
@@ -130,26 +76,44 @@ module Users
       end
     end
 
-    def auth
-      request.env['omniauth.auth']
+    def set_auth
+      @auth = request.env['omniauth.auth']
     end
 
-    def set_service
-      @service = Service.where(provider: auth.provider, uid: auth.uid).first
-    end
-
-    def set_user
-      if user_signed_in?
-        @user = current_user
-      elsif service.present?
-        @user = service.user
-      elsif User.where(email: auth.info.email).any?
-        # 5. User is logged out and they login to a new account which doesn't match their old one
-        flash[:alert] = "An account with this email already exists. Please sign in with that account before connecting your #{auth.provider.titleize} account."
-        redirect_to new_user_session_path
+    def get_email_from_auth
+      if auth.info.email.blank?
+        temp_email = "#{auth.uid}-#{auth.provider}@needpedia.org"
+        Rails.logger.info "No email provided by #{auth.provider}, using temporary email: #{temp_email}"
+        temp_email
       else
-        @user = create_user
+        auth.info.email
       end
+    end
+
+    def find_or_initialize_user
+      User.where(provider: auth.provider, uid: auth.uid).first_or_initialize do |user|
+        user.email = get_email_from_auth
+        user.password = generate_secure_password
+        user.provider = auth.provider
+        user.uid = auth.uid
+        user.name = auth.info.name || "#{auth.info.first_name} #{auth.info.last_name}"
+        user.skip_confirmation! if user.respond_to?(:skip_confirmation!)
+        user.confirm if user.respond_to?(:confirm)
+      end
+    end
+
+    def confirm_user
+      unless @user.confirmed?
+        @user.skip_confirmation! if @user.respond_to?(:skip_confirmation!)
+        @user.confirm if @user.respond_to?(:confirm)
+        @user.save
+      end
+    end
+
+    def handle_oauth_error(exception, provider)
+      Rails.logger.error "#{provider} OAuth Error: #{exception.class} - #{exception.message}"
+      Rails.logger.error exception.backtrace.join("\n")
+      redirect_to new_user_session_path, alert: "Authentication failed: #{exception.message}"
     end
 
     def service_attrs
@@ -165,9 +129,26 @@ module Users
 
     def create_user
       User.create(
-        email: auth.info.email,
+        email: get_email_from_auth,
         password: generate_secure_password
       )
+    end
+
+    def set_service
+      @service = Service.where(provider: auth.provider, uid: auth.uid).first
+    end
+
+    def set_user
+      if user_signed_in?
+        @user = current_user
+      elsif service.present?
+        @user = service.user
+      elsif User.where(email: auth.info.email).any?
+        flash[:alert] = "An account with this email already exists. Please sign in with that account before connecting your #{auth.provider.titleize} account."
+        redirect_to new_user_session_path
+      else
+        @user = create_user
+      end
     end
 
     def generate_secure_password
@@ -197,6 +178,5 @@ module Users
         "#{error_type.to_s.humanize} - #{error&.message}"
       end
     end
-
   end
 end
