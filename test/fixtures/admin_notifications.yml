@@ -1,11 +1,9 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
-  message: MyText
-  user: one
-  read_at: 2020-11-26 23:12:51
+  audience: 'Admin'
+  created_at: <%= 2.days.ago %>
+  updated_at: <%= 1.day.ago %>
 
 two:
-  message: MyText
-  user: two
-  read_at: 2020-11-26 23:12:51
+  audience: 'All'
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= Time.current %>
