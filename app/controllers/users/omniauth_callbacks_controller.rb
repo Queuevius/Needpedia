@@ -42,7 +42,7 @@ module Users
         # Get or generate email
         email = get_email_from_auth
         
-        @user = find_or_initialize_user
+        @user = find_user_for_oauth
         
         if @user.persisted? || @user.save
           # Ensure existing users are also confirmed
@@ -90,16 +90,33 @@ module Users
       end
     end
 
-    def find_or_initialize_user
-      User.where(provider: auth.provider, uid: auth.uid).first_or_initialize do |user|
-        user.email = get_email_from_auth
-        user.password = generate_secure_password
-        user.provider = auth.provider
-        user.uid = auth.uid
-        user.name = auth.info.name || "#{auth.info.first_name} #{auth.info.last_name}"
-        user.skip_confirmation! if user.respond_to?(:skip_confirmation!)
-        user.confirm if user.respond_to?(:confirm)
+    def find_user_for_oauth
+      user = User.where(provider: auth.provider, uid: auth.uid).first
+      
+      if user.nil?
+        email = get_email_from_auth
+        existing_user = User.find_by(email: email)
+        
+        if existing_user
+          existing_user.update(
+            provider: auth.provider,
+            uid: auth.uid
+          )
+          return existing_user
+        else
+          user = User.new(
+            email: email,
+            password: generate_secure_password,
+            provider: auth.provider,
+            uid: auth.uid,
+            name: auth.info.name || "#{auth.info.first_name} #{auth.info.last_name}"
+          )
+          user.skip_confirmation! if user.respond_to?(:skip_confirmation!)
+          user.confirm if user.respond_to?(:confirm)
+        end
       end
+      
+      user
     end
 
     def confirm_user
@@ -144,8 +161,8 @@ module Users
       elsif service.present?
         @user = service.user
       elsif User.where(email: auth.info.email).any?
-        flash[:alert] = "An account with this email already exists. Please sign in with that account before connecting your #{auth.provider.titleize} account."
-        redirect_to new_user_session_path
+        @user = User.find_by(email: auth.info.email)
+        @user.update(provider: auth.provider, uid: auth.uid)
       else
         @user = create_user
       end
@@ -180,3 +197,4 @@ module Users
     end
   end
 end
+

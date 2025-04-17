@@ -92,7 +92,7 @@ class User < ApplicationRecord
   belongs_to :current_chat_thread, class_name: 'ChatThread', optional: true
   has_many :impacts, dependent: :destroy
 
-  has_many :ai_tokens
+  has_many :ai_tokens, dependent: :destroy
 
   MAX_RESET_PASSWORD_ATTEMPTS = 5
   RESET_ATTEMPT_WINDOW = 24.hours
