@@ -6,7 +6,7 @@ class User < ApplicationRecord
   include DeviseTokenAuth::Concerns::User
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :invitable, :masqueradable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :confirmable, :lockable, :invitable
+  devise :invitable, :masqueradable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :confirmable, :lockable, :invitable, omniauth_providers: [:google_oauth2, :facebook]
 
 
   after_create :add_default_credit, :create_admin_notifications, :make_friend_with_mascot, :create_user_tutorials
@@ -92,7 +92,7 @@ class User < ApplicationRecord
   belongs_to :current_chat_thread, class_name: 'ChatThread', optional: true
   has_many :impacts, dependent: :destroy
 
-  has_many :ai_tokens
+  has_many :ai_tokens, dependent: :destroy
 
   MAX_RESET_PASSWORD_ATTEMPTS = 5
   RESET_ATTEMPT_WINDOW = 24.hours
@@ -199,6 +199,54 @@ class User < ApplicationRecord
 
     update_reset_password_tracking
     super
+  end
+
+  def self.from_omniauth(auth)
+    # Log the auth data received
+    Rails.logger.debug "Processing auth data: #{auth.inspect}"
+    
+    # Check if email is present in the auth data
+    if auth.info.email.blank?
+      # Generate a temporary email using the provider UID if no email is provided
+      temp_email = "#{auth.uid}-#{auth.provider}@needpedia.example"
+      Rails.logger.debug "No email provided by #{auth.provider}, using temporary email: #{temp_email}"
+    else
+      temp_email = auth.info.email
+    end
+    
+    # Find existing user by provider and uid or email
+    user = where(provider: auth.provider, uid: auth.uid).first_or_initialize do |user|
+      user.email = temp_email
+      user.password = Users::OmniauthCallbacksController.new.send(:generate_secure_password)
+      user.name = auth.info.name || "#{auth.info.first_name} #{auth.info.last_name}"
+      
+      # Populate any other fields from auth.info if needed
+      # user.image = auth.info.image # if you have an image field
+    end
+    
+    # Update user with latest info from provider
+    if user.persisted?
+      Rails.logger.debug "User found, updating from auth data"
+      user.update(
+        name: auth.info.name,
+        # Any other fields you want to update
+        last_sign_in_at: Time.current
+      )
+    else
+      Rails.logger.debug "New user created from auth data"
+    end
+    
+    user
+  end
+
+  def self.new_with_session(params, session)
+    super.tap do |user|
+      if data = session["devise.google_oauth2_data"] && session["devise.google_oauth2_data"]["extra"]["raw_info"]
+        user.email = data["email"] if user.email.blank?
+        user.first_name = data["given_name"] if user.first_name.blank?
+        user.last_name = data["family_name"] if user.last_name.blank?
+      end
+    end
   end
 
   private

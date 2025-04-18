@@ -2,10 +2,25 @@ require 'sidekiq/web'
 require 'sidekiq/cron/web'
 
 Rails.application.routes.draw do
+  # Devise and OmniAuth routes
+  devise_for :users, controllers: {
+    omniauth_callbacks: 'users/omniauth_callbacks',
+    sessions: 'users/sessions',
+    registrations: 'users/registrations'
+  }
+
+  # Wrap OmniAuth routes in devise_scope
+  devise_scope :user do
+    get '/omniauth/failure', to: 'users/omniauth_callbacks#failure'
+    get '/omniauth/:provider/callback', to: 'users/omniauth_callbacks#:provider'
+    post '/omniauth/:provider', to: 'users/omniauth_callbacks#passthru'
+  end
+
+  # API routes
   namespace :api, defaults: {format: 'json'} do
     namespace :v1 do
       match '/auth/sign_in', to: 'auth#options_request', via: [:options]
-      mount_devise_token_auth_for 'User', at: 'auth'
+      mount_devise_token_auth_for 'User', at: 'auth', skip: [:omniauth_callbacks]
       match '/register_device', to: 'device_registration#register_device', via: [:post]
       resources :faqs, only: [:index]
       resources :how_to, only: [:index]
@@ -349,7 +364,6 @@ Rails.application.routes.draw do
   get 'otp_verifications/new', to: 'otp_verifications#new', as: :new_otp_verification
   post 'otp_verifications', to: 'otp_verifications#create', as: :verify_otp
 
-  devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", :sessions => "users/sessions", registrations: 'users/registrations'}
   root to: 'home#index'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   post '/user_tutorials/update_viewed', to: 'user_tutorials#update_viewed', as: 'update_viewed'
