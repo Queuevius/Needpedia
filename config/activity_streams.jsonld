@@ -1,0 +1,166 @@
+{
+  "@context": {
+    "id": "@id",
+    "type": "@type",
+    "as": "https://www.w3.org/ns/activitystreams#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Activity": "as:Activity",
+    "Actor": "as:Actor",
+    "Application": "as:Application",
+    "Article": "as:Article",
+    "Audio": "as:Audio",
+    "Collection": "as:Collection",
+    "CollectionPage": "as:CollectionPage",
+    "Create": "as:Create",
+    "Delete": "as:Delete",
+    "Document": "as:Document",
+    "Event": "as:Event",
+    "Follow": "as:Follow",
+    "Group": "as:Group",
+    "Image": "as:Image",
+    "IntransitiveActivity": "as:IntransitiveActivity",
+    "Like": "as:Like",
+    "Link": "as:Link",
+    "Mention": "as:Mention",
+    "Note": "as:Note",
+    "Object": "as:Object",
+    "Offer": "as:Offer",
+    "OrderedCollection": "as:OrderedCollection",
+    "OrderedCollectionPage": "as:OrderedCollectionPage",
+    "Organization": "as:Organization",
+    "Page": "as:Page",
+    "Person": "as:Person",
+    "Place": "as:Place",
+    "Profile": "as:Profile",
+    "Question": "as:Question",
+    "Relationship": "as:Relationship",
+    "Service": "as:Service",
+    "Tombstone": "as:Tombstone",
+    "Undo": "as:Undo",
+    "Update": "as:Update",
+    "Video": "as:Video",
+    "View": "as:View",
+    "publicKey": {
+      "@id": "as:publicKey",
+      "@type": "@id"
+    },
+    "publicKeyPem": "as:publicKeyPem",
+    "inbox": {
+      "@id": "as:inbox",
+      "@type": "@id"
+    },
+    "outbox": {
+      "@id": "as:outbox",
+      "@type": "@id"
+    },
+    "sharedInbox": {
+      "@id": "as:sharedInbox",
+      "@type": "@id"
+    },
+    "followers": {
+      "@id": "as:followers",
+      "@type": "@id"
+    },
+    "following": {
+      "@id": "as:following",
+      "@type": "@id"
+    },
+    "liked": {
+      "@id": "as:liked",
+      "@type": "@id"
+    },
+    "preferredUsername": "as:preferredUsername",
+    "name": "as:name",
+    "summary": "as:summary",
+    "icon": {
+      "@id": "as:icon",
+      "@type": "@id"
+    },
+    "image": {
+      "@id": "as:image",
+      "@type": "@id"
+    },
+    "url": {
+      "@id": "as:url",
+      "@type": "@id"
+    },
+    "to": {
+      "@id": "as:to",
+      "@type": "@id"
+    },
+    "cc": {
+      "@id": "as:cc",
+      "@type": "@id"
+    },
+    "bto": {
+      "@id": "as:bto",
+      "@type": "@id"
+    },
+    "bcc": {
+      "@id": "as:bcc",
+      "@type": "@id"
+    },
+    "mediaType": "as:mediaType",
+    "duration": "as:duration",
+    "published": {
+      "@id": "as:published",
+      "@type": "xsd:dateTime"
+    },
+    "startTime": {
+      "@id": "as:startTime",
+      "@type": "xsd:dateTime"
+    },
+    "endTime": {
+      "@id": "as:endTime",
+      "@type": "xsd:dateTime"
+    },
+    "updated": {
+      "@id": "as:updated",
+      "@type": "xsd:dateTime"
+    },
+    "attributedTo": {
+      "@id": "as:attributedTo",
+      "@type": "@id"
+    },
+    "attachment": {
+      "@id": "as:attachment",
+      "@type": "@id"
+    },
+    "content": "as:content",
+    "context": {
+      "@id": "as:context",
+      "@type": "@id"
+    },
+    "replies": {
+      "@id": "as:replies",
+      "@type": "@id"
+    },
+    "tag": {
+      "@id": "as:tag",
+      "@type": "@id"
+    },
+    "generator": {
+      "@id": "as:generator",
+      "@type": "@id"
+    },
+    "location": {
+      "@id": "as:location",
+      "@type": "@id"
+    },
+    "inReplyTo": {
+      "@id": "as:inReplyTo",
+      "@type": "@id"
+    },
+    "sensitive": "as:sensitive",
+    "signature": {
+      "@id": "as:signature",
+      "@type": "@id"
+    },
+    "signatureValue": "as:signatureValue",
+    "signatureAlgorithm": "as:signatureAlgorithm",
+    "signatureKey": {
+      "@id": "as:signatureKey",
+      "@type": "@id"
+    }
+  }
+}

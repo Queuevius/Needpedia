@@ -1,309 +1,377 @@
 <div class="container mb-5">
   <%= render "shared/tutorial" %>
   <div class="row mt-3">
-    <div class="col-md-12 text-center mb-2">
-      <h1><b>Search results</b></h1>
+    <div class="col-md-12 text-center">
+      <h1 class="mb-4"><b>Search</b></h1>
+      <% if @posts&.total_count.present? || @users&.total_count.present? %>
+        <p><%= @posts&.total_count || 0 %> posts and <%= @users&.total_count || 0 %> users
+          found <%= "for '#{@keywords[:title_cont]}'" if @keywords[:title_cont].present? %></p>
+      <% end %>
     </div>
+
     <div class="col-md-12">
-      <div class="row m-t-40 p-t-20 artist-box">
-        <div class="col-md-12">
-          <h3><b>Posts</b></h3>
-        </div>
-
-        <div class="col-md-12">
-          <div class="row text-right">
-            <div class="col-lg-12 col-md-12">
-              <div class="ui-block shadow-lg rounded">
-                <div class="ui-block-content">
-                  <%= link_to new_post_path(post_type: Post::POST_TYPE_SUBJECT), class: 'btn btn-primary', id: 'new_button' do %>
-                    Create Post
-                  <% end %>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-12">
-          <div class="row">
-            <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
-              <h5 class="alert alert-info"><%= @posts&.total_count %> posts and <%= @users&.total_count %> users found <%= "for '#{@keywords[:title_cont]}'" if @keywords[:title_cont].present? %></h5>
-            </div>
-          </div>
-<!--          <div class="row">-->
-<!--            <div class="col-sm-6 text-right mb-2 offset-6">-->
-              <%#= link_to new_post_path(post_type: Post::POST_TYPE_SUBJECT), class: 'btn btn-primary' do %>
-<!--                Add New Post-->
-              <%# end %>
-<!--            </div>-->
-<!--          </div>-->
-        </div>
-      </div>
-
+      <!-- Simple tabs -->
       <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item">
-          <a class="nav-link <%= 'active' if @active_tab == 'posts' %>" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true"><h5><b>Posts</b></h5></a>
+          <a class="nav-link <%= 'active' if @active_tab == 'posts' || @active_tab.blank? %>" id="posts-tab" data-toggle="tab" href="#posts-content" role="tab">
+            <h5><b>Posts</b></h5>
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <%= 'active' if @active_tab == 'people' %>" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false"><h5><b>People</b></h5></a>
+          <a class="nav-link <%= 'active' if @active_tab == 'people' %>" id="people-tab" data-toggle="tab" href="#people-content" role="tab">
+            <h5><b>People</b></h5>
+          </a>
         </li>
       </ul>
-      <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade <%= 'show active' if @active_tab == 'posts' %>" id="home" role="tabpanel" aria-labelledby="home-tab">
 
-          <div class="row pt-3">
-            <div class="col-lg-12 col-md-12">
-              <div class="ui-block shadow-lg rounded">
-                <div class="ui-block-content">
-                  <%= search_form_for @q, url: search_result_posts_path do |f| %>
-                    <div class="row">
-                      <div class="col-12">
-                        <div class="row no-gutters align-items-center">
-                          <div class="col-6">
-                            <div class="form-group row">
-                              <label for="inputPassword" class="col-sm-2 text-sm-center col-form-label" style="white-space: nowrap;">Keyword</label>
-                              <div class="col-sm-8">
-                                <%= f.text_field :title_cont, class: 'form-control' %>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="col-6">
-                            <div class="form-group row">
-                              <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Author</label>
-                              <div class="col-sm-8">
-                                <%= f.text_field :user_first_name_cont, class: 'form-control' %>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="col-6">
-                            <div class="form-group row">
-                              <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Post Type</label>
-                              <div class="col-sm-8">
-                                <%#= f.select(:post_type_cont , options_for_select(Post::TYPES_FOR_SEARCH.map { |r| [r.titleize, r] }, @post_type), { include_blank: false }, {class: 'selectpicker form-control', autofocus: false })%>
-                                <%= select_tag 'post_type', options_for_select(Post::TYPES_FOR_SEARCH.map { |r| [r.titleize, r] }, @post_type), include_blank: false , class: "form form-group form-control" %>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="col-6">
-                            <div class="form-group row">
-                              <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Sorted By</label>
-                              <div class="col-sm-8">
-                                <%= select_tag "sorted_by", options_for_select(%w[Highest-Rated Highest-Rated/View New Random], @sorted_by), include_blank: false, class: "form form-group form-control" %>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+      <div class="tab-content mt-4" id="myTabContent">
+        <!-- Posts tab content -->
+        <div class="tab-pane fade  <%= 'show active' if @active_tab == 'posts' || @active_tab.blank? %>" id="posts-content" role="tabpanel">
+          <!-- Search form -->
+          <%= search_form_for @q, url: search_result_posts_path, method: :get, enforce_utf8: false, html: {id: 'posts_search_form'} do |f| %>
+            <div class="bg-white p-4 rounded shadow">
+              <!-- Hidden field to ensure keyword is captured -->
+              <%= hidden_field_tag 'active_tab', 'posts' %>
+              <div class="form-group row">
+                <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-md-4 text-right pt-2">
+                      <label for="q_title_cont">Keyword</label>
                     </div>
-<!--                    <div class="row pb-4">-->
-                      <%#= render 'searchable_tag_section', heading_text: 'Subject', main_section_id: 'subject-tag-section', searched_title: @subject_input_field, modal_section_id: 'subject_input_modal', input_field_name: 'subject_input_field', input_field_value: @subject_input_field %>
-                      <%#= render 'searchable_tag_section', heading_text: 'Problem', main_section_id: 'problem-tag-section', searched_title: @problem_input_field, modal_section_id: 'problem_input_modal', input_field_name: 'problem_input_field', input_field_value: @problem_input_field %>
-                      <%#= render 'searchable_tag_section', heading_text: 'Idea', main_section_id: 'idea-tag-section', searched_title: @idea_input_field, modal_section_id: 'idea_input_modal', input_field_name: 'idea_input_field', input_field_value: @idea_input_field %>
-<!--                    </div>-->
-                    <div class="row">
-                      <div class="col-md-12">
-                        <button class="btn btn-sm btn-secondary mb-3" type="button" data-toggle="collapse" data-target="#collapseAdvanceFilters" aria-expanded="false" aria-controls="collapseExample">
-                          Advance Filters <i class="fa fa-sliders" aria-hidden="true"></i>
-                        </button>
-                        <div class="collapse <%= 'show' if @open_advance_filters %>" id="collapseAdvanceFilters">
-                          <div class="row no-gutters align-items-center">
-                            <div class="col-6">
-                              <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label " style="white-space: nowrap;">Access Type</label>
-                                <div class="col-sm-8">
-                                  <%= select_tag 'access_type', options_for_select(%w[Public All Curated], @access_type), include_blank: false, class: "form form-group form-control" %>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div class="col-6">
-                              <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Subject</label>
-                                <div class="col-sm-8">
-                                  <%= text_field_tag 'subject', @subject, class: 'form-control' %>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div class="col-6">
-                              <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 pr-2 col-form-label " style="white-space: nowrap; ">Resource Tags</label>
-                                <div class="col-sm-8">
-                                  <%= text_field_tag 'resource_tags', @resource_tags, class: 'form-control' %>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div class="col-6">
-                              <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Problem</label>
-                                <div class="col-sm-8">
-                                  <%= text_field_tag 'problem', @problem, class: 'form-control' %>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div class="col-6">
-                              <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-3 col-form-label " style="white-space: nowrap;">Location Tags</label>
-                                <div class="col-sm-8">
-                                  <%= text_field_tag 'location_tags', @location_tags, class: 'form-control' %>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div class="col-6">
-                              <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-2 col-form-label text-sm-center" style="white-space: nowrap;">Idea</label>
-                                <div class="col-sm-8">
-                                  <%= text_field_tag 'idea', @idea, class: 'form-control' %>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                    <div class="col-md-8">
+                      <% keyword_value = params.dig(:q, :title_cont).present? ? params.dig(:q, :title_cont) : "" %>
+                      <%= f.text_field :title_cont, class: 'form-control', placeholder: 'Enter search keyword', id: 'q_title_cont', value: keyword_value %>
+                      <% if keyword_value.present? %>
+                        <small class="form-text text-muted">
+                          Currently searching for: "<%= keyword_value %>"
+                        </small>
+                      <% end %>
                     </div>
-                    <div class="row">
-                      <div class="col-6"></div>
-                      <div class="col-6">
-                        <div class="form-group row">
-                          <div class="col-sm-2"></div>
-                          <div class="col-sm-9">
-                            <%= f.submit 'Search', class: 'btn btn-primary float-right' %>
-                          </div>
-                        </div>
-                      </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-md-4 text-right pt-2">
+                      <label>Sort By</label>
                     </div>
-                  <% end %>
+                    <div class="col-md-8">
+                      <%= select_tag "sorted_by", options_for_select(%w[Highest-Rated Highest-Rated/View New Random], @sorted_by), include_blank: false, class: "form-control" %>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div id="post-content">
-            <% if @posts.blank? && @task_cards.blank? %>
-              <div class="row">
-                <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1">
-                  <div class="ui-block shadow-lg rounded">
-                    <div class="ui-block-content">
-                      <div class="row">
-                        <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
-                          <h6 class="alert alert-warning">There doesn’t currently seem to be anything on that on Needpedia, would you like to be the one to add it?</h6>
+              <!-- Advanced Features -->
+              <div class="form-group row mb-3">
+                <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-md-4 text-right pt-2">
+                      <label>Advanced</label>
+                    </div>
+                    <div class="col-md-8">
+                      <a href="#" data-toggle="collapse" data-target="#advancedFeatures" class="text-dark d-block pt-1">
+                        Advanced Features <i class="fa fa-angle-down"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="collapse" id="advancedFeatures">
+                <div class="row mb-3">
+                  <!-- Post Type -->
+                  <div class="col-md-6 mb-3">
+                    <div class="row">
+                      <div class="col-md-4 text-right pt-2">
+                        <label>Post Type</label>
+                      </div>
+                      <div class="col-md-8">
+                        <%= select_tag 'post_type', options_for_select(Post::TYPES_FOR_SEARCH.map {|r| [r.titleize, r]}, @post_type), include_blank: false, class: "form-control" %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Access Type -->
+                  <div class="col-md-6 mb-3">
+                    <div class="row">
+                      <div class="col-md-4 text-right pt-2">
+                        <label>Access Type</label>
+                      </div>
+                      <div class="col-md-8">
+                        <%= select_tag 'access_type', options_for_select(%w[Public All Curated], @access_type), include_blank: false, class: "form-control" %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Location Tag -->
+                  <div class="col-md-6 mb-3">
+                    <div class="row">
+                      <div class="col-md-4 text-right pt-2">
+                        <label>Location Tag</label>
+                      </div>
+                      <div class="col-md-8">
+                        <%= text_field_tag 'location_tags', @location_tags, class: 'form-control' %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Author -->
+                  <div class="col-md-6 mb-3">
+                    <div class="row">
+                      <div class="col-md-4 text-right pt-2">
+                        <label>Author</label>
+                      </div>
+                      <div class="col-md-8">
+                        <%= f.text_field :user_first_name_cont, class: 'form-control' %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Data Tree -->
+                  <div class="col-md-6 mb-3">
+                    <div class="row">
+                      <div class="col-md-4 text-right pt-2">
+                        <label>Data Tree</label>
+                      </div>
+                      <div class="col-md-8">
+                        <div class="input-group">
+                          <%= text_field_tag 'tree_url', nil, class: 'form-control', placeholder: 'Paste wiki post URL' %>
+                          <div class="input-group-append">
+                          <span class="input-group-text" data-toggle="tooltip" title="Paste a URL from any Subject, Problem, or Idea post to find all related posts in that tree">
+                            <i class="fa fa-question-circle"></i>
+                          </span>
+                          </div>
+                        </div>
+                        <small class="form-text text-muted mt-1">
+                          Shows all related posts in the tree
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Include Content From section -->
+                  <div class="col-md-6 mb-3">
+                    <div class="row">
+                      <div class="col-md-4 text-right pt-2">
+                        <label>Fediverse</label>
+                      </div>
+                      <div class="col-md-8">
+                        <div class="form-check mb-2">
+                          <%= check_box_tag 'include_mastodon', '1', params[:include_mastodon] == '1', class: 'form-check-input blue-checkbox' %>
+                          <label class="form-check-label" for="include_mastodon">Mastodon.social</label>
+                        </div>
+                        <div class="form-check mb-2">
+                          <%= check_box_tag 'include_lemmy', '1', params[:include_lemmy] == '1', class: 'form-check-input blue-checkbox' %>
+                          <label class="form-check-label" for="include_lemmy">Lemmy.ml</label>
+                        </div>
+                        <div class="form-check mb-2">
+                          <%= check_box_tag 'include_reddit', '1', params[:include_reddit] == '1', class: 'form-check-input blue-checkbox' %>
+                          <label class="form-check-label" for="include_reddit">Reddit</label>
+                        </div>
+                        <div class="form-check mb-2">
+                          <%= check_box_tag 'include_bluesky', '1', params[:include_bluesky] == '1', class: 'form-check-input blue-checkbox' %>
+                          <label class="form-check-label" for="include_bluesky">Bluesky</label>
+                        </div>
+                        <div class="form-check mb-2">
+                          <%= check_box_tag 'include_peer', '1', params[:include_peer] == '1', class: 'form-check-input blue-checkbox' %>
+                          <label class="form-check-label" for="include_peer">Peer Instances</label>
                         </div>
                       </div>
-                      <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1 text-center">
-                        <%= link_to new_post_path(post_type: Post::POST_TYPE_SUBJECT), class: 'btn btn-primary' do %>
-                          Add New Post
-                        <% end %>
+                    </div>
+                  </div>
+
+                  <!-- Resource Tags section -->
+                  <div class="col-md-6 mb-3">
+                    <div class="row">
+                      <div class="col-md-4 text-right ">
+                        <label>Resource Tags</label>
+                      </div>
+                      <div class="col-md-8">
+                        <%= text_field_tag 'resource_tags', @resource_tags, class: 'form-control' %>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <!-- Buttons -->
+              <div class="text-right mt-3">
+                <%= link_to "Create Post", new_post_path(post_type: Post::POST_TYPE_SUBJECT), class: 'btn btn-primary mr-2', id: 'new_button' %>
+                <%= f.submit 'Search', class: 'btn btn-primary', data: {disable_with: false} %>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Posts Content -->
+          <div id="post-content" class="mt-4">
+            <% if @posts.blank? && @task_cards.blank? %>
+              <div class="alert alert-warning text-center">
+                There doesn't currently seem to be anything on that on Needpedia, would you like to be the one to add
+                it?
+                <div class="mt-3">
+                  <%= link_to "Add New Post", new_post_path(post_type: Post::POST_TYPE_SUBJECT), class: 'btn btn-primary' %>
+                </div>
+                Global
+              </div>
             <% end %>
+
             <% if @task_cards.present? %>
               <%= render 'tasks', tasks: @task_cards %>
             <% else %>
               <%= render 'posts_list', posts: @sorted_by == 'Random' ? @posts.shuffle : @posts, type: @type %>
             <% end %>
           </div>
-          <div class="col-md-12">
-            <div class="row">
-              <div class="col-md-3"></div>
-              <div class="col-md-6">
-                <div id="infinite-scrolling" class="justify-content-center">
-                  <%= paginate @posts, param_name: :posts if @posts.present? %>
-                </div>
-              </div>
-            </div>
+
+          <!-- Pagination -->
+          <div class="d-flex justify-content-center mt-4">
+            <%= paginate @posts, param_name: :posts if @posts.present? %>
           </div>
         </div>
-        <div class="tab-pane fade <%= 'show active' if @active_tab == 'people' %>" id="profile" role="tabpanel" aria-labelledby="profile-tab">
 
-          <div class="row pt-3">
-            <div class="col-lg-12 col-md-12">
-              <div class="ui-block shadow-lg rounded">
-                <div class="ui-block-content">
-                  <div class="row">
-                    <div class="col-12">
-                      <%= search_form_for @u, url: search_result_posts_path do |f| %>
-                        <div class="row no-gutters align-items-center">
-                          <div class="col-6">
-                            <div class="form-group row">
-                              <label class="col-sm-2 col-form-label">Name</label>
-                              <div class="col-sm-9">
-                                <%= f.text_field :first_name_or_last_name_or_full_name_cont, class: 'form-control', placeholder: "Search" %>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="col-6">
-                            <div class="form-group row">
-                              <div class="col-sm-2"></div>
-                              <div class="col-sm-9">
-                                <%= f.submit 'Search', class: 'btn btn-secondary float-right' %>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      <% end %>
-                    </div>
-                  </div>
+        <!-- People tab content -->
+        <div class="tab-pane fade <%= 'show active' if @active_tab == 'people' %>" id="people-content" role="tabpanel">
+          <div class="bg-white p-4 rounded shadow">
+            <%= search_form_for @u, url: search_result_posts_path do |f| %>
+              <div class="row align-items-center">
+                <div class="col-2">
+                  <label>Name</label>
+                </div>
+                <div class="col-7">
+                  <%= f.text_field :first_name_or_last_name_or_full_name_cont, class: 'form-control', placeholder: "Search" %>
+                </div>
+                <div class="col-3 text-right">
+                  <%= f.submit 'Search', class: 'btn btn-primary' %>
                 </div>
               </div>
-            </div>
+            <% end %>
           </div>
 
-          <div class="col-md-12">
-            <div class="row m-t-40 p-t-20 artist-box">
-              <div class="col-md-12">
-                <div class="row justify-content-center" id="users-content">
-                  <%= render 'profile/small_friends_list', friends: @users %>
-                </div>
-                <div class="col-md-12">
-                  <div class="row">
-                    <div class="col-md-3"></div>
-                    <div class="col-md-6">
-                      <div id="infinite-scrolling" class="justify-content-center">
-                        <%= paginate @users, param_name: :users %>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="row justify-content-center mt-4" id="users-content">
+            <%= render 'profile/small_friends_list', friends: @users %>
+          </div>
+
+          <div class="d-flex justify-content-center mt-4">
+            <%= paginate @users, param_name: :users %>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
 <script>
-  var post_type = $('#q_post_type_cont').val();
-  if (post_type == 'social_media') {
-      $('#access_type').val('');
-      $('#access_type').parent('div').parent('div').toggle('hidden');
-  }
+    var post_type = $('#q_post_type_cont').val();
+    if (post_type == 'social_media') {
+        $('#access_type').val('');
+        $('#access_type').parent('div').parent('div').toggle('hidden');
+    }
 
-  setUpNewButton();
-  $(document).on("input", "#subject, #problem, #idea, #post_type", function () {
-      setUpNewButton();
-  });
+    setUpNewButton();
+    $(document).on("input", "#subject, #problem, #idea, #post_type", function () {
+        setUpNewButton();
+    });
 
-  function setUpNewButton() {
-      var post_type = $('#post_type').val();
-      var subject_field = $('#subject');
-      var problem_field = $('#problem');
-      var idea_field = $('#idea');
-      $('#new_button').attr('href', `/posts/new?subject_title=${subject_field.val()}&problem_title=${problem_field.val()}&idea_title=${idea_field.val()}&post_type=${post_type}`);
-  }
-  <%# just removing tag functionality, keeping the commented code for awhile in case its required again  %>
-  // $('#post_type').change(function (e) {
-  //     $(`#${e.target.value}-tag-section`).removeClass('hidden');
-  // })
+    function setUpNewButton() {
+        var post_type = $('#post_type').val();
+        $('#new_button').attr('href', `/posts/new?post_type=${post_type}`);
+    }
 
+    // Fix for the keyword search
+    $(document).ready(function () {
+        // Debug log the current value
+        console.log('Current keyword value:', $('#q_title_cont').val());
+        console.log('Current URL params:', window.location.search);
+
+        // Ensure form is correctly submitted
+        $('form').submit(function () {
+            // Log the values being submitted
+            console.log('Form submitting, keyword value:', $('#q_title_cont').val());
+            return true;
+        });
+
+        // Add loading spinner for Fediverse searches
+        $('#include_mastodon, #include_lemmy, #include_reddit, #include_bluesky, #include_peer').on('change', function () {
+            // Check if at least one fediverse option is checked
+            var anyFediverseChecked = $('#include_mastodon').is(':checked') ||
+                $('#include_lemmy').is(':checked') ||
+                $('#include_reddit').is(':checked') ||
+                $('#include_bluesky').is(':checked') ||
+                $('#include_peer').is(':checked');
+
+            // Get list of selected platforms for message
+            var selectedPlatforms = [];
+            if ($('#include_mastodon').is(':checked')) selectedPlatforms.push('Mastodon');
+            if ($('#include_lemmy').is(':checked')) selectedPlatforms.push('Lemmy');
+            if ($('#include_reddit').is(':checked')) selectedPlatforms.push('Reddit');
+            if ($('#include_bluesky').is(':checked')) selectedPlatforms.push('Bluesky');
+            if ($('#include_peer').is(':checked')) selectedPlatforms.push('Peer Instances');
+
+            // Only show the notice if there's a search term and at least one checkbox is selected
+            if (anyFediverseChecked && $('#q_title_cont').val()) {
+                // Add notice that searches with Fediverse content may take longer
+                var platformText = selectedPlatforms.length > 0 ?
+                    'Searching ' + selectedPlatforms.join(', ') + ' content may take a little longer' :
+                    'Searching Fediverse content may take a little longer';
+
+                if ($('.fediverse-notice').length === 0) {
+                    $('<div class="alert alert-info mt-2 fediverse-notice">' +
+                        '<small><i class="fas fa-info-circle"></i> ' + platformText + '</small>' +
+                        '</div>').insertAfter('#q_title_cont');
+                } else {
+                    $('.fediverse-notice small').html('<i class="fas fa-info-circle"></i> ' + platformText);
+                }
+            } else {
+                // Remove the notice if no Fediverse sources are selected
+                $('.fediverse-notice').remove();
+            }
+        });
+
+        // Debug Fediverse post images
+        $(document).on('error', '.fediverse-post-image', function () {
+            console.log('Failed to load image:', $(this).attr('src'));
+        });
+
+        // Add image loaded success log
+        $(document).on('load', '.fediverse-post-image', function () {
+            console.log('Successfully loaded image:', $(this).attr('src'));
+        });
+    });
+
+    // Initialize tooltips
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+
+        // Handle tree URL input
+        $('#tree_url').on('change', function () {
+            var url = $(this).val();
+            if (url) {
+                // Extract tree number from URL
+                var treeMatch = url.match(/\/posts\/(\d+)/);
+                if (treeMatch && treeMatch[1]) {
+                    var treeNumber = treeMatch[1];
+                    // Store the tree number in a hidden field that will be submitted with the form
+                    if (!$('#tree_number').length) {
+                        $('<input>').attr({
+                            type: 'hidden',
+                            id: 'tree_number',
+                            name: 'tree_number',
+                            value: treeNumber
+                        }).appendTo('form');
+                    } else {
+                        $('#tree_number').val(treeNumber);
+                    }
+
+                    // Show visual confirmation to the user
+                    var confirmMsg = $('<small class="text-success ml-2">Tree code extracted: ' + treeNumber + '</small>');
+                    $('#tree_url').parent().find('.text-success').remove();
+                    $('#tree_url').parent().append(confirmMsg);
+                }
+            }
+        });
+    });
+
+    $(function () {
+        // Add custom style for blue checkboxes
+        $('<style>.blue-checkbox:checked { accent-color: #007bff; }</style>').appendTo('head');
+    });
 </script>

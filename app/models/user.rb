@@ -8,6 +8,8 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :invitable, :masqueradable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable, :confirmable, :lockable, :invitable, omniauth_providers: [:google_oauth2, :facebook]
 
+  # Class accessor for current user - used for Fediverse integration
+  cattr_accessor :current
 
   after_create :add_default_credit, :create_admin_notifications, :make_friend_with_mascot, :create_user_tutorials
   before_destroy :delete_notifications
@@ -20,6 +22,8 @@ class User < ApplicationRecord
   validate :password_complexity
 
   after_create :create_ai_tokens
+
+  before_create :generate_activitypub_keys
 
   has_rich_text :about
 
@@ -93,6 +97,23 @@ class User < ApplicationRecord
   has_many :impacts, dependent: :destroy
 
   has_many :ai_tokens, dependent: :destroy
+
+  # Fediverse relationships
+  has_many :remote_follows, dependent: :destroy
+  has_many :remote_followers, -> { where(status: RemoteFollow::ACCEPTED) }, class_name: 'RemoteFollow'
+
+  # This method returns remote follows where the current user is following others
+  def outgoing_follows
+    my_actor_url = actor_id
+    remote_follows.where("follower_url = ? OR target_url IS NOT NULL", my_actor_url)
+  end
+
+  # Check if the user is following a remote account with the given actor_id
+  def follows_remote?(actor_id)
+    remote_follows.where("follower_url LIKE ?", "%/actors/#{self.id}%")
+                 .where(actor_id: actor_id)
+                 .exists?
+  end
 
   MAX_RESET_PASSWORD_ATTEMPTS = 5
   RESET_ATTEMPT_WINDOW = 24.hours
@@ -249,6 +270,25 @@ class User < ApplicationRecord
     end
   end
 
+  # Public method to generate actor_id
+  def actor_id
+    Rails.application.routes.url_helpers.activity_pub_actor_url(self, host: Rails.application.config.x.domain, protocol: 'https')
+  end
+
+  def followers_url
+    Rails.application.routes.url_helpers.activity_pub_actor_url(self, host: Rails.application.config.x.domain, protocol: 'https') + "/followers"
+  end
+
+  def mastodon_compatible_username
+    base_name = name.present? ? name : "#{first_name}#{last_name}"
+
+    username = base_name.gsub(/[^a-zA-Z0-9_]/, '_')
+
+    username = "u#{username}" unless username.match?(/^[a-zA-Z]/)
+
+    "#{username}_#{id}"
+  end
+
   private
 
   def initialize_reset_password_tracking
@@ -278,5 +318,11 @@ class User < ApplicationRecord
 
   def create_ai_tokens
     self.ai_tokens.create
+  end
+
+  def generate_activitypub_keys
+    keypair = OpenSSL::PKey::RSA.new(2048)
+    self.private_key_pem = keypair.to_pem
+    self.public_key_pem = keypair.public_key.to_pem
   end
 end
