@@ -2,6 +2,16 @@
   $(".reply_container_<%= @comment.parent_id %>").append("<%= j(render(partial: '/comments/reply', locals: { replies: [@comment], post: @comment.commentable })) %>")
   $('.reply_body').val('');
 <% else %>
-  $(".comments_container_<%= @comment.commentable.id %>").prepend("<%= j(render(partial: '/comments/list', locals: { comments: [@comment], post: @comment.commentable })) %>")
+  var commentsContainer = $(".comments_container_<%= @comment.commentable_id %>");
+  <% if @comment.commentable_type == 'Task' %>
+    commentsContainer.prepend("<%= j(render(partial: 'tasks/comments_list', locals: { comments: [@comment], task: @comment.commentable })) %>");
+  <% else %>
+    commentsContainer.prepend("<%= j(render(partial: '/comments/list', locals: { comments: [@comment], post: @comment.commentable })) %>");
+  <% end %>
+  
+  <% if @comment.commentable_type == 'Task' %>
+    $("#task-comment-form-<%= @comment.commentable_id %> #comment_body").val('');
+  <% else %>
   $('#comment_body').val('');
+  <% end %>
 <% end %>

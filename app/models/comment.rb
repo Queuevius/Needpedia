@@ -39,6 +39,8 @@ class Comment < ApplicationRecord
   end
 
   def send_email
+    return unless commentable.is_a?(Post)
+
     post = commentable
     users = post.users
     users.each do |u|
