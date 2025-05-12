@@ -372,10 +372,9 @@ Rails.application.routes.draw do
         get :outbox, to: 'actors#outbox', as: 'outbox'
         get :followers, to: 'actors#followers', as: 'followers'
         get :following, to: 'actors#following', as: 'following'
-        get :public_key, to: 'actors#public_key', as: 'public_key'
+        get :public_key, path: 'key'
       end
     end
-    get 'actors/:id/main-key', to: 'actors#public_key', as: 'actor_key'
   end
 
   # Remote follow routes

@@ -17,7 +17,7 @@ class RemoteFollowsController < ApplicationController
     end
 
     # Extract the username and domain from the input
-    account = params[:account].strip
+    account = params[:account].to_s.strip
 
     # Remove @ prefix if present
     account = account.sub(/^@/, '')
@@ -36,8 +36,19 @@ class RemoteFollowsController < ApplicationController
           target_actor_url ||= webfinger.links.find {|l| l['rel'] == 'http://webfinger.net/rel/profile-page' && l['type'] == 'application/activity+json'}&.dig('href')
           target_actor_url ||= webfinger.links.find {|l| l['rel'] == 'self'}&.dig('href')
         end
+      rescue StandardError => e
+        # Check for common error patterns that would indicate user not found
+        if e.message.include?('404') || e.message.downcase.include?('not found')
+          redirect_to new_remote_follow_path, alert: "User @#{username}@#{domain} was not found on the Fediverse. Please check the username and domain and try again."
+          return
+        else
+          redirect_to new_remote_follow_path, alert: "Unable to find @#{username}@#{domain} on the Fediverse. Please verify the account exists."
+          logger.error "WebFinger discovery failed: #{e.class} - #{e.message}"
+          return
+        end
       rescue => e
-        redirect_to new_remote_follow_path, alert: "WebFinger discovery failed: #{e.message}"
+        redirect_to new_remote_follow_path, alert: "Something went wrong when looking up @#{username}@#{domain}. Please try again later."
+        logger.error "WebFinger discovery failed: #{e.class} - #{e.message}"
         return
       end
 
@@ -46,7 +57,7 @@ class RemoteFollowsController < ApplicationController
         begin
           service = ActivityPub::RequestService.new(current_user)
           service.send_follow_request(target_actor_url)
-          redirect_to feed_path, notice: "Follow request sent to #{account}"
+          redirect_to feed_path, notice: "Follow request sent to @#{username}@#{domain}"
         rescue => e
           redirect_to new_remote_follow_path, alert: "Failed to send follow request: #{e.message}"
         end
@@ -54,7 +65,7 @@ class RemoteFollowsController < ApplicationController
         redirect_to new_remote_follow_path, alert: "Could not find ActivityPub endpoint for #{account}"
       end
     else
-      redirect_to new_remote_follow_path, alert: "Invalid account format. Must be in the format username@domain.com"
+      redirect_to new_remote_follow_path, alert: "Please enter a valid Fediverse account in the format username@domain.com"
     end
   end
-end 
+end

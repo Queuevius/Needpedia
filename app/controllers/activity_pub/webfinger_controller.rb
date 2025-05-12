@@ -17,12 +17,8 @@ module ActivityPub
       name_parts = name_and_domain.split('@')
       name = name_parts.first
       
-      # Normalize the name (replace underscores with spaces)
-      normalized_name = name.gsub('_', ' ').strip
-
-      # Try different ways to find the user
-      user = find_user_by_various_criteria(normalized_name, name)
-
+      last_part = name.split('_').last
+      user = User.find(last_part)
       # Return 404 if user is not found
       unless user
         head :not_found
@@ -50,36 +46,6 @@ module ActivityPub
       }
       
       render json: response
-    end
-    
-    private
-    
-    def find_user_by_various_criteria(normalized_name, original_name)
-      # Try various ways to find the user
-      user = User.find_by("CONCAT(first_name, ' ', last_name) = ?", normalized_name)
-      return user if user
-      
-      # Try by email
-      user = User.find_by("email LIKE ?", "#{original_name}%")
-      return user if user
-      
-      # Try by first name only
-      user = User.find_by("first_name = ?", normalized_name)
-      return user if user
-      
-      # Try by first and last name separately
-      name_parts = normalized_name.split(' ')
-      if name_parts.size >= 2
-        first_name = name_parts.first
-        last_name = name_parts.last
-        user = User.find_by(first_name: first_name, last_name: last_name)
-        return user if user
-      end
-      
-      if original_name.to_i > 0
-        user = User.find_by(id: original_name.to_i)
-        return user if user
-      end
     end
   end
 end
