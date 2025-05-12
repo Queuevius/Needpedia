@@ -5,6 +5,7 @@ class HomeController < ApplicationController
   before_action :set_tutorial
   before_action :check_otp, only: [:time_bank]
   before_action :track_guest, only: [:chatbot]
+  before_action :authenticate_user!, only: [:fediverse_feed]
 
   def index
     # @q = Post.ransack(params[:q])
@@ -16,6 +17,42 @@ class HomeController < ApplicationController
     @how_tos = HowTo.all
     @quick_post = ButtonImage.where(name: "Quick post", page_name: "Home").last
     @archive_post = ButtonImage.where(name: "Archive post", page_name: "Home").last
+  end
+
+  def fediverse_feed
+    unless current_user
+      redirect_to root_path, alert: "You need to sign in to view the Fediverse feed"
+      return
+    end
+    
+    # Get search query if provided
+    @search_query = params[:search]
+    @global_search = params[:global_search] == "1"
+    
+    # Fetch posts directly from the fediverse without storing locally
+    service = ActivityPub::FederatedTimelineService.new(current_user)
+    @federated_posts = service.fetch_posts(
+      page: params[:page], 
+      per_page: 10,
+      search_query: @search_query,
+      global_search: @global_search
+    )
+    
+    # Set appropriate title
+    @title = if @search_query.present?
+      if @global_search
+        "Global Fediverse Search: #{@search_query}"
+      else
+        "Following Search: #{@search_query}"
+      end
+    else
+      "Fediverse Feed"
+    end
+    
+    respond_to do |format|
+      format.html
+      format.js
+    end
   end
 
   def terms

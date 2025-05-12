@@ -1,0 +1,32 @@
+<% @federated_posts.each do |post| %>
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="d-flex align-items-center mb-2">
+        <div class="flex-grow-1">
+          <h6 class="mb-0">
+            <%= post[:author] %>
+          </h6>
+          <small class="text-muted">
+            <%= Time.parse(post[:published]).strftime("%B %d, %Y at %I:%M %p") %>
+          </small>
+        </div>
+      </div>
+      
+      <div class="post-content">
+        <%= sanitize post[:content] %>
+      </div>
+      
+      <div class="mt-2">
+        <a href="<%= post[:url] %>" target="_blank" class="btn btn-sm btn-outline-primary">
+          View Original Post
+        </a>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% if @federated_posts.empty? %>
+  <div class="alert alert-info">
+    No posts from your Fediverse followers yet.
+  </div>
+<% end %> 

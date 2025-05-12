@@ -225,6 +225,10 @@ class PostsController < ApplicationController
   def search_result
     @keywords = params[:q]
     @post_type = params[:post_type]
+    @tree_number = params[:tree_number]
+
+    # Set current user for federated content fetching
+    User.current = current_user if current_user
 
     if @post_type == "TaskCard"
       search_term = params.dig(:q, :title_cont).to_s.strip
@@ -235,7 +239,7 @@ class PostsController < ApplicationController
         @task_cards = Task.all.page(params[:page]).per(10)
       end
     else
-      post_query_service = PostSearchService.new(params)
+      post_query_service = PostSearchService.new(params.merge(tree_number: @tree_number))
       posts = post_query_service.filter
       @posts = Kaminari.paginate_array(posts).page(params[:posts]).per(10)
     end
@@ -246,8 +250,13 @@ class PostsController < ApplicationController
     @idea = params[:idea]
     @location_tags = params[:location_tags]
     @resource_tags = params[:resource_tags]
+    @include_mastodon = params[:include_mastodon]
+    @include_lemmy = params[:include_lemmy]
+    @include_reddit = params[:include_reddit]
+    @include_bluesky = params[:include_bluesky]
+    @include_peer = params[:include_peer]
     @users = Kaminari.paginate_array([]).page(params[:users]).per(10)
-    if @access_type.present? || @resource_tags.present? || @location_tags.present? || @problem.present? || @subject.present? || @idea.present? || @post_type.present?
+    if @access_type.present? || @resource_tags.present? || @location_tags.present? || @problem.present? || @subject.present? || @idea.present? || @post_type.present? || @tree_number.present?
       @open_advance_filters = true
       @active_tab = 'posts'
     else

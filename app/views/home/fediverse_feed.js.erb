@@ -1,0 +1,84 @@
+// Hide the loading spinner
+var loadingSpinner = document.getElementById('loading-spinner');
+if (loadingSpinner) {
+  loadingSpinner.style.display = 'none';
+}
+
+// Restore opacity to any elements that were faded
+document.querySelectorAll('.search-results-info, .row:has(.col-lg-12), .row:has(.justify-content-center)').forEach(el => {
+  if (el) el.style.opacity = '1';
+});
+
+// Update the page title to reflect search mode (global or following only)
+if (document.querySelector('h1.text-center')) {
+  document.querySelector('h1.text-center').textContent = '<%= @title %>';
+}
+
+// Update the global search checkbox state
+var globalSearchToggle = document.getElementById('global-search-toggle');
+if (globalSearchToggle) {
+  globalSearchToggle.checked = <%= @global_search %>;
+}
+
+// Replace the posts container content with updated results
+document.querySelector('.row:has(.col-lg-12)').outerHTML = '<%= j render(partial: "federated_posts", locals: { federated_posts: @federated_posts }) %>';
+
+// Update pagination
+var paginationContainer = document.querySelector('.row:has(.justify-content-center)');
+if (paginationContainer) {
+  paginationContainer.outerHTML = '<%= j render(partial: "federated_pagination", locals: { federated_posts: @federated_posts }) %>';
+}
+
+// Update search results information
+<% if @search_query.present? %>
+  // If search results info container doesn't exist, insert it
+  if (!document.querySelector('.search-results-info')) {
+    var searchContainer = document.querySelector('.row.justify-content-center.mb-3');
+    if (!searchContainer) {
+      var searchForm = document.querySelector('.row.justify-content-center.mb-4');
+      var searchInfo = document.createElement('div');
+      searchInfo.className = 'row justify-content-center mb-3 search-results-info';
+      searchInfo.innerHTML = `
+        <div class="col-md-6">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>Search results for: <%= @search_query %></strong>
+              <% if @global_search %><span class="badge badge-info ml-2">Global Search</span><% end %>
+              <% if @federated_posts.empty? %>
+                <span class="text-muted">(No results)</span>
+              <% else %>
+                <span class="text-muted">(<%= @federated_posts.total_count %> results)</span>
+              <% end %>
+            </div>
+            <a href="<%= fediverse_feed_path %>" class="btn btn-sm btn-outline-secondary">Clear Search</a>
+          </div>
+        </div>
+      `;
+      searchForm.after(searchInfo);
+    }
+    else {
+      searchContainer.innerHTML = `
+        <div class="col-md-6">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>Search results for: <%= @search_query %></strong>
+              <% if @global_search %><span class="badge badge-info ml-2">Global Search</span><% end %>
+              <% if @federated_posts.empty? %>
+                <span class="text-muted">(No results)</span>
+              <% else %>
+                <span class="text-muted">(<%= @federated_posts.total_count %> results)</span>
+              <% end %>
+            </div>
+            <a href="<%= fediverse_feed_path %>" class="btn btn-sm btn-outline-secondary">Clear Search</a>
+          </div>
+        </div>
+      `;
+    }
+  }
+<% else %>
+  // Remove search results info if it exists
+  var searchContainer = document.querySelector('.search-results-info');
+  if (searchContainer) {
+    searchContainer.remove();
+  }
+<% end %> 

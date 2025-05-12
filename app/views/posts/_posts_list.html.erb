@@ -1,91 +1,286 @@
 <div class="row">
   <% posts.each do |post| %>
-    <% if post.post_type == Post::POST_TYPE_SUBJECT %>
-      <% next if post.private? && !post.private_users&.include?(current_user) %>
-    <% end %>
+    <% if post.respond_to?(:federated?) && post.federated? %>
+      <!-- Federated Post -->
+      <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1">
+        <div class="ui-block shadow-lg rounded border-left federated-post">
+          <div class="ui-block-content federated-custom-width">
+            <div class="row">
+              <div class="col-12">
+                <div class="row">
+                  <div class="col-12">
+                    <a href="<%= post.url %>" target="_blank" class="text-decoration-none">
+                      <div class="row">
+                        <div class="col-3 federated-search-result-img d-flex align-items-center justify-content-center">
+                          <div class="federated-img-container">
+                            <% if post.image_url.present? %>
+                              <img src="<%= post.image_url %>" class="img-fluid shadow-sm border"
+                                   onerror="this.onerror=null;this.src='/assets/fediverse_icon.png';console.log('Image load error for:', '<%= post.image_url %>');"
+                                   onload="console.log('Image loaded successfully:', '<%= post.image_url %>');"
+                                   loading="lazy"
+                                   alt="<%= post.platform.capitalize %> post image">
+                            <% else %>
+                              <%= image_tag('thumbs_for_bars.png', class: 'img-fluid missing-image') %>
+                            <% end %>
+                          </div>
+                        </div>
+                        <div class="col-9 text-dark text-break overflow-auto">
+                          <div class="d-flex align-items-center mb-2 mt-3">
 
-    <% if post.post_type.in?([Post::POST_TYPE_PROBLEM]) %>
-      <% next if post.parent_subject&.private? && !post.parent_subject&.private_users&.include?(current_user) %>
-    <% end %>
-
-    <% if post.post_type == Post::POST_TYPE_IDEA %>
-      <% next if post.problem&.parent_subject&.private? && !post.problem&.parent_subject&.private_users&.include?(current_user) %>
-    <% end %>
-
-    <% if post.post_type == Post::POST_TYPE_LAYER %>
-      <% next if post.parent_post&.private? && !post.parent_post&.private_users&.include?(current_user) %>
-    <% end %>
-    <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1">
-      <div class="ui-block shadow-lg rounded">
-        <div class="ui-block-content custom-width">
-          <div class="row">
-            <div class="col-12">
-              <div class="row">
-                <div class="btn btn-link p-0 m-0 font-weight-bold">
-                  <span id="list_rating_title-<%= post.id %>" class="search-result-rating text-dark" data-toggle="modal" data-target="#rating_modal-<%= post.id %>"><%= post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %></span>
-                </div>
-                <div class="col-11">
-                  <%= link_to post_path(post.id), class: 'text-decoration-none' do %>
-                    <div class="row">
-                      <div class="col-3 search-result-img">
-                        <% if post.images.present? %>
-                          <%= image_tag(post.images.first, class: 'img-fluid') %>
-                        <% else %>
-                          <%= image_tag('thumbs_for_bars.png', class: 'img-fluid missing-image') %>
-                        <% end %>
+                          </div>
+                          <b class="pl-2"><span class="badge badge-primary mr-2"><%= post.platform  %></span>:</b> <h6><%= post.title %></h6>
+                          <p><%= truncate(strip_tags(post.content.to_s), length: 280) %></p>
+                        </div>
                       </div>
-                      <div class="col-9 text-dark text-break overflow-auto">
-                        <b class="pl-2"><%= post.post_type.titleize %>:</b> <h6><%= post.title %></h6>
-                        <p><%= truncate(strip_tags(post&.content&.to_s), length: 150) %></p>
-                      </div>
-                    </div>
-                  <% end %>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    <% else %>
+      <% if post.post_type == Post::POST_TYPE_SUBJECT %>
+        <% next if post.private? && !post.private_users&.include?(current_user) %>
+      <% end %>
 
-    <div class="modal fade" id="rating_modal-<%= post.id %>" tabindex="-1" role="dialog" aria-labelledby="rating_modal-<%= post.id %>" aria-hidden="true">
+      <% if post.post_type.in?([Post::POST_TYPE_PROBLEM]) %>
+        <% next if post.parent_subject&.private? && !post.parent_subject&.private_users&.include?(current_user) %>
+      <% end %>
 
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Rate <%= post.title %></h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body p-2" id="body-<%= post.id %>">
+      <% if post.post_type == Post::POST_TYPE_IDEA %>
+        <% next if post.problem&.parent_subject&.private? && !post.problem&.parent_subject&.private_users&.include?(current_user) %>
+      <% end %>
 
-            <%= render 'rating_modal', post: post %>
+      <% if post.post_type == Post::POST_TYPE_LAYER %>
+        <% next if post.parent_post&.private? && !post.parent_post&.private_users&.include?(current_user) %>
+      <% end %>
+      <div class="col-lg-12 col-md-12 ml-auto mr-auto pb-1">
+        <div class="ui-block shadow-lg rounded">
+          <div class="ui-block-content custom-width">
+            <div class="row">
+              <div class="col-12">
+                <div class="row">
+                  <div class="btn btn-link p-0 m-0 font-weight-bold">
+                    <span id="list_rating_title-<%= post.id %>" class="search-result-rating text-dark" data-toggle="modal" data-target="#rating_modal-<%= post.id %>"><%= post&.ratings.where.not(rating: 6)&.pluck(:rating)&.sum || 0 %></span>
+                  </div>
+                  <div class="col-11">
+                    <%= link_to post_path(post.id), class: 'text-decoration-none' do %>
+                      <div class="row">
+                        <div class="col-3 search-result-img">
+                          <% if post.images.present? %>
+                            <%= image_tag(post.images.first, class: 'img-fluid') %>
+                          <% else %>
+                            <%= image_tag('thumbs_for_bars.png', class: 'img-fluid missing-image') %>
+                          <% end %>
+                        </div>
+                        <div class="col-9 text-dark text-break overflow-auto">
+                          <b class="pl-2"><%= post.post_type.titleize %>:</b> <h6><%= post.title %></h6>
+                          <p><%= truncate(strip_tags(post&.content&.to_s), length: 150) %></p>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <script>
-        $('#popover-<%= post.id %>').popover({
-            html : true,
-            placement: 'bottom',
-            content: function() {
-                return $("#popover-content-<%= post.id %>").html();
-            }
-        });
-    </script>
+      <div class="modal fade" id="rating_modal-<%= post.id %>" tabindex="-1" role="dialog" aria-labelledby="rating_modal-<%= post.id %>" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Rate <%= post.title %></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body p-2" id="body-<%= post.id %>">
+              <%= render 'rating_modal', post: post %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+          $('#popover-<%= post.id %>').popover({
+              html : true,
+              placement: 'bottom',
+              content: function() {
+                  return $("#popover-content-<%= post.id %>").html();
+              }
+          });
+      </script>
+    <% end %>
   <% end %>
 </div>
 <style>
+  /* Federated Posts Specific Styling */
+  .federated-search-result-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 144px;
+    width: 100%;
+    overflow: hidden;
+    padding: 0;
+    margin-top: 0;
+  }
+
+  .federated-img-container {
+    width: 240px;
+    height: 144px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding-top: 0;
+    margin-top: 0;
+  }
+
+  .federated-img-container img,
+  .federated-search-result-img .img-fluid {
+    width: 240px;
+    height: 115px;  /* 80% of container height */
+    object-fit: cover;
+    border-radius: 4px;
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  /* Special handling for different image sources in federated posts */
+  .federated-img-container img[src*="/assets/"],
+  .federated-img-container img[alt*="icon"] {
+    width: 52px !important;
+    height: 52px !important;
+    object-fit: contain !important;
+  }
+
+  /* Special handling for Reddit images in federated posts */
+  .federated-post .badge-danger + b + p {
+    max-height: 100px;
+    overflow-y: auto;
+  }
+
+  /* Federated Post card styling */
+  .federated-post.ui-block {
+    background: #fff;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    margin-top: 0;
+    padding-top: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  }
+
+  .federated-custom-width {
+    min-height: 144px !important;
+    max-height: 144px !important;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  /* Remove top spacing from federated post rows */
+  .federated-post .row {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .federated-post .col-lg-12,
+  .federated-post .col-md-12 {
+    padding-top: 0;
+    margin-top: 0;
+  }
+
+  .federated-post .ui-block-content {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  /* Responsive styling for federated posts */
+  @media (max-width: 991px) {
+    .federated-search-result-img {
+      height: 120px;
+    }
+
+    .federated-img-container {
+      width: 200px;
+      height: 120px;
+    }
+
+    .federated-img-container img,
+    .federated-search-result-img .img-fluid {
+      width: 200px;
+      height: 96px;  /* 80% of container height */
+    }
+
+    /* Update responsive icon sizes */
+    .federated-img-container img[src*="/assets/"],
+    .federated-img-container img[alt*="icon"] {
+      width: 45px !important;
+      height: 45px !important;
+    }
+
+    .federated-post .custom-width {
+      min-height: 120px !important;
+      max-height: 120px !important;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .federated-search-result-img {
+      height: 96px;
+    }
+
+    .federated-img-container {
+      width: 160px;
+      height: 96px;
+    }
+
+    .federated-img-container img,
+    .federated-search-result-img .img-fluid {
+      width: 160px;
+      height: 77px;  /* 80% of container height */
+    }
+
+    /* Update responsive icon sizes */
+    .federated-img-container img[src*="/assets/"],
+    .federated-img-container img[alt*="icon"] {
+      width: 36px !important;
+      height: 36px !important;
+    }
+
+    .federated-post .custom-width {
+      min-height: 96px !important;
+      max-height: 96px !important;
+    }
+
+    .federated-post .missing-image {
+      width: 36px !important;
+      height: 36px !important;
+    }
+  }
+
+  /* Regular (non-federated) posts styling as requested */
   .missing-image {
     height: 65%;
   }
+
   @media (min-width: 766px) {
     .custom-width {
       max-height: 200px !important;
       min-height: 125px !important;
       height: 125px !important;
     }
+  }
+
+  /* Base UI block styling for all posts */
+  .ui-block {
+    background: #fff;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
   }
 </style>
