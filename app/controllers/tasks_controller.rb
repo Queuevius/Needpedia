@@ -1,7 +1,10 @@
 class TasksController < ApplicationController
   before_action :set_task, only: %i[show edit update destroy]
   # GET /tasks/1 or /tasks/1.json
-  def show; end
+  def show
+    @comments = @task.comments.includes(:user, :replies).order(created_at: :asc)
+    @new_comment = Comment.new # For the new comment form
+  end
 
   # GET /tasks/new
   def new
@@ -29,13 +32,18 @@ class TasksController < ApplicationController
 
   # PATCH/PUT /tasks/1 or /tasks/1.json
   def update
+    current_task_params = task_params.to_h
+    if current_task_params.key?(:assignee_id) && current_task_params[:assignee_id].blank?
+      current_task_params[:assignee_id] = nil
+    end
+
     respond_to do |format|
-      if @task.update(task_params)
+      if @task.update(current_task_params)
         format.html { redirect_to @task, notice: 'Task was successfully updated.' }
-        format.json { render :show, status: :ok, location: @task }
+        format.json { render json: { status: :ok, message: 'Task was successfully updated.', assignee_name: @task.assignee&.name } }
       else
         format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @task.errors, status: :unprocessable_entity }
+        format.json { render json: { errors: @task.errors.full_messages }, status: :unprocessable_entity }
       end
     end
   end
@@ -63,6 +71,6 @@ class TasksController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def task_params
-    params.require(:task).permit(:title, :description, :city, :user_id, :group_id, :skills, :hours, :status, images: [])
+    params.require(:task).permit(:title, :description, :city, :user_id, :group_id, :skills, :hours, :status, :priority, :assignee_id, :check_back_date, images: [])
   end
 end

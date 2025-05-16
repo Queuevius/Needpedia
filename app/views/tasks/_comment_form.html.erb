@@ -1,0 +1,26 @@
+<%# app/views/tasks/_comment_form.html.erb %>
+<% if current_user.present? %>
+  <%= form_with(model: new_comment, url: comments_path, local: false, html: { id: "task-comment-form-#{@task.id}" }) do |form| %>
+    <%= form.hidden_field :user_id, value: current_user.id %>
+    <%= form.hidden_field :commentable_id, value: task.id %>
+    <%= form.hidden_field :commentable_type, value: 'Task' %>
+    
+    <%# Optionally, associate with the task's group if comments should be group-specific %>
+    <% if task.group_id && current_user.default_group_id == task.group_id %>
+      <%# Or some other logic if comments are always tied to the task's group %>
+      <%# form.hidden_field :group_id, value: task.group_id %>
+    <% elsif current_user.default_group_id.to_i.positive? %>
+      <%# This was in your original comments/_form, might need context %>
+      <%# form.hidden_field :group_id, value: current_user.default_group_id %>
+    <% end %>
+
+    <div class="form-group mb-2">
+      <%= form.text_area :body, rows: 3, class: 'form-control', placeholder: 'Add a comment, question, or update...', required: true %>
+    </div>
+    <div class="form-group text-end">
+      <%= form.submit 'Post Comment', class: 'btn btn-primary btn-sm' %>
+    </div>
+  <% end %>
+<% else %>
+  <p><a href="<%= new_user_session_path %>">Log in</a> to post a comment.</p>
+<% end %> 
