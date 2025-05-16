@@ -1,0 +1,99 @@
+<div class="row">
+  <% if federated_posts.empty? %>
+    <div class="col-12">
+      <div class="alert alert-info">
+        <% if @search_query.present? %>
+          <p class="text-center">No posts match your search criteria. Try a different search term or hashtag.</p>
+        <% else %>
+          <p class="text-center">No posts from the Fediverse yet. Follow some accounts on other platforms to see their content here!</p>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <% federated_posts.each do |post| %>
+      <div class="col-lg-12 col-md-12 mb-4">
+        <div class="card shadow">
+          <div class="card-body">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <h5 class="font-weight-bold mb-1">Subject: <%= post[:subject] || "Post from Fediverse" %></h5>
+                <div class="text-muted small">
+                  Author: <span class="font-weight-bold">@<%= post[:federated_author] %></span>
+                  <br><%= Time.parse(post[:published]).strftime('%d-%m-%Y') %>
+                </div>
+              </div>
+              <div>
+                <span class="text-dark">&#9733;</span>
+              </div>
+            </div>
+            
+            <hr class="my-2">
+            
+            <div class="card-text mt-2">
+              <%= post[:content]&.html_safe %>
+            </div>
+            
+            <% if post[:hashtags].present? %>
+              <div class="mt-2">
+                <% post[:hashtags].each do |tag| %>
+                  <%= link_to "##{tag}", fediverse_feed_path(search: "##{tag}"), class: "badge badge-secondary mr-1" %>
+                <% end %>
+              </div>
+            <% end %>
+            
+            <div class="row mt-3">
+              <div class="col-12">
+                <div class="form-group">
+                  <div class="d-flex">
+                    <% 
+                      # Check if the current user has liked this post
+                      like_cache_key = "federated_like:#{current_user.id}:#{post[:id]}"
+                      user_like = Rails.cache.read(like_cache_key)
+                      like_count = Rails.cache.fetch("federated_likes:#{post[:id]}", expires_in: 30.days) { [] }.size
+                      liked_class = user_like.present? ? "btn-primary" : "btn-outline-primary"
+                      like_action = user_like.present? ? "unlike" : "like"
+                    %>
+                    
+                    <button id="like-button-<%= post[:id] %>" 
+                            class="btn btn-sm <%= liked_class %> mr-2"
+                            data-remote="true"
+                            data-action="<%= like_action %>"
+                            <%= user_like.present? ? "data-interaction-id=#{like_cache_key}" : "" %>
+                            onclick="handleLikeClick(this, '<%= post[:id] %>')">
+                      <i class="fa fa-thumbs-up"></i> <span><%= like_count %></span>
+                    </button>
+                    
+                    <div style="flex-grow: 1;">
+                      <input type="text" 
+                             id="comment-input-<%= post[:id] %>" 
+                             class="form-control" 
+                             placeholder="Add Comment" 
+                             onkeydown="if(event.key==='Enter') submitComment(this, '<%= post[:id] %>')">
+                    </div>
+                    
+                    <button class="btn btn-primary ml-2" onclick="submitComment(document.getElementById('comment-input-<%= post[:id] %>'), '<%= post[:id] %>')">
+                      Submit
+                    </button>
+                  </div>
+                  
+                  <!-- Comments Section (Hidden by default) -->
+                  <div id="comments-section-<%= post[:id] %>" class="mt-3" style="display: none;">
+                    <h6 class="mb-2"><strong>Comments</strong></h6>
+                    <div id="comments-list-<%= post[:id] %>" class="p-2 bg-light rounded">
+                      <!-- Comments will be loaded here -->
+                    </div>
+                  </div>
+                  
+                  <!-- Toggle link for comments -->
+                  <div class="text-center mt-2">
+                    <a href="javascript:void(0)" onclick="toggleComments('<%= post[:id] %>')">Show/Hide Comments</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div> 

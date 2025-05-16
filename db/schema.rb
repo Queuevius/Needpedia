@@ -492,6 +492,9 @@ ActiveRecord::Schema.define(version: 2025_05_09_100230) do
     t.datetime "deleted_at"
     t.datetime "restore_at"
     t.integer "group_id"
+    t.boolean "federated", default: false
+    t.string "federated_url"
+    t.string "federated_author"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
@@ -536,6 +539,18 @@ ActiveRecord::Schema.define(version: 2025_05_09_100230) do
     t.string "body"
     t.index ["post_id"], name: "index_related_contents_on_post_id"
     t.index ["user_id"], name: "index_related_contents_on_user_id"
+  end
+
+  create_table "remote_follows", force: :cascade do |t|
+    t.string "actor_id"
+    t.bigint "user_id", null: false
+    t.string "follower_url"
+    t.string "follower_inbox"
+    t.string "status"
+    t.string "target_url"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_remote_follows_on_user_id"
   end
 
   create_table "requests", force: :cascade do |t|
@@ -796,6 +811,12 @@ ActiveRecord::Schema.define(version: 2025_05_09_100230) do
     t.string "otp_backup_codes", array: true
     t.integer "reset_password_attempts"
     t.datetime "last_reset_attempt_at"
+    t.string "actor_id"
+    t.text "public_key_pem"
+    t.text "private_key_pem"
+    t.string "inbox_url"
+    t.string "outbox_url"
+    t.string "shared_inbox_url"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
@@ -841,6 +862,7 @@ ActiveRecord::Schema.define(version: 2025_05_09_100230) do
   add_foreign_key "questions", "questionnaires"
   add_foreign_key "ratings", "users"
   add_foreign_key "related_contents", "users"
+  add_foreign_key "remote_follows", "users"
   add_foreign_key "requests", "groups"
   add_foreign_key "requests", "users"
   add_foreign_key "services", "users"

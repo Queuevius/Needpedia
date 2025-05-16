@@ -110,11 +110,14 @@ class Post < ApplicationRecord
   scope :idea_posts, -> { where(post_type: POST_TYPE_IDEA, disabled: false) }
   scope :layer_posts, -> { where(post_type: POST_TYPE_LAYER, disabled: false) }
   scope :geo_maxing_posts, -> { where(geo_maxing: true) }
+  scope :federated_posts, -> { where(federated: true).order(created_at: :desc) }
 
   ################################ Callbacks ########################
   after_create :send_notification, if: -> { post_type == Post::POST_TYPE_LAYER || post_type.in?(CORE_POST_TYPES) }
   after_create :send_notification_to_posted_to_user, if: -> { posted_to_id.present? }
   after_create :send_notification_on_layer_create, if: -> { post_type == Post::POST_TYPE_LAYER && post_id.present? && parent_post.tracking_enabled? }
+  # after_create :deliver_to_followers
+  # after_create :federate_post, if: :should_federate?
   ############################### Methods ################################
   def parent_post_id
     subject_id
@@ -152,5 +155,25 @@ class Post < ApplicationRecord
 
   def long_is_present
     errors.add(:base, 'Longitude cant be blank, please select a location on map for GeoMaxing post') if long.blank? && geo_maxing
+  end
+
+  def deliver_to_followers
+    ActivityPub::DeliveryJob.perform_later(self)
+  end
+
+  def should_federate?
+    !federated && user.present? && !private
+  end
+
+  def federate_post
+    ActivityPub::RequestService.new(user).send_create_note(self)
+  end
+
+  def url
+    if federated
+      federated_url
+    else
+      Rails.application.routes.url_helpers.post_url(self, host: Rails.application.config.x.domain)
+    end
   end
 end

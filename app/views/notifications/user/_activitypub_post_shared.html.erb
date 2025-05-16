@@ -1,0 +1,26 @@
+<% post = notification.post %>
+<div class="notification-item">
+  <div class="notification-content">
+    <div class="notification-header">
+      <%= link_to notification.actor.name, user_path(notification.actor), class: "notification-actor" %>
+      shared a post in the Fediverse
+    </div>
+    
+    <div class="notification-body">
+      <% if post.present? %>
+        <div class="notification-post-preview">
+          <%= link_to post_path(post), class: "notification-link" do %>
+            <div class="post-title">
+              <%= truncate(strip_tags(post.content.to_s), length: 100) %>
+            </div>
+            <div class="post-meta">
+              <small class="text-muted">
+                <%= time_ago_in_words(notification.created_at) %> ago
+              </small>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div> 
