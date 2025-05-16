@@ -91,7 +91,7 @@
           <div class="card shadow-sm">
             <div class="card-body p-0">
               <div class="input-group">
-                <input type="text" class="form-control border-0" placeholder="Search fediverse...">
+                <input type="text" class="form-control border-0" placeholder="Search fediverse posts...">
                 <div class="input-group-append">
                   <button class="btn btn-primary" type="button">
                     <i class="fa fa-search"></i>
@@ -107,7 +107,7 @@
       <div class="d-flex justify-content-end mb-4">
         <a href="<%= fediverse_path %>" class="btn btn-primary"
            data-toggle="tooltip" data-placement="top" title="Follow user on Fediverse">
-          <i class="fa fa-user-plus mr-2"></i>Follow User
+          <i class="fa fa-user-plus mr-2"></i>Follow New User
         </a>
       </div>
 
@@ -126,63 +126,7 @@
         <% else %>
           <!-- Federated Posts List -->
           <div class="row">
-            <% @federated_posts.each do |post| %>
-              <div class="col-12 mb-4">
-                <div class="card shadow-sm">
-                  <div class="card-body">
-                    <!-- Post Header -->
-                    <div class="d-flex align-items-start justify-content-between mb-3">
-                      <div>
-                        <h5 class="card-title mb-1">
-                          <%= post[:subject] || "Post from Fediverse" %>
-                        </h5>
-                        <div class="text-muted small">
-                          <span class="font-weight-bold">@<%= post[:federated_author] %></span>
-                          • <%= Time.parse(post[:published]).strftime('%b %d, %Y') %>
-                        </div>
-                      </div>
-                      <div>
-                        <button class="btn btn-sm btn-outline-secondary rounded-circle">
-                          <i class="fa fa-star"></i>
-                        </button>
-                      </div>
-                    </div>
-
-                    <hr class="my-3">
-
-                    <!-- Post Content -->
-                    <div class="card-text mb-3">
-                      <%= post[:content]&.html_safe %>
-                    </div>
-
-                    <!-- Post Actions -->
-                    <div class="mt-4">
-                      <div class="d-flex align-items-center mb-3">
-                        <button class="btn btn-sm btn-outline-primary mr-2">
-                          <i class="fa fa-thumbs-up mr-1"></i> 0
-                        </button>
-                        <span class="text-muted small">Be the first to like this</span>
-                      </div>
-
-                      <!-- Comment Form -->
-                      <div class="form-group mb-0">
-                        <div class="d-flex">
-                          <div class="flex-grow-1 mr-2">
-                            <textarea class="form-control bg-light" rows="1" placeholder="Add Comment"></textarea>
-                          </div>
-                          <button class="btn btn-primary">Submit</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-          </div>
-
-          <!-- Pagination -->
-          <div class="d-flex justify-content-center my-4" id="fediverse-paginator">
-            <%= paginate @federated_posts, param_name: :federated_page %>
+            <%= render 'home/federated_posts', federated_posts: @federated_posts %>
           </div>
 
           <!-- View All Button -->

@@ -119,18 +119,11 @@ module ActivityPub
         # Create a unique ID for the Follow activity
         activity_id = "#{actor_url}/follows/#{SecureRandom.uuid}"
 
-        # Create the Follow activity - using exact format expected by Mastodon
-        follow_activity = {
-            "@context": "https://www.w3.org/ns/activitystreams",
-            "id": activity_id,
-            "type": "Follow",
-            "actor": actor_url,
-            "object": target_actor_url
-        }
-
-        # Fetch the actor's inbox URL
+        # Fetch the actor's inbox URL and CORRECT actor URL
         begin
           actor_doc = fetch_actor(target_actor_url)
+          actual_actor_url = actor_doc["id"]
+          actual_actor_url ||= target_actor_url
 
           inbox_url = actor_doc["inbox"]
 
@@ -139,14 +132,23 @@ module ActivityPub
             raise "No inbox URL found for #{target_actor_url}"
           end
 
+          # Create the Follow activity USING THE CORRECT ACTOR URL
+          follow_activity = {
+              "@context": "https://www.w3.org/ns/activitystreams",
+              "id": activity_id,
+              "type": "Follow",
+              "actor": actor_url,
+              "object": actual_actor_url  # Use the ACTUAL actor URL from the document
+          }
+
           # Post the Follow activity to the inbox
           result = post_to_inbox(inbox_url, follow_activity)
 
           # Create a RemoteFollow record to track this outgoing follow request
-          remote_follow = @user.remote_follows.find_or_initialize_by(actor_id: target_actor_url)
+          remote_follow = @user.remote_follows.find_or_initialize_by(actor_id: actual_actor_url)
           remote_follow.follower_url = actor_url
           remote_follow.follower_inbox = get_actor_url(@user) + "/inbox"
-          remote_follow.target_url = target_actor_url
+          remote_follow.target_url = actual_actor_url
           remote_follow.status = RemoteFollow::PENDING
           remote_follow.save!
 

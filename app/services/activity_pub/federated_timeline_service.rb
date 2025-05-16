@@ -2,6 +2,8 @@ module ActivityPub
   class FederatedTimelineService
     require 'rest-client'
     require 'kaminari'
+    require 'nokogiri'
+    require 'securerandom'
     
     # List of popular Fediverse instances to include in global search
     POPULAR_INSTANCES = [
@@ -354,101 +356,136 @@ module ActivityPub
     
     def fetch_outbox_posts(outbox_url)
       # Fetch the outbox
-      response = RestClient.get(outbox_url, { 
-        'Accept' => 'application/activity+json',
-        'User-Agent' => 'NeedpediaBot/1.0'
-      })
-      
-      if response.code == 200
-        outbox_data = JSON.parse(response.body)
-        
-        # Handle different outbox structures (OrderedCollection, etc.)
-        items = []
-        
-        if outbox_data["type"] == "OrderedCollection" || outbox_data["type"] == "Collection"
-          if outbox_data["orderedItems"].present?
-            # Some servers include items directly
-            items = outbox_data["orderedItems"]
-          elsif outbox_data["first"].present?
-            # Some servers provide a URL to the first page
-            first_page_url = outbox_data["first"]
-            if first_page_url.is_a?(String)
-              first_page_response = RestClient.get(first_page_url, { 
-                'Accept' => 'application/activity+json',
-                'User-Agent' => 'NeedpediaBot/1.0'
-              })
-              
-              if first_page_response.code == 200
-                first_page_data = JSON.parse(first_page_response.body)
-                if first_page_data["orderedItems"].present?
-                  items = first_page_data["orderedItems"]
-                end
-              end
-            elsif first_page_url.is_a?(Hash) && first_page_url["orderedItems"].present?
-              items = first_page_url["orderedItems"]
-            end
-          end
+      posts = []
+      if outbox_url.include?("pixelfed.social")
+        response = RestClient.get(outbox_url, {
+          'User-Agent' => 'NeedpediaBot/1.0'
+        })
+
+        html = Nokogiri::HTML(response.body)
+        profile_element = html.at_css('profile[profile-id]')
+        if profile_element
+          profile_id = profile_element['profile-id']
+          outbox_url = "https://pixelfed.social/api/pixelfed/v1/accounts/#{profile_id}/statuses?limit=9&pinned=true&only_media=true"
         end
-        
-        # Process and extract actual posts (Notes)
-        posts = []
-        
-        items.each do |item|
-          # Handle both Create activities and direct Note objects
-          if item["type"] == "Create" && item["object"].present?
-            object = item["object"]
-            
-            # If object is a URL, fetch it
-            if object.is_a?(String)
-              begin
-                object_response = RestClient.get(object, { 
-                  'Accept' => 'application/activity+json',
-                  'User-Agent' => 'NeedpediaBot/1.0'
-                })
-                
-                if object_response.code == 200
-                  object = JSON.parse(object_response.body)
-                end
-              rescue => e
-                next
-              end
-            end
-            
-            # Only include Note objects
-            if object["type"] == "Note"
-              post = {
-                id: object["id"],
-                content: object["content"],
-                author: item["actor"],
-                federated_author: extract_username_from_url(item["actor"]),
-                published: Time.parse(object["published"] || item["published"]).iso8601,
-                url: object["url"] || object["id"],
-                hashtags: extract_hashtags(object["content"]),
-                image_url: object["media_attachments"]&.first&.dig('preview_url') || object["media_attachments"]&.first&.dig('url')
-              }
-              
-              posts << post
-            end
-          elsif item["type"] == "Note"
-            # Direct Note object
+
+
+        response = RestClient.get(outbox_url, { 
+          'Accept' => 'application/activity+json',
+          'User-Agent' => 'NeedpediaBot/1.0'
+        })
+        if response.code == 200
+          JSON.parse(response.body).each do |item|
             post = {
-              id: item["id"],
-              content: item["content"],
-              author: item["attributedTo"],
-              federated_author: extract_username_from_url(item["attributedTo"]),
-              published: Time.parse(item["published"]).iso8601,
-              url: item["url"] || item["id"],
-              hashtags: extract_hashtags(item["content"]),
-              image_url: item["media_attachments"]&.first&.dig('preview_url') || item["media_attachments"]&.first&.dig('url')
+                id: item["id"],
+                content: item["content"],
+                author: item["account"]["username"],                      # Using account.username for profile-username
+                federated_author: extract_username_from_url(item["uri"]), # Using uri as actor since actor isn't in the JSON
+                published: Time.parse(item["published"] || item["created_at"]).iso8601,
+                url: item["url"] || item["id"],
+                hashtags: extract_hashtags(item["content"]),
+                image_url: item["media_attachments"]&.first&.dig('preview_url') || item["media_attachments"]&.first&.dig('url')
             }
-            
+
             posts << post
           end
+          return posts
         end
-        
-        return posts
+
       else
-        raise "Failed to fetch outbox: #{response.code}"
+        response = RestClient.get(outbox_url, {
+            'Accept' => 'application/activity+json',
+            'User-Agent' => 'NeedpediaBot/1.0'
+        })
+
+        if response.code == 200
+          outbox_data = JSON.parse(response.body)
+
+          # Handle different outbox structures (OrderedCollection, etc.)
+          items = []
+
+          if outbox_data["type"] == "OrderedCollection" || outbox_data["type"] == "Collection"
+            if outbox_data["orderedItems"].present?
+              # Some servers include items directly
+              items = outbox_data["orderedItems"]
+            elsif outbox_data["first"].present?
+              # Some servers provide a URL to the first page
+              first_page_url = outbox_data["first"]
+              if first_page_url.is_a?(String)
+                first_page_response = RestClient.get(first_page_url, {
+                    'Accept' => 'application/activity+json',
+                    'User-Agent' => 'NeedpediaBot/1.0'
+                })
+
+                if first_page_response.code == 200
+                  first_page_data = JSON.parse(first_page_response.body)
+                  if first_page_data["orderedItems"].present?
+                    items = first_page_data["orderedItems"]
+                  end
+                end
+              elsif first_page_url.is_a?(Hash) && first_page_url["orderedItems"].present?
+                items = first_page_url["orderedItems"]
+              end
+            end
+          end
+
+          items.each do |item|
+            # Handle both Create activities and direct Note objects
+            if item["type"] == "Create" && item["object"].present?
+              object = item["object"]
+
+              # If object is a URL, fetch it
+              if object.is_a?(String)
+                begin
+                  object_response = RestClient.get(object, {
+                      'Accept' => 'application/activity+json',
+                      'User-Agent' => 'NeedpediaBot/1.0'
+                  })
+
+                  if object_response.code == 200
+                    object = JSON.parse(object_response.body)
+                  end
+                rescue => e
+                  next
+                end
+              end
+
+              # Only include Note objects
+              if object["type"] == "Note"
+                post = {
+                    id: object["id"],
+                    content: object["content"],
+                    author: item["actor"],
+                    federated_author: extract_username_from_url(item["actor"]),
+                    published: Time.parse(object["published"] || item["published"]).iso8601,
+                    url: object["url"] || object["id"],
+                    hashtags: extract_hashtags(object["content"]),
+                    image_url: object["media_attachments"]&.first&.dig('preview_url') || object["media_attachments"]&.first&.dig('url')
+                }
+
+                posts << post
+              end
+            elsif item["type"] == "Note"
+              # Direct Note object
+              post = {
+                  id: item["id"],
+                  content: item["content"],
+                  author: item["attributedTo"],
+                  federated_author: extract_username_from_url(item["attributedTo"]),
+                  published: Time.parse(item["published"]).iso8601,
+                  url: item["url"] || item["id"],
+                  hashtags: extract_hashtags(item["content"]),
+                  image_url: item["media_attachments"]&.first&.dig('preview_url') || item["media_attachments"]&.first&.dig('url')
+              }
+
+              posts << post
+            end
+          end
+
+          return posts
+        else
+          raise "Failed to fetch outbox: #{response.code}"
+        end
       end
     end
     
@@ -512,4 +549,4 @@ module ActivityPub
       end
     end
   end
-end 
+end
