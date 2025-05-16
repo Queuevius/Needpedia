@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container mb-2">
   <div class="row">
     <div class="col-12 mb-4">
       <h1 class="text-center"><%= @title %></h1>
@@ -20,9 +20,6 @@
           <div class="small text-muted">
             Example searches: #technology, climate change, @username
           </div>
-          <div class="custom-control custom-switch">
-            <%= f.check_box :global_search, id: "global-search-toggle", class: "custom-control-input", checked: @global_search %>
-            <%= f.label :global_search, "Search All Fediverse", class: "custom-control-label", for: "global-search-toggle" %>
         </div>
       </div>
       <% end %>
@@ -37,39 +34,7 @@
       </div>
     </div>
     <p class="mt-3 loading-message">Searching the Fediverse...</p>
-              </div>
-              
-  <style>
-    .loading-container {
-      background-color: rgba(248, 249, 250, 0.7);
-      border-radius: 10px;
-      padding: 30px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s ease;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-    
-    .spinner {
-      display: flex;
-      justify-content: center;
-    }
-    
-    .loading-message {
-      color: #495057;
-      font-weight: 500;
-    }
-    
-    @keyframes fadeInOut {
-      0%, 100% { opacity: 0.6; }
-      50% { opacity: 1; }
-    }
-    
-    .spinner-border {
-      border-width: 0.25em;
-      animation: spinner-border 1s linear infinite, fadeInOut 2s ease-in-out infinite;
-    }
-  </style>
+  </div>
 
   <% if @search_query.present? %>
     <div class="row justify-content-center mb-3 search-results-info">
@@ -91,15 +56,41 @@
   <% end %>
 
   <%= render partial: "federated_posts", locals: { federated_posts: @federated_posts } %>
-  
+
   <%= render partial: "federated_pagination", locals: { federated_posts: @federated_posts } %>
-  
-  <div class="row mt-4">
-    <div class="col-12 text-center">
-      <a href="<%= fediverse_path %>" class="btn btn-primary">Connect to Fediverse</a>
-    </div>
-  </div>
-</div> 
+</div>
+
+<style>
+  .loading-container {
+    background-color: rgba(248, 249, 250, 0.7);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .spinner {
+    display: flex;
+    justify-content: center;
+  }
+
+  .loading-message {
+    color: #495057;
+    font-weight: 500;
+  }
+
+  @keyframes fadeInOut {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  .spinner-border {
+    border-width: 0.25em;
+    animation: spinner-border 1s linear infinite, fadeInOut 2s ease-in-out infinite;
+  }
+</style>
 
 <script>
   function toggleComments(postId) {
@@ -111,12 +102,12 @@
       commentsSection.style.display = 'none';
     }
   }
-  
+
   function loadComments(postId) {
     // Get comments from the cache
     var commentsListElement = document.getElementById('comments-list-' + postId);
     var comments = JSON.parse(localStorage.getItem('federated_comments_' + postId) || '[]');
-    
+
     if (comments.length === 0) {
       commentsListElement.innerHTML = '<p class="text-center text-muted">No comments yet. Be the first to comment!</p>';
     } else {
@@ -129,7 +120,7 @@
       });
     }
   }
-  
+
   function submitComment(inputElement, postId) {
     var commentText = inputElement.value.trim();
     if (commentText) {
@@ -140,10 +131,10 @@
         text: commentText
       });
       localStorage.setItem('federated_comments_' + postId, JSON.stringify(comments));
-      
+
       // Clear the input
       inputElement.value = '';
-      
+
       // Reload comments if section is visible
       var commentsSection = document.getElementById('comments-section-' + postId);
       if (commentsSection.style.display !== 'none') {
@@ -151,19 +142,19 @@
       }
     }
   }
-  
+
   function handleLikeClick(button, postId) {
     var action = button.getAttribute('data-action');
     var likeCountElement = button.querySelector('span');
     var likeCount = parseInt(likeCountElement.textContent);
-    
+
     if (action === 'like') {
       // "Like" the post (demo only - no backend)
       likeCount++;
       button.classList.remove('btn-outline-primary');
       button.classList.add('btn-primary');
       button.setAttribute('data-action', 'unlike');
-      
+
       // Store in localStorage for demo
       var likes = JSON.parse(localStorage.getItem('federated_likes_' + postId) || '[]');
       if (!likes.includes('current_user')) {
@@ -176,7 +167,7 @@
       button.classList.remove('btn-primary');
       button.classList.add('btn-outline-primary');
       button.setAttribute('data-action', 'like');
-      
+
       // Remove from localStorage for demo
       var likes = JSON.parse(localStorage.getItem('federated_likes_' + postId) || '[]');
       var userIndex = likes.indexOf('current_user');
@@ -185,7 +176,7 @@
         localStorage.setItem('federated_likes_' + postId, JSON.stringify(likes));
       }
     }
-    
+
     likeCountElement.textContent = likeCount;
   }
 
@@ -196,14 +187,14 @@
     const searchForm = document.getElementById('fediverse-search-form');
     const loadingSpinner = document.getElementById('loading-spinner');
     let debounceTimer;
-    
+
     // Add tooltip or help text for global search toggle
     const toggleLabel = document.querySelector('label[for="global-search-toggle"]');
     if (toggleLabel) {
       toggleLabel.setAttribute('title', 'Search across the entire Fediverse, not just accounts you follow');
       toggleLabel.style.cursor = 'help';
     }
-    
+
     // Show loading spinner when form is submitted
     if (searchForm) {
       searchForm.addEventListener('ajax:before', function() {
@@ -214,14 +205,14 @@
             if (el) el.style.opacity = '0.4';
             if (el) el.style.transition = 'opacity 0.3s';
           });
-          
+
           // Show the spinner with animation
           loadingSpinner.style.display = 'block';
           loadingSpinner.style.opacity = '0';
           setTimeout(() => {
             loadingSpinner.style.opacity = '1';
           }, 10);
-          
+
           // Customize the message based on search type
           const messageEl = loadingSpinner.querySelector('.loading-message');
           if (messageEl) {
@@ -243,7 +234,7 @@
           }
         }
       });
-      
+
       searchForm.addEventListener('ajax:complete', function() {
         // Hide loading spinner
         if (loadingSpinner) {
@@ -254,7 +245,7 @@
         }
       });
     }
-    
+
     // Listen for changes on the global search toggle
     if (globalToggle) {
       globalToggle.addEventListener('change', function() {
@@ -266,10 +257,10 @@
         }
       });
     }
-    
+
     searchInput.addEventListener('input', function() {
       clearTimeout(debounceTimer);
-      
+
       // Only trigger search if the input has at least 2 characters or is empty
       if (this.value.length > 2 || this.value.length === 0) {
         debounceTimer = setTimeout(() => {
@@ -279,7 +270,7 @@
         }, 500); // Wait 500ms after typing stops before searching
       }
     });
-    
+
     // Add click handlers to hashtags for easy filtering
     document.body.addEventListener('click', function(e) {
       if (e.target.classList.contains('badge-secondary') && e.target.textContent.startsWith('#')) {
@@ -291,4 +282,4 @@
       }
     });
   });
-</script> 
+</script>
