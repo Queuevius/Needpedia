@@ -2,176 +2,184 @@
 
   <!-- Available Tasks Section -->
   <div class="task-section available-section mb-4">
-    <div class="section-header d-flex justify-content-between align-items-center" id="available-header">
+    <div class="section-header d-flex justify-content-between align-items-center"
+         id="available-header" data-toggle="collapse" data-target="#available-tasks" aria-expanded="false">
       <h3><i class="bi bi-list-check"></i> Available Tasks</h3>
       <div class="d-flex align-items-center">
         <span class="task-count badge bg-primary"><%= tasks.select {|task| task.status == 'Available Tasks'}.count %></span>
+        <i class="bi bi-chevron-down toggle-icon"></i>
       </div>
     </div>
+    <div class="collapse show" id="available-tasks">
+      <div class="task-grid">
+        <div class="row">
+          <% available_tasks = tasks.select {|task| task.status == 'Available Tasks'} %>
+          <% available_tasks.first(8).each do |task| %>
+            <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">
+              <div class="task-card" data-toggle="modal" data-target="#taskModal<%= task.id %>">
+                <h5 class="task-title text-truncate" title="<%= task.title %>">
+                  <%= task.title %>
+                </h5>
 
-    <div class="task-grid" id="available-tasks">
-      <div class="row">
-        <% available_tasks = tasks.select {|task| task.status == 'Available Tasks'} %>
-        <% available_tasks.first(8).each do |task| %>
-          <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">
-            <div class="task-card" data-toggle="modal" data-target="#taskModal<%= task.id %>">
-              <h5 class="task-title text-truncate" title="<%= task.title %>">
-                <%= task.title %>
-              </h5>
+                <% if task.images.attached? %>
+                  <div class="task-image-preview">
+                    <%= image_tag task.images.first, class: "img-fluid rounded", alt: "#{task.title} Image" %>
+                    <% if task.images.count > 1 %>
+                      <span class="image-count">+<%= task.images.count - 1 %></span>
+                    <% end %>
+                  </div>
+                <% end %>
 
-              <% if task.images.attached? %>
-                <div class="task-image-preview">
-                  <%= image_tag task.images.first, class: "img-fluid rounded", alt: "#{task.title} Image" %>
-                  <% if task.images.count > 1 %>
-                    <span class="image-count">+<%= task.images.count - 1 %></span>
-                  <% end %>
+                <div class="task-meta">
+                  <% priority_class = case task.priority
+                                      when 'Casual' then
+                                        'priority-casual'
+                                      when 'Pressing' then
+                                        'priority-pressing'
+                                      when 'Urgent' then
+                                        'priority-urgent'
+                                      end %>
+                  <span class="priority-pill <%= priority_class %>"><%= task.priority %></span>
+                  <span class="hours-badge"><%= number_with_precision(task.hours, precision: 1) %> hrs</span>
                 </div>
-              <% end %>
+                <% if task.check_back_date? %>
+                  <div class="task-check-back-date mb-2">
+                    <small class="text-muted">
+                      <i class="bi bi-calendar-check"></i> Est. Finish: <%= task.check_back_date.strftime("%b %d, %Y") %>
+                    </small>
+                  </div>
+                <% end %>
 
-              <div class="task-meta">
-                <% priority_class = case task.priority
-                                    when 'Casual' then
-                                      'priority-casual'
-                                    when 'Pressing' then
-                                      'priority-pressing'
-                                    when 'Urgent' then
-                                      'priority-urgent'
-                                    end %>
-                <span class="priority-pill <%= priority_class %>"><%= task.priority %></span>
-                <span class="hours-badge"><%= number_with_precision(task.hours, precision: 1) %> hrs</span>
-              </div>
-              <% if task.check_back_date? %>
-                <div class="task-check-back-date mb-2">
-                  <small class="text-muted">
-                    <i class="bi bi-calendar-check"></i> Est. Finish: <%= task.check_back_date.strftime("%b %d, %Y") %>
-                  </small>
-                </div>
-              <% end %>
+                <p class="task-description text-left" title="<%= task.description %>">
+                  <%= truncate(task.description, length: 100) %>
+                </p>
 
-              <p class="task-description text-left" title="<%= task.description %>">
-                <%= truncate(task.description, length: 100) %>
-              </p>
-
-              <div class="task-footer">
-                <span class="owner">
-                  <% if task.user.profile_image.attached? %>
-                    <%= image_tag task.user.profile_image, class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
-                  <% else %>
-                    <%= image_tag "profile.png", class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
-                  <% end %>
-                  <%= task.user.name %>
-                </span>
-                <% if task.assignee %>
-                  <div class="assignee-display-on-card">
-                    <% if task.assignee.profile_image.attached? %>
-                      <%= image_tag task.assignee.profile_image, class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                <div class="task-footer">
+                  <span class="owner">
+                    <% if task.user.profile_image.attached? %>
+                      <%= image_tag task.user.profile_image, class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
                     <% else %>
                       <%= image_tag "profile.png", class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
                     <% end %>
-                    <small class="text-muted">Assigned: <%= task.assignee.name %></small>
-                  </div>
-                <% end %>
-                <% if task.skills.any? %>
-                  <div class="skills-preview">
-                    <% task.skills.first(2).each do |skill| %>
-                      <span class="skill-pill"><%= skill %></span>
-                    <% end %>
-                    <% if task.skills.length > 2 %>
-                      <span class="more-skills">+<%= task.skills.length - 2 %></span>
-                    <% end %>
-                  </div>
-                <% end %>
+                    <%= task.user.name %>
+                  </span>
+                  <% if task.assignee %>
+                    <div class="assignee-display-on-card">
+                      <% if task.assignee.profile_image.attached? %>
+                        <%= image_tag task.assignee.profile_image, class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                      <% else %>
+                        <%= image_tag "profile.png", class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                      <% end %>
+                      <small class="text-muted">Assigned: <%= task.assignee.name %></small>
+                    </div>
+                  <% end %>
+                  <% if task.skills.any? %>
+                    <div class="skills-preview">
+                      <% task.skills.first(2).each do |skill| %>
+                        <span class="skill-pill"><%= skill %></span>
+                      <% end %>
+                      <% if task.skills.length > 2 %>
+                        <span class="more-skills">+<%= task.skills.length - 2 %></span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
               </div>
             </div>
-          </div>
-        <% end %>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Under Progress Tasks Section -->
   <div class="task-section progress-section mb-4">
-    <div class="section-header d-flex justify-content-between align-items-center" id="progress-header">
+    <div class="section-header d-flex justify-content-between align-items-center"
+         id="progress-header" data-toggle="collapse" data-target="#progress-tasks" aria-expanded="true">
       <h3><i class="bi bi-gear-fill"></i> Under Progress</h3>
-      <span class="task-count badge bg-warning"><%= tasks.select {|task| task.status == 'Under Progress'}.count %></span>
+      <div class="d-flex align-items-center">
+        <span class="task-count badge bg-warning me-2"><%= tasks.select {|task| task.status == 'Under Progress'}.count %></span>
+        <i class="bi bi-chevron-down toggle-icon"></i>
+      </div>
     </div>
+    <div class="collapse show" id="progress-tasks">
+      <div class="task-grid">
+        <div class="row">
+          <% progress_tasks = tasks.select {|task| task.status == 'Under Progress'} %>
+          <% progress_tasks.first(8).each do |task| %>
+            <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">
+              <div class="task-card" data-toggle="modal" data-target="#taskModal<%= task.id %>">
+                <h5 class="task-title text-truncate" title="<%= task.title %>">
+                  <%= task.title %>
+                </h5>
 
-    <div class="task-grid" id="progress-tasks">
-      <div class="row">
-        <% progress_tasks = tasks.select {|task| task.status == 'Under Progress'} %>
-        <% progress_tasks.first(8).each do |task| %>
-          <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">
-            <div class="task-card" data-toggle="modal" data-target="#taskModal<%= task.id %>">
-              <h5 class="task-title text-truncate" title="<%= task.title %>">
-                <%= task.title %>
-              </h5>
+                <% if task.images.attached? %>
+                  <div class="task-image-preview">
+                    <%= image_tag task.images.first, class: "img-fluid rounded", alt: "#{task.title} Image" %>
+                    <% if task.images.count > 1 %>
+                      <span class="image-count">+<%= task.images.count - 1 %></span>
+                    <% end %>
+                  </div>
+                <% end %>
 
-              <% if task.images.attached? %>
-                <div class="task-image-preview">
-                  <%= image_tag task.images.first, class: "img-fluid rounded", alt: "#{task.title} Image" %>
-                  <% if task.images.count > 1 %>
-                    <span class="image-count">+<%= task.images.count - 1 %></span>
-                  <% end %>
+                <div class="task-meta">
+                  <% priority_class = case task.priority
+                                      when 'Casual' then
+                                        'priority-casual'
+                                      when 'Pressing' then
+                                        'priority-pressing'
+                                      when 'Urgent' then
+                                        'priority-urgent'
+                                      end %>
+                  <span class="priority-pill <%= priority_class %>"><%= task.priority %></span>
+                  <span class="hours-badge"><%= number_with_precision(task.hours, precision: 1) %> hrs</span>
                 </div>
-              <% end %>
+                <% if task.check_back_date? %>
+                  <div class="task-check-back-date mb-2">
+                    <small class="text-muted">
+                      <i class="bi bi-calendar-check"></i> Est. Finish: <%= task.check_back_date.strftime("%b %d, %Y") %>
+                    </small>
+                  </div>
+                <% end %>
 
-              <div class="task-meta">
-                <% priority_class = case task.priority
-                                    when 'Casual' then
-                                      'priority-casual'
-                                    when 'Pressing' then
-                                      'priority-pressing'
-                                    when 'Urgent' then
-                                      'priority-urgent'
-                                    end %>
-                <span class="priority-pill <%= priority_class %>"><%= task.priority %></span>
-                <span class="hours-badge"><%= number_with_precision(task.hours, precision: 1) %> hrs</span>
-              </div>
-              <% if task.check_back_date? %>
-                <div class="task-check-back-date mb-2">
-                  <small class="text-muted">
-                    <i class="bi bi-calendar-check"></i> Est. Finish: <%= task.check_back_date.strftime("%b %d, %Y") %>
-                  </small>
-                </div>
-              <% end %>
+                <p class="task-description text-left" title="<%= task.description %>">
+                  <%= truncate(task.description, length: 100) %>
+                </p>
 
-              <p class="task-description text-left" title="<%= task.description %>">
-                <%= truncate(task.description, length: 100) %>
-              </p>
-
-              <div class="task-footer">
-                <span class="owner">
-                  <% if task.user.profile_image.attached? %>
-                    <%= image_tag task.user.profile_image, class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
-                  <% else %>
-                    <%= image_tag "profile.png", class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
-                  <% end %>
-                  <%= task.user.name %>
-                </span>
-                <% if task.assignee %>
-                  <div class="assignee-display-on-card">
-                    <% if task.assignee.profile_image.attached? %>
-                      <%= image_tag task.assignee.profile_image, class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                <div class="task-footer">
+                  <span class="owner">
+                    <% if task.user.profile_image.attached? %>
+                      <%= image_tag task.user.profile_image, class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
                     <% else %>
                       <%= image_tag "profile.png", class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
                     <% end %>
-                    <small class="text-muted">Assigned: <%= task.assignee.name %></small>
-                  </div>
-                <% end %>
-                <% if task.skills.any? %>
-                  <div class="skills-preview">
-                    <% task.skills.first(2).each do |skill| %>
-                      <span class="skill-pill"><%= skill %></span>
-                    <% end %>
-                    <% if task.skills.length > 2 %>
-                      <span class="more-skills">+<%= task.skills.length - 2 %></span>
-                    <% end %>
-                  </div>
-                <% end %>
+                    <%= task.user.name %>
+                  </span>
+                  <% if task.assignee %>
+                    <div class="assignee-display-on-card">
+                      <% if task.assignee.profile_image.attached? %>
+                        <%= image_tag task.assignee.profile_image, class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                      <% else %>
+                        <%= image_tag "profile.png", class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                      <% end %>
+                      <small class="text-muted">Assigned: <%= task.assignee.name %></small>
+                    </div>
+                  <% end %>
+                  <% if task.skills.any? %>
+                    <div class="skills-preview">
+                      <% task.skills.first(2).each do |skill| %>
+                        <span class="skill-pill"><%= skill %></span>
+                      <% end %>
+                      <% if task.skills.length > 2 %>
+                        <span class="more-skills">+<%= task.skills.length - 2 %></span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
               </div>
             </div>
-          </div>
-        <% end %>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>
@@ -414,21 +422,23 @@
                       <span>Not assigned.</span>
                     <% end %>
                   </div>
-                  <div class="assignment-form-container d-flex align-items-center mt-3">
-                    <select class="form-control assignment-select mr-2" data-task-id="<%= task.id %>">
-                      <option value="">Unassign</option>
-                      <% task.group.members.each do |member| %>
-                        <option value="<%= member.id %>"
-                                <%= 'selected' if task.assignee_id == member.id %>
-                                data-profile-image="<%= member.profile_image.attached? ? url_for(member.profile_image) : asset_path('profile.png') %>">
-                          <%= member.name %>
-                        </option>
-                      <% end %>
-                    </select>
-                    <button class="btn btn-sm btn-outline-primary assign-task-btn" data-task-id="<%= task.id %>">
-                      Assign
-                    </button>
-                  </div>
+                  <% if current_user&.present? && current_user&.id == task.user_id %>
+                    <div class="assignment-form-container d-flex align-items-center mt-3">
+                      <select class="form-control assignment-select mr-2" data-task-id="<%= task.id %>">
+                        <option value="">Unassign</option>
+                        <% task.group.members.each do |member| %>
+                          <option value="<%= member.id %>"
+                                  <%= 'selected' if task.assignee_id == member.id %>
+                                  data-profile-image="<%= member.profile_image.attached? ? url_for(member.profile_image) : asset_path('profile.png') %>">
+                            <%= member.name %>
+                          </option>
+                        <% end %>
+                      </select>
+                      <button class="btn btn-sm btn-outline-primary assign-task-btn" data-task-id="<%= task.id %>">
+                        Assign
+                      </button>
+                    </div>
+                  <% end %>
                   <div class="assignment-message mt-2" id="assignment-message-<%= task.id %>"></div>
                 </div>
               </div>
@@ -1326,4 +1336,79 @@
             });
         }, 500);
     });
+    // Initialize Select2 on document ready
+  $(document).ready(function() {
+    // Initialize Select2 for assignment select dropdowns
+    $(".assignment-select").select2({
+      width: '100%',
+      placeholder: "Select a person to assign",
+      allowClear: true,
+      templateResult: formatAssigneeOption,
+      templateSelection: formatAssigneeSelection
+    });
+
+    // Custom formatting for dropdown options with profile image
+    function formatAssigneeOption(assignee) {
+      if (!assignee.id) { return assignee.text; }
+
+      var profileImage = $(assignee.element).data('profile-image');
+
+      if(!profileImage) {
+        return assignee.text;
+      }
+
+      var $assignee = $(
+        '<div class="assignee-option d-flex align-items-center">' +
+          '<img src="' + profileImage + '" class="assignee-img mr-2" style="width: 25px; height: 25px; border-radius: 50%;" />' +
+          '<span>' + assignee.text + '</span>' +
+        '</div>'
+      );
+
+      return $assignee;
+    }
+
+    // Custom formatting for selected option
+    function formatAssigneeSelection(assignee) {
+      if (!assignee.id) { return assignee.text; }
+
+      var profileImage = $(assignee.element).data('profile-image');
+
+      if(!profileImage) {
+        return assignee.text;
+      }
+
+      var $selection = $(
+        '<div class="d-flex align-items-center">' +
+          '<img src="' + profileImage + '" class="assignee-img mr-2" style="width: 20px; height: 20px; border-radius: 50%;" />' +
+          '<span>' + assignee.text + '</span>' +
+        '</div>'
+      );
+
+      return $selection;
+    }
+
+    // Handle assign button clicks
+    $(".assign-task-btn").on("click", function() {
+      var taskId = $(this).data("task-id");
+      var assigneeId = $(".assignment-select[data-task-id='" + taskId + "']").val();
+
+      // Send AJAX request to assign the task
+      $.ajax({
+        url: "/tasks/" + taskId + "/assign",
+        method: "PATCH",
+        data: { assignee_id: assigneeId },
+        success: function(response) {
+          // Show success notification if needed
+          if(response.success) {
+            // You can add a toast notification here
+            console.log("Task assigned successfully");
+          }
+        },
+        error: function(error) {
+          console.error("Error assigning task:", error);
+          // Show error notification if needed
+        }
+      });
+    });
+  });
 </script>
