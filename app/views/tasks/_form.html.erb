@@ -30,7 +30,7 @@
   <!-- Skills field -->
   <div class="form-group">
     <%= form.label :skills, "Skills (comma separated)" %>
-    <%= form.text_field :skills, class: 'form-control', placeholder: "Enter skills like: JavaScript, Ruby, UI/UX" %>
+    <%= form.text_field :skills, value: task.skills.is_a?(Array) ? task.skills.join(', ') : task.skills, class: 'form-control', placeholder: "Enter skills like: JavaScript, Ruby, UI/UX" %>
   </div>
 
   <!-- status field -->

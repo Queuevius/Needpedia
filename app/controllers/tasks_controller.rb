@@ -71,6 +71,12 @@ class TasksController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def task_params
-    params.require(:task).permit(:title, :description, :city, :user_id, :group_id, :skills, :hours, :status, :priority, :assignee_id, :check_back_date, images: [])
+    permitted = params.require(:task).permit(
+        :title, :description, :city, :user_id, :group_id, :hours, :status,
+        :priority, :assignee_id, :check_back_date, images: []
+    )
+    # Convert the comma-separated string into an array
+    permitted[:skills] = params[:task][:skills].to_s.split(',').map(&:strip)
+    permitted
   end
 end
