@@ -1,0 +1,49 @@
+<div class="row">
+  <% if federated_posts.empty? %>
+    <div class="col-12">
+      <div class="alert alert-info">
+        <% if @search_query.present? %>
+          <p class="text-center">No posts match your search criteria. Try a different search term or hashtag.</p>
+        <% else %>
+          <p class="text-center">No posts from the Fediverse yet. Follow some accounts on other platforms to see their content here!</p>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <% federated_posts.each do |post| %>
+      <div class="col-lg-12 col-md-12 mb-4">
+        <div class="card shadow">
+          <div class="card-body">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <h5 class="font-weight-bold mb-1">
+                  <a href="<%= post[:url] %>" target="_blank" class="text-dark">
+                    Subject: <%= post[:subject] || "Post from Fediverse" %>
+                  </a>
+                </h5>
+                <div class="text-muted small">
+                  Author: <span class="font-weight-bold">@<%= post[:federated_author] %></span>
+                  <br><%= Time.parse(post[:published]).strftime('%d-%m-%Y') %>
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-2">
+
+            <div class="card-text mt-2">
+              <%= post[:content]&.html_safe %>
+            </div>
+
+            <% if post[:hashtags].present? %>
+              <div class="mt-2">
+                <% post[:hashtags].each do |tag| %>
+                  <%= link_to "##{tag}", fediverse_feed_path(search: "##{tag}"), class: "badge badge-secondary mr-1" %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

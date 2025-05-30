@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_01_29_062311) do
-
+ActiveRecord::Schema.define(version: 2025_05_09_100230) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -493,6 +492,9 @@ ActiveRecord::Schema.define(version: 2025_01_29_062311) do
     t.datetime "deleted_at"
     t.datetime "restore_at"
     t.integer "group_id"
+    t.boolean "federated", default: false
+    t.string "federated_url"
+    t.string "federated_author"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
@@ -537,6 +539,18 @@ ActiveRecord::Schema.define(version: 2025_01_29_062311) do
     t.string "body"
     t.index ["post_id"], name: "index_related_contents_on_post_id"
     t.index ["user_id"], name: "index_related_contents_on_user_id"
+  end
+
+  create_table "remote_follows", force: :cascade do |t|
+    t.string "actor_id"
+    t.bigint "user_id", null: false
+    t.string "follower_url"
+    t.string "follower_inbox"
+    t.string "status"
+    t.string "target_url"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_remote_follows_on_user_id"
   end
 
   create_table "requests", force: :cascade do |t|
@@ -619,6 +633,10 @@ ActiveRecord::Schema.define(version: 2025_01_29_062311) do
     t.string "city"
     t.string "status", default: "Casual", null: false
     t.decimal "hours", precision: 5, scale: 2, default: "1.0", null: false
+    t.string "priority", default: "Casual"
+    t.bigint "assignee_id"
+    t.date "check_back_date"
+    t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["group_id"], name: "index_tasks_on_group_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
@@ -773,11 +791,6 @@ ActiveRecord::Schema.define(version: 2025_01_29_062311) do
     t.text "tokens"
     t.string "comment"
     t.integer "default_group_id"
-    t.string "encrypted_otp_secret"
-    t.string "encrypted_otp_secret_iv"
-    t.string "encrypted_otp_secret_salt"
-    t.integer "consumed_timestep"
-    t.boolean "otp_required_for_login"
     t.string "invitation_token"
     t.datetime "invitation_created_at"
     t.datetime "invitation_sent_at"
@@ -787,12 +800,23 @@ ActiveRecord::Schema.define(version: 2025_01_29_062311) do
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
     t.jsonb "features", default: {}, null: false
+    t.string "encrypted_otp_secret"
+    t.string "encrypted_otp_secret_iv"
+    t.string "encrypted_otp_secret_salt"
+    t.integer "consumed_timestep"
+    t.boolean "otp_required_for_login"
     t.integer "failed_attempts"
     t.string "unlock_token"
     t.datetime "locked_at"
     t.string "otp_backup_codes", array: true
     t.integer "reset_password_attempts"
     t.datetime "last_reset_attempt_at"
+    t.string "actor_id"
+    t.text "public_key_pem"
+    t.text "private_key_pem"
+    t.string "inbox_url"
+    t.string "outbox_url"
+    t.string "shared_inbox_url"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
@@ -838,12 +862,14 @@ ActiveRecord::Schema.define(version: 2025_01_29_062311) do
   add_foreign_key "questions", "questionnaires"
   add_foreign_key "ratings", "users"
   add_foreign_key "related_contents", "users"
+  add_foreign_key "remote_follows", "users"
   add_foreign_key "requests", "groups"
   add_foreign_key "requests", "users"
   add_foreign_key "services", "users"
   add_foreign_key "shares", "users"
   add_foreign_key "taggings", "tags"
   add_foreign_key "tasks", "users"
+  add_foreign_key "tasks", "users", column: "assignee_id"
   add_foreign_key "token_ans_debates", "post_tokens"
   add_foreign_key "token_ans_debates", "posts"
   add_foreign_key "token_ans_debates", "users"

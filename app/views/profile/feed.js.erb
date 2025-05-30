@@ -1,7 +1,17 @@
-$('#content').append('<%= j render_activities @activities %>');
-<% if @activities.next_page %>
-  $('.pagination').replaceWith('<%= j paginate @activities %>');
+<% if params[:federated_page].present? %>
+  // For federated posts (Fediverse tab)
+  $('#fediverse-content .row:first').append('<%= j render(partial: "posts/federated_list", locals: { posts: @federated_posts }) %>');
+  <% if @federated_posts.last_page? %>
+    $('#fediverse-paginator').html('');
+  <% else %>
+    $('#fediverse-paginator').html('<%= j paginate(@federated_posts, param_name: :federated_page, remote: true) %>');
+  <% end %>
 <% else %>
-  $(window).off('scroll');
-  $('.pagination').remove();
+  // For regular feed posts (Friend Feed tab)
+  $('#content .col-md-12:first').append('<%= j render(partial: "posts/list", locals: { posts: @posts, type: nil }) %>');
+  <% if @posts.last_page? %>
+    $('#infinite-scrolling').html('');
+  <% else %>
+    $('#infinite-scrolling').html('<%= j paginate(@posts, remote: true) %>');
+  <% end %>
 <% end %>

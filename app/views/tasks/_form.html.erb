@@ -30,7 +30,7 @@
   <!-- Skills field -->
   <div class="form-group">
     <%= form.label :skills, "Skills (comma separated)" %>
-    <%= form.text_field :skills, class: 'form-control', placeholder: "Enter skills like: JavaScript, Ruby, UI/UX" %>
+    <%= form.text_field :skills, value: task.skills.is_a?(Array) ? task.skills.join(', ') : task.skills, class: 'form-control', placeholder: "Enter skills like: JavaScript, Ruby, UI/UX" %>
   </div>
 
   <!-- status field -->
@@ -39,17 +39,27 @@
     <%= form.select :status, Task::STATUSES, {}, class: "form-control custom-select" %>
   </div>
 
-  <!-- status field -->
+  <!-- priority field -->
+  <div class="form-group mb-3">
+    <%= form.label :priority, "Priority", class: "form-label" %>
+    <%= form.select :priority, Task::PRIORITIES, {}, class: "form-control custom-select" %>
+  </div>
+
+  <!-- hours field -->
   <div class="form-group mb-3">
     <%= form.label :hours, "Estimated Hours", class: "form-label" %>
     <%= form.number_field :hours, step: 0.1, min: 0.1, max: 999.99, class: "form-control", placeholder: "Enter hours (e.g., 1.5)" %>
   </div>
 
-
-
   <div class="form-group">
     <%= form.label :description, class: 'col-form-label' %>
     <%= form.text_area :description, rows: 5, class: 'form-control', placeholder: "Task Description" %>
+  </div>
+
+  <div class="form-group mb-3">
+    <%= form.label :check_back_date, "Check Back Date (Est. Finish)", class: "form-label" %>
+    <%= form.date_field :check_back_date, class: "form-control" %>
+    <small class="form-text text-muted">Optional: Estimated date to check back or when it might be done.</small>
   </div>
 
   <!-- Cancel/Submit Buttons -->

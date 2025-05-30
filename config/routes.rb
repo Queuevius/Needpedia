@@ -361,6 +361,31 @@ Rails.application.routes.draw do
   #   end
   # end
 
+  # Fediverse Routes
+  get '.well-known/webfinger', to: 'activity_pub/webfinger#show'
+
+  namespace :activity_pub do
+    get '.well-known/webfinger', to: 'webfinger#show', as: 'webfinger'
+    resources :actors, only: [:show], param: :id do
+      member do
+        post :inbox, to: 'actors#inbox', as: 'inbox'
+        get :outbox, to: 'actors#outbox', as: 'outbox'
+        get :followers, to: 'actors#followers', as: 'followers'
+        get :following, to: 'actors#following', as: 'following'
+        get :public_key, path: 'key'
+      end
+    end
+  end
+
+  # Remote follow routes
+  resources :remote_follows, only: [:new, :create]
+  get 'fediverse', to: 'remote_follows#new', as: 'fediverse'
+  get '/fediverse/feed', to: 'home#fediverse_feed', as: 'fediverse_feed'
+
+  post '/fediverse/follow', to: 'remote_follows#create', as: 'fediverse_follow'
+  # Federated inbox route
+  get 'federated_inbox', to: 'federated_posts#index', as: :federated_inbox
+
   get 'otp_verifications/new', to: 'otp_verifications#new', as: :new_otp_verification
   post 'otp_verifications', to: 'otp_verifications#create', as: :verify_otp
 

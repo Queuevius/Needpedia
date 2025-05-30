@@ -1,0 +1,28 @@
+<%# app/views/tasks/_comments_list.html.erb %>
+<div id="task-comments-list-<%= task.id %>">
+  <% if comments.any? %>
+    <% comments.each do |comment| %>
+      <div class="card mb-2 shadow-sm" id="comment-<%= comment.id %>">
+        <div class="card-body p-3">
+          <p class="card-text"><%= simple_format(comment.body) %></p>
+          <small class="text-muted">
+            Posted by <%= comment.user.name %> - <%= time_ago_in_words(comment.created_at) %> ago
+            <% if comment.created_at != comment.updated_at %>
+              (edited <%= time_ago_in_words(comment.updated_at) %> ago)
+            <% end %>
+          </small>
+          <%# Basic Edit/Delete for comment owner - assuming generic comment routes %>
+          <% if current_user == comment.user %>
+            <div class="mt-1">
+              <%# Link to an edit action - this might need a specific route or JS handling %>
+              <%#= link_to 'Edit', edit_comment_path(comment), class: 'btn btn-link btn-sm p-0' %> 
+              <%= link_to 'Delete', comment_path(comment), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-link btn-sm p-0 text-danger' %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <p>No comments yet. Be the first to comment!</p>
+  <% end %>
+</div> 
