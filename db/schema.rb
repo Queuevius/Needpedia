@@ -10,8 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< Updated upstream
 ActiveRecord::Schema.define(version: 2025_01_29_062311) do
 
+=======
+ActiveRecord::Schema.define(version: 2025_06_19_072322) do
+>>>>>>> Stashed changes
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -799,6 +803,16 @@ ActiveRecord::Schema.define(version: 2025_01_29_062311) do
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
     t.index ["invited_by_type", "invited_by_id"], name: "index_users_on_invited_by_type_and_invited_by_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  create_table "webhook_configurations", force: :cascade do |t|
+    t.string "url"
+    t.datetime "validate_until"
+    t.string "secret"
+    t.boolean "active"
+    t.text "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

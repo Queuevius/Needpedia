@@ -115,6 +115,12 @@ class Post < ApplicationRecord
   after_create :send_notification, if: -> { post_type == Post::POST_TYPE_LAYER || post_type.in?(CORE_POST_TYPES) }
   after_create :send_notification_to_posted_to_user, if: -> { posted_to_id.present? }
   after_create :send_notification_on_layer_create, if: -> { post_type == Post::POST_TYPE_LAYER && post_id.present? && parent_post.tracking_enabled? }
+<<<<<<< Updated upstream
+=======
+  # after_create :deliver_to_followers
+  # after_create :federate_post, if: :should_federate?
+  after_create_commit :send_to_webhooks
+>>>>>>> Stashed changes
   ############################### Methods ################################
   def parent_post_id
     subject_id
@@ -153,4 +159,57 @@ class Post < ApplicationRecord
   def long_is_present
     errors.add(:base, 'Longitude cant be blank, please select a location on map for GeoMaxing post') if long.blank? && geo_maxing
   end
+<<<<<<< Updated upstream
+=======
+
+  def deliver_to_followers
+    ActivityPub::DeliveryJob.perform_later(self)
+  end
+
+  def should_federate?
+    !federated && user.present? && !private
+  end
+
+  def federate_post
+    ActivityPub::RequestService.new(user).send_create_note(self)
+  end
+
+  def url
+    if federated
+      federated_url
+    else
+      Rails.application.routes.url_helpers.post_url(self, host: Rails.application.config.x.domain)
+    end
+  end
+
+  private
+
+  def send_to_webhooks
+    WebhookConfiguration.where("validate_until > ?", Time.current,  active: true).find_each do |webhook|
+      begin
+        response = Faraday.post(webhook.url) do |req|
+          req.headers['Content-Type'] = 'application/json'
+          req.body = {
+              id: id,
+              title: title,
+              content: content&.body&.to_html,
+              post_type: post_type,
+              user_id: user_id,
+              tags: tag_list,
+              resource_tags: resource_tag_list,
+              lat: lat,
+              long: long,
+              created_at: created_at,
+              updated_at: updated_at,
+              url: url
+          }.to_json
+        end
+
+        Rails.logger.info("Webhook POST to #{webhook.url} returned #{response.status}")
+      rescue => e
+        Rails.logger.error("Failed to send webhook to #{webhook.url}: #{e.message}")
+      end
+    end
+  end
+>>>>>>> Stashed changes
 end

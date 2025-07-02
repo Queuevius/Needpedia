@@ -34,6 +34,9 @@ Rails.application.routes.draw do
       resources :tokens, only: [:create]
       post 'tokens/decrease'
     end
+    namespace :v2 do
+      resources :posts, only: [:index, :create, :update]
+    end
   end
   resources :tasks
   put 'posts/:id/api_update', to: 'posts#api_update_post', as: 'api_update_post'
@@ -178,6 +181,7 @@ Rails.application.routes.draw do
 
 
     root to: "users#index"
+    resources :webhook_configurations
   end
   get '/otp', to: 'profile#otp'
   get '/ai', to: 'home#chatbot'
