@@ -1,11 +1,21 @@
 class Api::V2::PostsController < Api::V2::BaseController
+  resource_description do
+    name 'API v2 - Posts'
+    short 'JWT or token-auth endpoints for posts'
+    api_versions 'v2'
+  end
   before_action :authenticate_with_token!
 
+  api :GET, '/api/v2/posts', 'List posts'
+  error code: 401, desc: 'Unauthorized'
   def index
     @posts = Post.all
     render json: @posts
   end
 
+  api :GET, '/api/v2/posts/search', 'Search posts'
+  param :q, Hash, desc: 'Ransack query params'
+  error code: 401, desc: 'Unauthorized'
   def search
     @q = Post.ransack(params[:q])
     @posts = @q.result(distinct: true)

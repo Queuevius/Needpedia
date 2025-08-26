@@ -1,4 +1,12 @@
 class Api::V1::TokensController < ApplicationController
+  resource_description do
+    name 'API v1 - Tokens'
+    short 'AI token balance endpoints'
+    api_versions 'v1'
+  end
+
+  api :POST, '/api/v1/tokens', 'Get available tokens for a user/guest'
+  param :utoken, String, required: true, desc: 'User or Guest UUID'
   def create
     record = User.find_by(uuid: params[:utoken]) || Guest.find_by(uuid: params[:utoken])
     tokens = record&.ai_tokens.last.tokens_count || 0
@@ -10,6 +18,9 @@ class Api::V1::TokensController < ApplicationController
   end
 
 
+  api :POST, '/api/v1/tokens/decrease', 'Decrease token balance'
+  param :utoken, String, required: true, desc: 'User or Guest UUID'
+  param :decrement_by, Integer, required: true, desc: 'How many tokens to subtract'
   def decrease
     record = User.find_by(uuid: params[:utoken]) || Guest.find_by(uuid: params[:utoken])
     if record.nil?

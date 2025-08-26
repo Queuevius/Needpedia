@@ -10,12 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< Updated upstream
-ActiveRecord::Schema.define(version: 2025_01_29_062311) do
-
-=======
-ActiveRecord::Schema.define(version: 2025_06_19_072322) do
->>>>>>> Stashed changes
+ActiveRecord::Schema.define(version: 2025_08_20_060548) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -777,11 +772,6 @@ ActiveRecord::Schema.define(version: 2025_06_19_072322) do
     t.text "tokens"
     t.string "comment"
     t.integer "default_group_id"
-    t.string "encrypted_otp_secret"
-    t.string "encrypted_otp_secret_iv"
-    t.string "encrypted_otp_secret_salt"
-    t.integer "consumed_timestep"
-    t.boolean "otp_required_for_login"
     t.string "invitation_token"
     t.datetime "invitation_created_at"
     t.datetime "invitation_sent_at"
@@ -791,6 +781,11 @@ ActiveRecord::Schema.define(version: 2025_06_19_072322) do
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
     t.jsonb "features", default: {}, null: false
+    t.string "encrypted_otp_secret"
+    t.string "encrypted_otp_secret_iv"
+    t.string "encrypted_otp_secret_salt"
+    t.integer "consumed_timestep"
+    t.boolean "otp_required_for_login"
     t.integer "failed_attempts"
     t.string "unlock_token"
     t.datetime "locked_at"
@@ -813,6 +808,14 @@ ActiveRecord::Schema.define(version: 2025_06_19_072322) do
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "webhook_settings", force: :cascade do |t|
+    t.string "key"
+    t.text "value"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["key"], name: "index_webhook_settings_on_key", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

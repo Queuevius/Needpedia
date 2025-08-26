@@ -12,6 +12,7 @@ class WebhookConfigurationDashboard < Administrate::BaseDashboard
     active: Field::Boolean,
     description: Field::Text,
     url: Field::String,
+    secret: Field::String,
     validate_until: Field::DateTime,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
@@ -26,6 +27,7 @@ class WebhookConfigurationDashboard < Administrate::BaseDashboard
     id
     active
     description
+    url
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -34,6 +36,7 @@ class WebhookConfigurationDashboard < Administrate::BaseDashboard
     id
     active
     description
+    secret
     url
     validate_until
     created_at
@@ -47,6 +50,7 @@ class WebhookConfigurationDashboard < Administrate::BaseDashboard
     active
     description
     url
+    secret
     validate_until
   ].freeze
 

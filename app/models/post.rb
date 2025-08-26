@@ -61,15 +61,10 @@ class Post < ApplicationRecord
   has_many :layers, class_name: 'Post', foreign_key: :post_id, dependent: :destroy
 
   has_many :comments, as: :commentable, dependent: :destroy
-
   has_many :flags, as: :flagable, dependent: :destroy
-
   has_many :likes, as: :likeable, dependent: :destroy
-
   has_many :ratings, as: :rateable, dependent: :destroy
-
   has_many :shares, as: :shareable, dependent: :destroy
-
   has_many :post_tokens, dependent: :destroy
 
   has_many :user_posts, dependent: :destroy
@@ -115,12 +110,10 @@ class Post < ApplicationRecord
   after_create :send_notification, if: -> { post_type == Post::POST_TYPE_LAYER || post_type.in?(CORE_POST_TYPES) }
   after_create :send_notification_to_posted_to_user, if: -> { posted_to_id.present? }
   after_create :send_notification_on_layer_create, if: -> { post_type == Post::POST_TYPE_LAYER && post_id.present? && parent_post.tracking_enabled? }
-<<<<<<< Updated upstream
-=======
-  # after_create :deliver_to_followers
-  # after_create :federate_post, if: :should_federate?
+  #after_create :deliver_to_followers
+  #after_create :federate_post, if: :should_federate?
   after_create_commit :send_to_webhooks
->>>>>>> Stashed changes
+
   ############################### Methods ################################
   def parent_post_id
     subject_id
@@ -159,8 +152,7 @@ class Post < ApplicationRecord
   def long_is_present
     errors.add(:base, 'Longitude cant be blank, please select a location on map for GeoMaxing post') if long.blank? && geo_maxing
   end
-<<<<<<< Updated upstream
-=======
+
 
   def deliver_to_followers
     ActivityPub::DeliveryJob.perform_later(self)
@@ -185,24 +177,32 @@ class Post < ApplicationRecord
   private
 
   def send_to_webhooks
-    WebhookConfiguration.where("validate_until > ?", Time.current,  active: true).find_each do |webhook|
+    return unless defined?(WebhookSetting)
+    WebhookConfiguration.where("validate_until > ?", Time.current).where(active: true).find_each do |webhook|
       begin
+        payload = {
+          id: id,
+          title: title,
+          content: content&.body&.to_html,
+          post_type: post_type,
+          user_id: user_id,
+          subject_id: subject_id,
+          problem_id: problem_id,
+          posted_to_id: posted_to_id,
+          group_id: group_id,
+          geo_maxing: geo_maxing,
+          tags: tag_list,
+          resource_tags: resource_tag_list,
+          lat: lat,
+          long: long,
+          created_at: created_at,
+          updated_at: updated_at,
+        }
+
         response = Faraday.post(webhook.url) do |req|
           req.headers['Content-Type'] = 'application/json'
-          req.body = {
-              id: id,
-              title: title,
-              content: content&.body&.to_html,
-              post_type: post_type,
-              user_id: user_id,
-              tags: tag_list,
-              resource_tags: resource_tag_list,
-              lat: lat,
-              long: long,
-              created_at: created_at,
-              updated_at: updated_at,
-              url: url
-          }.to_json
+          req.headers['X-Webhook-Secret'] = webhook.secret if webhook.secret.present?
+          req.body = payload.to_json
         end
 
         Rails.logger.info("Webhook POST to #{webhook.url} returned #{response.status}")
@@ -211,5 +211,4 @@ class Post < ApplicationRecord
       end
     end
   end
->>>>>>> Stashed changes
 end
