@@ -153,24 +153,22 @@ class ProfileController < ApplicationController
   end
 
   def feed
-    # if @uuid
-    #   activities = PublicActivity::Activity.where(owner_id: @user.id).order('created_at DESC').limit(50)
-    #   posts = activities.select { |p| p.trackable_type == 'Post'}.map(&:trackable_id).uniq
-    #   private_post_ids = Post.includes(:private_users).where(id: posts, private: true).reject{ |p| p.private_users&.include?(current_user) }&.pluck(:id)
-    #   @activities = activities.reject { |p| private_post_ids.include?(p.trackable_id) }
-    # else
-    # @activities = PublicActivity::Activity.includes(:owner, trackable: [:flags, :likes, :comments, :shares, :post_tokens, :notifications, images_attachment: :blob]).order('created_at DESC').limit(50)
-      # @activities = PublicActivity::Activity.order('created_at DESC')
-      # @activities = @activities.select { |p| p.trackable&.private == false }
-      blocked_user_ids = params[:uuid].present? ? [] : current_user.blocked_users.pluck(:block_user_id)
-      @f = Post.posts_feed.where.not(user_id: blocked_user_ids).ransack(params[:q])
-      posts = @f.result.where(user_id: @user.links.pluck(:id), private: false, disabled: false).order('created_at desc')
-      @posts = Kaminari.paginate_array(posts).page(params[:page]).per 10
-      respond_to do |format|
-        format.html
-        format.js
-      end
-    # end
+    blocked_user_ids = params[:uuid].present? ? [] : current_user.blocked_users.pluck(:block_user_id)
+    @f = Post.posts_feed.where.not(user_id: blocked_user_ids).ransack(params[:q])
+    posts = @f.result.where(user_id: @user.links.pluck(:id), private: false, disabled: false).order('created_at desc')
+    @posts = Kaminari.paginate_array(posts).page(params[:page]).per 10
+    
+    # Fetch federated posts directly from followed instances
+    federated_service = ActivityPub::FederatedTimelineService.new(@user)
+    @federated_posts = federated_service.fetch_posts(
+      page: (params[:federated_page] || 1).to_i,
+      per_page: 5
+    )
+    
+    respond_to do |format|
+      format.html
+      format.js
+    end
   end
 
   def get_users

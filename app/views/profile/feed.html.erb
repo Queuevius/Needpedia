@@ -1,87 +1,229 @@
-<%= render "shared/tutorial"  %>
-<ul class="nav nav-tabs border-0 nav-fill mb-3" id="ex1" role="tablist">
+<%= render "shared/tutorial" %>
+
+<!-- Improved Tabs Navigation -->
+<ul class="nav nav-tabs nav-fill mb-4" id="socialTabs" role="tablist">
   <li class="nav-item" role="presentation">
-    <%= link_to '#ex2-tabs-1', class: 'nav-link active border-bottom-0 border-left-0 border-dark', id: 'ex2-tab-1', data: { mdb_toggle: 'tab' }, role: 'tab', aria: { controls: 'ex2-tabs-1', selected: 'true' } do %>
-      <h4 class="font-weight-bold">Feed</h4>
+    <%= link_to '#feed-tab', class: "nav-link #{params[:tab] != 'fediverse' ? 'active' : ''}", id: 'feed-tab-link',
+                data: {toggle: 'tab'}, role: 'tab',
+                aria: {controls: 'feed-tab', selected: params[:tab] != 'fediverse' ? 'true' : 'false'} do %>
+      <span class="d-flex align-items-center justify-content-center">
+        <i class="fa fa-users mr-2"></i>
+        <span class="font-weight-bold">Friends Feed</span>
+      </span>
     <% end %>
   </li>
   <li class="nav-item" role="presentation">
-    <%= link_to "Wall", wall_path(uuid: params[:uuid]), class: "nav-link h4 font-weight-bold border-top-0 border-right-0 border-dark border-left-0 pb-3", id: "ex2-tab-2", data: { mdb_toggle: "tab" }  %>
+    <%= link_to '#fediverse-tab', class: "nav-link #{params[:tab] == 'fediverse' ? 'active' : ''}", id: 'fediverse-tab-link',
+                data: {toggle: 'tab'}, role: 'tab',
+                aria: {controls: 'fediverse-tab', selected: params[:tab] == 'fediverse' ? 'true' : 'false'} do %>
+      <span class="d-flex align-items-center justify-content-center">
+        <i class="fa fa-globe mr-2"></i>
+        <span class="font-weight-bold">Fediverse</span>
+      </span>
+    <% end %>
+  </li>
+  <li class="nav-item" role="presentation">
+    <%= link_to wall_path(uuid: params[:uuid]), class: "nav-link" do %>
+      <span class="d-flex align-items-center justify-content-center">
+        <i class="fa fa-th-list mr-2"></i>
+        <span class="font-weight-bold">Wall</span>
+      </span>
+    <% end %>
   </li>
 </ul>
-<!-- Tabs navs -->
 
 <!-- Tabs content -->
-<div class="tab-content" id="ex2-content">
-  <div
-    class="tab-pane fade show active"
-    id="ex2-tabs-1"
-    role="tabpanel"
-    aria-labelledby="ex2-tab-1"
-  >
-    <div class="row justify-content-center">
-      <div class="col-md-9 col-lg-9 col-xl-9 col-sm-12">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="container mb-3">
-                <div class="row justify-content-center">
-                  <div class="col-12 col-md-10 col-lg-8">
-                    <%= search_form_for @f, url: wall_path, method: :get do |f| %>
-                      <div class="row no-gutters align-items-center">
-                        <div class="col">
-                          <%= f.text_field :title_or_content_body_or_tags_name_cont, class: 'form-control form-control-lg', placeholder: "Search" %>
-                        </div>
-                        <div class="col-auto">
-                          <button class="ml-2 btn btn-lg btn-secondary search-button" type="submit">Go</button>
-                        </div>
-                      </div>
-                    <% end %>
+<div class="tab-content bg-light rounded-lg p-3" id="socialTabsContent">
+  <!-- Friends Feed Tab -->
+  <div class="tab-pane fade <%= params[:tab] != 'fediverse' ? 'show active' : '' %>" id="feed-tab" role="tabpanel" aria-labelledby="feed-tab-link">
+    <div class="container">
+      <!-- Search Form -->
+      <div class="row justify-content-center mb-4">
+        <div class="col-12 col-md-10 col-lg-8">
+          <div class="card shadow-sm">
+            <div class="card-body p-0">
+              <%= search_form_for @f, url: wall_path, method: :get do |f| %>
+                <div class="input-group">
+                  <%= f.text_field :title_or_content_body_or_tags_name_cont,
+                                   class: 'form-control border-0',
+                                   placeholder: "Search posts..." %>
+                  <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">
+                      <i class="fa fa-search"></i>
+                    </button>
                   </div>
                 </div>
-              </div>
+              <% end %>
             </div>
           </div>
         </div>
-        <div id="content" class="p-4">
-          <div class="col-md-12">
+      </div>
+
+      <!-- Posts Content -->
+      <div id="content" class="mt-4">
+        <div class="row">
+          <div class="col-12">
             <%= render 'posts/list', posts: @posts, type: nil %>
           </div>
-          <% if @posts.blank? %>
-            <div class="col-md-12 text-center">
-              <h5 class="text-warning">Not posted yet</h5>
-            </div>
-          <% end %>
         </div>
+        <% if @posts.blank? %>
+          <div class="text-center py-5">
+            <div class="mb-3">
+              <i class="fa fa-users text-muted fa-3x"></i>
+            </div>
+            <h5 class="text-muted">No posts from your friends yet</h5>
+            <p class="text-muted small">Connect with friends to see their posts here</p>
+          </div>
+        <% end %>
         <div id="infinite-scrolling" class="hide">
           <%= paginate @posts, theme: 'default' %>
         </div>
       </div>
     </div>
   </div>
-</div>
 
+  <!-- Fediverse Feed Tab -->
+  <div class="tab-pane fade <%= params[:tab] == 'fediverse' ? 'show active' : '' %>" id="fediverse-tab" role="tabpanel" aria-labelledby="fediverse-tab-link">
+    <div class="container">
+      <!-- Fediverse Search -->
+      <div class="row justify-content-center mb-4">
+        <div class="col-12 col-md-8">
+          <div class="card shadow-sm">
+            <div class="card-body p-0">
+              <div class="input-group">
+                <input type="text" class="form-control border-0" placeholder="Search fediverse posts...">
+                <div class="input-group-append">
+                  <button class="btn btn-primary" type="button">
+                    <i class="fa fa-search"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fediverse Actions -->
+      <div class="d-flex justify-content-end mb-4">
+        <a href="<%= fediverse_path %>" class="btn btn-primary"
+           data-toggle="tooltip" data-placement="top" title="Follow user on Fediverse">
+          <i class="fa fa-user-plus mr-2"></i>Follow New User
+        </a>
+      </div>
+
+      <!-- Fediverse Content -->
+      <div id="fediverse-content">
+        <% if @federated_posts.empty? %>
+          <div class="text-center py-5">
+            <div class="mb-3">
+              <i class="fa fa-globe text-muted fa-3x"></i>
+            </div>
+            <div class="alert alert-info d-inline-block">
+              <p class="mb-0">No posts from the Fediverse yet.</p>
+            </div>
+            <p class="text-muted small mt-3">Follow users to see their federated posts</p>
+          </div>
+        <% else %>
+          <!-- Federated Posts List -->
+          <div class="row">
+            <%= render 'home/federated_posts', federated_posts: @federated_posts %>
+          </div>
+
+          <!-- View All Button -->
+          <div class="text-center mb-3">
+            <a href="<%= fediverse_feed_path %>" class="btn btn-outline-primary">
+              <i class="fa fa-list mr-2"></i>View All Fediverse Posts
+            </a>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
     $(document).on('turbolinks:load', function () {
+        // Initialize tooltips
+        $('[data-toggle="tooltip"]').tooltip();
+
+        // Activate the appropriate tab based on URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabParam = urlParams.get('tab');
+
+        if (tabParam === 'fediverse') {
+            $('#fediverse-tab-link').tab('show');
+        } else {
+            $('#feed-tab-link').tab('show');
+        }
+
+        // Infinite scrolling for regular feed
         if ($('.pagination').length && $('#content').length) {
             $(window).on('scroll', function () {
-                more_posts_url = $('.pagination .next_page a').attr('href');
-                if (more_posts_url) {
-                    more_posts_url = more_posts_url;
-                } else {
-                    more_posts_url = $('.pagination .next a').attr('href');
-                }
-                if (more_posts_url && $(window).scrollTop() > $(document).height() - $(window).height() - 60) {
-                    $('.pagination').html('<img src="/assets/ajax-loader.gif" alt="Loading..." title="Loading..." />');
-                    $.getScript(more_posts_url);
+                // Only handle infinite scrolling if the feed tab is active
+                if ($('#feed-tab').hasClass('active')) {
+                    more_posts_url = $('.pagination .next_page a').attr('href');
+                    if (more_posts_url) {
+                        more_posts_url = more_posts_url;
+                    } else {
+                        more_posts_url = $('.pagination .next a').attr('href');
+                    }
+                    if (more_posts_url && $(window).scrollTop() > $(document).height() - $(window).height() - 60) {
+                        $('.pagination').html('<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div>');
+                        $.getScript(more_posts_url);
+                    }
                 }
             });
         }
+
+        // Handle tab switching
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            // Reset scroll position when switching tabs
+            window.scrollTo(0, 0);
+        });
     });
 </script>
+
 <style>
+  /* Hide pagination numbers but keep the pagination functioning */
   .pagination > li {
     display: none;
+  }
+
+  /* Additional styling */
+  .nav-tabs .nav-link {
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    font-size: 1rem;
+    padding: 0.75rem 1.25rem;
+    transition: all 0.2s ease;
+  }
+
+  .nav-tabs .nav-link.active {
+    background-color: #f8f9fa;
+    border-bottom-color: transparent;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+  }
+
+  .card {
+    border: none;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08) !important;
+  }
+
+  textarea.form-control {
+    border-radius: 0.5rem;
+  }
+
+  .btn {
+    border-radius: 0.25rem;
+  }
+
+  .form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
   }
 </style>

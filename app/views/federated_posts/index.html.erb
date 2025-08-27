@@ -1,0 +1,117 @@
+<%# app/views/federated_posts/index.html.erb %>
+<div class="container py-5">
+  <div class="row">
+    <!-- Main Content -->
+    <div class="col-lg-8 mb-4">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h1 class="card-title h3 font-weight-bold">Fediverse Inbox</h1>
+          <p class="text-muted mb-4">Posts from people you follow across the Fediverse</p>
+
+          <div>
+            <% if @federated_posts.any? %>
+              <% @federated_posts.each do |post| %>
+                <div class="border-bottom pb-4 mb-4">
+                  <div class="media">
+                    <div class="mr-3">
+                      <% if post.user&.avatar.present? %>
+                        <%= image_tag post.user.avatar, class: "rounded-circle", width: "40", height: "40" %>
+                      <% else %>
+                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                          <span class="text-white small"><%= post.user&.initials || '?' %></span>
+                        </div>
+                      <% end %>
+                    </div>
+                    <div class="media-body">
+                      <div class="d-flex align-items-center">
+                        <h5 class="mt-0 mb-0 mr-2"><%= post.user&.name || "Unknown User" %></h5>
+                        <small class="text-muted">•</small>
+                        <small class="text-muted ml-2"><%= time_ago_in_words(post.created_at) %> ago</small>
+                      </div>
+                      <div class="mt-2">
+                        <%= simple_format(post.content, class: "mb-2") %>
+                      </div>
+                      <% if post.federated_url.present? %>
+                        <div>
+                          <%= link_to "View original post", post.federated_url,
+                                      class: "text-primary small",
+                                      target: "_blank",
+                                      rel: "noopener noreferrer" %>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+
+              <div class="mt-4">
+                <%= paginate @federated_posts %>
+              </div>
+            <% else %>
+              <div class="text-center py-5">
+                <p class="text-muted">No federated posts yet. Follow some users on the Fediverse to see their posts here!</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+      <!-- Notifications Section -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h2 class="card-title h4 font-weight-bold mb-3">Recent Notifications</h2>
+          <div>
+            <% if @notifications.any? %>
+              <% @notifications.each do |notification| %>
+                <div class="border-bottom pb-3 mb-3">
+                  <div class="media">
+                    <div class="mr-2">
+                      <% if notification.from_user&.avatar.present? %>
+                        <%= image_tag notification.from_user.avatar, class: "rounded-circle", width: "32", height: "32" %>
+                      <% else %>
+                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                          <span class="text-white small"><%= notification.from_user&.initials || '?' %></span>
+                        </div>
+                      <% end %>
+                    </div>
+                    <div class="media-body">
+                      <p class="small mb-0">
+                        <strong><%= notification.from_user&.name || "Someone" %></strong>
+                        shared a new post
+                      </p>
+                      <span class="text-muted smaller"><%= time_ago_in_words(notification.created_at) %> ago</span>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+
+              <div class="mt-3">
+                <%= paginate @notifications, param_name: :notifications_page %>
+              </div>
+            <% else %>
+              <p class="text-muted small">No new notifications</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title h4 font-weight-bold mb-3">Quick Actions</h2>
+          <div class="d-grid gap-2">
+            <%= link_to new_remote_follow_path, class: "btn btn-primary btn-block mb-2" do %>
+              Follow Someone New
+            <% end %>
+            <%#= link_to remote_follows_path, class: "btn btn-outline-secondary btn-block" do %>
+<!--              Manage Follows-->
+            <%# end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

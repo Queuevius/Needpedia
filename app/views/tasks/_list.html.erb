@@ -1,63 +1,1414 @@
-<div class="container">
-  <div class="row g-4">
-    <% tasks.each do |task| %>
-      <div class="col-12 col-md-6 col-lg-4 mb-3">
-        <div class="card h-100 text-center  shadow" style="border: 0.125rem solid #000; border-radius: 1rem;">
-          <%= link_to  task_path(task) do %>
-            <div class="card-body p-3" style="cursor: pointer;" onclick="window.location='<%= task_path(task) %>';">
-              <!-- Task title as a link to the task's show page -->
-              <h5 class="card-title mb-2 text-truncate" title="<%= task.title %>">
-                <strong><%= task.title %></strong>
-              </h5>
-              <!-- Display the task's image carousel if images are attached -->
-              <div id="carouselExampleIndicators<%= task.id %>" class="carousel slide" data-ride="carousel">
-                <div class="carousel-inner">
-                  <% if task.images.attached? %>
-                    <% task.images.each_with_index do |image, index| %>
-                      <div class="carousel-item <%= 'active' if index == 0 %>">
-                        <%= image_tag image, class: "mx-auto d-block", alt: "#{task.title} Image", style: "width: 18rem; height: 12rem; object-fit: cover;", alt: "Card Image #{index + 1}" %>
-                      </div>
+<div class="container-fluid task-container">
+
+  <!-- Available Tasks Section -->
+  <div class="task-section available-section mb-4">
+    <div class="section-header d-flex justify-content-between align-items-center"
+         id="available-header" data-toggle="collapse" data-target="#available-tasks" aria-expanded="false">
+      <h3><i class="bi bi-list-check"></i> Available Tasks</h3>
+      <div class="d-flex align-items-center">
+        <span class="task-count badge bg-primary"><%= tasks.select {|task| task.status == 'Available Tasks'}.count %></span>
+        <i class="bi bi-chevron-down toggle-icon"></i>
+      </div>
+    </div>
+    <div class="collapse show" id="available-tasks">
+      <div class="task-grid">
+        <div class="row">
+          <% available_tasks = tasks.select {|task| task.status == 'Available Tasks'} %>
+          <% available_tasks.first(8).each do |task| %>
+            <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">
+              <div class="task-card" data-toggle="modal" data-target="#taskModal<%= task.id %>">
+                <h5 class="task-title text-truncate" title="<%= task.title %>">
+                  <%= task.title %>
+                </h5>
+
+                <% if task.images.attached? %>
+                  <div class="task-image-preview">
+                    <%= image_tag task.images.first, class: "img-fluid rounded", alt: "#{task.title} Image" %>
+                    <% if task.images.count > 1 %>
+                      <span class="image-count">+<%= task.images.count - 1 %></span>
                     <% end %>
+                  </div>
+                <% end %>
+
+                <div class="task-meta">
+                  <% priority_class = case task.priority
+                                      when 'Casual' then
+                                        'priority-casual'
+                                      when 'Pressing' then
+                                        'priority-pressing'
+                                      when 'Urgent' then
+                                        'priority-urgent'
+                                      end %>
+                  <span class="priority-pill <%= priority_class %>"><%= task.priority %></span>
+                  <span class="hours-badge"><%= number_with_precision(task.hours, precision: 1) %> hrs</span>
+                </div>
+                <% if task.check_back_date? %>
+                  <div class="task-check-back-date mb-2">
+                    <small class="text-muted">
+                      <i class="bi bi-calendar-check"></i> Est. Finish: <%= task.check_back_date.strftime("%b %d, %Y") %>
+                    </small>
+                  </div>
+                <% end %>
+
+                <p class="task-description text-left" title="<%= task.description %>">
+                  <%= truncate(task.description, length: 100) %>
+                </p>
+
+                <div class="task-footer">
+                  <span class="owner">
+                    <% if task.user.profile_image.attached? %>
+                      <%= image_tag task.user.profile_image, class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                    <% else %>
+                      <%= image_tag "profile.png", class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                    <% end %>
+                    <%= task.user.name %>
+                  </span>
+                  <% if task.assignee %>
+                    <div class="assignee-display-on-card">
+                      <% if task.assignee.profile_image.attached? %>
+                        <%= image_tag task.assignee.profile_image, class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                      <% else %>
+                        <%= image_tag "profile.png", class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                      <% end %>
+                      <small class="text-muted">Assigned: <%= task.assignee.name %></small>
+                    </div>
+                  <% end %>
+                  <% if task.skills.any? %>
+                    <div class="skills-preview">
+                      <% task.skills.first(2).each do |skill| %>
+                        <span class="skill-pill"><%= skill %></span>
+                      <% end %>
+                      <% if task.skills.length > 2 %>
+                        <span class="more-skills">+<%= task.skills.length - 2 %></span>
+                      <% end %>
+                    </div>
                   <% end %>
                 </div>
-                <!-- Carousel controls for navigation -->
-                <a class="carousel-control-prev" href="#carouselExampleIndicators<%= task.id %>" role="button" data-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#carouselExampleIndicators<%= task.id %>" role="button" data-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="sr-only">Next</span>
-                </a>
               </div>
-              <!-- Status (Urgent/Casual/Pressing) and hours -->
-              <h5 class="d-flex flex-wrap justify-content-between align-items-center mb-2 mt-2 border-top border-bottom border-dark p-2">
-                <!-- Task Status -->
-                <span class="col-auto text-truncate">
-                  <strong>
-                    <%= task.status %>
-                  </strong>
-                </span>
-
-                <!-- Task Hours -->
-                <span class="col-auto text-truncate">
-                  <strong><%= number_with_precision(task.hours, precision: 1) %> hrs</strong>
-                </span>
-
-              </h5>
-              <!-- Task description with a "Read More" link to the task's show page -->
-              <p class="card-text mt-3" title="<%= task.description %>">
-                <% if task.description.length > 200 %>
-                  <%= truncate(task.description, length: 200, class: "text-dark") %>
-                  <%= link_to 'Read More', task_path(task), class: 'text-primary' %>
-                <% else %>
-                  <%= task.description %>
-                <% end %>
-              </p>
             </div>
           <% end %>
         </div>
       </div>
-    <% end %>
+    </div>
+  </div>
+
+  <!-- Under Progress Tasks Section -->
+  <div class="task-section progress-section mb-4">
+    <div class="section-header d-flex justify-content-between align-items-center"
+         id="progress-header" data-toggle="collapse" data-target="#progress-tasks" aria-expanded="true">
+      <h3><i class="bi bi-gear-fill"></i> Under Progress</h3>
+      <div class="d-flex align-items-center">
+        <span class="task-count badge bg-warning me-2"><%= tasks.select {|task| task.status == 'Under Progress'}.count %></span>
+        <i class="bi bi-chevron-down toggle-icon"></i>
+      </div>
+    </div>
+    <div class="collapse show" id="progress-tasks">
+      <div class="task-grid">
+        <div class="row">
+          <% progress_tasks = tasks.select {|task| task.status == 'Under Progress'} %>
+          <% progress_tasks.first(8).each do |task| %>
+            <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">
+              <div class="task-card" data-toggle="modal" data-target="#taskModal<%= task.id %>">
+                <h5 class="task-title text-truncate" title="<%= task.title %>">
+                  <%= task.title %>
+                </h5>
+
+                <% if task.images.attached? %>
+                  <div class="task-image-preview">
+                    <%= image_tag task.images.first, class: "img-fluid rounded", alt: "#{task.title} Image" %>
+                    <% if task.images.count > 1 %>
+                      <span class="image-count">+<%= task.images.count - 1 %></span>
+                    <% end %>
+                  </div>
+                <% end %>
+
+                <div class="task-meta">
+                  <% priority_class = case task.priority
+                                      when 'Casual' then
+                                        'priority-casual'
+                                      when 'Pressing' then
+                                        'priority-pressing'
+                                      when 'Urgent' then
+                                        'priority-urgent'
+                                      end %>
+                  <span class="priority-pill <%= priority_class %>"><%= task.priority %></span>
+                  <span class="hours-badge"><%= number_with_precision(task.hours, precision: 1) %> hrs</span>
+                </div>
+                <% if task.check_back_date? %>
+                  <div class="task-check-back-date mb-2">
+                    <small class="text-muted">
+                      <i class="bi bi-calendar-check"></i> Est. Finish: <%= task.check_back_date.strftime("%b %d, %Y") %>
+                    </small>
+                  </div>
+                <% end %>
+
+                <p class="task-description text-left" title="<%= task.description %>">
+                  <%= truncate(task.description, length: 100) %>
+                </p>
+
+                <div class="task-footer">
+                  <span class="owner">
+                    <% if task.user.profile_image.attached? %>
+                      <%= image_tag task.user.profile_image, class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                    <% else %>
+                      <%= image_tag "profile.png", class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                    <% end %>
+                    <%= task.user.name %>
+                  </span>
+                  <% if task.assignee %>
+                    <div class="assignee-display-on-card">
+                      <% if task.assignee.profile_image.attached? %>
+                        <%= image_tag task.assignee.profile_image, class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                      <% else %>
+                        <%= image_tag "profile.png", class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                      <% end %>
+                      <small class="text-muted">Assigned: <%= task.assignee.name %></small>
+                    </div>
+                  <% end %>
+                  <% if task.skills.any? %>
+                    <div class="skills-preview">
+                      <% task.skills.first(2).each do |skill| %>
+                        <span class="skill-pill"><%= skill %></span>
+                      <% end %>
+                      <% if task.skills.length > 2 %>
+                        <span class="more-skills">+<%= task.skills.length - 2 %></span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Completed Tasks Section (Collapsible) -->
+  <div class="task-section completed-section">
+    <div class="section-header d-flex justify-content-between align-items-center collapsed"
+         id="completed-header" data-toggle="collapse" data-target="#completed-tasks" aria-expanded="false">
+      <h3><i class="bi bi-check-circle-fill"></i> Completed Tasks</h3>
+      <div class="d-flex align-items-center">
+        <span class="task-count badge bg-success me-2"><%= tasks.select {|task| task.status == 'Completed Tasks'}.count %></span>
+        <i class="bi bi-chevron-down toggle-icon"></i>
+      </div>
+    </div>
+
+    <div class="collapse" id="completed-tasks">
+      <div class="task-grid">
+        <div class="row">
+          <% completed_tasks = tasks.select {|task| task.status == 'Completed Tasks'} %>
+          <% completed_tasks.first(8).each do |task| %>
+            <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">
+              <div class="task-card" data-toggle="modal" data-target="#taskModal<%= task.id %>">
+                <h5 class="task-title text-truncate" title="<%= task.title %>">
+                  <%= task.title %>
+                </h5>
+
+                <% if task.images.attached? %>
+                  <div class="task-image-preview">
+                    <%= image_tag task.images.first, class: "img-fluid rounded", alt: "#{task.title} Image" %>
+                    <% if task.images.count > 1 %>
+                      <span class="image-count">+<%= task.images.count - 1 %></span>
+                    <% end %>
+                  </div>
+                <% end %>
+
+                <div class="task-meta">
+                  <% priority_class = case task.priority
+                                      when 'Casual' then
+                                        'priority-casual'
+                                      when 'Pressing' then
+                                        'priority-pressing'
+                                      when 'Urgent' then
+                                        'priority-urgent'
+                                      end %>
+                  <span class="priority-pill <%= priority_class %>"><%= task.priority %></span>
+                  <span class="hours-badge"><%= number_with_precision(task.hours, precision: 1) %> hrs</span>
+                </div>
+                <% if task.check_back_date? %>
+                  <div class="task-check-back-date mb-2">
+                    <small class="text-muted">
+                      <i class="bi bi-calendar-check"></i> Est.
+                      Finish: <%= task.check_back_date.strftime("%b %d, %Y") %>
+                    </small>
+                  </div>
+                <% end %>
+
+                <p class="task-description text-left" title="<%= task.description %>">
+                  <%= truncate(task.description, length: 100) %>
+                </p>
+
+                <div class="task-footer">
+                  <span class="owner">
+                    <% if task.user.profile_image.attached? %>
+                      <%= image_tag task.user.profile_image, class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                    <% else %>
+                      <%= image_tag "profile.png", class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                    <% end %>
+                    <%= task.user.name %>
+                  </span>
+                  <% if task.assignee %>
+                    <div class="assignee-display-on-card">
+                      <% if task.assignee.profile_image.attached? %>
+                        <%= image_tag task.assignee.profile_image, class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                      <% else %>
+                        <%= image_tag "profile.png", class: "rounded-circle me-2", style: "width: 24px; height: 24px; object-fit: cover;" %>
+                      <% end %>
+                      <small class="text-muted">Assigned: <%= task.assignee.name %></small>
+                    </div>
+                  <% end %>
+                  <% if task.skills.any? %>
+                    <div class="skills-preview">
+                      <% task.skills.first(2).each do |skill| %>
+                        <span class="skill-pill"><%= skill %></span>
+                      <% end %>
+                      <% if task.skills.length > 2 %>
+                        <span class="more-skills">+<%= task.skills.length - 2 %></span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <% if completed_tasks.count > 40 %>
+            <div class="col-12 text-center mt-3 mb-3">
+              <p>Showing 40 of <%= completed_tasks.count %> completed tasks</p>
+              <a href="#" class="btn btn-outline-secondary">View All Completed Tasks</a>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
+
+
+<!-- Task Modals -->
+<% tasks.each do |task| %>
+  <div class="modal fade task-modal" id="taskModal<%= task.id %>" tabindex="-1" role="dialog" aria-labelledby="taskModalLabel<%= task.id %>" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="taskModalLabel<%= task.id %>">
+            <%= task.title %>
+          </h5>
+          <div class="modal-actions">
+            <%= link_to edit_task_path(task), class: 'btn btn-sm btn-outline-secondary me-2' do %>
+              <i class="bi bi-pencil"></i> Edit
+            <% end %>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <!-- Left column: Task details -->
+            <div class="col-md-5">
+              <!-- Task Description -->
+              <div class="detail-section mb-4">
+                <h3 class="detail-heading">Description</h3>
+                <div class="detail-content">
+                  <%= simple_format(task.description) %>
+                </div>
+              </div>
+
+              <!-- Task Details -->
+              <div class="detail-section mb-4">
+                <h3 class="detail-heading">Details</h3>
+                <div class="detail-content">
+                  <div class="detail-item">
+                    <span class="detail-label">Hours</span>
+                    <span class="hours-badge"><%= number_with_precision(task.hours, precision: 1) %></span>
+                  </div>
+
+                  <div class="detail-item">
+                    <span class="detail-label">Priority</span>
+                    <% priority_class = case task.priority
+                                        when 'Casual' then
+                                          'priority-casual'
+                                        when 'Pressing' then
+                                          'priority-pressing'
+                                        when 'Urgent' then
+                                          'priority-urgent'
+                                        end %>
+                    <span class="priority-pill <%= priority_class %>"><%= task.priority %></span>
+                  </div>
+
+                  <div class="detail-item">
+                    <span class="detail-label">Status</span>
+                    <span class="status-pill status-<%= task.status %>">
+                      <%= task.status %>
+                    </span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Check Back Date</span>
+                    <span><%= task.check_back_date&.strftime("%B %d, %Y") %></span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Created</span>
+                    <span><%= task.created_at.strftime("%B %d, %Y") %></span>
+                  </div>
+
+                  <div class="detail-item">
+                    <span class="detail-label">Created by</span>
+                    <span><%= task.user.name %></span>
+                  </div>
+                  <% if task.check_back_date? %>
+                    <div class="detail-item">
+                      <span class="detail-label">Est. Finish Date</span>
+                      <span><%= task.check_back_date.strftime("%B %d, %Y") %></span>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+
+              <!-- Skills -->
+              <% if task.skills.any? %>
+                <div class="detail-section mb-4">
+                  <h3 class="detail-heading">Skills Required</h3>
+                  <div class="detail-content">
+                    <div class="skills-container">
+                      <% task.skills.each do |skill| %>
+                        <span class="skill-pill"><%= skill %></span>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+            <!-- Right column: Status and images -->
+            <div class="col-md-7">
+              <!-- Status Update -->
+              <div class="detail-section mb-4">
+                <h3 class="detail-heading">Status</h3>
+                <div class="detail-content">
+                  <div class="status-select-container d-flex align-items-center">
+                    <select class="form-control status-select" data-task-id="<%= task.id %>" data-current-status="<%= task.status %>">
+                      <option value="Available Tasks" <%= 'selected' if task.status == 'Available Tasks' %>>Available</option>
+                      <option value="Under Progress" <%= 'selected' if task.status == 'Under Progress' %>>Under
+                        Progress
+                      </option>
+                      <option value="Completed Tasks" <%= 'selected' if task.status == 'Completed Tasks' %>>Completed</option>
+                    </select>
+                    <button class="btn btn-update ml-3 update-status-btn" data-task-id="<%= task.id %>">
+                      Update
+                    </button>
+                  </div>
+                  <div class="status-message mt-2" id="status-message-<%= task.id %>"></div>
+                </div>
+              </div>
+
+              <!-- Assignment Section -->
+              <div class="detail-section mb-4">
+                <h3 class="detail-heading">Assigned To</h3>
+                <div class="detail-content">
+                  <div id="assignment-display-<%= task.id %>" class="d-flex align-items-center">
+                    <% if task.assignee %>
+                      <div class="d-flex align-items-center">
+                        <% if task.assignee.profile_image.attached? %>
+                          <%= image_tag task.assignee.profile_image, class: "rounded-circle me-2", style: "width: 32px; height: 32px; object-fit: cover;" %>
+                        <% else %>
+                          <%= image_tag "profile.png", class: "rounded-circle me-2", style: "width: 32px; height: 32px; object-fit: cover;" %>
+                        <% end %>
+                        <span>Currently assigned to: <strong><%= task.assignee.name %></strong></span>
+                      </div>
+                    <% else %>
+                      <span>Not assigned.</span>
+                    <% end %>
+                  </div>
+                  <% if current_user&.present? && current_user&.id == task.user_id %>
+                    <div class="assignment-form-container d-flex align-items-center mt-3">
+                      <select class="form-control assignment-select mr-2" data-task-id="<%= task.id %>">
+                        <option value="">Unassign</option>
+                        <% task.group.members.each do |member| %>
+                          <option value="<%= member.id %>"
+                                  <%= 'selected' if task.assignee_id == member.id %>
+                                  data-profile-image="<%= member.profile_image.attached? ? url_for(member.profile_image) : asset_path('profile.png') %>">
+                            <%= member.name %>
+                          </option>
+                        <% end %>
+                      </select>
+                      <button class="btn btn-sm btn-outline-primary assign-task-btn" data-task-id="<%= task.id %>">
+                        Assign
+                      </button>
+                    </div>
+                  <% end %>
+                  <div class="assignment-message mt-2" id="assignment-message-<%= task.id %>"></div>
+                </div>
+              </div>
+
+              <!-- Carousel for Multiple Images -->
+              <% if task.images.attached? %>
+                <div class="detail-section">
+                  <h3 class="detail-heading">Attachments</h3>
+                  <div class="detail-content">
+                    <div id="carouselTaskImages<%= task.id %>" class="carousel slide" data-ride="carousel">
+                      <!-- Indicators -->
+                      <ol class="carousel-indicators">
+                        <% task.images.each_with_index do |image, index| %>
+                          <li data-target="#carouselTaskImages<%= task.id %>" data-slide-to="<%= index %>" class="<%= 'active' if index == 0 %>"></li>
+                        <% end %>
+                      </ol>
+
+                      <div class="carousel-inner">
+                        <% task.images.each_with_index do |image, index| %>
+                          <div class="carousel-item <%= 'active' if index == 0 %>">
+                            <div class="modal-image-container">
+                              <%= image_tag image, class: 'img-fluid rounded', alt: "#{task.title} Image #{index + 1}" %>
+                            </div>
+                          </div>
+                        <% end %>
+                      </div>
+
+                      <!-- Carousel controls -->
+                      <a class="carousel-control-prev" href="#carouselTaskImages<%= task.id %>" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                      </a>
+                      <a class="carousel-control-next" href="#carouselTaskImages<%= task.id %>" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                      </a>
+                    </div>
+
+                    <!-- Thumbnail navigation -->
+                    <div class="thumbnails-container mt-3">
+                      <% task.images.each_with_index do |image, index| %>
+                        <div class="thumbnail-wrapper">
+                          <img src="<%= url_for(image) %>" class="img-thumbnail carousel-thumbnail"
+                               data-target="#carouselTaskImages<%= task.id %>" data-slide-to="<%= index %>"
+                               alt="Thumbnail <%= index + 1 %>">
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+
+              <!-- Comments Section -->
+              <div class="detail-section mb-4">
+                <h3 class="detail-heading">Comments</h3>
+                <div class="detail-content">
+                  <div id="comments-container-<%= task.id %>" class="overflow-auto" style="max-height: 300px;">
+                    <%= render partial: 'tasks/comments_list', locals: {task: task, comments: task.comments} %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
+          <%= link_to task_path(task), class: 'btn btn-dark' do %>
+            View Details
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<!-- New Task Modal -->
+<% if defined?(current_user) && current_user.present? %>
+  <div class="modal fade" id="newTaskModal" tabindex="-1" role="dialog" aria-labelledby="newTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="newTaskModalLabel"><i class="bi bi-plus-circle"></i> Create New Task</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="task-form-container">
+            <%= form_with(model: Task.new, remote: true, html: {class: "task-form"}) do |form| %>
+              <!-- Hidden fields -->
+              <%= form.hidden_field :user_id, value: current_user.id %>
+              <%= form.hidden_field :group_id, value: defined?(group) && group.present? ? group.id : nil %>
+              <%= form.hidden_field :status, value: "Available Tasks" %>
+
+              <div class="form-row">
+                <div class="form-group col-12">
+                  <%= form.label :title, "Task Title", class: 'form-label fw-bold' %>
+                  <%= form.text_field :title, autofocus: true, class: 'form-control', placeholder: "Enter a clear, descriptive title" %>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col-12">
+                  <%= form.label :description, "Task Description", class: 'form-label fw-bold' %>
+                  <%= form.text_area :description, rows: 4, class: 'form-control',
+                                     placeholder: "Describe what needs to be done, provide context, and any specific requirements" %>
+                </div>
+              </div>
+
+              <div class="form-row mt-3">
+                <div class="form-group col-md-6">
+                  <%= form.label :priority, "Priority Level", class: "form-label fw-bold" %>
+                  <%= form.select :priority, [['Casual', 'Casual'], ['Pressing', 'Pressing'], ['Urgent', 'Urgent']],
+                                  {selected: 'Casual'}, {class: "form-control custom-select"} %>
+                  <small class="form-text text-muted">How urgent is this task?</small>
+                </div>
+
+                <div class="form-group col-md-6">
+                  <%= form.label :hours, "Estimated Hours", class: "form-label fw-bold" %>
+                  <%= form.number_field :hours, step: 0.1, min: 0.1, max: 999.99, value: 1.0,
+                                        class: "form-control", placeholder: "e.g., 1.5" %>
+                  <small class="form-text text-muted">Approximate time needed to complete</small>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col-12">
+                  <%= form.label :skills, "Required Skills", class: 'form-label fw-bold' %>
+                  <%= form.text_field :skills, class: 'form-control',
+                                      placeholder: "JavaScript, Ruby, UI/UX (comma separated)" %>
+                  <small class="form-text text-muted">Skills needed to complete this task</small>
+                </div>
+              </div>
+
+              <div class="form-row mt-2">
+                <div class="form-group col-12">
+                  <%= form.label :images, "Task Images", class: 'form-label fw-bold' %>
+                  <div class="custom-file">
+                    <%= form.file_field :images, multiple: true, accept: 'image/jpeg, image/png',
+                                        class: 'custom-file-input', id: 'taskImagesInput' %>
+                    <label class="custom-file-label" for="taskImagesInput">Choose files</label>
+                  </div>
+                  <small class="form-text text-muted">Upload relevant screenshots or images (optional)</small>
+                </div>
+              </div>
+
+              <div class="form-row mt-3">
+                <div class="form-group col-12">
+                  <%= form.label :check_back_date, "Check Back Date (Est. Finish)", class: 'form-label fw-bold' %>
+                  <%= form.date_field :check_back_date, class: 'form-control' %>
+                  <small class="form-text text-muted">Optional: Estimated date to check back or when it might be done.
+                  </small>
+                </div>
+              </div>
+
+              <div class="modal-footer mt-4">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <%= form.submit "Create Task", class: 'btn btn-primary' %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<style>
+  /* Task Container Styling */
+  .task-container {
+    padding: 20px;
+  }
+
+  /* Section Styling */
+  .task-section {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+
+  .section-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: #f8f9fa;
+    cursor: pointer;
+  }
+
+  .section-header h3 {
+    font-size: 1.2rem;
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+  }
+
+  .section-header h3 i {
+    margin-right: 10px;
+  }
+
+  .task-count {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    border-radius: 20px;
+  }
+
+  .available-section .section-header {
+    border-left: 4px solid #4957b8;
+  }
+
+  .progress-section .section-header {
+    border-left: 4px solid #d19628;
+  }
+
+  .completed-section .section-header {
+    border-left: 4px solid #279e78;
+  }
+
+  .task-grid {
+    padding: 20px;
+  }
+
+  /* Task Card Styling */
+  .task-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .task-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .task-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .task-image-preview {
+    margin-bottom: 10px;
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    height: 120px;
+  }
+
+  .task-image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .image-count {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
+
+  .task-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .task-description {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 10px;
+    flex-grow: 1;
+  }
+
+  .task-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 10px;
+    margin-top: auto;
+    border-top: 1px solid #eee;
+  }
+
+  .task-footer .owner {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    color: #777;
+  }
+
+  .task-footer .assignee-display-on-card {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+  }
+
+  .task-footer img {
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .completed-date {
+    font-size: 0.75rem;
+    color: #666;
+  }
+
+  .skills-preview {
+    display: flex;
+    gap: 5px;
+  }
+
+  .more-skills {
+    font-size: 0.75rem;
+    background: #eee;
+    padding: 3px 6px;
+    border-radius: 10px;
+  }
+
+  /* Toggle Icon */
+  .toggle-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .section-header.collapsed .toggle-icon {
+    transform: rotate(-90deg);
+  }
+
+  /* Status Pills */
+  .status-pill, .priority-pill, .skill-pill {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+  }
+
+  .status-todo {
+    background-color: #e0e5ff;
+    color: #4957b8;
+  }
+
+  .status-inprogress {
+    background-color: #fff0d4;
+    color: #d19628;
+  }
+
+  .status-done {
+    background-color: #d4f5e9;
+    color: #279e78;
+  }
+
+  .priority-casual {
+    background-color: #e0f5ff;
+    color: #2790b8;
+  }
+
+  .priority-pressing {
+    background-color: #fff0d4;
+    color: #d19628;
+  }
+
+  .priority-urgent {
+    background-color: #ffe0e0;
+    color: #d93535;
+  }
+
+  .skill-pill {
+    background-color: #f0f0f5;
+    color: #555;
+    margin-right: 5px;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+  }
+
+  .hours-badge {
+    background-color: #f0f0f5;
+    color: #555;
+    border-radius: 12px;
+    padding: 3px 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  /* Modal Styling */
+  .modal-content {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .modal-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1.25rem 1.5rem;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1rem 1.5rem;
+  }
+
+  .detail-section {
+    margin-bottom: 1.5rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+  }
+
+  .detail-heading {
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+  }
+
+  .detail-content {
+    padding: 1rem;
+  }
+
+  .detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .detail-item:last-child {
+    border-bottom: none;
+  }
+
+  .detail-label {
+    font-weight: 500;
+    color: #555;
+  }
+
+  .modal-image-container {
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    padding: 10px;
+  }
+
+  .modal-image-container img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .carousel {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .carousel-inner {
+    border-radius: 12px;
+  }
+
+  .carousel-item img {
+    border-radius: 12px;
+    object-fit: contain;
+    background-color: #f8f9fa;
+  }
+
+  .thumbnails-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .thumbnail-wrapper {
+    width: 70px;
+    height: 70px;
+    overflow: hidden;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+
+  .thumbnail-wrapper:hover {
+    transform: scale(1.05);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .carousel-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  .btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+    font-weight: 500;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .new-task {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .new-task i {
+    font-size: 0.9rem;
+  }
+
+  .page-item.active .page-link {
+    background-color: #4957b8;
+    border-color: #4957b8;
+  }
+
+  .d-none {
+    display: none !important;
+  }
+
+  /* For layout compatibility */
+  .task-list-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid #eaeaea;
+    transition: all 0.2s ease;
+  }
+
+  .task-list-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .task-number {
+    font-weight: bold;
+    margin-right: 15px;
+    color: #666;
+  }
+
+  /* Additional pagination styling */
+  .pagination .page-link {
+    color: #4957b8;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+  }
+
+  .pagination .page-link:hover {
+    color: #fff;
+    background-color: #4957b8;
+    border-color: #4957b8;
+  }
+</style>
+
+<script>
+    // Collapsible sections
+    $(document).ready(function () {
+        $('#completed-header').on('click', function () {
+            $(this).toggleClass('collapsed');
+            $('#completed-tasks').collapse('toggle');
+        });
+
+        // Initialize carousel thumbnails when modal is shown
+        $('.task-modal').on('shown.bs.modal', function (e) {
+            var modalId = $(this).attr('id');
+            $('.carousel-thumbnail', this).on('click', function () {
+                const slideIndex = $(this).data('slide-to');
+                $('#carouselTaskImages' + modalId.replace('taskModal', '')).carousel(slideIndex);
+            });
+        });
+
+        // Stop event propagation for carousel controls
+        $('.carousel-control-prev, .carousel-control-next').on('click', function (e) {
+            e.stopPropagation();
+        });
+
+        // Status update functionality
+        $('.update-status-btn').on('click', function () {
+            const taskId = $(this).data('task-id');
+            const statusSelect = $(`.status-select[data-task-id="${taskId}"]`);
+            const newStatus = statusSelect.val();
+            const currentStatus = statusSelect.data('current-status');
+            const messageElement = $(`#status-message-${taskId}`);
+
+            // Don't send request if status hasn't changed
+            if (newStatus === currentStatus) {
+                messageElement.html('<div class="alert alert-info">Status is already set to ' +
+                    (newStatus === 'Available Tasks' ? 'Available' : newStatus === 'Under Progress' ? 'Under Progress' : 'Completed') +
+                    '</div>');
+                setTimeout(function () {
+                    messageElement.html('');
+                }, 3000);
+                return;
+            }
+
+            // Show loading indicator
+            $(this).html('Updating...');
+            $(this).prop('disabled', true);
+
+            // Get CSRF token
+            const token = $('meta[name="csrf-token"]').attr('content');
+
+            // Send AJAX request to update status
+            $.ajax({
+                url: `/tasks/${taskId}`,
+                type: 'PATCH',
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-Token': token,
+                    'Accept': 'application/json'
+                },
+                data: {
+                    task: {
+                        status: newStatus
+                    }
+                },
+                success: function (response) {
+                    // Update the status in the task details section
+                    const modal = statusSelect.closest('.modal');
+
+                    // Update the status pill
+                    $(`.detail-item:has(.detail-label:contains('Status')) .status-pill`, modal)
+                        .removeClass('status-todo status-inprogress status-done')
+                        .addClass('status-' + newStatus)
+                        .text(newStatus === 'Available Tasks' ? 'Available' : newStatus === 'Under Progress' ? 'Under Progress' : 'Completed');
+
+                    // Update the data-current-status attribute
+                    statusSelect.data('current-status', newStatus);
+
+                    // Show success message
+                    messageElement.html('<div class="alert alert-success">Status updated successfully!</div>');
+
+                    // Reload the page to reflect the changes in the task sections
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+
+                    // Reset button
+                    $('.update-status-btn[data-task-id="' + taskId + '"]').html('Update');
+                    $('.update-status-btn[data-task-id="' + taskId + '"]').prop('disabled', false);
+                },
+                error: function (xhr, status, error) {
+                    // Show error message
+                    messageElement.html('<div class="alert alert-danger">Failed to update status. Please try again.</div>');
+
+                    // Reset button
+                    $('.update-status-btn[data-task-id="' + taskId + '"]').html('Update');
+                    $('.update-status-btn[data-task-id="' + taskId + '"]').prop('disabled', false);
+
+                    console.error('Error updating status:', error);
+                }
+            });
+        });
+
+        // Task Assignment functionality
+        $('.assign-task-btn').on('click', function () {
+            const taskId = $(this).data('task-id');
+            const assigneeSelect = $(`.assignment-select[data-task-id="${taskId}"]`);
+            const newAssigneeId = assigneeSelect.val();
+            const messageElement = $(`#assignment-message-${taskId}`);
+            const displayElement = $(`#assignment-display-${taskId}`);
+            const assignButton = $(this);
+
+            assignButton.html('Assigning...').prop('disabled', true);
+            messageElement.html(''); // Clear previous messages
+
+            const token = $('meta[name="csrf-token"]').attr('content');
+
+            $.ajax({
+                url: `/tasks/${taskId}`,
+                type: 'PATCH',
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-Token': token,
+                    'Accept': 'application/json'
+                },
+                data: {
+                    task: {
+                        assignee_id: newAssigneeId
+                    }
+                },
+                success: function (response) {
+                    assignButton.html('Assign').prop('disabled', false);
+                    messageElement.html('<div class="alert alert-success">Assignment updated successfully!</div>');
+
+                    // Update the display in the modal
+                    const selectedOption = assigneeSelect.find('option:selected');
+                    const selectedUserName = selectedOption.text();
+                    const selectedUserId = selectedOption.val(); // This is the ID or empty string
+
+                    if (selectedUserId && selectedUserId !== "") { // Check if a user is selected (not "Unassign")
+                        displayElement.html(`Currently assigned to: <strong>${selectedUserName}</strong>`);
+                    } else {
+                        displayElement.html('Not assigned.');
+                    }
+
+                    // Update the card display (outside the modal)
+                    const taskCard = $(`div[data-target="#taskModal${taskId}"]`); // Find the card that opens this modal
+                    let assigneeDisplayOnCard = taskCard.find('.assignee-display-on-card');
+
+                    if (selectedUserId && selectedUserId !== "") {
+                        if (assigneeDisplayOnCard.length === 0) {
+                            // If the display element doesn't exist, create and append it
+                            taskCard.find('.task-footer').append('<div class="d-flex align-items-center mt-2 assignee-display-on-card"></div>');
+                            assigneeDisplayOnCard = taskCard.find('.assignee-display-on-card');
+                        }
+                        // Get the selected option's data attributes for profile image
+                        const profileImageUrl = selectedOption.data('profile-image') || '/assets/profile.png';
+                        assigneeDisplayOnCard.html(`
+                            <img src="${profileImageUrl}" class="rounded-circle me-2" style="width: 24px; height: 24px; object-fit: cover;">
+                            <small class="text-muted">Assigned: ${selectedUserName}</small>
+                        `).show();
+                    } else {
+                        assigneeDisplayOnCard.hide();
+                    }
+
+                    setTimeout(function () {
+                        messageElement.html('');
+                    }, 3000);
+                },
+                error: function (xhr, status, error) {
+                    assignButton.html('Assign').prop('disabled', false);
+                    let errorMessage = 'Failed to update assignment.';
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = xhr.responseJSON.errors.join(', ');
+                    }
+                    messageElement.html(`<div class="alert alert-danger">${errorMessage} Please try again.</div>`);
+                    console.error('Error updating assignment:', error, xhr.responseText);
+                }
+            });
+        });
+    });
+
+    // Pagination functionality
+    $(document).ready(function () {
+        function setupPagination(containerSelector, itemsPerPage = 8) {
+            console.log(`Setting up pagination for ${containerSelector}`);
+
+            const container = $(containerSelector);
+            if (!container.length) {
+                console.log(`Container ${containerSelector} not found`);
+                return;
+            }
+
+            const items = container.find('.row > .col-12');
+            const totalItems = items.length;
+            console.log(`Found ${totalItems} items in ${containerSelector}`);
+
+            // Don't paginate if we don't have enough items
+            if (totalItems <= itemsPerPage) {
+                console.log(`Not enough items for pagination in ${containerSelector}`);
+                return;
+            }
+
+            // Create our pagination controls
+            let paginationHTML = `
+        <div class="pagination-container mt-3">
+          <nav>
+            <ul class="pagination justify-content-center">
+              <li class="page-item disabled"><a class="page-link" href="#" data-page="prev">Previous</a></li>
+      `;
+
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            console.log(`Total pages: ${totalPages}`);
+
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML += `<li class="page-item ${i === 1 ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+            }
+
+            paginationHTML += `
+              <li class="page-item"><a class="page-link" href="#" data-page="next">Next</a></li>
+            </ul>
+          </nav>
+        </div>
+      `;
+
+            // Remove existing pagination if any
+            container.find('.pagination-container').remove();
+
+            // Append new pagination
+            container.append(paginationHTML);
+
+            // Show only the first page
+            showPage(1);
+
+            // Handle pagination clicks
+            container.find('.pagination .page-link').on('click', function (e) {
+                e.preventDefault();
+
+                const pageAction = $(this).data('page');
+                const activePage = container.find('.pagination .page-item.active');
+                const activePageNum = parseInt(activePage.find('.page-link').text());
+
+                let targetPage = activePageNum;
+
+                // Update which page we're showing
+                if (pageAction === 'prev') {
+                    if (activePageNum > 1) {
+                        targetPage = activePageNum - 1;
+                    } else {
+                        return; // Already on first page
+                    }
+                } else if (pageAction === 'next') {
+                    if (activePageNum < totalPages) {
+                        targetPage = activePageNum + 1;
+                    } else {
+                        return; // Already on last page
+                    }
+                } else {
+                    targetPage = parseInt(pageAction);
+                }
+
+                console.log(`Changing to page ${targetPage}`);
+                showPage(targetPage);
+                updatePaginationUI(targetPage);
+            });
+
+            // Function to show a specific page
+            function showPage(pageNum) {
+                const startIndex = (pageNum - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+
+                console.log(`Showing items from ${startIndex} to ${endIndex - 1}`);
+
+                // Hide all items
+                items.each(function (index) {
+                    if (index >= startIndex && index < endIndex) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+
+            // Function to update pagination UI
+            function updatePaginationUI(currentPage) {
+                // Update active page
+                container.find('.pagination .page-item').removeClass('active');
+                container.find(`.pagination .page-link[data-page="${currentPage}"]`).parent().addClass('active');
+
+                // Update disabled states
+                container.find('.pagination .page-link[data-page="prev"]').parent().toggleClass('disabled', currentPage === 1);
+                container.find('.pagination .page-link[data-page="next"]').parent().toggleClass('disabled', currentPage === totalPages);
+            }
+        }
+
+        // Initialize pagination with a slight delay to ensure DOM is ready
+        setTimeout(function () {
+            console.log("Initializing pagination for task sections");
+            setupPagination('#available-tasks', 8);
+            setupPagination('#progress-tasks', 8);
+
+            // Set up completed tasks pagination when expanded
+            $('#completed-header').on('click', function () {
+                if (!$(this).hasClass('collapsed')) {
+                    setTimeout(function () {
+                        setupPagination('#completed-tasks', 8);
+                    }, 300);
+                }
+            });
+        }, 500);
+    });
+    // Initialize Select2 on document ready
+  $(document).ready(function() {
+    // Initialize Select2 for assignment select dropdowns
+    $(".assignment-select").select2({
+      width: '100%',
+      placeholder: "Select a person to assign",
+      allowClear: true,
+      templateResult: formatAssigneeOption,
+      templateSelection: formatAssigneeSelection
+    });
+
+    // Custom formatting for dropdown options with profile image
+    function formatAssigneeOption(assignee) {
+      if (!assignee.id) { return assignee.text; }
+
+      var profileImage = $(assignee.element).data('profile-image');
+
+      if(!profileImage) {
+        return assignee.text;
+      }
+
+      var $assignee = $(
+        '<div class="assignee-option d-flex align-items-center">' +
+          '<img src="' + profileImage + '" class="assignee-img mr-2" style="width: 25px; height: 25px; border-radius: 50%;" />' +
+          '<span>' + assignee.text + '</span>' +
+        '</div>'
+      );
+
+      return $assignee;
+    }
+
+    // Custom formatting for selected option
+    function formatAssigneeSelection(assignee) {
+      if (!assignee.id) { return assignee.text; }
+
+      var profileImage = $(assignee.element).data('profile-image');
+
+      if(!profileImage) {
+        return assignee.text;
+      }
+
+      var $selection = $(
+        '<div class="d-flex align-items-center">' +
+          '<img src="' + profileImage + '" class="assignee-img mr-2" style="width: 20px; height: 20px; border-radius: 50%;" />' +
+          '<span>' + assignee.text + '</span>' +
+        '</div>'
+      );
+
+      return $selection;
+    }
+
+    // Handle assign button clicks
+    $(".assign-task-btn").on("click", function() {
+      var taskId = $(this).data("task-id");
+      var assigneeId = $(".assignment-select[data-task-id='" + taskId + "']").val();
+
+      // Send AJAX request to assign the task
+      $.ajax({
+        url: "/tasks/" + taskId + "/assign",
+        method: "PATCH",
+        data: { assignee_id: assigneeId },
+        success: function(response) {
+          // Show success notification if needed
+          if(response.success) {
+            // You can add a toast notification here
+            console.log("Task assigned successfully");
+          }
+        },
+        error: function(error) {
+          console.error("Error assigning task:", error);
+          // Show error notification if needed
+        }
+      });
+    });
+  });
+</script>

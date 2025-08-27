@@ -16,6 +16,11 @@ module Needpedia
     config.application_name = Rails.application.class.module_parent_name
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
+    config.x.domain = ENV.fetch('DOMAIN') { 'needpedia.org' }
+
+    # Use HTTPS for ActivityPub URLs
+    config.action_mailer.default_url_options = { host: config.x.domain, protocol: 'https' }
+    config.action_controller.default_url_options = { host: config.x.domain, protocol: 'https' }
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers

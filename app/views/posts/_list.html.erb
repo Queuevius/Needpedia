@@ -7,6 +7,8 @@
     <% end %>
   </div>
   <% posts.each do |post| %>
+    <% next unless post.is_a?(Post) %>
+
     <% if post.present? %>
       <div id="post-<%= post.id %>">
         <% if post.post_type == Post::POST_TYPE_SUBJECT %>
