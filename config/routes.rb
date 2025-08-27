@@ -2,6 +2,7 @@ require 'sidekiq/web'
 require 'sidekiq/cron/web'
 
 Rails.application.routes.draw do
+  get '/apipie', to: redirect('/apipie/v2.html')
   apipie
   # Devise and OmniAuth routes
   devise_for :users, controllers: {
@@ -36,7 +37,7 @@ Rails.application.routes.draw do
       post 'tokens/decrease'
     end
     namespace :v2 do
-      resources :posts, only: [:index, :create, :update]
+      resources :posts, only: [:index, :show, :create, :update]
       namespace :webhooks do
         resources :posts, only: [:create]
       end

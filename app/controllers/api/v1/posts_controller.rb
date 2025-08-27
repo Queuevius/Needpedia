@@ -1,15 +1,8 @@
 class Api::V1::PostsController < ApplicationController
-  resource_description do
-    name 'API v1 - Posts'
-    short 'Endpoints to list, create, and update posts'
-    api_versions 'v1'
-  end
   before_action :authenticate_token, except: [:index]
   before_action :validate_post_type_presence, only: [:create]
   before_action :set_post, only: [:update]
 
-  api :GET, '/api/v1/posts', 'List posts (filtered by type)'
-  error code: 401, desc: 'Not authenticated'
   def index
     header_token = extract_token_from_header
     token = ENV['POST_TOKEN']
@@ -21,19 +14,6 @@ class Api::V1::PostsController < ApplicationController
     @subjects = @q.result.includes(:ideas, :child_posts).where(post_type: params[:type], post_id: nil, disabled: false, private: false).uniq
   end
 
-  api :POST, '/api/v1/posts', 'Create a post'
-  param :post, Hash, required: true do
-    param :title, String, required: true
-    param :post_type, String, required: true
-    param :subject_id, Integer
-    param :problem_id, Integer
-    param :parent_id, Integer
-    param :content, Hash do
-      param :body, String, required: true
-    end
-  end
-  error code: 401, desc: 'User must be present'
-  error code: 422, desc: 'Validation error'
   def create
     @post = Post.new(post_params.merge(user_id: current_user.id, content: post_params[:content][:body] ))
     if @post.save
@@ -43,20 +23,6 @@ class Api::V1::PostsController < ApplicationController
     end
   end
 
-  api :PUT, '/api/v1/posts/:id', 'Update a post'
-  param :id, Integer, required: true
-  param :post, Hash, required: true do
-    param :title, String
-    param :post_type, String
-    param :subject_id, Integer
-    param :problem_id, Integer
-    param :parent_id, Integer
-    param :content, Hash do
-      param :body, String
-    end
-  end
-  error code: 404, desc: 'Post not found'
-  error code: 422, desc: 'Validation error'
   def update
     if @post.update(post_params.merge(content: post_params[:content][:body] ))
       render_success_response(@post, 'Post was successfully updated.')

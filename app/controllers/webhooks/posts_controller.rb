@@ -1,48 +1,8 @@
 module Webhooks
   class PostsController < ApplicationController
-    resource_description do
-      name 'Webhooks - Posts'
-      short 'Incoming webhook to create posts'
-      api_versions 'v1'
-    end
+
     skip_before_action :verify_authenticity_token
 
-    api :POST, '/webhooks/posts', 'Create a post via incoming webhook'
-    header 'X-Webhook-Secret', 'Shared secret for authentication', required: true
-    param :title, String, desc: 'Post title', required: true
-    param :content, String, desc: 'Post content (text or HTML)'
-    param :post_type, String, desc: 'Type of the post (e.g., idea, problem, note)'
-    param :user_id, Integer, desc: 'User ID for the post creator', required: true
-    param :subject_id, Integer, desc: 'Optional subject ID'
-    param :problem_id, Integer, desc: 'Optional problem ID'
-    param :lat, Float, desc: 'Latitude'
-    param :long, Float, desc: 'Longitude'
-    param :posted_to_id, Integer, desc: 'Destination/posted_to ID'
-    param :geo_maxing, [TrueClass, FalseClass], desc: 'Geo-maxing flag'
-    param :group_id, Integer, desc: 'Group ID'
-    param :tags, Array, of: String, desc: 'List of tags'
-    param :resource_tags, Array, of: String, desc: 'List of resource tags'
-    param :created_at, String, desc: 'ISO8601 timestamp to override creation time'
-    param :updated_at, String, desc: 'ISO8601 timestamp to override updated time'
-    error code: 401, desc: 'Unauthorized (missing or invalid secret)'
-    error code: 422, desc: 'Validation errors'
-    error code: 503, desc: 'Receiving disabled by admin settings'
-    example <<-EOS
-    Request:
-      POST /webhooks/posts
-      Headers: { "X-Webhook-Secret": "<secret>" }
-      Body:
-      {
-        "title": "Example from Webhook",
-        "content": "Hello from an external system",
-        "post_type": "idea",
-        "user_id": 1,
-        "tags": ["integration", "external"]
-      }
-
-    Success (201):
-      { "id": 42, "url": "https://needpedia.org/posts/42" }
-    EOS
     def create
       unless WebhookSetting.webhook_receiving_enabled?
         render json: { error: 'receiving_disabled' }, status: :service_unavailable and return
