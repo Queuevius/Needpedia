@@ -39,7 +39,8 @@ class TasksController < ApplicationController
 
     respond_to do |format|
       if @task.update(current_task_params)
-        format.html { redirect_to @task, notice: 'Task was successfully updated.' }
+        # After editing, return to the group page and reopen this task's modal (the "2nd view")
+        format.html { redirect_to group_path(@task.group, open_task: true, task_id: @task.id), notice: 'Task was successfully updated.' }
         format.json { render json: { status: :ok, message: 'Task was successfully updated.', assignee_name: @task.assignee&.name } }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -72,7 +73,8 @@ class TasksController < ApplicationController
   # Only allow a list of trusted parameters through.
   def task_params
     permitted = params.require(:task).permit(
-        :title, :description, :city, :user_id, :group_id, :hours, :status,
+        :title, :description, :city, :region, :country, :postal_code, :lat, :long,
+        :user_id, :group_id, :hours, :status,
         :priority, :assignee_id, :check_back_date, images: []
     )
     # Convert the comma-separated string into an array
