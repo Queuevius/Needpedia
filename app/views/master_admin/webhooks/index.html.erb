@@ -1,0 +1,14 @@
+<div class="card align-content-around text-center "><h2>Webhook Settings</h2>
+
+<%= form_with url: update_settings_master_admin_webhooks_path, method: :post, local: true do %>
+  <div>
+    <label>
+      <%= check_box_tag :receiving_enabled, '1', @receiving_enabled %>
+      Enable receiving posts
+    </label>
+  </div>
+  <div>
+    <%= submit_tag "Save" %>
+  </div>
+<% end %>
+</div>
