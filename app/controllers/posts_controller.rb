@@ -231,13 +231,50 @@ class PostsController < ApplicationController
     User.current = current_user if current_user
 
     if @post_type == "TaskCard"
+      tasks = Task.all
+
+      # Filter by skills (comma separated keywords from the main search box)
       search_term = params.dig(:q, :title_cont).to_s.strip
-      keywords = search_term.split(",").map(&:strip)
+      keywords = search_term.split(",").map(&:strip).reject(&:blank?)
       if keywords.present?
-        @task_cards = Task.where("skills::text ~* ANY (array[?])", keywords.map { |k| ".*#{k}.*" }).page(params[:page]).per(10)
-      else
-        @task_cards = Task.all.page(params[:page]).per(10)
+        tasks = tasks.where("skills::text ~* ANY (array[?])", keywords.map { |k| ".*#{Regexp.escape(k)}.*" })
       end
+
+      # Normalize incoming params
+      location_mode = params[:location_mode].to_s
+      raw_lat = params[:lat].to_s.strip
+      raw_lng = params[:long].to_s.strip
+      has_coords = raw_lat.present? && raw_lng.present?
+
+      # Text-based location filtering (only when in text mode or when map coords absent)
+      if (location_mode == 'text') || (location_mode.blank? && params[:location_tags].present? && !has_coords)
+        if params[:location_tags].present?
+          tokens = params[:location_tags].to_s.split(',').map(&:strip).reject(&:blank?)
+          if tokens.any?
+            concatenated = "LOWER(COALESCE(city,'') || ' ' || COALESCE(region,'') || ' ' || COALESCE(country,'') || ' ' || COALESCE(postal_code,''))"
+            ors = tokens.map { |_| "#{concatenated} LIKE ?" }.join(' OR ')
+            likes = tokens.map { |tok| "%#{tok.downcase}%" }
+            tasks = tasks.where(ors, *likes)
+
+            # Special-case: if user types 'online', return tasks with no location set
+            if tokens.any? { |t| t.downcase == 'online' }
+              tasks = tasks.or(Task.where("(city IS NULL OR city='') AND (region IS NULL OR region='') AND (country IS NULL OR country='') AND (postal_code IS NULL OR postal_code='')"))
+            end
+          end
+        end
+      end
+
+      # Map-based filtering (only when in map mode)
+      if location_mode == 'map' && has_coords
+        lat = raw_lat.to_f
+        lng = raw_lng.to_f
+        delta = 2.0 # widen radius (~222km) to be more forgiving
+        tasks = tasks.where("lat BETWEEN ? AND ? AND long BETWEEN ? AND ?", lat - delta, lat + delta, lng - delta, lng + delta)
+      end
+
+      @task_cards = tasks.page(params[:page]).per(10)
+      # Ensure @posts is defined so the view doesn't try to iterate nil when TaskCard has zero results
+      @posts = Kaminari.paginate_array([]).page(params[:posts]).per(10)
     else
       post_query_service = PostSearchService.new(params.merge(tree_number: @tree_number))
       posts = post_query_service.filter
