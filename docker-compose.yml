@@ -1,39 +1,40 @@
-version: "3.3"
-
 services:
-  my-redis:
-    image: redis:latest
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: needpedia
+      POSTGRES_PASSWORD: needpedia
+      POSTGRES_DB: needpedia_development
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
     ports:
       - "6380:6379"
 
-  need_pedia:
+  web:
     build:
       context: .
+    command: bash -lc "bundle exec rails s -b 0.0.0.0 -p 3000"
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgres://needpedia:needpedia@db:5432/needpedia_development
+      REDIS_URL: redis://redis:6379/1
+      DISABLE_FIREBASE: "true"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
     ports:
       - "3000:3000"
-    environment:
-      RAILS_ENV: "development"
-      POSTGRES_USER: "need_pedia"
-      POSTGRES_PASSWORD: "need_pedia"
-      POSTGRES_DB: "need_pedia_development"
-      REDIS_URL: "redis://my-redis:6379/1"
-      RECAPTCHA_SECRET_KEY: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
-      RECAPTCHA_SITE_KEY: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-      RAILS_MASTER_KEY: "ebfbe695bcc876920f7ab978207afd91"
-    volumes:
-      - ./:/workspace
-      - ./docker/database.yml:/workspace/config/database.yml
-      - ./config/credentials/google-services.json:/workspace/config/credentials/google-services.json:ro
-    links:
-      - db
     depends_on:
       - db
+      - redis
 
-  db:
-    image: postgres:11.6
-    environment:
-      POSTGRES_USER: "need_pedia"
-      POSTGRES_PASSWORD: "need_pedia"
-      POSTGRES_DB: "need_pedia_development"
-    ports:
-      - "5432:5432"
+volumes:
+  db_data:
+  node_modules:
+
+
