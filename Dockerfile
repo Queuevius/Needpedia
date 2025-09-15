@@ -1,37 +1,57 @@
-FROM ruby:2.7.1
+FROM ruby:2.7.8-bullseye
 
-WORKDIR /workspace
+# Set working directory
+WORKDIR /app
 
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg -o /root/yarn-pubkey.gpg && apt-key add /root/yarn-pubkey.gpg
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
-RUN curl -sL https://deb.nodesource.com/setup_12.x | /bin/bash -
-RUN apt-get update && apt-get install -y --no-install-recommends nodejs yarn
+# Install OS packages
+RUN apt-get update -y \
+  && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    curl \
+    ca-certificates \
+    git \
+    python2 \
+  && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && \
-  apt-get install -qq -y --no-install-recommends && \
-  rm -rf /var/lib/apt/lists/*
+# Install Node.js 14.x via nvm and Yarn (avoids EOL Debian repo issues)
+ENV NVM_DIR=/usr/local/nvm
+ENV NODE_VERSION=12.22.12
+RUN mkdir -p "$NVM_DIR" \
+  && curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
+  && . "$NVM_DIR/nvm.sh" \
+  && nvm install $NODE_VERSION \
+  && nvm alias default $NODE_VERSION \
+  && nvm use default \
+  && npm install -g yarn \
+  && ln -s "$NVM_DIR/versions/node/v$NODE_VERSION/bin/node" /usr/local/bin/node \
+  && ln -s "$NVM_DIR/versions/node/v$NODE_VERSION/bin/npm" /usr/local/bin/npm \
+  && ln -s "$NVM_DIR/versions/node/v$NODE_VERSION/bin/yarn" /usr/local/bin/yarn
 
+# Install bundler matching project
+ENV BUNDLE_PATH=/usr/local/bundle \
+    BUNDLE_JOBS=4 \
+    BUNDLE_RETRY=3
 
-COPY Gemfile ./
-COPY Gemfile.lock ./
+# Cache gems
+COPY Gemfile Gemfile.lock ./
+RUN gem install bundler -v 2.4.4 \
+  && bundle install
 
-RUN apt install shared-mime-info
-RUN gem install nokogiri -v 1.13.10
-RUN gem install mimemagic -v '0.3.10' --source 'https://rubygems.org/'
-RUN gem install bundler -v 2.4.4
-RUN gem install zeitwerk -v 2.6.18
-RUN gem install nokogiri -v 1.15.6
-RUN gem install net-imap -v 0.3.7
-RUN gem install rails -v 6.0.4
-RUN bundle install
+# Copy application code
+COPY . .
 
-COPY . ./
-RUN chmod +x /workspace/bin/rails
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | /bin/bash -
+# Install JS deps for webpacker
+RUN yarn install --frozen-lockfile || yarn install
 
-
-RUN chmod 0755 /workspace/bin/rails
-RUN chmod 0755 /workspace/bin/start.sh
+# Expose port
 EXPOSE 3000
-# Start the application server
-ENTRYPOINT [ "/bin/bash","./bin/start.sh" ]
+
+# Entrypoint
+COPY docker/entrypoint.sh /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/entrypoint.sh
+
+ENTRYPOINT ["/usr/bin/entrypoint.sh"]
+CMD ["bash", "-lc", "bundle exec rails s -b 0.0.0.0 -p 3000"]
+
+
