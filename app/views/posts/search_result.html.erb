@@ -103,6 +103,19 @@
                     </div>
                   </div>
 
+                  <!-- Skill Tags (only for TaskCard) -->
+                  <div class="col-md-6 mb-3" id="skill-tags-section" style="display:none;">
+                    <div class="row">
+                      <div class="col-md-4 text-right pt-2">
+                        <label>Skill Tag</label>
+                      </div>
+                      <div class="col-md-8">
+                        <%= text_field_tag 'skill_tags', @skill_tags, class: 'form-control', placeholder: 'e.g. Ruby, UI/UX' %>
+                        <small class="form-text text-muted">Comma-separated skills to match TaskCards</small>
+                      </div>
+                    </div>
+                  </div>
+
                   <!-- Location (Map/Text toggle) -->
                   <div class="col-md-6 mb-3" id="location-section">
                     <div class="row">
@@ -231,6 +244,11 @@
 
           <!-- Posts Content -->
           <div id="post-content" class="mt-4">
+            <% if @post_type == 'TaskCard' %>
+              <div class="mb-3">
+                <div id="tasks-result-map" style="height: 380px; width: 100%; display: <%= @task_cards.present? ? 'block' : 'none' %>;"></div>
+              </div>
+            <% end %>
             <% if @posts.blank? && @task_cards.blank? %>
               <div class="alert alert-warning text-center">
                 There doesn't currently seem to be anything on that on Needpedia, would you like to be the one to add
@@ -328,6 +346,14 @@
                 $('.fediverse-notice').remove();
                 $('#location-section').show();
             }
+
+            // Show Skill Tags only for TaskCard
+            if (pt === 'TaskCard') {
+                $('#skill-tags-section').show();
+            } else {
+                $('#skill-tags-section').hide();
+                $('input[name="skill_tags"]').val('');
+            }
         }
 
         toggleFediverseVisibility();
@@ -369,6 +395,13 @@
                 $('.fediverse-notice').remove();
             }
         });
+
+        // Initialize tasks map if TaskCard tab active
+        try {
+            if ($('#tasks-result-map').length) {
+                initTasksMap();
+            }
+        } catch (e) { console.warn('Tasks map init skipped', e); }
 
         // Debug Fediverse post images
         $(document).on('error', '.fediverse-post-image', function () {
@@ -485,4 +518,37 @@
             }
         }
     });
+
+    // Render TaskCard markers on a Leaflet map
+    function initTasksMap() {
+        if ($('#tasks-result-map').data('initialized')) return;
+        $('#tasks-result-map').data('initialized', true);
+
+        try {
+            var coordinates = [32.239491, -83.141719];
+            var mymap = L.map('tasks-result-map').setView(coordinates, 3);
+            var accessToken = '<%= ENV["MAPBOX_ACCESS_TOKEN"] %>';
+            L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + accessToken, {
+                maxZoom: 18,
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                id: 'mapbox/streets-v11',
+                tileSize: 512,
+                zoomOffset: -1
+            }).addTo(mymap);
+
+            var tasks = <%= raw(@task_cards&.map { |t| { id: t.id, title: t.title, lat: t.lat, long: t.long, city: t.city, region: t.region, country: t.country } }.to_json) %>;
+            tasks.forEach(function(t) {
+                if (t.lat && t.long) {
+                    var marker = L.marker([t.lat, t.long]).addTo(mymap);
+                    var city = t.city || '';
+                    var region = t.region || '';
+                    var country = t.country || '';
+                    var loc = [city, region, country].filter(Boolean).join(', ');
+                    marker.bindPopup('<a href="/tasks/' + t.id + '" target="_blank">' + (t.title || '') + '</a><br/>' + (loc || ''));
+                }
+            });
+        } catch (e) {
+            console.warn('initTasksMap failed', e);
+        }
+    }
 </script>
