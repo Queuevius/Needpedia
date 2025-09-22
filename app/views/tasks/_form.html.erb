@@ -151,6 +151,33 @@
           $('#task_lat').val(e.latlng.lat);
           $('#task_long').val(e.latlng.lng);
           L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
+
+          // Reverse geocode to fill city/region/country/postal_code
+          try {
+            var url = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + encodeURIComponent(e.latlng.lat) + '&lon=' + encodeURIComponent(e.latlng.lng);
+            fetch(url, { headers: { 'Accept': 'application/json', 'User-Agent': 'Needpedia/1.0 (contact: support@needpedia.org)' } })
+              .then(function(res){ return res.json(); })
+              .then(function(data){
+                if (!data || !data.address) { return; }
+                var addr = data.address;
+                var city = addr.city || addr.town || addr.village || addr.hamlet || '';
+                var region = addr.state || addr.region || addr.county || '';
+                var country = addr.country || '';
+                var postal = addr.postcode || '';
+
+                // Prefer ids Rails generates (task_city, etc.)
+                var $city = $('#task_city');
+                var $region = $('#task_region');
+                var $country = $('#task_country');
+                var $postal = $('#task_postal_code');
+
+                if ($city.length) { $city.val(city); }
+                if ($region.length) { $region.val(region); }
+                if ($country.length) { $country.val(country); }
+                if ($postal.length) { $postal.val(postal); }
+              })
+              .catch(function(err){ console.warn('Reverse geocoding failed', err); });
+          } catch (ge) { console.warn('Reverse geocoding error', ge); }
         }
         map.on('click', onMapClick);
       } catch (e) { console.warn('Task map init failed', e); }

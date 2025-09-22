@@ -233,11 +233,16 @@ class PostsController < ApplicationController
     if @post_type == "TaskCard"
       tasks = Task.all
 
-      # Filter by skills (comma separated keywords from the main search box)
-      search_term = params.dig(:q, :title_cont).to_s.strip
-      keywords = search_term.split(",").map(&:strip).reject(&:blank?)
-      if keywords.present?
-        tasks = tasks.where("skills::text ~* ANY (array[?])", keywords.map { |k| ".*#{Regexp.escape(k)}.*" })
+      # Filter by skills from dedicated field 'skill_tags'; fallback to keywords from main box
+      skill_tags = params[:skill_tags].to_s.split(',').map(&:strip).reject(&:blank?)
+      if skill_tags.present?
+        tasks = tasks.where("skills::text ~* ANY (array[?])", skill_tags.map { |k| ".*#{Regexp.escape(k)}.*" })
+      else
+        search_term = params.dig(:q, :title_cont).to_s.strip
+        keywords = search_term.split(",").map(&:strip).reject(&:blank?)
+        if keywords.present?
+          tasks = tasks.where("skills::text ~* ANY (array[?])", keywords.map { |k| ".*#{Regexp.escape(k)}.*" })
+        end
       end
 
       # Normalize incoming params
@@ -287,6 +292,7 @@ class PostsController < ApplicationController
     @idea = params[:idea]
     @location_tags = params[:location_tags]
     @resource_tags = params[:resource_tags]
+    @skill_tags = params[:skill_tags]
     @include_mastodon = params[:include_mastodon]
     @include_lemmy = params[:include_lemmy]
     @include_reddit = params[:include_reddit]
