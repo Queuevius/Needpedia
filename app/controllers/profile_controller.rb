@@ -155,7 +155,7 @@ class ProfileController < ApplicationController
   def feed
     blocked_user_ids = params[:uuid].present? ? [] : current_user.blocked_users.pluck(:block_user_id)
     @f = Post.posts_feed.where.not(user_id: blocked_user_ids).ransack(params[:q])
-    posts = @f.result.where(user_id: @user.links.pluck(:id), private: false, disabled: false).order('created_at desc')
+    posts = @f.result.where(private: false, disabled: false).order('created_at desc')
     @posts = Kaminari.paginate_array(posts).page(params[:page]).per 10
     
     # Fetch federated posts directly from followed instances
