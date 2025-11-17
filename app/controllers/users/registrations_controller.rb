@@ -108,6 +108,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def validate_turnstile(token, ip)
+    return true if skip_turnstile_in_development?
+
     uri = URI.parse("https://challenges.cloudflare.com/turnstile/v0/siteverify")
     response = Net::HTTP.post_form(uri, {
         'secret' => ENV['CLOUDFLARE_SECRET_KEY'],
@@ -117,6 +119,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     outcome = JSON.parse(response.body)
     outcome['success']
+  end
+
+  def skip_turnstile_in_development?
+    Rails.env.development? && (ENV['CLOUDFLARE_SECRET_KEY'].blank? || ENV['CLOUDFLARE_SITE_KEY'].blank?)
   end
 
 end
