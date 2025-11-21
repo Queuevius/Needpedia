@@ -31,6 +31,7 @@ Rails.application.routes.draw do
           post :set_current
         end
       end
+      resources :chat_messages, only: [:index, :create]
       resources :tokens, only: [:create]
       post 'tokens/decrease'
     end
@@ -345,6 +346,7 @@ Rails.application.routes.draw do
   post 'users/otp', to: 'users#verify_otp', as: 'verify_user_otp'
   post 'verify_backup_code', to: 'users#verify_backup_code'
   post 'verify_backup_code_show_qrcode', to: 'users#verify_backup_code_show_qrcode', as: 'verify_backup_code_show_qrcode'
+  post 'users/ai_assistant_popup_seen', to: 'users#ai_assistant_popup_seen', as: 'ai_assistant_popup_seen'
 
   resources :feedbacks, only: [:new, :create]
 

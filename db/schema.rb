@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_05_09_100230) do
+ActiveRecord::Schema.define(version: 2025_11_19_114912) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -147,6 +147,17 @@ ActiveRecord::Schema.define(version: 2025_05_09_100230) do
     t.string "page_name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "chat_messages", force: :cascade do |t|
+    t.bigint "chat_thread_id", null: false
+    t.string "role", null: false
+    t.text "content"
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["chat_thread_id", "created_at"], name: "index_chat_messages_on_chat_thread_id_and_created_at"
+    t.index ["chat_thread_id"], name: "index_chat_messages_on_chat_thread_id"
   end
 
   create_table "chat_threads", force: :cascade do |t|
@@ -636,6 +647,11 @@ ActiveRecord::Schema.define(version: 2025_05_09_100230) do
     t.string "priority", default: "Casual"
     t.bigint "assignee_id"
     t.date "check_back_date"
+    t.float "lat"
+    t.float "long"
+    t.string "region"
+    t.string "country"
+    t.string "postal_code"
     t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["group_id"], name: "index_tasks_on_group_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
@@ -817,6 +833,7 @@ ActiveRecord::Schema.define(version: 2025_05_09_100230) do
     t.string "inbox_url"
     t.string "outbox_url"
     t.string "shared_inbox_url"
+    t.boolean "ai_assistant_popup_seen", default: false, null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
@@ -825,12 +842,31 @@ ActiveRecord::Schema.define(version: 2025_05_09_100230) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "webhook_configurations", force: :cascade do |t|
+    t.string "url"
+    t.datetime "validate_until"
+    t.string "secret"
+    t.boolean "active"
+    t.text "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "webhook_settings", force: :cascade do |t|
+    t.string "key"
+    t.text "value"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["key"], name: "index_webhook_settings_on_key", unique: true
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "admin_histories", "users"
   add_foreign_key "ai_tokens", "guests"
   add_foreign_key "ai_tokens", "users"
   add_foreign_key "answers", "questions"
   add_foreign_key "answers", "users"
+  add_foreign_key "chat_messages", "chat_threads"
   add_foreign_key "chat_threads", "guests"
   add_foreign_key "chat_threads", "users"
   add_foreign_key "comments", "users"

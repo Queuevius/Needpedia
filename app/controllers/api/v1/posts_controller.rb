@@ -10,12 +10,127 @@ class Api::V1::PostsController < ApplicationController
       render json: {status: 401, message: 'Not authenticated', content: {}}
       return
     end
+
+    # If post_id is provided, find that specific post
+    if params[:post_id].present?
+      @post = Post.find_by(id: params[:post_id], disabled: false, private: false)
+
+      unless @post
+        render json: { status: 404, message: 'Post not found', content: {} }
+        return
+      end
+
+      # Determine what to include based on post type
+      json_options = { methods: [:url] }
+
+      case @post.post_type
+      when Post::POST_TYPE_SUBJECT
+        # Load problems and their ideas
+        @post = Post.includes(child_posts: :ideas).find(@post.id)
+        json_options[:include] = {
+            child_posts: {
+                only: [:id, :post_type, :title, :subject_id],
+                methods: [:url, :content],
+                include: {
+                    ideas: {
+                        only: [:id, :post_type, :title, :problem_id],
+                        methods: [:url, :content]
+                    }
+                }
+            }
+        }
+      when Post::POST_TYPE_PROBLEM
+        # Load ideas
+        @post = Post.includes(:ideas).find(@post.id)
+        json_options[:include] = {
+            ideas: {
+                only: [:id, :post_type, :title, :problem_id],
+                methods: [:url, :content]
+            }
+        }
+      when Post::POST_TYPE_IDEA
+        # No children to load
+        json_options[:include] = {}
+      end
+
+      render json: {
+          status: 200,
+          message: 'OK',
+          content: @post.as_json(json_options)
+      }
+      return
+    end
+
+    # Original logic for listing posts
     @q = Post.ransack(params[:q])
-    @subjects = @q.result.includes(:ideas, :child_posts).where(post_type: params[:type], post_id: nil, disabled: false, private: false).uniq
+
+    scope = @q.result.where(disabled: false, private: false)
+
+    # Filter by type if specified and not 'all'
+    if params[:type].present? && params[:type].downcase != 'all'
+      case params[:type].downcase
+      when 'subject'
+        # Top-level subjects only
+        scope = scope.where(post_type: Post::POST_TYPE_SUBJECT, subject_id: nil)
+      when 'problem'
+        # Problems belong to subjects
+        scope = scope.where(post_type: Post::POST_TYPE_PROBLEM).where.not(subject_id: nil)
+      when 'idea'
+        # Ideas belong to problems
+        scope = scope.where(post_type: Post::POST_TYPE_IDEA).where.not(problem_id: nil)
+      else
+        # Handle other post types if needed
+        scope = scope.where(post_type: params[:type])
+      end
+    else
+      # When returning all types, get only top-level subjects
+      scope = scope.where(post_type: Post::POST_TYPE_SUBJECT, subject_id: nil)
+    end
+
+    # Load the full hierarchy for 'all' or no type specified
+    if params[:type].blank? || params[:type].downcase == 'all'
+      # Subject has child_posts (problems), and problems have ideas
+      scope = scope.includes(child_posts: :ideas)
+    end
+    @posts = scope.distinct
+
+    include_children = ActiveModel::Type::Boolean.new.cast(params[:include_children])
+
+    # Build JSON response
+    json_options = {
+        methods: [:url],
+        include: {}
+    }
+
+    # Include hierarchy when returning all types or include_children is true
+    if params[:type].blank? || params[:type].downcase == 'all' || include_children
+      json_options[:include][:child_posts] = {
+          only: [:id, :post_type, :title, :subject_id],
+          methods: [:url, :content],
+          include: {
+              ideas: {
+                  only: [:id, :post_type, :title, :problem_id],
+                  methods: [:url, :content]
+              }
+          }
+      }
+    end
+
+    render json: {
+        status: 200,
+        message: 'OK',
+        content: @posts.as_json(json_options)
+    }
   end
 
   def create
-    @post = Post.new(post_params.merge(user_id: current_user.id, content: post_params[:content][:body] ))
+    @post = Post.new(post_params.except(:content).merge(user_id: current_user.id))
+
+    # Set the rich text content from nested body parameter
+    if post_params[:content].present? && post_params[:content][:body].present?
+      @post.content = post_params[:content][:body]
+    end
+
     if @post.save
       render_success_response(@post, 'Post was successfully created.')
     else
@@ -85,7 +200,7 @@ class Api::V1::PostsController < ApplicationController
   end
 
   def post_params
-    params[:post].permit(:title, :post_type, :subject_id, :problem_id, :parent_id, content: [:body])
+    params.require(:post).permit(:title, :post_type, :subject_id, :problem_id, :post_id, :posted_to_id, content: [:body])
   end
 
   def current_user
