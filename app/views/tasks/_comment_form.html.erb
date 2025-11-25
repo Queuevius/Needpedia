@@ -1,6 +1,6 @@
 <%# app/views/tasks/_comment_form.html.erb %>
 <% if current_user.present? %>
-  <%= form_with(model: new_comment, url: comments_path, local: false, html: { id: "task-comment-form-#{@task.id}" }) do |form| %>
+  <%= form_with(model: new_comment, url: comments_path, local: false, html: { id: "task-comment-form-#{task.id}" }) do |form| %>
     <%= form.hidden_field :user_id, value: current_user.id %>
     <%= form.hidden_field :commentable_id, value: task.id %>
     <%= form.hidden_field :commentable_type, value: 'Task' %>

@@ -15,10 +15,16 @@ as defined by the routes in the `admin/` namespace
   ) %>
 
   <% Administrate::Namespace.new(namespace).resources_with_index_route.each do |resource| %>
+    <% next if resource.to_s == 'webhooks' %>
     <%= link_to(
             display_resource_name(resource),
             resource_index_route(resource),
             class: "navigation__link navigation__link--#{nav_link_state(resource)}"
         ) if accessible_action?(model_from_resource(resource), :index) %>
   <% end %>
+  <%= link_to(
+    "Webhooks",
+    master_admin_webhooks_path,
+    class: "navigation__link"
+  ) %>
 </nav>

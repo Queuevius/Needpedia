@@ -179,6 +179,32 @@
 
   <!-- invite Modal -->
   <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<script>
+  function openTaskModalFromParams() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('open_task') === 'true') {
+        var taskId = params.get('task_id');
+        if (taskId) {
+          // Ensure the tasks section is visible (if wrapped in a collapse)
+          var collapse = $('#collapseTask');
+          if (collapse.length && !collapse.hasClass('show')) {
+            collapse.collapse('show');
+          }
+
+          // Wait a moment to ensure DOM is ready, then open the modal
+          setTimeout(function() {
+            var modal = $('#taskModal' + taskId);
+            if (modal.length) { modal.modal('show'); }
+          }, 150);
+        }
+      }
+    } catch (e) { console.warn('Auto-open task modal failed', e); }
+  }
+
+  document.addEventListener('DOMContentLoaded', openTaskModalFromParams);
+  document.addEventListener('turbolinks:load', openTaskModalFromParams);
+</script>
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
