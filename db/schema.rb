@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_11_19_114912) do
+ActiveRecord::Schema.define(version: 2025_08_29_124000) do
+
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -647,11 +648,6 @@ ActiveRecord::Schema.define(version: 2025_11_19_114912) do
     t.string "priority", default: "Casual"
     t.bigint "assignee_id"
     t.date "check_back_date"
-    t.float "lat"
-    t.float "long"
-    t.string "region"
-    t.string "country"
-    t.string "postal_code"
     t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["group_id"], name: "index_tasks_on_group_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"

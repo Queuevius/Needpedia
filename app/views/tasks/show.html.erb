@@ -147,6 +147,18 @@
             </div>
           <% end %>
 
+          <!-- Location -->
+          <div class="mb-4">
+            <h2 class="h5 text-uppercase font-weight-bold mb-3">Location</h2>
+            <% if @task.lat.present? && @task.long.present? %>
+              <div id="task-show-map" style="height: 220px; width: 100%;" data-lat="<%= @task.lat %>" data-long="<%= @task.long %>"></div>
+            <% else %>
+              <p class="mb-1">
+                <%= [@task.city, @task.region, @task.country, @task.postal_code].compact.reject(&:blank?).join(', ').presence || 'Online' %>
+              </p>
+            <% end %>
+          </div>
+
           <!-- Images -->
           <% if @task.images.attached? %>
             <h2 class="h5 text-uppercase font-weight-bold mb-3">Attachments</h2>
@@ -477,4 +489,32 @@
           });
       });
   });
+
+  // Initialize map on task show if present
+  (function initTaskShowMap(){
+    var container = $('#task-show-map');
+    if (!container.length) return;
+    try {
+      var lat = parseFloat(container.data('lat'));
+      var lng = parseFloat(container.data('long'));
+      var map = L.map('task-show-map').setView([lat, lng], 11);
+      var accessToken = '<%= ENV["MAPBOX_ACCESS_TOKEN"].to_s %>';
+      if (accessToken && accessToken.length > 0) {
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + accessToken, {
+          maxZoom: 18,
+          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+          id: 'mapbox/streets-v11',
+          tileSize: 512,
+          zoomOffset: -1
+        }).addTo(map);
+      } else {
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+      }
+      L.marker([lat, lng]).addTo(map);
+      setTimeout(function(){ map.invalidateSize(); }, 100);
+    } catch(e) { console.warn('Show map init failed', e); }
+  })();
 </script>

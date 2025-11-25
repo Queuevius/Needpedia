@@ -2,6 +2,8 @@ require 'sidekiq/web'
 require 'sidekiq/cron/web'
 
 Rails.application.routes.draw do
+  get '/apipie', to: redirect('/apipie/v2.html')
+  apipie
   # Devise and OmniAuth routes
   devise_for :users, controllers: {
     omniauth_callbacks: 'users/omniauth_callbacks',
@@ -35,6 +37,12 @@ Rails.application.routes.draw do
       resources :tokens, only: [:create]
       post 'tokens/decrease'
     end
+    namespace :v2 do
+      resources :posts, only: [:index, :show, :create, :update]
+      namespace :webhooks do
+        resources :posts, only: [:create]
+      end
+    end
   end
   resources :tasks
   put 'posts/:id/api_update', to: 'posts#api_update_post', as: 'api_update_post'
@@ -62,6 +70,12 @@ Rails.application.routes.draw do
   get 'how_tos/index'
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :master_admin do
+    resources :webhooks, only: [:index] do
+      collection do
+        post :update_settings
+      end
+    end
+
     get 'user_ai_histories/show'
 
     resources :admin_histories
@@ -116,6 +130,8 @@ Rails.application.routes.draw do
         get 'unconfirmed_users'
       end
     end
+    resources :webhook_configurations
+
 
     root to: "users#index"
   end

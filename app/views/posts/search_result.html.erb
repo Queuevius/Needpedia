@@ -66,7 +66,7 @@
                 <div class="col-md-6">
                   <div class="row">
                     <div class="col-md-4 text-right pt-2">
-                      <label>Advanced</label>
+                      <label>&nbsp;</label>
                     </div>
                     <div class="col-md-8">
                       <a href="#" data-toggle="collapse" data-target="#advancedFeatures" class="text-dark d-block pt-1">
@@ -103,14 +103,54 @@
                     </div>
                   </div>
 
-                  <!-- Location Tag -->
-                  <div class="col-md-6 mb-3">
+                  <!-- Skill Tags (only for TaskCard) -->
+                  <div class="col-md-6 mb-3" id="skill-tags-section" style="display:none;">
                     <div class="row">
                       <div class="col-md-4 text-right pt-2">
-                        <label>Location Tag</label>
+                        <label>Skill Tag</label>
                       </div>
                       <div class="col-md-8">
-                        <%= text_field_tag 'location_tags', @location_tags, class: 'form-control' %>
+                        <%= text_field_tag 'skill_tags', @skill_tags, class: 'form-control', placeholder: 'e.g. Ruby, UI/UX' %>
+                        <small class="form-text text-muted">Comma-separated skills to match TaskCards</small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Location (Map/Text toggle) -->
+                  <div class="col-md-6 mb-3" id="location-section">
+                    <div class="row">
+                      <div class="col-md-4 text-right pt-2">
+                        <label>Location</label>
+                      </div>
+                      <div class="col-md-8">
+                        <div class="d-flex align-items-center mb-2">
+                          <button type="button" class="btn btn-light btn-sm mr-2" id="location-toggle-map">Map</button>
+                          <button type="button" class="btn btn-light btn-sm" id="location-toggle-text">Text</button>
+                        </div>
+                        <div id="location-text-input">
+                          <div class="form-row">
+                            <div class="col-12 col-md-6 mb-2">
+                              <input type="text" id="location-city" class="form-control" placeholder="City" value="">
+                            </div>
+                            <div class="col-12 col-md-6 mb-2">
+                              <input type="text" id="location-region" class="form-control" placeholder="State / Province / Region" value="">
+                            </div>
+                            <div class="col-12 col-md-6 mb-2">
+                              <input type="text" id="location-country" class="form-control" placeholder="Country" value="">
+                            </div>
+                            <div class="col-12 col-md-6 mb-2">
+                              <input type="text" id="location-code" class="form-control" placeholder="Postal / Area Code (any country)" value="">
+                            </div>
+                          </div>
+                          <%= hidden_field_tag 'location_tags', @location_tags, id: 'location-tags-hidden' %>
+                          <small class="form-text text-muted">You can fill any combination; we’ll match them together.</small>
+                        </div>
+                        <div id="location-map-input" class="mt-2" style="display:none;">
+                          <div id="search-location-map" style="height: 180px; width: 100%;"></div>
+                          <%= hidden_field_tag 'lat', params[:lat], id: 'location-lat-hidden' %>
+                          <%= hidden_field_tag 'long', params[:long], id: 'location-long-hidden' %>
+                          <%= hidden_field_tag 'location_mode', params[:location_mode], id: 'location-mode-hidden' %>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -149,8 +189,8 @@
                     </div>
                   </div>
 
-                  <!-- Include Content From section -->
-                  <div class="col-md-6 mb-3">
+                  <!-- Include Content From section (Fediverse) -->
+                  <div class="col-md-6 mb-3" id="fediverse-section">
                     <div class="row">
                       <div class="col-md-4 text-right pt-2">
                         <label>Fediverse</label>
@@ -204,6 +244,11 @@
 
           <!-- Posts Content -->
           <div id="post-content" class="mt-4">
+            <% if @post_type == 'TaskCard' %>
+              <div class="mb-3">
+                <div id="tasks-result-map" style="height: 380px; width: 100%; display: <%= @task_cards.present? ? 'block' : 'none' %>;"></div>
+              </div>
+            <% end %>
             <% if @posts.blank? && @task_cards.blank? %>
               <div class="alert alert-warning text-center">
                 There doesn't currently seem to be anything on that on Needpedia, would you like to be the one to add
@@ -289,6 +334,31 @@
             return true;
         });
 
+        // Show Fediverse options only when Post Type is Social Media
+        function toggleFediverseVisibility() {
+            var pt = $('#post_type').val();
+            if (pt === 'social_media') {
+                $('#fediverse-section').show();
+                $('#location-section').hide();
+            } else {
+                $('#fediverse-section').hide();
+                $('#include_mastodon, #include_lemmy, #include_reddit, #include_bluesky, #include_peer').prop('checked', false);
+                $('.fediverse-notice').remove();
+                $('#location-section').show();
+            }
+
+            // Show Skill Tags only for TaskCard
+            if (pt === 'TaskCard') {
+                $('#skill-tags-section').show();
+            } else {
+                $('#skill-tags-section').hide();
+                $('input[name="skill_tags"]').val('');
+            }
+        }
+
+        toggleFediverseVisibility();
+        $(document).on('change', '#post_type', toggleFediverseVisibility);
+
         // Add loading spinner for Fediverse searches
         $('#include_mastodon, #include_lemmy, #include_reddit, #include_bluesky, #include_peer').on('change', function () {
             // Check if at least one fediverse option is checked
@@ -325,6 +395,13 @@
                 $('.fediverse-notice').remove();
             }
         });
+
+        // Initialize tasks map if TaskCard tab active
+        try {
+            if ($('#tasks-result-map').length) {
+                initTasksMap();
+            }
+        } catch (e) { console.warn('Tasks map init skipped', e); }
 
         // Debug Fediverse post images
         $(document).on('error', '.fediverse-post-image', function () {
@@ -373,5 +450,105 @@
     $(function () {
         // Add custom style for blue checkboxes
         $('<style>.blue-checkbox:checked { accent-color: #007bff; }</style>').appendTo('head');
+
+        // Location toggle behavior
+        function setLocationMode(mode) {
+            if (mode === 'map') {
+                $('#location-map-input').show();
+                $('#location-text-input').hide();
+                initSearchLocationMap();
+                $('#location-mode-hidden').val('map');
+            } else {
+                $('#location-map-input').hide();
+                $('#location-text-input').show();
+                $('#location-mode-hidden').val('text');
+            }
+        }
+
+        $('#location-toggle-map').on('click', function(){ setLocationMode('map'); });
+        $('#location-toggle-text').on('click', function(){ setLocationMode('text'); });
+
+        // default to text input and keep hidden field updated
+        setLocationMode('text');
+
+        function updateLocationTags() {
+            var city = ($('#location-city').val() || '').trim();
+            var region = ($('#location-region').val() || '').trim();
+            var country = ($('#location-country').val() || '').trim();
+            var code = ($('#location-code').val() || '').trim();
+
+            var parts = [];
+            if (city) parts.push(city);
+            if (region) parts.push(region);
+            if (country) parts.push(country);
+            if (code) parts.push(code);
+            $('#location-tags-hidden').val(parts.join(', '));
+        }
+
+        $(document).on('input change', '#location-city, #location-region, #location-country, #location-code', updateLocationTags);
+
+        function initSearchLocationMap() {
+            if ($('#search-location-map').data('initialized')) return;
+            $('#search-location-map').data('initialized', true);
+
+            try {
+                var coordinates = [32.239491, -83.141719];
+                var mymap = L.map('search-location-map').setView(coordinates, 5);
+                var accessToken = '<%= ENV["MAPBOX_ACCESS_TOKEN"] %>';
+                L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + accessToken, {
+                    maxZoom: 18,
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    id: 'mapbox/streets-v11',
+                    tileSize: 512,
+                    zoomOffset: -1
+                }).addTo(mymap);
+
+                function onMapClick(e) {
+                    $(".leaflet-marker-icon").remove();
+                    $(".leaflet-popup").remove();
+                    $(".leaflet-pane.leaflet-shadow-pane").remove();
+                    $('#location-lat-hidden').val(e.latlng.lat);
+                    $('#location-long-hidden').val(e.latlng.lng);
+                    L.marker([e.latlng.lat, e.latlng.lng]).addTo(mymap);
+                }
+
+                mymap.on('click', onMapClick);
+            } catch (e) {
+                console.warn('Map init failed', e);
+            }
+        }
     });
+
+    // Render TaskCard markers on a Leaflet map
+    function initTasksMap() {
+        if ($('#tasks-result-map').data('initialized')) return;
+        $('#tasks-result-map').data('initialized', true);
+
+        try {
+            var coordinates = [32.239491, -83.141719];
+            var mymap = L.map('tasks-result-map').setView(coordinates, 3);
+            var accessToken = '<%= ENV["MAPBOX_ACCESS_TOKEN"] %>';
+            L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + accessToken, {
+                maxZoom: 18,
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                id: 'mapbox/streets-v11',
+                tileSize: 512,
+                zoomOffset: -1
+            }).addTo(mymap);
+
+            var tasks = <%= raw(@task_cards&.map { |t| { id: t.id, title: t.title, lat: t.lat, long: t.long, city: t.city, region: t.region, country: t.country } }.to_json) %>;
+            tasks.forEach(function(t) {
+                if (t.lat && t.long) {
+                    var marker = L.marker([t.lat, t.long]).addTo(mymap);
+                    var city = t.city || '';
+                    var region = t.region || '';
+                    var country = t.country || '';
+                    var loc = [city, region, country].filter(Boolean).join(', ');
+                    marker.bindPopup('<a href="/tasks/' + t.id + '" target="_blank">' + (t.title || '') + '</a><br/>' + (loc || ''));
+                }
+            });
+        } catch (e) {
+            console.warn('initTasksMap failed', e);
+        }
+    }
 </script>

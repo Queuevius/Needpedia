@@ -14,7 +14,7 @@
       <div class="task-grid">
         <div class="row">
           <% available_tasks = tasks.select {|task| task.status == 'Available Tasks'} %>
-          <% available_tasks.first(8).each do |task| %>
+          <% available_tasks.each do |task| %>
             <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">
               <div class="task-card" data-toggle="modal" data-target="#taskModal<%= task.id %>">
                 <h5 class="task-title text-truncate" title="<%= task.title %>">
@@ -106,7 +106,7 @@
       <div class="task-grid">
         <div class="row">
           <% progress_tasks = tasks.select {|task| task.status == 'Under Progress'} %>
-          <% progress_tasks.first(8).each do |task| %>
+          <% progress_tasks.each do |task| %>
             <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">
               <div class="task-card" data-toggle="modal" data-target="#taskModal<%= task.id %>">
                 <h5 class="task-title text-truncate" title="<%= task.title %>">
@@ -199,7 +199,7 @@
       <div class="task-grid">
         <div class="row">
           <% completed_tasks = tasks.select {|task| task.status == 'Completed Tasks'} %>
-          <% completed_tasks.first(8).each do |task| %>
+          <% completed_tasks.each do |task| %>
             <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">
               <div class="task-card" data-toggle="modal" data-target="#taskModal<%= task.id %>">
                 <h5 class="task-title text-truncate" title="<%= task.title %>">
@@ -368,7 +368,24 @@
                 </div>
               </div>
 
-              <!-- Skills -->
+              
+              <!-- Location (bottom-left) -->
+              <div class="detail-section mt-4">
+                <h3 class="detail-heading">Location</h3>
+                <div class="detail-content">
+                  <% if task.lat.present? && task.long.present? %>
+                    <div id="task-modal-map-<%= task.id %>" style="height: 180px; width: 100%;" data-lat="<%= task.lat %>" data-long="<%= task.long %>"></div>
+                  <% else %>
+                    <p class="mb-1">
+                      <%= [task.city, task.region, task.country, task.postal_code].compact.reject(&:blank?).join(', ').presence || 'Online' %>
+                    </p>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+            <!-- Right column: Skills, Status and images -->
+            <div class="col-md-7">
+              <!-- Skills (top-right) -->
               <% if task.skills.any? %>
                 <div class="detail-section mb-4">
                   <h3 class="detail-heading">Skills Required</h3>
@@ -381,9 +398,6 @@
                   </div>
                 </div>
               <% end %>
-            </div>
-            <!-- Right column: Status and images -->
-            <div class="col-md-7">
               <!-- Status Update -->
               <div class="detail-section mb-4">
                 <h3 class="detail-heading">Status</h3>
@@ -495,8 +509,11 @@
               <div class="detail-section mb-4">
                 <h3 class="detail-heading">Comments</h3>
                 <div class="detail-content">
-                  <div id="comments-container-<%= task.id %>" class="overflow-auto" style="max-height: 300px;">
+                  <div class="comments_container_<%= task.id %> overflow-auto" style="max-height: 300px;">
                     <%= render partial: 'tasks/comments_list', locals: {task: task, comments: task.comments} %>
+                  </div>
+                  <div class="mt-2">
+                    <%= render partial: 'tasks/comment_form', locals: {task: task, new_comment: Comment.new} %>
                   </div>
                 </div>
               </div>
@@ -1230,7 +1247,7 @@
 
             // Create our pagination controls
             let paginationHTML = `
-        <div class="pagination-container mt-3">
+        <div class="pagination-container mt-3 mb-4">
           <nav>
             <ul class="pagination justify-content-center">
               <li class="page-item disabled"><a class="page-link" href="#" data-page="prev">Previous</a></li>
@@ -1409,6 +1426,38 @@
           // Show error notification if needed
         }
       });
+    });
+  });
+</script>
+<script>
+  $(function(){
+    $(document).on('shown.bs.modal', '.task-modal', function() {
+      var container = $(this).find('[id^=task-modal-map-]');
+      if (container.length && !container.data('initialized')) {
+        container.data('initialized', true);
+        var lat = parseFloat(container.data('lat'));
+        var lng = parseFloat(container.data('long'));
+        try {
+          var map = L.map(container.attr('id')).setView([lat, lng], 11);
+          var accessToken = '<%= ENV["MAPBOX_ACCESS_TOKEN"].to_s %>';
+          if (accessToken && accessToken.length > 0) {
+            L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + accessToken, {
+              maxZoom: 18,
+              attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+              id: 'mapbox/streets-v11',
+              tileSize: 512,
+              zoomOffset: -1
+            }).addTo(map);
+          } else {
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              maxZoom: 19,
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+          }
+          L.marker([lat, lng]).addTo(map);
+          setTimeout(function(){ map.invalidateSize(); }, 100);
+        } catch(e) { console.warn('Modal map init failed', e); }
+      }
     });
   });
 </script>

@@ -4,7 +4,10 @@
 <% else %>
   var commentsContainer = $(".comments_container_<%= @comment.commentable_id %>");
   <% if @comment.commentable_type == 'Task' %>
-    commentsContainer.prepend("<%= j(render(partial: 'tasks/comments_list', locals: { comments: [@comment], task: @comment.commentable })) %>");
+    // Remove placeholder if present
+    commentsContainer.find('.no-comments-placeholder').remove();
+    // Insert just the single comment card
+    commentsContainer.prepend("<%= j(render(partial: 'tasks/comment', locals: { comment: @comment })) %>");
   <% else %>
     commentsContainer.prepend("<%= j(render(partial: '/comments/list', locals: { comments: [@comment], post: @comment.commentable })) %>");
   <% end %>
