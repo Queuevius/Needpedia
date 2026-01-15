@@ -9,13 +9,18 @@
 # User.destroy_all
 # User.create(email: 'murtaza@gmail.com', password: 'password', admin: true, first_name: 'Murtaza', last_name: 'Khan')
 
-20.times do |index|
+1.times do |index|
   u = User.new(
-      first_name: Faker::Name.first_name,
-      last_name: Faker::Name.last_name,
-      email: Faker::Internet.unique.email,
-      password: 'password',
-      # image_file_name: rand(1..16)
+    #first_name: Faker::Name.first_name,
+    first_name: "John",
+    #last_name: Faker::Name.last_name,
+    last_name: "Smith",
+    #email: Faker::Internet.unique.email,
+    email: "johnsmith@example.com",
+    password: 'Password123#',
+    confirmation_sent_at: "2023-03-31 04:22:33.308354",
+    confirmed_at: "2023-03-31 04:22:33.308354",
+    #image_file_name: rand(1..16)
   )
   u.save!
 end
