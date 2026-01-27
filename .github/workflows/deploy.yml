@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Install SSH key to Server
-        uses: shimataro/ssh-key-action@v2
+        uses: shimataro/ssh-key-action@v2.7.0
         with:
           key: ${{ secrets.SSH_KEY }}
           name: github-actions
