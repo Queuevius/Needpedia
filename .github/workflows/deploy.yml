@@ -3,7 +3,7 @@ name: Deploy To Server
 on:
   # Deploy on merge to main
   push:
-    branches: [ staging ]
+    branches: [ staging-deploy ]
 #  # Manually deploy branch
 #  workflow_dispatch:
 #    branches: [ main ]
@@ -21,7 +21,7 @@ jobs:
           name: github-actions
           known_hosts: 'random-placeholder-value-replaced-by-keyscan-below'
           config: |
-            host 3.140.250.134
+            host 18.223.241.10
               IdentityFile ~/.ssh/github-actions
               IdentitiesOnly yes
               ForwardAgent yes
@@ -32,11 +32,11 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.6.3
+          ruby-version: 2.7.8
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: Deploy to Staging
         run: |
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/github-actions
-          bundle exec cap staging deploy
+          bundle exec cap production deploy
