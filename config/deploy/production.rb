@@ -40,11 +40,21 @@ server '18.223.241.10', user: 'deploy', roles: %w{app db web}
 # http://net-ssh.github.io/net-ssh/classes/Net/SSH.html#method-c-start
 #
 # Global options
-# --------------
- set :ssh_options, {
-   keys: %w(/Users/murtazakhan/.ssh/needpedia-master-key-pair.pem),
-   forward_agent: true,
- }
+# -------------- for deployment from local (uncomment following lines) ---
+#  set :ssh_options, {
+#    keys: %w(/Users/murtazakhan/.ssh/needpedia-master-key-pair.pem),
+#    forward_agent: true,
+#  }
+
+# config/deploy/production.rb
+server '18.223.241.10', 
+  user: 'deploy',
+  roles: %w{app db web},
+  ssh_options: {
+    forward_agent: true,
+    auth_methods: ["publickey"]
+  }
+
 #
 # The server-based syntax can be used to override options:
 # ------------------------------------
