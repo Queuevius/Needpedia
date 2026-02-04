@@ -38,6 +38,7 @@ class ApplicationController < ActionController::Base
   end
 
   def set_chatbot_url
+    return if request.path.start_with?("/api/v1/auth") && request.post?
     track_guest
     @user = current_user || current_guest
     @token = @user&.uuid
