@@ -14,7 +14,7 @@
       <% end %>
     </li>
     <% if user_signed_in? %>
-      <li>
+      <li class="nav-item dropdown">
         <%= link_to "#", id: "navbar-dropdown-search", class: "dropdown-toggle", data: {target: "nav-search-dropdown", toggle: "dropdown"}, aria: {haspopup: true, expanded: false} do %>
           <i class="fa fa-neuter" style="font-size: x-large; aria-hidden:true" title="Search"></i>
         <% end %>
