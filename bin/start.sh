@@ -50,6 +50,10 @@ boot_need_pedia() {
   "$RAILS_CMD" s --binding 0.0.0.0 -p 3000
 }
 
+rails_seed() {
+  python3 /workspace/bin/seed.py
+}
+
 main() {
   echo "bootstrapping dependencies"
   rm tmp/pids/server.pid || true
@@ -57,6 +61,8 @@ main() {
   install_node_modules
   install_bundle
   configure_db
+
+  rails_seed
 
   # run the rails server
   echo "starting need_pedia"
