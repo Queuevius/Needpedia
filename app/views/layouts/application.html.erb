@@ -11,8 +11,21 @@
       <%= yield %>
     </div>
 
+    <div class="fill-the-empty-space"></div>
+
     <%= render 'shared/footer' %>
   </body>
+  <style>
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    .fill-the-empty-space {
+        flex-grow: 1;
+        flex-shrink: 0;
+    }
+  </style>
 </html>
 <style>
   /* Ensure the whole page takes up at least 100% of the viewport height */
