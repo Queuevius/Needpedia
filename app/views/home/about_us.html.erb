@@ -7,6 +7,69 @@
       <div class="header-accent animate-accent"></div>
     </header>
 
+    <!-- Mission Section -->
+    <section class="mission-section">
+      <div class="mission-content animate-scale">
+        <div class="about-card">
+          <div class="about-copy">
+            <h2>Our Mission</h2>
+            <p class="lead">
+              To create the world's greatest archive for all ideas for all problems in human existence.
+            </p>
+            <p>
+              The world faces countless challenges, yet there is still no centralized place to collect and
+              refine solutions. Needpedia exists to change that — empowering people everywhere to share,
+              improve, and build upon ideas that can shape a better future for humanity.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="center-logo-wrap animate-fade-in" aria-hidden="true">
+      <div class="mission-visual">
+        <div class="visual-accent"></div>
+        <div class="logo-container">
+          <%= image_tag 'Needpedia_logo.png', alt: 'Needpedia Logo', class: 'mission-img' %>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Section -->
+    <section class="history-section">
+      <div class="history-content animate-fade-in">
+        <div class="about-card">
+          <div class="about-copy">
+            <h2>Our History</h2>
+          <p>
+            During the Occupy Wall Street movement, it became clear that people needed a more efficient way to
+            share ideas for the problems they were facing. Meeting in person took too much energy, so creating
+            a digital archive made sense.
+          </p>
+
+          <p>
+            In the beginning, we tried obtaining funding by applying for grants. Sadly, we were unable to secure
+            financial support, so the project's founder personally funded development. Progress was slow but
+            steady — it took years to bring everything together on such a meager budget.
+          </p>
+
+          <p>
+            Many programmers and volunteers contributed their time and knowledge, helping shape the platform
+            and teaching us invaluable lessons about nonprofit management. With support from fiscal sponsors
+            like the Know Agenda Foundation, Needpedia is now able to offer community service hours, accept
+            tax-deductible donations, and provide other services.
+          </p>
+
+          <p>
+            While the platform still doesn’t have a huge user base or content library, even a single news
+            article could instantly change that. Our focus remains on building the best possible technology
+            to empower people everywhere to share ideas and solve real-world problems.
+          </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Founder Section -->
     <section class="profile-section alternating-section">
       <div class="profile-content animate-slide-left">
@@ -56,61 +119,11 @@
       </div>
     </section>
 
-    <!-- Mission Section -->
-    <section class="mission-section">
-      <div class="mission-content animate-scale">
-        <div class="mission-visual">
-          <div class="logo-container">
-            <%= image_tag 'Needpedia_logo.png', alt: 'Needpedia Logo', class: 'mission-img' %>
-          </div>
-          <div class="visual-accent"></div>
-        </div>
-        <div class="mission-text">
-          <h2>Our Mission</h2>
-          <p class="lead">
-            To create the world's greatest archive for all ideas for all problems in human existence.
-          </p>
-          <p>
-            The world faces countless challenges, yet there is still no centralized place to collect and
-            refine solutions. Needpedia exists to change that — empowering people everywhere to share,
-            improve, and build upon ideas that can shape a better future for humanity.
-          </p>
-          <div class="mission-card-text">
-            <h2>Our History</h2>
-            <p>
-              During the Occupy Wall Street movement, it became clear that people needed a more efficient way to
-              share ideas for the problems they were facing. Meeting in person took too much energy, so creating
-              a digital archive made sense.
-            </p>
-
-            <p>
-              In the beginning, we tried obtaining funding by applying for grants. Sadly, we were unable to secure
-              financial support, so the project's founder personally funded development. Progress was slow but
-              steady — it took years to bring everything together on such a meager budget.
-            </p>
-
-            <p>
-              Many programmers and volunteers contributed their time and knowledge, helping shape the platform
-              and teaching us invaluable lessons about nonprofit management. With support from fiscal sponsors
-              like the Know Agenda Foundation, Needpedia is now able to offer community service hours, accept
-              tax-deductible donations, and provide other services.
-            </p>
-
-            <p>
-              While the platform still doesn’t have a huge user base or content library, even a single news
-              article could instantly change that. Our focus remains on building the best possible technology
-              to empower people everywhere to share ideas and solve real-world problems.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- AI Section -->
     <section class="ai-section">
       <div class="ai-intro animate-fade-in">
-        <h2>Our Digital Librarians</h2>
-        <p class="subheading">AI systems named after heroic librarians who resisted oppression</p>
+        <h2>Our Digital Assistants</h2>
+        <p class="subheading">All our AI systems are named in honor of civil servants who dared to oppose fascism</p>
       </div>
 
       <div class="ai-grid">
@@ -359,75 +372,96 @@
 
   /* Mission Section */
   .mission-section {
-    background: linear-gradient(135deg, var(--light) 0%, #ffffff 100%);
-    padding: 6rem 0;
-    margin: 6rem 0;
+    background: transparent;
+    padding: 0;
+    margin: 2rem 0 0;
     position: relative;
+    border-radius: 0;
   }
 
-  .mission-content {
-    max-width: 1200px;
+  .mission-content,
+  .history-content {
+    max-width: 1100px;
     margin: 0 auto;
+  }
+
+  .about-card {
+    padding: 2rem;
+    background: #ffffff;
+    border: 1px solid #e6edf5;
+    border-radius: 18px;
+    box-shadow: 0 16px 34px rgba(25, 44, 67, 0.11);
+  }
+
+  .about-copy {
+    text-align: left;
+  }
+
+  .about-copy p {
+    margin-bottom: 1rem;
+  }
+
+  .about-copy h2 {
+    font-size: 2.4rem;
+    margin-bottom: 1.2rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .center-logo-wrap {
     display: flex;
-    gap: 4rem;
-    align-items: center;
+    justify-content: center;
+    margin: 1.25rem 0 1rem;
   }
 
   .mission-visual {
     position: relative;
-    flex: 0 0 300px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 200px;
+    height: 200px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
   }
 
   .logo-container {
     position: relative;
     z-index: 2;
-    width: 100%;
-    max-width: 250px;
-    transition: transform 0.3s ease;
+    width: 168px;
+    height: 168px;
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 18px 35px rgba(42, 92, 130, 0.2);
   }
 
   .mission-img {
     width: 100%;
-    height: auto;
-    border-radius: 8px;
+    height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+    padding: 8px;
   }
 
   .visual-accent {
     position: absolute;
-    width: calc(100% + 30px);
-    height: calc(100% + 30px);
+    inset: 0;
     background: var(--gradient-secondary);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 12px;
+    border-radius: 20px;
     z-index: 1;
-    transition: all 0.5s ease;
-    animation: gradientShift 5s infinite;
+    animation: gradientShift 8s ease infinite;
+    background-size: 200% 200%;
   }
 
-  .mission-visual:hover .visual-accent {
-    transform: translate(-50%, -50%) rotate(2deg);
-  }
-
-  .mission-text h2 {
-    font-size: 2.4rem;
-    margin-bottom: 1.5rem;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  .history-section {
+    margin: 0 0 4rem;
+    padding: 1rem 0 0;
   }
 
   .lead {
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--primary);
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
   }
 
   /* AI Section */
@@ -509,14 +543,24 @@
       text-align: center;
     }
 
-    .mission-visual {
-      max-width: 250px;
-      margin-bottom: 2rem;
+    .mission-section {
+      padding: 0;
+      margin: 1.5rem 0 0;
+      border-radius: 0;
     }
 
-    .visual-accent {
-      width: calc(100% + 20px);
-      height: calc(100% + 20px);
+    .about-card {
+      padding: 1.25rem;
+    }
+
+    .about-copy h2 {
+      font-size: 2rem;
+    }
+
+    .mission-visual {
+      width: 184px;
+      height: 184px;
+      margin: 0 auto;
     }
 
     .about-header h1 {
