@@ -143,33 +143,33 @@
         const chatDropdown = document.querySelector('.chat-dropdown');
         const toggleButton = document.getElementById('toggleImage');
         const navbarDropdown = document.getElementById('navbarDropdown');
-        
+
         chatDropdown.classList.add('animate-entry');
         toggleButton.classList.add('animate-pulse');
-        
+
         setTimeout(function () {
             toggleButton.classList.remove('animate-pulse');
         }, 2000);
-        
+
         <% if (user_signed_in? && controller.action_name == "index") || (!user_signed_in? && controller.action_name == "index") %>
             $(navbarDropdown).dropdown('show');
             if (toggleButton.src.includes("<%= image_path('buttler.png') %>")) {
                 toggleButton.src = "<%= image_path('dark_buttler.png') %>";
             }
         <% end %>
-        
+
         $(navbarDropdown).on('shown.bs.dropdown', function() {
             if (toggleButton.src.includes("<%= image_path('buttler.png') %>")) {
                 toggleButton.src = "<%= image_path('dark_buttler.png') %>";
             }
         });
-        
+
         $(navbarDropdown).on('hidden.bs.dropdown', function() {
             if (toggleButton.src.includes("<%= image_path('dark_buttler.png') %>")) {
                 toggleButton.src = "<%= image_path('buttler.png') %>";
             }
         });
-        
+
         $(document).on('click', function(e) {
             if (!$(e.target).closest('.nav-item.dropdown').length) {
                 $('.dropdown-menu.show').removeClass('show');
