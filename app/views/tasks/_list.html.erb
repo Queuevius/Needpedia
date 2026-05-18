@@ -298,11 +298,12 @@
             <%= task.title %>
           </h5>
           <div class="modal-actions">
-            <%= link_to edit_task_path(task), class: 'btn btn-sm btn-outline-secondary me-2' do %>
-              <i class="bi bi-pencil"></i> Edit
+            <% if current_user %>
+              <%= link_to edit_task_path(task), class: 'btn btn-sm btn-outline-secondary me-2' do %>
+                <i class="bi bi-pencil"></i> Edit
+              <% end %>
             <% end %>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">              <span aria-hidden="true">&times;</span>
             </button>
           </div>
         </div>
@@ -399,24 +400,26 @@
                 </div>
               <% end %>
               <!-- Status Update -->
-              <div class="detail-section mb-4">
-                <h3 class="detail-heading">Status</h3>
-                <div class="detail-content">
-                  <div class="status-select-container d-flex align-items-center">
-                    <select class="form-control status-select" data-task-id="<%= task.id %>" data-current-status="<%= task.status %>">
-                      <option value="Available Tasks" <%= 'selected' if task.status == 'Available Tasks' %>>Available</option>
-                      <option value="Under Progress" <%= 'selected' if task.status == 'Under Progress' %>>Under
-                        Progress
-                      </option>
-                      <option value="Completed Tasks" <%= 'selected' if task.status == 'Completed Tasks' %>>Completed</option>
-                    </select>
-                    <button class="btn btn-update ml-3 update-status-btn" data-task-id="<%= task.id %>">
-                      Update
-                    </button>
+              <% if current_user %>
+                <div class="detail-section mb-4">
+                  <h3 class="detail-heading">Status</h3>
+                  <div class="detail-content">
+                    <div class="status-select-container d-flex align-items-center">
+                      <select class="form-control status-select" data-task-id="<%= task.id %>" data-current-status="<%= task.status %>">
+                        <option value="Available Tasks" <%= 'selected' if task.status == 'Available Tasks' %>>Available</option>
+                        <option value="Under Progress" <%= 'selected' if task.status == 'Under Progress' %>>Under
+                          Progress
+                        </option>
+                        <option value="Completed Tasks" <%= 'selected' if task.status == 'Completed Tasks' %>>Completed</option>
+                      </select>
+                      <button class="btn btn-update ml-3 update-status-btn" data-task-id="<%= task.id %>">
+                        Update
+                      </button>
+                    </div>
+                    <div class="status-message mt-2" id="status-message-<%= task.id %>"></div>
                   </div>
-                  <div class="status-message mt-2" id="status-message-<%= task.id %>"></div>
                 </div>
-              </div>
+              <% end %>
 
               <!-- Assignment Section -->
               <div class="detail-section mb-4">

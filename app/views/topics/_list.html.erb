@@ -82,7 +82,7 @@
             type: "POST",
             dataType: "JSON",
             data: {
-                user_id: <%= current_user.id %>,
+                user_id: <%= current_user&.id || 'null' %>,
                 group_id: <%= @group.id || 2 %>,
                 post_token_type: token_type,
             },
