@@ -1,4 +1,5 @@
 class TasksController < ApplicationController
+  before_action :authenticate_user!, except: [:show]
   before_action :set_task, only: %i[show edit update destroy]
   # GET /tasks/1 or /tasks/1.json
   def show

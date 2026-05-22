@@ -1,14 +1,18 @@
 class GroupsController < ApplicationController
   before_action :set_group, only: %i[ layers show edit update destroy join request_to_join ]
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:index, :show]
 
   # GET /groups or /groups.json
   def index
-    if params[:user].present?
-      @groups = current_user.groups.where("group_type IS NULL OR group_type != ?", Group::GROUP_TYPE_LAYER)
+    if current_user
+      if params[:user].present?
+        @groups = current_user.groups.where("group_type IS NULL OR group_type != ?", Group::GROUP_TYPE_LAYER)
+      else
+        groups = Group.where.not(user_id: current_user.id).includes(:requests, :user).all
+        @groups = groups.where("group_type IS NULL OR group_type != ?", Group::GROUP_TYPE_LAYER)
+      end
     else
-      groups = Group.where.not(user_id: current_user.id).includes(:requests, :user).all
-      @groups = groups.where("group_type IS NULL OR group_type != ?", Group::GROUP_TYPE_LAYER)
+      @groups = Group.where("group_type IS NULL OR group_type != ?", Group::GROUP_TYPE_LAYER).includes(:requests, :user).all
     end
   end
 
@@ -20,7 +24,7 @@ class GroupsController < ApplicationController
     @invitations = @group.invitations.where(status: "pending")
     @users_not_in_group = User.where.not(id: @members.pluck(:id)).where.not(id: @invitations&.pluck(:id))
     @invitations = Invitation.where(group_id: @group.id)
-    @current_user_invitation = @invitations.where(user_id: current_user.id).first
+    @current_user_invitation = @invitations.where(user_id: current_user.id).first if current_user
     @topic = Topic.new(parent_id: params[:parent_id])
     @topics = @group.topics.where(parent_id: nil).page(params[:page].present? ? params[:page] : 1).per(5).order('topics.created_at DESC')
     @tasks = @group.tasks.order(created_at: :desc)

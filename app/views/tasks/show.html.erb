@@ -26,10 +26,12 @@
             <div class="d-flex flex-shrink-0">
               <%= link_to group_path(@task.group), class: 'btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center px-2' do %>
                 <i class="bi bi-arrow-left"></i> <span class="d-none d-sm-inline">Back</span>
-            <% end %>
-              <%= link_to edit_task_path(@task), class: 'btn btn-primary btn-sm d-flex align-items-center justify-content-center px-2 ml-2' do %>
-                <i class="bi bi-pencil"></i> <span class="d-none d-sm-inline">Edit</span>
-            <% end %>
+              <% end %>
+              <% if current_user %>
+                <%= link_to edit_task_path(@task), class: 'btn btn-primary btn-sm d-flex align-items-center justify-content-center px-2 ml-2' do %>
+                  <i class="bi bi-pencil"></i> <span class="d-none d-sm-inline">Edit</span>
+                <% end %>
+              <% end %>
             </div>
           </div>
           <h1 class="h3 mb-0 text-break word-wrap"><%= @task.title %></h1>
