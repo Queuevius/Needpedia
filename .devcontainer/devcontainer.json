@@ -1,0 +1,12 @@
+{
+  "name": "Needpedia Development Environment",
+  "image": "mcr.microsoft.com/devcontainers/universal:latest",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Codeium.codeium"
+      ]
+    }
+  },
+  "features": {}
+}
