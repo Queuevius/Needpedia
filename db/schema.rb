@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_08_29_124000) do
-
+ActiveRecord::Schema.define(version: 2026_06_15_121115) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -92,6 +91,20 @@ ActiveRecord::Schema.define(version: 2025_08_29_124000) do
     t.string "audience"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "ai_prompts", force: :cascade do |t|
+    t.string "ai_type"
+    t.text "description"
+    t.integer "version"
+    t.boolean "active"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["active"], name: "index_ai_prompts_on_active"
+    t.index ["ai_type", "version"], name: "index_ai_prompts_on_ai_type_and_version", unique: true
+    t.index ["ai_type"], name: "index_ai_prompts_on_ai_type"
+    t.index ["ai_type"], name: "index_ai_prompts_on_ai_type_active", unique: true, where: "(active = true)"
+    t.index ["version"], name: "index_ai_prompts_on_version"
   end
 
   create_table "ai_tokens", force: :cascade do |t|
@@ -648,6 +661,11 @@ ActiveRecord::Schema.define(version: 2025_08_29_124000) do
     t.string "priority", default: "Casual"
     t.bigint "assignee_id"
     t.date "check_back_date"
+    t.float "lat"
+    t.float "long"
+    t.string "region"
+    t.string "country"
+    t.string "postal_code"
     t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["group_id"], name: "index_tasks_on_group_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
@@ -829,7 +847,6 @@ ActiveRecord::Schema.define(version: 2025_08_29_124000) do
     t.string "inbox_url"
     t.string "outbox_url"
     t.string "shared_inbox_url"
-    t.boolean "ai_assistant_popup_seen", default: false, null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
