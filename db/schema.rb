@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_06_15_121115) do
+ActiveRecord::Schema.define(version: 2026_06_23_120926) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -847,7 +847,9 @@ ActiveRecord::Schema.define(version: 2026_06_15_121115) do
     t.string "inbox_url"
     t.string "outbox_url"
     t.string "shared_inbox_url"
+    t.bigint "current_chat_thread_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["current_chat_thread_id"], name: "index_users_on_current_chat_thread_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
@@ -937,4 +939,5 @@ ActiveRecord::Schema.define(version: 2026_06_15_121115) do
   add_foreign_key "user_questionnaires", "questionnaires"
   add_foreign_key "user_questionnaires", "users"
   add_foreign_key "user_tutorials", "users"
+  add_foreign_key "users", "chat_threads", column: "current_chat_thread_id"
 end
