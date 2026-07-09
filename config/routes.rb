@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       resources :chat_messages, only: [:index, :create]
       resources :tokens, only: [:create]
       post 'tokens/decrease'
+      get 'ai_prompt', to: 'ai_prompts#show'
     end
     namespace :v2 do
       resources :posts, only: [:index, :show, :create, :update]
@@ -70,6 +71,11 @@ Rails.application.routes.draw do
   get 'how_tos/index'
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :master_admin do
+    resources :ai_prompts do
+      member do
+        post :activate
+      end
+    end
     resources :webhooks, only: [:index] do
       collection do
         post :update_settings
