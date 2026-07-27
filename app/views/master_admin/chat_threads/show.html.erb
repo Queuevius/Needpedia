@@ -1,0 +1,94 @@
+<% content_for(:title) { "Chat Thread ##{@thread.id}" } %>
+
+<header class="main-content__header" role="banner">
+  <h1 class="main-content__page-title" id="page-title">
+    Chat Thread: <%= @thread.title.presence || @thread.thread_id %>
+  </h1>
+
+  <div>
+    <%= link_to "Back to Threads", master_admin_chat_threads_path, class: "button" %>
+    <% if @thread.user %>
+      <%= link_to "View User", master_admin_user_path(@thread.user), class: "button" %>
+    <% elsif @thread.guest %>
+      <%= link_to "View Guest", master_admin_guest_path(@thread.guest), class: "button" %>
+    <% end %>
+  </div>
+</header>
+
+<section class="main-content__body">
+  <div class="thread-meta" style="margin-bottom: 24px; padding: 16px; background: #f8f9fa; border-radius: 6px;">
+    <dl style="display: flex; flex-wrap: wrap; gap: 16px 32px; margin: 0;">
+      <div>
+        <dt style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #666;">Thread ID</dt>
+        <dd><code><%= @thread.thread_id %></code></dd>
+      </div>
+      <div>
+        <dt style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #666;">User</dt>
+        <dd>
+          <% if @thread.user %>
+            <%= link_to @thread.user.name || @thread.user.email, master_admin_user_path(@thread.user) %>
+          <% else %>
+            <span class="text-muted">—</span>
+          <% end %>
+        </dd>
+      </div>
+      <div>
+        <dt style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #666;">Guest</dt>
+        <dd>
+          <% if @thread.guest %>
+            <%= link_to "Guest ##{@thread.guest.id}", master_admin_guest_path(@thread.guest) %>
+            <br><small>IP: <%= @thread.guest.ip %> | Last IP: <%= @thread.guest.last_ip %></small>
+          <% else %>
+            <span class="text-muted">—</span>
+          <% end %>
+        </dd>
+      </div>
+      <div>
+        <dt style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #666;">Created</dt>
+        <dd><%= @thread.created_at&.strftime('%B %d, %Y %H:%M:%S') || "—" %></dd>
+      </div>
+      <div>
+        <dt style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #666;">Assistant</dt>
+        <dd><%= @thread.assistant_name.presence || "—" %></dd>
+      </div>
+      <div>
+        <dt style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #666;">Total Messages</dt>
+        <dd><%= @messages.count %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <h2 style="margin-bottom: 16px;">Messages</h2>
+
+  <% if @messages.empty? %>
+    <p class="text-muted">No messages in this thread.</p>
+  <% else %>
+    <div class="chat-messages" style="max-width: 800px;">
+      <% @messages.each do |message| %>
+        <div class="chat-message" style="margin-bottom: 12px; padding: 12px; border-radius: 8px; border: 1px solid <%= message.role == 'user' ? '#e3f2fd' : message.role == 'assistant' ? '#f3e5f5' : '#f5f5f5' %>; background: <%= message.role == 'user' ? '#e3f2fd' : message.role == 'assistant' ? '#f3e5f5' : '#fafafa' %>;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <strong style="text-transform: capitalize; font-size: 13px;">
+              <% if message.role == 'user' %>
+                👤 User
+              <% elsif message.role == 'assistant' %>
+                🤖 Assistant
+              <% else %>
+                🔧 <%= message.role %>
+              <% end %>
+            </strong>
+            <span style="font-size: 12px; color: #888;">
+              <%= message.created_at&.strftime('%b %d, %Y %H:%M:%S') || "—" %>
+              <% if message.ip_address.present? %>
+                | <code><%= message.ip_address %></code>
+              <% end %>
+            </span>
+          </div>
+          <div class="message-content" style="white-space: pre-wrap; word-wrap: break-word; font-size: 14px; line-height: 1.5;">
+            <%= message.content %>
+          </div>
+
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</section>

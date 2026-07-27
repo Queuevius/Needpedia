@@ -18,9 +18,11 @@ class Api::V1::ChatMessagesController < ApplicationController
       return render json: { error: 'messages parameter is required' }, status: :unprocessable_entity
     end
 
+    ip = request.remote_ip
+
     ChatMessage.transaction do
       permitted_messages.each do |attrs|
-        @chat_thread.chat_messages.create!(attrs)
+        @chat_thread.chat_messages.create!(attrs.merge(ip_address: ip))
       end
 
       update_thread_metadata(permitted_messages)
@@ -35,6 +37,15 @@ class Api::V1::ChatMessagesController < ApplicationController
 
   def set_actor
     token = request.headers['Authorization'].to_s
+
+    if token.present? && ENV['POST_TOKEN'].present? && token == ENV['POST_TOKEN']
+      @actor = Guest.find_or_create_by!(uuid: 'vc-email-service') do |g|
+        g.fingerprint = 'vc-email-service'
+        g.ip = request.remote_ip
+      end
+      return
+    end
+
     @actor = User.find_by(uuid: token) || Guest.find_by(uuid: token)
     return if @actor
 
@@ -48,7 +59,13 @@ class Api::V1::ChatMessagesController < ApplicationController
     @chat_thread = @actor.chat_threads.find_by(thread_id: thread_identifier)
     return if @chat_thread
 
-    render json: { error: 'Chat thread not found' }, status: :not_found
+    @chat_thread = @actor.chat_threads.create!(
+      thread_id: thread_identifier,
+      title: params[:title].presence || "Chat",
+      assistant_name: params[:assistant_name]
+    )
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: 'Failed to create thread', details: e.message }, status: :unprocessable_entity and return
   end
 
   def message_params
@@ -72,6 +89,7 @@ class Api::V1::ChatMessagesController < ApplicationController
     updates = {}
     updates[:title] = title if title.present?
     updates[:last_message] = last_message if last_message.present?
+    updates[:assistant_name] = params[:assistant_name] if params[:assistant_name].present?
 
     @chat_thread.update(updates) if updates.present?
   end
