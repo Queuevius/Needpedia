@@ -9,7 +9,8 @@ class Api::V1::ChatThreadsController < ApplicationController
   end
 
   def show
-    render json: @chat_thread
+    messages = @chat_thread.chat_messages.order(:created_at).as_json(only: [:id, :role, :content, :created_at, :metadata])
+    render json: @chat_thread.as_json.merge(messages: messages)
   end
 
   def create
@@ -55,6 +56,15 @@ class Api::V1::ChatThreadsController < ApplicationController
 
   def set_actor
     token = request.headers['Authorization'].to_s
+
+    if token.present? && ENV['POST_TOKEN'].present? && token == ENV['POST_TOKEN']
+      @actor = Guest.find_or_create_by!(uuid: 'vc-email-service') do |g|
+        g.fingerprint = 'vc-email-service'
+        g.ip = request.remote_ip
+      end
+      return
+    end
+
     @actor = User.find_by(uuid: token) || Guest.find_by(uuid: token)
     return if @actor
 
@@ -62,12 +72,11 @@ class Api::V1::ChatThreadsController < ApplicationController
   end
 
   def set_chat_thread
-    @chat_thread = @actor.chat_threads.find(params[:id])
-  rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Chat thread not found' }, status: :not_found
+    @chat_thread = @actor.chat_threads.find_by(id: params[:id]) || @actor.chat_threads.find_by(thread_id: params[:id])
+    render json: { error: 'Chat thread not found' }, status: :not_found unless @chat_thread
   end
 
   def chat_thread_params
-    params.require(:chat_thread).permit(:thread_id, :title, :last_message)
+    params.require(:chat_thread).permit(:thread_id, :title, :last_message, :assistant_name)
   end
 end
