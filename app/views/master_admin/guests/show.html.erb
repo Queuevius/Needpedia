@@ -19,9 +19,10 @@
             method: :delete,
             data: {confirm: t("administrate.actions.confirm")}
         ) if accessible_action?(page.resource, :destroy) %>
+    <% latest_thread = page.resource.chat_threads.order(created_at: :desc).first %>
     <%= link_to(
             "AI Chat History",
-            master_admin_user_ai_histories_show_path(guest_id: page.resource.id),
+            latest_thread ? master_admin_chat_thread_path(latest_thread) : master_admin_chat_threads_path(guest_id: page.resource.id),
             class: "button"
         ) %>
   </div>

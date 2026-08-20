@@ -1,0 +1,100 @@
+<% content_for(:title) { "Conversations" } %>
+
+<style>
+  select.field__input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: #fff url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 10px center;
+    padding: 8px 32px 8px 12px;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-wrap table { min-width: 700px; }
+  @media (max-width: 768px) {
+    .search-row { flex-direction: column; }
+    .search-row .field__input,
+    .search-row .button { width: 100% !important; flex: none !important; min-width: 0 !important; }
+    .table-wrap table { min-width: 600px; }
+    .hide-mobile { display: none; }
+  }
+</style>
+
+<header class="main-content__header" role="banner">
+  <h1 class="main-content__page-title" id="page-title">
+    Conversations
+  </h1>
+
+  <div class="main-content__header-actions">
+    <%= form_tag master_admin_chat_threads_path, method: :get, class: "search-form" do %>
+      <div class="search-row" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+        <%= text_field_tag :search, params[:search], placeholder: "Search title, messages...", class: "field__input", style: "flex: 1; min-width: 200px;" %>
+        <%= select_tag :assistant_name, options_for_select(["VC Email Assistant", "Needpedia Greeter", "Needpedia Assistant"], params[:assistant_name]), prompt: "All Assistants", class: "field__input", style: "width: 180px;" %>
+        <%= date_field_tag :date_from, params[:date_from], class: "field__input", style: "width: 150px;", title: "From date" %>
+        <%= date_field_tag :date_to, params[:date_to], class: "field__input", style: "width: 150px;", title: "To date" %>
+        <%= submit_tag "Filter", class: "button" %>
+        <%= link_to "Clear", master_admin_chat_threads_path, class: "button" %>
+      </div>
+    <% end %>
+  </div>
+</header>
+
+<section class="main-content__body main-content__body--flush">
+  <div class="table-wrap">
+  <table aria-labelledby="page-title" class="table table-striped collection-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>User</th>
+        <th>Guest</th>
+        <th>Assistant</th>
+        <th>Messages</th>
+        <th class="hide-mobile">IP (last msg)</th>
+        <th class="hide-mobile">Created</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @threads.each do |thread| %>
+        <tr>
+          <td><%= thread.id %></td>
+          <td><%= thread.title&.truncate(40) %></td>
+          <td>
+            <% if thread.user %>
+              <%= link_to thread.user.name || thread.user.email, master_admin_user_path(thread.user) %>
+            <% else %>
+              <span class="text-muted">—</span>
+            <% end %>
+          </td>
+            <td>
+              <% if thread.guest %>
+                <%= link_to "Guest ##{thread.guest.id}", master_admin_guest_path(thread.guest) %>
+                <br><small class="text-muted"><%= thread.guest.ip %></small>
+              <% else %>
+                <span class="text-muted">—</span>
+              <% end %>
+            </td>
+          <td><%= thread.assistant_name.presence || "—" %></td>
+          <td><%= thread.chat_messages.count %></td>
+          <td class="hide-mobile">
+            <% last_msg_ip = thread.chat_messages.last&.ip_address %>
+            <% if last_msg_ip %>
+              <code><%= last_msg_ip %></code>
+            <% else %>
+              <span class="text-muted">—</span>
+            <% end %>
+          </td>
+          <td class="hide-mobile"><%= thread.created_at&.strftime('%b %d, %Y %H:%M') || "—" %></td>
+          <td>
+            <%= link_to "View", master_admin_chat_thread_path(thread), class: "button" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  </div>
+
+  <%= paginate @threads %>
+</section>

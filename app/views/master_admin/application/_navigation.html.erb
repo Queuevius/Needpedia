@@ -14,8 +14,14 @@ as defined by the routes in the `admin/` namespace
     class: "navigation__link"
   ) %>
 
+  <%= link_to(
+    "AI Conversations",
+    master_admin_chat_threads_path,
+    class: "navigation__link navigation__link--#{nav_link_state('chat_threads')}"
+  ) %>
+
   <% Administrate::Namespace.new(namespace).resources_with_index_route.each do |resource| %>
-    <% next if resource.to_s == 'webhooks' %>
+    <% next if %w[webhooks chat_threads].include?(resource.to_s) %>
     <%= link_to(
             display_resource_name(resource),
             resource_index_route(resource),

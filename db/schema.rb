@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_06_23_120926) do
+ActiveRecord::Schema.define(version: 2026_07_29_000000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -170,8 +170,10 @@ ActiveRecord::Schema.define(version: 2026_06_23_120926) do
     t.jsonb "metadata", default: {}, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "ip_address"
     t.index ["chat_thread_id", "created_at"], name: "index_chat_messages_on_chat_thread_id_and_created_at"
     t.index ["chat_thread_id"], name: "index_chat_messages_on_chat_thread_id"
+    t.index ["ip_address"], name: "index_chat_messages_on_ip_address"
   end
 
   create_table "chat_threads", force: :cascade do |t|
@@ -180,6 +182,10 @@ ActiveRecord::Schema.define(version: 2026_06_23_120926) do
     t.string "thread_id"
     t.bigint "user_id"
     t.bigint "guest_id"
+    t.datetime "created_at", precision: 6
+    t.datetime "updated_at", precision: 6
+    t.string "assistant_name"
+    t.index ["assistant_name"], name: "index_chat_threads_on_assistant_name"
     t.index ["guest_id"], name: "index_chat_threads_on_guest_id"
     t.index ["user_id"], name: "index_chat_threads_on_user_id"
   end

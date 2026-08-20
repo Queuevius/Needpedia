@@ -18,7 +18,7 @@ Rails.application.routes.draw do
     post '/omniauth/:provider', to: 'users/omniauth_callbacks#passthru'
   end
 
-  # API routes
+  get '/flutter_service_worker.js', to: proc { [204, {}, []] }
   namespace :api, defaults: {format: 'json'} do
     namespace :v1 do
       match '/auth/sign_in', to: 'auth#options_request', via: [:options]
@@ -71,6 +71,7 @@ Rails.application.routes.draw do
   get 'how_tos/index'
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :master_admin do
+    resources :chat_threads, only: [:index, :show]
     resources :ai_prompts do
       member do
         post :activate
