@@ -96,6 +96,17 @@ class PostsController < ApplicationController
     @related_content = RelatedContent.new(parent_id: params[:parent_id])
     @objective = Objective.new(parent_id: params[:parent_id])
     @cleaned_text = @post.content.body.to_plain_text.squish
+
+    # Load per-user transform if present
+    @post_transformation = nil
+    if current_user
+      @post_transformation = PostTransformation.for_user(current_user).for_post(@post).last
+    elsif current_guest
+      @post_transformation = PostTransformation.for_guest(current_guest).for_post(@post).last
+    end
+    @display_content = @post_transformation&.content || @post.content
+    @transformed = @post_transformation.present?
+    @post_translations = PostTranslation.for_post(@post).pluck(:language, :content).to_h
   end
 
   # GET /posts/new
@@ -334,6 +345,22 @@ class PostsController < ApplicationController
       flash[:alert] = "An Error occurred: #{e}"
     end
     redirect_back(fallback_location: post_path(@post))
+  end
+
+  def undo_transform
+    @post = Post.find(params[:post_id])
+    transform = if current_user
+                  PostTransformation.for_user(current_user).for_post(@post).last
+                elsif current_guest
+                  PostTransformation.for_guest(current_guest).for_post(@post).last
+                end
+    if transform
+      transform.destroy
+      flash[:notice] = 'Page restored to original.'
+    else
+      flash[:alert] = 'No transformation found to undo.'
+    end
+    redirect_to post_path(@post)
   end
 
   def modal

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_07_29_000000) do
+ActiveRecord::Schema.define(version: 2026_08_04_120000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -170,10 +170,8 @@ ActiveRecord::Schema.define(version: 2026_07_29_000000) do
     t.jsonb "metadata", default: {}, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "ip_address"
     t.index ["chat_thread_id", "created_at"], name: "index_chat_messages_on_chat_thread_id_and_created_at"
     t.index ["chat_thread_id"], name: "index_chat_messages_on_chat_thread_id"
-    t.index ["ip_address"], name: "index_chat_messages_on_ip_address"
   end
 
   create_table "chat_threads", force: :cascade do |t|
@@ -182,10 +180,6 @@ ActiveRecord::Schema.define(version: 2026_07_29_000000) do
     t.string "thread_id"
     t.bigint "user_id"
     t.bigint "guest_id"
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
-    t.string "assistant_name"
-    t.index ["assistant_name"], name: "index_chat_threads_on_assistant_name"
     t.index ["guest_id"], name: "index_chat_threads_on_guest_id"
     t.index ["user_id"], name: "index_chat_threads_on_user_id"
   end
@@ -486,6 +480,32 @@ ActiveRecord::Schema.define(version: 2026_07_29_000000) do
     t.integer "topic_id"
     t.index ["post_id"], name: "index_post_tokens_on_post_id"
     t.index ["user_id"], name: "index_post_tokens_on_user_id"
+  end
+
+  create_table "post_transformations", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "guest_id"
+    t.bigint "post_id", null: false
+    t.string "transform_type", default: "freeform"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["guest_id", "post_id"], name: "index_post_transformations_on_guest_id_and_post_id", unique: true, where: "(guest_id IS NOT NULL)"
+    t.index ["guest_id"], name: "index_post_transformations_on_guest_id"
+    t.index ["post_id"], name: "index_post_transformations_on_post_id"
+    t.index ["user_id", "post_id"], name: "index_post_transformations_on_user_id_and_post_id", unique: true, where: "(user_id IS NOT NULL)"
+    t.index ["user_id"], name: "index_post_transformations_on_user_id"
+  end
+
+  create_table "post_translations", force: :cascade do |t|
+    t.bigint "post_id", null: false
+    t.string "language", null: false
+    t.text "content", null: false
+    t.bigint "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["post_id", "language"], name: "index_post_translations_on_post_id_and_language", unique: true
+    t.index ["post_id"], name: "index_post_translations_on_post_id"
+    t.index ["user_id"], name: "index_post_translations_on_user_id"
   end
 
   create_table "post_versions", force: :cascade do |t|
@@ -912,6 +932,11 @@ ActiveRecord::Schema.define(version: 2026_07_29_000000) do
   add_foreign_key "objectives", "users"
   add_foreign_key "post_tokens", "posts", on_delete: :cascade
   add_foreign_key "post_tokens", "users"
+  add_foreign_key "post_transformations", "guests"
+  add_foreign_key "post_transformations", "posts"
+  add_foreign_key "post_transformations", "users"
+  add_foreign_key "post_translations", "posts"
+  add_foreign_key "post_translations", "users"
   add_foreign_key "post_versions", "posts"
   add_foreign_key "post_versions", "users"
   add_foreign_key "post_versions", "users", column: "restored_by_id"

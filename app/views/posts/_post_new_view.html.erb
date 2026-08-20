@@ -221,9 +221,23 @@
                         <tr>
                           <th scope="row">
                             <div>
+                              <% if @transformed %>
+                                <div class="alert alert-info d-flex justify-content-between align-items-center mb-3" style="border-left: 4px solid #17a2b8; background-color: #e8f4f8;">
+                                  <span>
+                                    <strong>Page temporarily edited for you.</strong>
+                                    <% if @post_transformation.transform_type&.start_with?('translate_') %>
+                                      Translated to <%= TranslationService::LANGUAGES[@post_transformation.transform_type.sub('translate_', '')] || @post_transformation.transform_type %>.
+                                    <% else %>
+                                      This page has been converted by Lotte.
+                                    <% end %>
+                                    The original content is unchanged.
+                                  </span>
+                                  <%= button_to 'Restore original', post_undo_transform_path(@post), method: :delete, class: 'btn btn-sm btn-outline-danger', data: { confirm: 'Restore the original page?' } %>
+                                </div>
+                              <% end %>
                               <% if @cleaned_text.length > Post::MAX_POST_BODY_LENGTH %>
                                 <div class="text-truncate-container">
-                                  <%= @post.content %>
+                                  <%= @display_content %>
                                 </div>
                                 <%= link_to 'See more', '', class: "read-more-#{@post.id} fas fa-caret-right  mt-3" %>
                                 <style>
@@ -236,7 +250,7 @@
                                 </style>
                               <% else %>
                                 <div>
-                                  <%= @post.content.blank? ? 'No details provided' : @post.content %>
+                                  <%= @display_content.blank? ? 'No details provided' : @display_content %>
                                 </div>
                               <% end %>
                             </div>
@@ -244,6 +258,9 @@
                         </tr>
                         </tbody>
                       </table>
+                      <div class="mt-2 mb-3">
+                        <%= render 'translate_controls' %>
+                      </div>
                       <div class="mt-2">
                         <% if @post.curated %>
                           <p><strong>Authers and Editors:</strong> <%= @post.user.name %>,
@@ -674,7 +691,7 @@
 
     $('.read-more-<%= @post.id %>').on('click', function (e) {
         e.preventDefault()
-        $(this).parent().html('<%= escape_javascript @post.content %>')
+        $(this).parent().html('<%= escape_javascript @display_content %>')
     });
 
     $('#recipeCarousel').carousel({
