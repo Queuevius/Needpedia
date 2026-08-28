@@ -36,9 +36,13 @@ module Api
         post = Post.find_by(id: params[:post_id])
         return render json: { error: 'Post not found' }, status: :not_found unless post
 
+        token = request.headers['token'].to_s
+        user = User.find_by(uuid: token)
+
         translation = PostTranslation.find_or_initialize_by(post: post, language: params[:language])
         translation.content = params[:content]
-        translation.user = current_user if current_user
+        translation.user = user if user
+        translation.post_version_id = post.post_versions.where(active: true).pluck(:id).first
         if translation.save
           render json: { status: 'ok', translation: { id: translation.id, language: translation.language, post_id: post.id } }
         else
@@ -48,8 +52,14 @@ module Api
 
       # GET /api/v1/translations/:post_id
       def index
-        translations = PostTranslation.for_post(params[:post_id]).pluck(:language, :content)
-        render json: { translations: translations.to_h }
+        post = Post.find_by(id: params[:post_id])
+        return render json: { translations: {} } unless post
+
+        active_version_id = post.post_versions.where(active: true).pluck(:id).first
+        translations = PostTranslation.for_post(post)
+          .where(post_version_id: [active_version_id, nil])
+          .pluck(:language, :content).to_h
+        render json: { translations: translations }
       end
     end
   end

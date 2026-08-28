@@ -44,6 +44,7 @@ Rails.application.routes.draw do
       post 'translations/batch_translate', to: 'translations#batch_translate'
       post 'translations/save', to: 'translations#save'
       get 'translations/:post_id', to: 'translations#index'
+      get 'posts/:post_id/post_versions/active', to: 'post_versions#active'
       get 'ai_prompt', to: 'ai_prompts#show'
     end
     namespace :v2 do

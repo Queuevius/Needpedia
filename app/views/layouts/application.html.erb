@@ -99,6 +99,14 @@
       return false;
     }
 
+    function updateTranslationButtons() {
+      var restoreBtn = document.getElementById('restore-btn');
+      var retranslateBtn = document.getElementById('retranslate-btn');
+      var show = pageTranslated && trackedNodes.length > 0;
+      if (restoreBtn) restoreBtn.style.display = show ? 'inline-block' : 'none';
+      if (retranslateBtn) retranslateBtn.style.display = show ? 'inline-block' : 'none';
+    }
+
     function saveCacheToDb(langCode) {
       var cache = pendingTranslations[langCode] || {};
       var postId = postIdForPage();
@@ -219,6 +227,7 @@
         }
       }
       pageTranslated = true;
+      updateTranslationButtons();
     }
 
     function confirmTranslation() {
@@ -244,6 +253,7 @@
       }
       trackedNodes = [];
       pageTranslated = false;
+      updateTranslationButtons();
 
       var confirmBtn = document.getElementById('confirm-btn');
       if (confirmBtn) confirmBtn.style.display = 'none';
@@ -317,9 +327,56 @@
       applyFromCache(cache);
     }
 
+    window.addEventListener('message', function(event) {
+      if (!event.data || event.data.type !== 'page-transformed') return;
+      var postId = event.data.postId;
+      var newContent = event.data.newContent;
+      if (!postId || !newContent) return;
+
+      // Save original content for client-side restore
+      var contentDiv = document.querySelector('[data-post-id="' + postId + '"]');
+
+      if (contentDiv && !contentDiv.dataset.originalContent) {
+        contentDiv.dataset.originalContent = contentDiv.innerHTML;
+      }
+
+      if (contentDiv) {
+        contentDiv.innerHTML = newContent;
+      }
+
+      var transformBanner = document.createElement('div');
+      transformBanner.className = 'alert alert-info d-flex justify-content-between align-items-center mb-3';
+      transformBanner.style.cssText = 'border-left: 4px solid #17a2b8; background-color: #e8f4f8;';
+      transformBanner.innerHTML = '<span><strong>Page temporarily edited for you.</strong> This page has been transformed by Lotte. The original content is unchanged.</span><button class="btn btn-sm btn-outline-danger" onclick="restoreTransformedPage(\'' + postId + '\')"><i class="fas fa-undo"></i> Restore original</button>';
+      if (contentDiv) contentDiv.parentNode.insertBefore(transformBanner, contentDiv);
+
+      var tc = document.getElementById('translate-controls');
+      if (tc) { tc.classList.remove('d-flex'); tc.classList.add('d-none'); }
+    });
+
+    function restoreTransformedPage(postId) {
+      var contentDiv = document.querySelector('[data-post-id="' + postId + '"]');
+      if (contentDiv && contentDiv.dataset.originalContent) {
+        contentDiv.innerHTML = contentDiv.dataset.originalContent;
+        delete contentDiv.dataset.originalContent;
+      }
+      var banner = document.querySelector('.alert-info.d-flex');
+      if (banner) banner.remove();
+      var tc = document.getElementById('translate-controls');
+      if (tc) { tc.classList.remove('d-none'); tc.classList.add('d-flex'); }
+    }
+
     loadDbTranslations().then(function() {
       markAvailableTranslations();
       autoApplySavedTranslation();
+      var transformBanner = document.querySelector('.alert-info.d-flex');
+      if (transformBanner) {
+        var tc = document.getElementById('translate-controls');
+        if (tc) {
+          tc.classList.remove('d-flex');
+          tc.classList.add('d-none');
+        }
+      }
     });
     </script>
   </body>

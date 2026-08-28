@@ -37,3 +37,10 @@ config/credentials/google-services.json
 !.env.sample
 config/credentials/google-services.json
 config.bat
+
+# Local secrets (never commit)
+.env
+.tool-versions
+
+# Redis dump
+dump.rdb

@@ -177,7 +177,7 @@
                           <% end %>
                         </div>
                       <% end %>
-                      <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-5">
+                      <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-5" data-post-id="<%= @post.id %>" data-post-title="<%= @post.title %>">
                         <% if @transformed %>
                           <div class="alert alert-info d-flex justify-content-between align-items-center mb-3" style="border-left: 4px solid #17a2b8; background-color: #e8f4f8;">
                             <span>
@@ -192,7 +192,7 @@
                             <%= button_to 'Restore original', post_undo_transform_path(@post), method: :delete, class: 'btn btn-sm btn-outline-danger', data: { confirm: 'Restore the original page?' } %>
                           </div>
                         <% end %>
-                        <%= @display_content %>
+                        <%= raw(@display_content) %>
                         <%= 'No details provided' if @display_content.blank? %>
                       </div>
                       <div class="col-lg-12 col-md-12 ml-auto mr-auto mb-3">

@@ -104,7 +104,7 @@ class PostsController < ApplicationController
     elsif current_guest
       @post_transformation = PostTransformation.for_guest(current_guest).for_post(@post).last
     end
-    @display_content = @post_transformation&.content || @post.content
+    @display_content = @post_transformation&.content_body || @post.content
     @transformed = @post_transformation.present?
     @post_translations = PostTranslation.for_post(@post).pluck(:language, :content).to_h
   end
@@ -355,6 +355,15 @@ class PostsController < ApplicationController
                   PostTransformation.for_guest(current_guest).for_post(@post).last
                 end
     if transform
+      # If transform has a linked version, restore that version
+      if transform.post_version_id
+        version = @post.post_versions.find_by(id: transform.post_version_id)
+        if version
+          @post.post_versions.where(active: true).update_all(active: false)
+          version.update!(active: true, restored_by_id: current_user&.id)
+          @post.update!(content: version.content)
+        end
+      end
       transform.destroy
       flash[:notice] = 'Page restored to original.'
     else
