@@ -36,7 +36,6 @@ yarn-debug.log*
 config/credentials/google-services.json
 !.env.sample
 config/credentials/google-services.json
-config.bat
 
 # Local secrets (never commit)
 .env
@@ -44,3 +43,6 @@ config.bat
 
 # Redis dump
 dump.rdb
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
