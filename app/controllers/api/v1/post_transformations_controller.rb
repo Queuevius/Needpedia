@@ -57,7 +57,10 @@ class Api::V1::PostTransformationsController < ApplicationController
     return unless @current_user || @guest
     scope = @current_user ? PostTransformation.for_user(@current_user) : PostTransformation.for_guest(@guest)
     transform = scope.for_post(@post).last
-    return nil if transform&.stale?
+    if transform&.stale?
+      transform.destroy
+      return nil
+    end
     transform
   end
 

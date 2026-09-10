@@ -222,7 +222,7 @@
                           <th scope="row">
                             <div data-post-id="<%= @post.id %>" data-post-title="<%= @post.title %>">
                               <% if @transformed %>
-                                <div class="alert alert-info d-flex justify-content-between align-items-center mb-3" style="border-left: 4px solid #17a2b8; background-color: #e8f4f8;">
+                                <div class="alert alert-info d-flex justify-content-between align-items-center mb-3 transform-banner" style="border-left: 4px solid #17a2b8; background-color: #e8f4f8;">
                                   <span>
                                     <strong>Page temporarily edited for you.</strong>
                                     <% if @post_transformation.transform_type&.start_with?('translate_') %>
