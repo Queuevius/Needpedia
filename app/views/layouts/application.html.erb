@@ -344,8 +344,12 @@
         contentDiv.innerHTML = newContent;
       }
 
+      // Remove any existing transform banner before inserting a new one
+      var existingBanner = document.querySelector('.transform-banner');
+      if (existingBanner) existingBanner.remove();
+
       var transformBanner = document.createElement('div');
-      transformBanner.className = 'alert alert-info d-flex justify-content-between align-items-center mb-3';
+      transformBanner.className = 'alert alert-info d-flex justify-content-between align-items-center mb-3 transform-banner';
       transformBanner.style.cssText = 'border-left: 4px solid #17a2b8; background-color: #e8f4f8;';
       transformBanner.innerHTML = '<span><strong>Page temporarily edited for you.</strong> This page has been transformed by Lotte. The original content is unchanged.</span><button class="btn btn-sm btn-outline-danger" onclick="restoreTransformedPage(\'' + postId + '\')"><i class="fas fa-undo"></i> Restore original</button>';
       if (contentDiv) contentDiv.parentNode.insertBefore(transformBanner, contentDiv);
@@ -360,8 +364,8 @@
         contentDiv.innerHTML = contentDiv.dataset.originalContent;
         delete contentDiv.dataset.originalContent;
       }
-      var banner = document.querySelector('.alert-info.d-flex');
-      if (banner) banner.remove();
+      var banners = document.querySelectorAll('.transform-banner');
+      banners.forEach(function(b) { b.remove(); });
       var tc = document.getElementById('translate-controls');
       if (tc) { tc.classList.remove('d-none'); tc.classList.add('d-flex'); }
     }
@@ -369,7 +373,7 @@
     loadDbTranslations().then(function() {
       markAvailableTranslations();
       autoApplySavedTranslation();
-      var transformBanner = document.querySelector('.alert-info.d-flex');
+      var transformBanner = document.querySelector('.transform-banner');
       if (transformBanner) {
         var tc = document.getElementById('translate-controls');
         if (tc) {
