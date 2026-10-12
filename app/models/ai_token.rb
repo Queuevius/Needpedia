@@ -11,9 +11,9 @@ class AiToken < ApplicationRecord
 
   def set_default_tokens_count
     if user.present?
-      self.tokens_count = ENV['USER_TOKENS_COUNT']&.to_i
+      self.tokens_count = (ENV['USER_TOKENS_COUNT'] || '0').to_i
     elsif guest.present?
-      self.tokens_count = ENV['GUEST_TOKENS_COUNT']&.to_i
+      self.tokens_count = (ENV['GUEST_TOKENS_COUNT'] || '0').to_i
     end
   end
 end

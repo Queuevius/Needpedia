@@ -1,7 +1,7 @@
 class Api::V1::TokensController < ApplicationController
   def create
     record = User.find_by(uuid: params[:utoken]) || Guest.find_by(uuid: params[:utoken])
-    tokens = record&.ai_tokens.last.tokens_count || 0
+    tokens = record&.ai_tokens&.last&.tokens_count.to_i
     if tokens.positive?
       render json: {tokens: tokens}, status: :ok
     else
