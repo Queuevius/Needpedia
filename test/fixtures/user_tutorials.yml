@@ -4,10 +4,10 @@ one:
   link: MyString
   content: MyText
   viewed: false
-  reference: 
+  user: one
 
 two:
   link: MyString
   content: MyText
   viewed: false
-  reference: 
+  user: two

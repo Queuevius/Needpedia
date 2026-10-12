@@ -1,5 +1,5 @@
 class AiPrompt < ApplicationRecord
-  TYPES = %w[Lotte Florence Adele].freeze
+  TYPES = %w[Lotte Florence Adele LotteFirstTime].freeze
 
   validates :ai_type, presence: true, inclusion: { in: TYPES }
   validates :description, presence: true

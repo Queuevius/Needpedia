@@ -1,3 +1,6 @@
+<% unless current_user&.onboarding_completed? %>
+  <%= render 'home/onboarding_overlay' %>
+<% end %>
 <% if current_user.nil? && @messages_for_guests.present? %>
   <%= render 'home/admin_notification_list', notifications: @messages_for_guests, color: 'light' %>
 <% end %>

@@ -37,3 +37,6 @@ config/credentials/google-services.json
 !.env.sample
 config/credentials/google-services.json
 config.bat
+.env
+dump.rdb
+graft/

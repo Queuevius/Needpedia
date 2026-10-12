@@ -37,6 +37,7 @@ Rails.application.routes.draw do
       resources :tokens, only: [:create]
       post 'tokens/decrease'
       get 'ai_prompt', to: 'ai_prompts#show'
+      post 'signup_draft', to: 'signup_drafts#create'
     end
     namespace :v2 do
       resources :posts, only: [:index, :show, :create, :update]
@@ -137,6 +138,7 @@ Rails.application.routes.draw do
         get 'unconfirmed_users'
       end
     end
+    resources :welcome_menus, only: [:index, :show, :edit, :update]
     resources :webhook_configurations
 
 
@@ -413,6 +415,8 @@ Rails.application.routes.draw do
 
   get 'otp_verifications/new', to: 'otp_verifications#new', as: :new_otp_verification
   post 'otp_verifications', to: 'otp_verifications#create', as: :verify_otp
+
+  patch '/users/onboarding', to: 'users/onboarding#update', as: :user_onboarding
 
   root to: 'home#index'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html

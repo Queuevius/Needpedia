@@ -1,0 +1,116 @@
+<%
+  menu = @welcome_menu
+  bg_url = if menu.bg_image.attached?
+    Rails.application.routes.url_helpers.rails_blob_path(menu.bg_image, only_path: true)
+  else
+    asset_path('Welcome Menu - Blank.jpeg')
+  end
+%>
+<div id="np-resources"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="np-resources-title"
+     tabindex="-1"
+     hidden>
+  <div class="np-resources__backdrop"></div>
+  <div class="np-resources__card">
+    <button type="button" class="np-resources__close" data-np-resources-close aria-label="Close resources">&times;</button>
+    <div class="np-resources__content">
+      <h2 id="np-resources-title" class="np-resources__heading">Resources</h2>
+      <%= sanitize(menu.content_or_default, tags: %w[p ul ol li a strong em b i u br h1 h2 h3 h4 h5 h6 span], attributes: %w[href class target rel]) %>
+    </div>
+  </div>
+  <style>
+    #np-resources {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #np-resources.is-visible { display: flex; }
+    #np-resources:focus { outline: none; }
+    .np-resources__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+    }
+    .np-resources__card {
+      position: relative;
+      width: min(94vw, 720px);
+      aspect-ratio: <%= menu.aspect_ratio %>;
+      max-height: 92vh;
+      background: #373737 url("<%= bg_url %>") no-repeat center / cover;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    }
+    .np-resources__close {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.75rem;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      border-radius: 50%;
+      color: #e8d9b8;
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .np-resources__close:focus-visible {
+      outline: 2px solid #f0e0c0;
+      outline-offset: 2px;
+    }
+    .np-resources__content {
+      position: absolute;
+      top: 30%;
+      right: 9%;
+      bottom: 8%;
+      left: 11%;
+      overflow-y: auto;
+      color: #d8c8a6;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+    .np-resources__heading {
+      color: #d8c8a6;
+      font-size: 26px;
+      margin: 0 0 0.75rem;
+      font-weight: 700;
+    }
+    .np-resources__content p { font-size: 15px; line-height: 1.5; }
+    .np-resources__content ul,
+    .np-resources__content ol { padding-left: 1.25rem; }
+    .np-resources__content li { margin-bottom: 0.6rem; font-size: 15px; }
+    .np-resources__content a {
+      color: #f0e0c0;
+      text-decoration: underline;
+    }
+    .np-resources__content a:focus-visible {
+      outline: 2px solid #f0e0c0;
+      outline-offset: 2px;
+    }
+    @media (max-width: 640px) {
+      .np-resources__card {
+        aspect-ratio: auto;
+        height: auto;
+        min-height: min(88vh, 560px);
+      }
+      .np-resources__content {
+        top: 12%;
+        left: 9%;
+        right: 9%;
+        bottom: 6%;
+      }
+      .np-resources__heading { font-size: 22px; }
+      .np-resources__content p,
+      .np-resources__content li { font-size: 14px; }
+    }
+  </style>
+</div>

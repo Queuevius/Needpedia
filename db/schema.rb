@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_07_29_000000) do
+ActiveRecord::Schema.define(version: 2026_10_12_000001) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -626,6 +626,17 @@ ActiveRecord::Schema.define(version: 2026_07_29_000000) do
     t.index ["user_id"], name: "index_shares_on_user_id"
   end
 
+  create_table "signup_drafts", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "email", null: false
+    t.string "token", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "consumed_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["token"], name: "index_signup_drafts_on_token", unique: true
+  end
+
   create_table "taggings", id: :serial, force: :cascade do |t|
     t.integer "tag_id"
     t.string "taggable_type"
@@ -854,6 +865,8 @@ ActiveRecord::Schema.define(version: 2026_07_29_000000) do
     t.string "outbox_url"
     t.string "shared_inbox_url"
     t.bigint "current_chat_thread_id"
+    t.string "onboarding_choice"
+    t.datetime "onboarding_completed_at"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["current_chat_thread_id"], name: "index_users_on_current_chat_thread_id"
     t.index ["email"], name: "index_users_on_email", unique: true
@@ -879,6 +892,12 @@ ActiveRecord::Schema.define(version: 2026_07_29_000000) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["key"], name: "index_webhook_settings_on_key", unique: true
+  end
+
+  create_table "welcome_menus", force: :cascade do |t|
+    t.text "content"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

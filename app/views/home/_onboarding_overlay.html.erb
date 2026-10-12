@@ -1,0 +1,112 @@
+<div id="np-onboarding"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="np-onboarding-title"
+     data-authed="<%= current_user ? '1' : '0' %>"
+     hidden>
+  <div class="np-onboarding__backdrop"></div>
+  <div class="np-onboarding__card">
+    <h2 id="np-onboarding-title" class="np-sr-only">Welcome!</h2>
+    <div class="np-onboarding__content">
+      <p class="np-onboarding__text">Needpedia is a place for people to share ideas and collaborate but to make that as easy and effective as possible we offer a range of tools, including some which leverage open source AI. They're totally optional, and we respect your decision either way, so first we just want to ask, which experience you'd prefer:</p>
+      <p class="np-onboarding__error" hidden>Something went wrong. Please try again.</p>
+      <div class="np-onboarding__actions">
+        <div class="np-onboarding__col">
+          <button type="button" class="np-onboarding__btn" data-np-choice="no_ai">I hate AI</button>
+          <p class="np-onboarding__caption">We have lots of resources to help you including videos and a volunteer nexus.</p>
+        </div>
+        <div class="np-onboarding__col">
+          <button type="button" class="np-onboarding__btn" data-np-choice="ai">I'll use it if it's for a good cause</button>
+          <p class="np-onboarding__caption">Our assistant can make posts for you, find things and even tell you what tasks we're working on right now.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <style>
+    #np-onboarding {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #np-onboarding.is-visible { display: flex; }
+    .np-onboarding__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+    }
+    .np-onboarding__card {
+      position: relative;
+      width: min(94vw, 720px, calc(92vh * 1024 / 724));
+      aspect-ratio: 1024 / 724;
+      background: #373737 url("<%= asset_path('Welcome Menu - Blank.jpeg') %>") no-repeat center / 100% 100%;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    }
+    .np-onboarding__content {
+      position: absolute;
+      top: 30%;
+      right: 7%;
+      bottom: 5%;
+      left: 13%;
+      overflow-y: auto;
+      color: #d8c8a6;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+    .np-onboarding__text { font-size: 15px; line-height: 1.5; margin: 0 0 1.25rem; }
+    .np-onboarding__error { color: #ffb3b3; margin: 0 0 0.75rem; }
+    .np-onboarding__actions { display: flex; gap: 8%; flex-wrap: wrap; }
+    .np-onboarding__col { flex: 1 1 160px; }
+    .np-onboarding__btn {
+      display: block;
+      width: 100%;
+      padding: 0.85rem 1.25rem;
+      background: transparent;
+      border: 1.5px solid #cbb794;
+      border-radius: 14px;
+      color: #e8d9b8;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-weight: 700;
+      font-size: 17px;
+      cursor: pointer;
+    }
+    .np-onboarding__btn:hover, .np-onboarding__btn:focus {
+      background: rgba(203, 183, 148, 0.12);
+      outline: none;
+    }
+    .np-onboarding__btn:focus { border-color: #f0e0c0; }
+    .np-onboarding__caption { font-size: 13px; line-height: 1.4; margin: 0.9rem 0 0; }
+    .np-sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    @media (max-width: 640px) {
+      .np-onboarding__card {
+        aspect-ratio: auto;
+        height: auto;
+        min-height: min(88vh, 560px);
+        background-size: cover;
+        background-position: top center;
+      }
+      .np-onboarding__content {
+        top: 32%;
+        left: 10%;
+        right: 8%;
+        bottom: 6%;
+      }
+      .np-onboarding__text { font-size: 14px; }
+      .np-onboarding__btn { font-size: 15px; padding: 0.7rem 1rem; }
+    }
+  </style>
+</div>
+<%= render 'home/welcome_resources' %>

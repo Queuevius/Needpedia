@@ -17,6 +17,7 @@ class HomeController < ApplicationController
     @how_tos = HowTo.all
     @quick_post = ButtonImage.where(name: "Quick post", page_name: "Home").last
     @archive_post = ButtonImage.where(name: "Archive post", page_name: "Home").last
+    @welcome_menu = WelcomeMenu.instance
   end
 
   def fediverse_feed

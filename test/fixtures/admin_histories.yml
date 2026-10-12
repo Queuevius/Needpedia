@@ -1,17 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  admin: one
+  user: one
   action: MyString
   target_type: MyString
-  target_id: 
+  target_id:
   message: MyText
   ip_address: MyString
 
 two:
-  admin: two
+  user: two
   action: MyString
   target_type: MyString
-  target_id: 
+  target_id:
   message: MyText
   ip_address: MyString

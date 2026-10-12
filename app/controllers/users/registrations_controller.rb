@@ -3,6 +3,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
   before_action :check_gibberish, only: [:create]
   before_action :check_account_status, only: [:new, :create]
   prepend_after_action :save_questionnaire_data, only: [:create]
+  prepend_after_action :save_onboarding_state, only: [:create]
+  prepend_after_action :consume_signup_draft, only: [:create]
   include GibberishHelper
 
   def update
@@ -40,6 +42,21 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
+  def save_onboarding_state
+    choice = params[:onboarding_choice]
+    return unless resource&.persisted? && %w[ai no_ai].include?(choice)
+
+    # update_columns deliberate: a failed save must never block signup completion.
+    resource.update_columns(onboarding_choice: choice, onboarding_completed_at: Time.current)
+  end
+
+  # One-time: only a successful account creation consumes the Florence draft,
+  # so a failed submission keeps the prefill for retry.
+  def consume_signup_draft
+    draft = SignupDraft.find_valid(params[:draft])
+    draft&.consume! if resource&.persisted?
+  end
+
   def check_account_status
     redirect_to root_path, alert: "Can't perform this action right now sorry for the inconvenience." and return if Setting.accounts_freezed
   end
@@ -51,6 +68,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
     # Jumpstart: Skip email confirmation on registration.
     #   Require confirmation when user changes their email only
     resource.skip_confirmation_notification! if questionnaire&.active?
+
+    # Florence draft prefill: fills only blank fields, so a failed create
+    # never overwrites what the user just typed. Opaque token only — no PII
+    # ever travels in the URL.
+    @signup_draft = SignupDraft.find_valid(params[:draft])
+    return unless @signup_draft
+
+    resource.name = resource.name.presence || @signup_draft.name
+    resource.email = resource.email.presence || @signup_draft.email
   end
 
   def check_gibberish

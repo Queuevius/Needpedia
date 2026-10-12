@@ -124,6 +124,10 @@ class User < ApplicationRecord
     sum.negative? ? 0 : sum
   end
 
+  def onboarding_completed?
+    onboarding_completed_at.present?
+  end
+
   def add_default_credit
     TransactionService.new(actor: nil, recipient: self, gig: nil, amount: 1, type: Transaction::TRANSACTION_TYPE_DEFAULT).call
   end
