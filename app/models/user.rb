@@ -53,6 +53,7 @@ class User < ApplicationRecord
   has_many :flags, dependent: :destroy
 
   has_many :post_tokens, dependent: :destroy
+  has_many :post_transformations, dependent: :destroy
 
   has_many :likes, dependent: :destroy
 
