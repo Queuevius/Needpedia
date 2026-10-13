@@ -4,8 +4,17 @@ class Api::V1::ChatThreadsController < ApplicationController
   before_action :set_chat_thread, only: [:show, :update, :destroy]
 
   def index
-    thread_ids = @actor.chat_threads.map(&:thread_id).uniq
-    render json: { threads: thread_ids }
+    threads = @actor.chat_threads
+                    .order(updated_at: :desc)
+                    .map do |t|
+                      {
+                        id: t.thread_id,
+                        title: t.title.presence || t.last_message&.truncate(80) || "New chat",
+                        lastMessage: t.last_message&.truncate(160) || "",
+                        timestamp: t.updated_at
+                      }
+                    end
+    render json: { threads: threads }
   end
 
   def show

@@ -73,7 +73,7 @@
               </div>
               <iframe
                 class="w-100"
-                src="<%= "#{@chatbot_url}?user_token=#{@token}&sidebar=false#{'&firsttime=true' if @user.chat_threads.blank?}" %>"
+                src="<%= "#{@chatbot_url}?user_token=#{@token}&sidebar=false#{'&firsttime=true' if @user.chat_threads.blank?}#{'&post_id=' + @post.id.to_s if @post}#{'&post_title=' + ERB::Util.url_encode(@post.title) if @post}" %>"
                 frameborder="0">
               </iframe>
             </div>
@@ -119,7 +119,7 @@
             <div class="card-body">
               <iframe
                 class="w-100"
-                src="<%= "#{@chatbot_url}?user_token=#{@token}&sidebar=false" %>"
+                src="<%= "#{@chatbot_url}?user_token=#{@token}&sidebar=false#{'&post_id=' + @post.id.to_s if @post}#{'&post_title=' + ERB::Util.url_encode(@post.title) if @post}" %>"
                 frameborder="0">
               </iframe>
             </div>

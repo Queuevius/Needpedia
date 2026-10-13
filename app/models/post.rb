@@ -85,6 +85,7 @@ class Post < ApplicationRecord
   has_many :deletions, as: :deletable, dependent: :destroy
 
   has_many :post_versions, dependent: :destroy
+  has_many :post_transformations, dependent: :destroy
 
   ############################### Validations ###########################
   validates :title, presence: true

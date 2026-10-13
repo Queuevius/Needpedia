@@ -1,7 +1,19 @@
 class Api::V1::PostsController < ApplicationController
-  before_action :authenticate_token, except: [:index]
+  before_action :authenticate_token, except: [:index, :show]
   before_action :validate_post_type_presence, only: [:create]
-  before_action :set_post, only: [:update]
+  before_action :set_post, only: [:update, :show]
+
+  def show
+    render json: {
+      status: 200,
+      content: {
+        id: @post.id,
+        title: @post.title,
+        content: @post.content,
+        post_type: @post.post_type
+      }
+    }
+  end
 
   def index
     header_token = extract_token_from_header

@@ -26,7 +26,11 @@ Rails.application.routes.draw do
       match '/register_device', to: 'device_registration#register_device', via: [:post]
       resources :faqs, only: [:index]
       resources :how_to, only: [:index]
-      resources :posts, only: [:index, :create]
+      resources :posts, only: [:index, :create, :show] do
+        member do
+          resource :post_transformation, only: [:show, :create, :update, :destroy]
+        end
+      end
       resources :chat_threads do
         collection do
           get :current
@@ -36,6 +40,11 @@ Rails.application.routes.draw do
       resources :chat_messages, only: [:index, :create]
       resources :tokens, only: [:create]
       post 'tokens/decrease'
+      post 'translations/translate', to: 'translations#translate'
+      post 'translations/batch_translate', to: 'translations#batch_translate'
+      post 'translations/save', to: 'translations#save'
+      get 'translations/:post_id', to: 'translations#index'
+      get 'posts/:post_id/post_versions/active', to: 'post_versions#active'
       get 'ai_prompt', to: 'ai_prompts#show'
     end
     namespace :v2 do
@@ -281,6 +290,7 @@ Rails.application.routes.draw do
     delete 'remove_private_user'
     delete 'remove_curated_user'
     patch 'track_post'
+    delete 'undo_transform'
     collection do
       delete 'destroy_activity'
       get 'modal'
