@@ -114,4 +114,38 @@ class WelcomeResourcesViewTest < ActionDispatch::IntegrationTest
     assert_raises(ActionController::RoutingError) { post '/master_admin/welcome_menus', params: {} }
     assert_raises(ActionController::RoutingError) { delete '/master_admin/welcome_menus/1' }
   end
+
+  test "overlay shows default onboarding text when column is blank" do
+    WelcomeMenu.instance.update!(onboarding_text: nil)
+
+    get root_path
+    assert_response :success
+    assert_select '#np-onboarding .np-onboarding__text', text: WelcomeMenu::ONBOARDING_DEFAULT_TEXT
+  end
+
+  test "master admin edit persists and changes rendered onboarding text" do
+    user = users(:one)
+    user.update_columns(master_admin: true)
+    sign_in user
+    menu = WelcomeMenu.instance
+
+    patch master_admin_welcome_menu_path(menu), params: { welcome_menu: { content: menu.content, onboarding_text: 'CUSTOM_ONBOARDING_XYZ' } }
+    assert_response :redirect
+    assert_equal 'CUSTOM_ONBOARDING_XYZ', menu.reload.onboarding_text
+
+    get root_path
+    assert_response :success
+    assert_select '#np-onboarding .np-onboarding__text', text: 'CUSTOM_ONBOARDING_XYZ'
+  end
+
+  test "blank onboarding_text from admin falls back to default" do
+    user = users(:one)
+    user.update_columns(master_admin: true)
+    sign_in user
+    menu = WelcomeMenu.instance
+
+    patch master_admin_welcome_menu_path(menu), params: { welcome_menu: { content: menu.content, onboarding_text: '' } }
+    assert_response :redirect
+    assert_nil menu.reload.onboarding_text
+  end
 end

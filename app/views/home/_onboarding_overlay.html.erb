@@ -8,7 +8,7 @@
   <div class="np-onboarding__card">
     <h2 id="np-onboarding-title" class="np-sr-only">Welcome!</h2>
     <div class="np-onboarding__content">
-      <p class="np-onboarding__text">Needpedia is a place for people to share ideas and collaborate but to make that as easy and effective as possible we offer a range of tools, including some which leverage open source AI. They're totally optional, and we respect your decision either way, so first we just want to ask, which experience you'd prefer:</p>
+      <p class="np-onboarding__text"><%= @welcome_menu.onboarding_text_or_default %></p>
       <p class="np-onboarding__error" hidden>Something went wrong. Please try again.</p>
       <div class="np-onboarding__actions">
         <div class="np-onboarding__col">
