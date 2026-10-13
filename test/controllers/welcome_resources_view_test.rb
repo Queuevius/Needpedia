@@ -182,4 +182,60 @@ class WelcomeResourcesViewTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_no_match(/&lt;p&gt;Here are some places/, response.body)
   end
+
+  # --- P0: authz edge cases ---
+
+  test "guest cannot open welcome menu edit form" do
+    get edit_master_admin_welcome_menu_path(WelcomeMenu.instance)
+    assert_redirected_to root_path
+    assert_equal 'Not authorized.', flash[:alert]
+  end
+
+  test "signed-in non master admin cannot open welcome menu edit form" do
+    sign_in users(:one)
+    get edit_master_admin_welcome_menu_path(WelcomeMenu.instance)
+    assert_redirected_to root_path
+    assert_equal 'Not authorized.', flash[:alert]
+  end
+
+  test "signed-in non master admin cannot PATCH welcome menu" do
+    user = users(:one)
+    sign_in user
+    menu = WelcomeMenu.instance
+    original = menu.content
+
+    patch master_admin_welcome_menu_path(menu), params: { welcome_menu: { content: '<p>hacked</p>' } }
+    assert_redirected_to root_path
+    assert_equal 'Not authorized.', flash[:alert]
+    assert_equal original, menu.reload.content
+  end
+
+  test "master admin PATCH keeps singleton invariant (no second row)" do
+    user = users(:one)
+    user.update_columns(master_admin: true)
+    sign_in user
+    menu = WelcomeMenu.instance
+    assert_equal 1, WelcomeMenu.count
+
+    patch master_admin_welcome_menu_path(menu), params: { welcome_menu: { content: '<p>still one</p>' } }
+    assert_response :redirect
+
+    assert_equal 1, WelcomeMenu.count
+    assert_equal '<p>still one</p>', WelcomeMenu.instance.reload.content
+    assert_equal menu.id, WelcomeMenu.instance.id
+  end
+
+  test "master admin update with blank onboarding_text cannot null out content" do
+    user = users(:one)
+    user.update_columns(master_admin: true)
+    sign_in user
+    menu = WelcomeMenu.instance
+
+    patch master_admin_welcome_menu_path(menu), params: { welcome_menu: { content: '', onboarding_text: 'keep_me' } }
+    assert_response :redirect
+
+    # content falls back to default (never blank), onboarding_text persists
+    assert_equal WelcomeMenu::DEFAULT_CONTENT, menu.reload.content_or_default
+    assert_equal 'keep_me', menu.onboarding_text
+  end
 end
