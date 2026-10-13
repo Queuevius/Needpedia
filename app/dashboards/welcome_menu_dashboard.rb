@@ -4,7 +4,7 @@ class WelcomeMenuDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     content: SummernoteField,
-    onboarding_text: Field::Text,
+    onboarding_text: SummernoteField,
     bg_image: Field::ActiveStorage,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,

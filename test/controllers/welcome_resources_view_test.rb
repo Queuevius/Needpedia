@@ -75,6 +75,8 @@ class WelcomeResourcesViewTest < ActionDispatch::IntegrationTest
 
     get edit_master_admin_welcome_menu_path(WelcomeMenu.instance)
     assert_response :success
+    assert_select 'textarea#summernote_content'
+    assert_select 'textarea#summernote_onboarding_text'
   end
 
   test "authed user with completed onboarding does not get resources menu" do
@@ -147,6 +149,14 @@ class WelcomeResourcesViewTest < ActionDispatch::IntegrationTest
     patch master_admin_welcome_menu_path(menu), params: { welcome_menu: { content: menu.content, onboarding_text: '' } }
     assert_response :redirect
     assert_nil menu.reload.onboarding_text
+  end
+
+  test "overlay renders HTML in onboarding text" do
+    WelcomeMenu.instance.update!(onboarding_text: '<strong>bold_intro</strong> and more')
+
+    get root_path
+    assert_response :success
+    assert_select '#np-onboarding .np-onboarding__text strong', text: 'bold_intro'
   end
 
   test "master admin show page renders content as HTML not escaped text" do

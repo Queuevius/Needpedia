@@ -8,7 +8,7 @@
   <div class="np-onboarding__card">
     <h2 id="np-onboarding-title" class="np-sr-only">Welcome!</h2>
     <div class="np-onboarding__content">
-      <p class="np-onboarding__text"><%= @welcome_menu.onboarding_text_or_default %></p>
+      <div class="np-onboarding__text"><%= @welcome_menu.onboarding_text_or_default&.html_safe %></div>
       <p class="np-onboarding__error" hidden>Something went wrong. Please try again.</p>
       <div class="np-onboarding__actions">
         <div class="np-onboarding__col">

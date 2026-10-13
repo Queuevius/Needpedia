@@ -12,10 +12,10 @@
   <%= f.label field.attribute %>
 </div>
 <div class="field-unit__field">
-  <%= f.text_area field.attribute, autofocus: true, rows: 3, class: 'form-control', id: 'summernote' %>
+  <%= f.text_area field.attribute, autofocus: true, rows: 3, class: 'form-control', id: "summernote_#{field.attribute}" %>
 </div>
 <script>
-    $('#summernote').summernote({
+    $('#summernote_<%= field.attribute %>').summernote({
         height: 150,
         disableDragAndDrop: true,
         toolbar: [
