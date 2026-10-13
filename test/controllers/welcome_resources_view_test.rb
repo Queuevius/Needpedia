@@ -148,4 +148,28 @@ class WelcomeResourcesViewTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_nil menu.reload.onboarding_text
   end
+
+  test "master admin show page renders content as HTML not escaped text" do
+    user = users(:one)
+    user.update_columns(master_admin: true)
+    sign_in user
+    menu = WelcomeMenu.instance
+
+    get master_admin_welcome_menu_path(menu)
+    assert_response :success
+    assert_select 'a[href="/how_tos/index"]'
+    assert_select 'a[href="/about_us"]'
+    assert_select 'a[href="/careers"]'
+    assert_no_match(/&lt;p&gt;Here are some places/, response.body)
+  end
+
+  test "master admin index page renders content as HTML not escaped text" do
+    user = users(:one)
+    user.update_columns(master_admin: true)
+    sign_in user
+
+    get master_admin_welcome_menus_path
+    assert_response :success
+    assert_no_match(/&lt;p&gt;Here are some places/, response.body)
+  end
 end
