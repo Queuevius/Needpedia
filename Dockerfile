@@ -3,6 +3,15 @@ FROM ruby:2.7.8-bullseye
 # Set working directory
 WORKDIR /app
 
+# bullseye reached EOL on 31 Aug 2026; its packages moved to the Debian
+# archive. Retarget apt before any install so package fetches don't 404.
+RUN printf '%s\n' \
+ 'deb http://archive.debian.org/debian bullseye main' \
+ 'deb http://archive.debian.org/debian bullseye-updates main' \
+ > /etc/apt/sources.list \
+ && rm -f /etc/apt/sources.list.d/* \
+ && echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99check-valid-until
+
 # Install OS packages
 RUN apt-get update -y \
   && apt-get install -y --no-install-recommends \
