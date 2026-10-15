@@ -17,6 +17,11 @@ module ApplicationHelper
     }.stringify_keys[type.to_s] || type.to_s
   end
 
+  def firsttime_for?(user)
+    user.present? && user.chat_threads.blank? &&
+      (user.created_at.blank? || user.created_at > 24.hours.ago)
+  end
+
   def unread_notification(user)
     count = user&.notifications&.unread&.count
     'unread-notificatios' if count&.positive?

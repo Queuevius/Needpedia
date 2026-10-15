@@ -16,6 +16,7 @@ class FlorenceOnboardingPathTest < ActionDispatch::IntegrationTest
   test "authed user without chat threads gets firsttime on homepage" do
     user = users(:one)
     user.chat_threads.destroy_all
+    user.update_columns(created_at: 1.hour.ago)
     sign_in user
 
     get root_path
@@ -25,6 +26,20 @@ class FlorenceOnboardingPathTest < ActionDispatch::IntegrationTest
     assert frame, 'expected butler iframe'
     assert_match(/sidebar=false&firsttime=true/, frame['src'])
     assert_no_match(/dropdown\(['"]show['"]\)/, response.body)
+  end
+
+  test "authed user older than 24h without chat threads does not get firsttime" do
+    user = users(:one)
+    user.chat_threads.destroy_all
+    user.update_columns(created_at: 2.days.ago)
+    sign_in user
+
+    get root_path
+    assert_response :success
+    frame = css_select('.chat-dropdown iframe').first
+    assert frame, 'expected butler iframe'
+    assert_no_match(/firsttime=true/, frame['src'])
+    assert_match(/sidebar=false/, frame['src'])
   end
 
   test "authed user with chat threads does not get firsttime on homepage" do
@@ -52,6 +67,7 @@ class FlorenceOnboardingPathTest < ActionDispatch::IntegrationTest
   test "authed /ai page passes firsttime only without chat threads" do
     user = users(:one)
     user.chat_threads.destroy_all
+    user.update_columns(created_at: 1.hour.ago)
     sign_in user
 
     get ai_path
