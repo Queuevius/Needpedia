@@ -72,7 +72,9 @@ class Api::V1::ChatMessagesController < ApplicationController
     Array(params[:messages]).filter_map do |message|
       parameterized = message.is_a?(ActionController::Parameters) ? message : ActionController::Parameters.new(message)
       permitted = parameterized.permit(:role, :content, metadata: {})
-      next unless permitted[:role].present? && permitted[:content].present?
+      # Allow metadata-only rows: a message whose body was fully consumed by
+      # the task-draft fence strip still needs to persist the draft.
+      next unless permitted[:role].present? && (permitted[:content].present? || permitted[:metadata].present?)
 
       {
         role: permitted[:role],

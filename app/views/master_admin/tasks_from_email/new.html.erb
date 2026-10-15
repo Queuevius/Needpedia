@@ -1,0 +1,59 @@
+<% content_for(:title) { 'Create Task from Email' } %>
+
+<header class="main-content__header">
+  <h1 class="main-content__page-title">Create Task from Email</h1>
+</header>
+
+<div class="main-content__body">
+  <p>
+    Manual intake: paste a forwarded email below to create an
+    <strong>Available Tasks</strong> entry in the chosen group.
+    This is not inbound email — nothing is fetched from a mailbox.
+  </p>
+
+  <%= form_with url: master_admin_create_task_from_email_path, method: :post, local: true do |f| %>
+    <div class="field-unit">
+      <div class="field-unit__label">Group (required)</div>
+      <div class="field-unit__field">
+        <%= select_tag :group_id,
+                       options_from_collection_for_select(@groups, :id, :name, @task.group_id),
+                       include_blank: '-- select group --',
+                       required: true,
+                       class: 'select' %>
+      </div>
+    </div>
+
+    <div class="field-unit">
+      <div class="field-unit__label">Email subject (becomes task title)</div>
+      <div class="field-unit__field">
+        <%= text_field_tag :subject, @task.title, required: true, class: 'string-input' %>
+      </div>
+    </div>
+
+    <div class="field-unit">
+      <div class="field-unit__label">Email body (becomes task description)</div>
+      <div class="field-unit__field">
+        <%= text_area_tag :body, @task.description, rows: 10, required: true %>
+      </div>
+    </div>
+
+    <div class="field-unit">
+      <div class="field-unit__label">Estimated hours</div>
+      <div class="field-unit__field">
+        <%= number_field_tag :hours, @task.hours || 1.0, min: 0.01, max: 999.99, step: 0.5 %>
+      </div>
+    </div>
+
+    <div class="field-unit">
+      <div class="field-unit__label">Assignee email (optional)</div>
+      <div class="field-unit__field">
+        <%= email_field_tag :assignee_email, params[:assignee_email], placeholder: 'user@example.com' %>
+      </div>
+    </div>
+
+    <div class="main-content__header">
+      <%= submit_tag 'Create task', class: 'button' %>
+      <%= link_to 'Cancel', master_admin_root_path, class: 'button button--secondary' %>
+    </div>
+  <% end %>
+</div>

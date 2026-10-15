@@ -20,6 +20,12 @@ as defined by the routes in the `admin/` namespace
     class: "navigation__link navigation__link--#{nav_link_state('chat_threads')}"
   ) %>
 
+  <%= link_to(
+    "Task from Email",
+    master_admin_task_from_email_path,
+    class: "navigation__link"
+  ) %>
+
   <% Administrate::Namespace.new(namespace).resources_with_index_route.each do |resource| %>
     <% next if %w[webhooks chat_threads].include?(resource.to_s) %>
     <%= link_to(

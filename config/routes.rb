@@ -47,6 +47,8 @@ Rails.application.routes.draw do
       get 'posts/:post_id/post_versions/active', to: 'post_versions#active'
       get 'ai_prompt', to: 'ai_prompts#show'
       post 'signup_draft', to: 'signup_drafts#create'
+      get 'tasks/groups', to: 'tasks#groups'
+      post 'tasks', to: 'tasks#create'
     end
     namespace :v2 do
       resources :posts, only: [:index, :show, :create, :update]
@@ -81,6 +83,8 @@ Rails.application.routes.draw do
   get 'how_tos/index'
   post '/rate' => 'rater#create', :as => 'rate'
   namespace :master_admin do
+    get 'task_from_email', to: 'tasks_from_email#new', as: :task_from_email
+    post 'task_from_email', to: 'tasks_from_email#create', as: :create_task_from_email
     resources :chat_threads, only: [:index, :show]
     resources :ai_prompts do
       member do

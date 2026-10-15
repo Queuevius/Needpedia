@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_10_12_000002) do
+ActiveRecord::Schema.define(version: 2026_10_15_000002) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -376,6 +376,9 @@ ActiveRecord::Schema.define(version: 2026_10_12_000002) do
     t.string "badge"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "task_id"
+    t.index ["task_id"], name: "index_impacts_on_task_id"
+    t.index ["user_id", "task_id"], name: "index_impacts_on_user_and_task", unique: true, where: "(task_id IS NOT NULL)"
     t.index ["user_id"], name: "index_impacts_on_user_id"
   end
 
@@ -704,7 +707,7 @@ ActiveRecord::Schema.define(version: 2026_10_12_000002) do
     t.datetime "updated_at", precision: 6, null: false
     t.text "skills", default: [], array: true
     t.string "city"
-    t.string "status", default: "Casual", null: false
+    t.string "status", default: "Available Tasks", null: false
     t.decimal "hours", precision: 5, scale: 2, default: "1.0", null: false
     t.string "priority", default: "Casual"
     t.bigint "assignee_id"
