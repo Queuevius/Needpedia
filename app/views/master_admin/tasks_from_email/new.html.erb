@@ -40,7 +40,7 @@
     <div class="field-unit">
       <div class="field-unit__label">Estimated hours</div>
       <div class="field-unit__field">
-        <%= number_field_tag :hours, @task.hours || 1.0, min: 0.01, max: 999.99, step: 0.5 %>
+        <%= number_field_tag :hours, @task.hours || 1.0, min: 0.01, max: 999.99, step: 0.01 %>
       </div>
     </div>
 
