@@ -29,4 +29,22 @@ class HomeOnboardingViewTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select '#np-onboarding', count: 0
   end
+
+  test "welcome menu button labels are editable and fall back to defaults" do
+    get root_path
+    assert_response :success
+    assert_select '[data-np-choice="no_ai"]', text: 'I hate AI'
+    assert_select '[data-np-choice="ai"]', text: "I'll use it if it's for a good cause"
+
+    WelcomeMenu.instance.update!(
+      button_no_ai_label: 'No AI for me',
+      button_ai_label: 'Yes to AI'
+    )
+
+    get root_path
+    assert_select '[data-np-choice="no_ai"]', text: 'No AI for me'
+    assert_select '[data-np-choice="ai"]', text: 'Yes to AI'
+  ensure
+    WelcomeMenu.instance.update!(button_no_ai_label: nil, button_ai_label: nil)
+  end
 end

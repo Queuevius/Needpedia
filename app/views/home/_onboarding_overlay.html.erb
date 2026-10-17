@@ -12,11 +12,11 @@
       <p class="np-onboarding__error" hidden>Something went wrong. Please try again.</p>
       <div class="np-onboarding__actions">
         <div class="np-onboarding__col">
-          <button type="button" class="np-onboarding__btn" data-np-choice="no_ai">I hate AI</button>
+          <button type="button" class="np-onboarding__btn" data-np-choice="no_ai"><%= @welcome_menu.button_no_ai_label_or_default %></button>
           <p class="np-onboarding__caption">We have lots of resources to help you including videos and a volunteer nexus.</p>
         </div>
         <div class="np-onboarding__col">
-          <button type="button" class="np-onboarding__btn" data-np-choice="ai">I'll use it if it's for a good cause</button>
+          <button type="button" class="np-onboarding__btn" data-np-choice="ai"><%= @welcome_menu.button_ai_label_or_default %></button>
           <p class="np-onboarding__caption">Our assistant can make posts for you, find things and even tell you what tasks we're working on right now.</p>
         </div>
       </div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_10_15_000002) do
+ActiveRecord::Schema.define(version: 2026_10_17_000002) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -933,6 +933,8 @@ ActiveRecord::Schema.define(version: 2026_10_15_000002) do
     t.text "onboarding_text"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "button_no_ai_label"
+    t.string "button_ai_label"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

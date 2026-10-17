@@ -5,6 +5,8 @@ class WelcomeMenuDashboard < Administrate::BaseDashboard
     id: Field::Number,
     content: SummernoteField,
     onboarding_text: SummernoteField,
+    button_no_ai_label: Field::String,
+    button_ai_label: Field::String,
     bg_image: Field::ActiveStorage,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
@@ -20,6 +22,8 @@ class WelcomeMenuDashboard < Administrate::BaseDashboard
     id
     content
     onboarding_text
+    button_no_ai_label
+    button_ai_label
     bg_image
     created_at
     updated_at
@@ -28,6 +32,8 @@ class WelcomeMenuDashboard < Administrate::BaseDashboard
   FORM_ATTRIBUTES = %i[
     content
     onboarding_text
+    button_no_ai_label
+    button_ai_label
     bg_image
   ].freeze
 

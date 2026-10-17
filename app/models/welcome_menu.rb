@@ -14,6 +14,9 @@ class WelcomeMenu < ApplicationRecord
 
   ALLOWED_IMAGE_TYPES = %w[image/png image/jpeg image/gif image/webp].freeze
 
+  BUTTON_NO_AI_DEFAULT = 'I hate AI'.freeze
+  BUTTON_AI_DEFAULT = "I'll use it if it's for a good cause".freeze
+
   validate :bg_image_content_type
   before_save :normalize_onboarding_text
 
@@ -43,10 +46,20 @@ class WelcomeMenu < ApplicationRecord
     onboarding_text.presence || ONBOARDING_DEFAULT_TEXT
   end
 
+  def button_no_ai_label_or_default
+    button_no_ai_label.presence || BUTTON_NO_AI_DEFAULT
+  end
+
+  def button_ai_label_or_default
+    button_ai_label.presence || BUTTON_AI_DEFAULT
+  end
+
   private
 
   def normalize_onboarding_text
     self.onboarding_text = nil if onboarding_text.blank?
+    self.button_no_ai_label = nil if button_no_ai_label.blank?
+    self.button_ai_label = nil if button_ai_label.blank?
   end
 
   def bg_image_content_type
