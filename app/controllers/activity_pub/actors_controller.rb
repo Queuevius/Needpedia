@@ -53,7 +53,14 @@ module ActivityPub
     end
 
     def inbox
-      verify_signature!
+      raw_body = request.body.read
+      request.body.rewind
+
+      @json_data = parse_json_object(raw_body)
+      return head :unauthorized unless @json_data
+
+      return head :unauthorized unless verify_signature!(raw_body)
+
       process_activity(@json_data)
       head :accepted
     end
@@ -312,46 +319,134 @@ module ActivityPub
       ActionController::Base.helpers.strip_tags(html_content).squish
     end
 
-    def verify_signature!
+    # Inbound HTTP-signature verification (fail-closed).
+    # Returns true only when: signature header parses, required headers were
+    # signed, keyId belongs to the activity's actor, the RSA signature is
+    # valid against the actor's published public key, Date is fresh, and any
+    # signed Digest matches the raw body.
+    def verify_signature!(raw_body)
       signature_header = request.headers['Signature']
+      return false if signature_header.blank?
 
+      params = HttpSignatures::SignatureParametersParser.new(signature_header).parse
+      key_id = params['keyId']
+      algorithm = params['algorithm']
+      signed_headers = params['headers'].to_s.split(' ')
+      return false if key_id.blank? || signed_headers.empty?
+      return false unless algorithm == 'rsa-sha256'
+      return false unless (['(request-target)', 'host', 'date', 'digest'] - signed_headers).empty?
 
-      key_id_match = signature_header.match(/keyId="([^"]+)"/)
-      key_id = key_id_match ? key_id_match[1] : nil
-      
-      headers_match = signature_header.match(/headers="([^"]+)"/)
-      signed_headers = headers_match ? headers_match[1].split(' ') : []
+      actor_url = activity_actor_url
+      return false if actor_url.blank?
+      # The signer must be the actor the activity claims came from.
+      return false unless key_id == actor_url || key_id == "#{actor_url}#main-key"
 
-      actor_url = key_id&.sub(/#main-key$/, '')
+      return false unless fresh_date?(request.headers['Date'])
 
-      begin
-        response = RestClient.get(actor_url, { 'Accept' => 'application/activity+json' })
-        actor_doc = JSON.parse(response.body)
-        public_key = actor_doc['publicKey']['publicKeyPem']
+      public_key = fetch_actor_public_key(key_id.sub(/#main-key$/, ''))
+      return false if public_key.blank?
 
-        unless public_key
-          return false
-        end
+      context = HttpSignatures::Context.new(
+        keys: { key_id => { public_key: public_key } },
+        algorithm: 'rsa-sha256'
+      )
+      return false unless context.verifier.valid?(InboxMessage.new(request))
+      return false unless digest_matches?(request.headers['Digest'], raw_body)
 
-        key_store = { key_id => public_key }
-        
-        verification_headers = signed_headers.present? ? signed_headers : ['(request-target)', 'host', 'date']
-        
-        context = HttpSignatures::Context.new(
-          keys: key_store,
-          algorithm: 'rsa-sha256',
-          headers: verification_headers
-        )
+      true
+    rescue HttpSignatures::SignatureParametersParser::Error,
+           HttpSignatures::Algorithm::UnknownAlgorithm,
+           HttpSignatures::HeaderNotInMessage => e
+      Rails.logger.warn("[ActivityPub] inbox signature rejected: #{e.class}: #{e.message}")
+      false
+    rescue => e
+      Rails.logger.warn("[ActivityPub] inbox verification error: #{e.class}: #{e.message}")
+      false
+    end
 
-        # Store the activity JSON for later processing
-        @json_data = JSON.parse(request.body.read)
+    def parse_json_object(raw_body)
+      parsed = JSON.parse(raw_body.to_s)
+      parsed.is_a?(Hash) ? parsed : nil
+    rescue JSON::ParserError
+      nil
+    end
 
+    def activity_actor_url
+      actor = @json_data && @json_data['actor']
+      actor.is_a?(Hash) ? actor['id'] : actor
+    end
 
-        valid = context.verifier.valid?(request)
-        
-        true
-      rescue => e
-        true
+    def fetch_actor_public_key(url)
+      response = RestClient.get(url, 'Accept' => 'application/activity+json')
+      doc = JSON.parse(response.body)
+      public_key = doc.dig('publicKey', 'publicKeyPem')
+      return nil if public_key.blank?
+
+      owner = doc.dig('publicKey', 'owner')
+      # Key must be published on (and owned by) the actor document we fetched.
+      return nil if owner.present? && owner != url
+
+      public_key
+    rescue => e
+      Rails.logger.warn("[ActivityPub] key fetch failed for #{url}: #{e.class}: #{e.message}")
+      nil
+    end
+
+    def fresh_date?(date_header)
+      date = Time.httpdate(date_header)
+      (Time.now.utc - date.utc).abs <= 1.hour
+    rescue ArgumentError
+      false
+    end
+
+    def digest_matches?(digest_header, raw_body)
+      return false if digest_header.blank?
+
+      algo, _, value = digest_header.partition('=')
+      return false if value.blank? || algo.downcase != 'sha-256'
+
+      expected = Base64.strict_encode64(Digest::SHA256.digest(raw_body.to_s))
+      ActiveSupport::SecurityUtils.secure_compare(value, expected)
+    end
+
+    # Minimal message adapter so the http_signatures gem can verify an
+    # ActionDispatch::Request (gem expects Net::HTTPRequest-style
+    # []/fetch/key?/method/path).
+    class InboxMessage
+      def initialize(request)
+        @request = request
+      end
+
+      def [](name)
+        @request.get_header(env_key(name))
+      end
+
+      def fetch(name, *args)
+        value = self[name]
+        return value unless value.nil?
+        return yield(name) if block_given?
+        return args.first unless args.empty?
+        raise KeyError, "header not found: #{name}"
+      end
+
+      def key?(name)
+        !self[name].nil?
+      end
+
+      def method
+        @request.request_method
+      end
+
+      def path
+        @request.fullpath
+      end
+
+      private
+
+      def env_key(name)
+        key = name.to_s.upcase.tr('-', '_')
+        return key if key == 'CONTENT_TYPE' || key == 'CONTENT_LENGTH' || key.start_with?('HTTP_')
+        "HTTP_#{key}"
       end
     end
   end
