@@ -354,13 +354,8 @@ module ActivityPub
       return false unless digest_matches?(request.headers['Digest'], raw_body)
 
       true
-    rescue HttpSignatures::SignatureParametersParser::Error,
-           HttpSignatures::Algorithm::UnknownAlgorithm,
-           HttpSignatures::HeaderNotInMessage => e
-      Rails.logger.warn("[ActivityPub] inbox signature rejected: #{e.class}: #{e.message}")
-      false
     rescue => e
-      Rails.logger.warn("[ActivityPub] inbox verification error: #{e.class}: #{e.message}")
+      Rails.logger.warn("[ActivityPub] inbox signature rejected: #{e.class}: #{e.message}")
       false
     end
 
@@ -377,7 +372,7 @@ module ActivityPub
     end
 
     def fetch_actor_public_key(url)
-      response = RestClient.get(url, 'Accept' => 'application/activity+json')
+      response = RestClient.get(url, { 'Accept' => 'application/activity+json', timeout: 5, open_timeout: 5 })
       doc = JSON.parse(response.body)
       public_key = doc.dig('publicKey', 'publicKeyPem')
       return nil if public_key.blank?
