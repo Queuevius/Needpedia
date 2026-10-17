@@ -7,6 +7,12 @@ class AiPromptTest < ActiveSupport::TestCase
     assert prompt.valid?
   end
 
+  test "FlorenceFirstTime is a valid type" do
+    assert_includes AiPrompt::TYPES, 'FlorenceFirstTime'
+    prompt = AiPrompt.new(ai_type: 'FlorenceFirstTime', description: 'Welcome aboard')
+    assert prompt.valid?
+  end
+
   test "create assigns version and activates, deactivating previous active" do
     first = AiPrompt.create!(ai_type: 'LotteFirstTime', description: 'v1 message')
     second = AiPrompt.create!(ai_type: 'LotteFirstTime', description: 'v2 message')
