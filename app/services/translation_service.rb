@@ -28,7 +28,7 @@ class TranslationService
     'ur' => 'Urdu'
   }.freeze
 
-  ASSISTANT_URL = ENV.fetch('ASSISTANT_URL', 'http://localhost:3002').freeze
+  ASSISTANT_URL = ENV.fetch('ASSISTANT_URL', 'http://localhost:3001').freeze
 
   def initialize(source_lang: 'auto', target_lang:)
     @source_lang = source_lang
